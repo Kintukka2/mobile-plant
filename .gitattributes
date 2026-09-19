@@ -1,0 +1,22 @@
+# Normalise every text file to LF in the repository.
+#
+# This exists because the repository has already been through one round of it:
+# js/data/problems.js arrived with CRLF endings while every other file used
+# LF, and re-uploading it rewrote all 1051 lines for a change that altered no
+# content at all. A diff that size hides whatever real change sits next to it,
+# and it will happen again on any Windows checkout whose git is not set to
+# convert on commit.
+#
+# `text=auto` lets git decide what is text and what is binary; `eol=lf` fixes
+# what lands in a commit. Working directories are unaffected — an editor on
+# Windows can still show and save CRLF if it wants to.
+* text=auto eol=lf
+
+# Explicit rather than inferred, so a file that is briefly empty or oddly
+# encoded cannot be mistaken for binary and slip through unnormalised.
+*.js    text eol=lf
+*.json  text eol=lf
+*.css   text eol=lf
+*.html  text eol=lf
+*.md    text eol=lf
+*.webmanifest text eol=lf
