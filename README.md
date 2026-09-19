@@ -20,26 +20,13 @@ There is no install step, but the app does need to be served over `http://`
 rather than opened as a `file://` path — service workers, the manifest and the
 weather fetch are all blocked on `file://`.
 
-**Anywhere with Node:**
-
 ```bash
 node .claude/serve.js
 ```
 
 Then open <http://localhost:8787/>. `PORT` and `HOST` override the defaults;
-the listener is loopback-only unless you set `HOST` yourself.
-
-**Windows, no runtime installed:**
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .claude\serve.ps1
-```
-
-The two are the same server on the same port. The PowerShell one came first,
-because the machine this was written on had no Node and no Python and needed
-something that required no elevation or install; the Node one exists because
-that assumption does not survive the trip to another machine — a cloud
-container has Node and no PowerShell. Neither has any dependencies.
+the listener is loopback-only unless you set `HOST` yourself. It has no
+dependencies — Node built-ins only.
 
 Anything else that serves static files works just as well:
 
@@ -202,8 +189,7 @@ js/
   weather.js             Open-Meteo client and forecast-derived nudges
   views/*.js             one per screen; species shares discover.js
   app.js                 router, theme, nav, init
-.claude/serve.js         dependency-free static server (Node, any OS)
-.claude/serve.ps1        the same server for Windows without a runtime
+.claude/serve.js         dependency-free static server
 CLAUDE.md                architecture notes and invariants for contributors
 .gitignore               local-only Claude settings, OS cruft
 .gitattributes           normalises line endings to LF in commits

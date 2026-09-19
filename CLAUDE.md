@@ -32,8 +32,7 @@ node .claude/serve.js          # → http://localhost:8787/
 ```
 
 Zero dependencies, Node built-ins only. `PORT` and `HOST` override the
-defaults. `.claude/serve.ps1` is the same server in PowerShell, for a Windows
-machine with no Node installed.
+defaults.
 
 ### Verifying a change actually works
 

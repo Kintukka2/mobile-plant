@@ -1,17 +1,11 @@
 /* ==========================================================================
-   Sprout — static file server (Node)
+   Sprout — static file server
    --------------------------------------------------------------------------
-   The same server as serve.ps1, on the same port, for every machine that has
-   a Node runtime: Windows, macOS, Linux, and a cloud session.
-
-   The PowerShell original exists because the machine this project started on
-   had no Node and no Python. That constraint does not travel — a cloud
-   container has Node and no PowerShell, so the one script that could start
-   the app was the one script that could not run. This file is the other half
-   of that pair.
+   Serves the app for local testing on any machine with a Node runtime:
+   Windows, macOS, Linux, or a cloud session.
 
    Node built-ins only. The app has no dependencies and neither does the
-   thing that serves it, so there is still nothing to install.
+   thing that serves it, so there is nothing to install.
 
      node .claude/serve.js            → http://localhost:8787/
      PORT=3000 node .claude/serve.js  → another port
@@ -30,7 +24,7 @@ const ROOT = path.resolve(__dirname, '..');
 const PORT = Number(process.env.PORT) || 8787;
 const HOST = process.env.HOST || '127.0.0.1';
 
-/* Mirrors the PowerShell table. The repo currently ships no images — the
+/* The repo currently ships no images — the
    icons are inline SVG data URIs — but the image types stay listed so that
    adding one is not also a debugging session about why it downloads instead
    of rendering. */
