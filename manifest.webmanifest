@@ -1,0 +1,26 @@
+{
+  "name": "Sprout — evergreen",
+  "short_name": "Sprout",
+  "description": "A considered home for your plants. Care schedules built from real species data, a diary and growth record for every plant, a diagnostic clinic for when something looks wrong, and watering that reads the weather where you actually live.",
+  "start_url": "index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0A1410",
+  "theme_color": "#0A1410",
+  "categories": ["lifestyle", "utilities"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%230A1410'/%3E%3Cg fill='none' stroke='%233FBE8B' stroke-width='26' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M256 430V205'/%3E%3Cpath d='M256 297C184 297 143 251 143 184c72 0 113 46 113 113Z'/%3E%3Cpath d='M256 235c72 0 113-46 113-113-72 0-113 46-113 113Z'/%3E%3C/g%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230A1410'/%3E%3Cg transform='translate(256 256) scale(0.7) translate(-256 -256)' fill='none' stroke='%233FBE8B' stroke-width='32' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M256 430V205'/%3E%3Cpath d='M256 297C184 297 143 251 143 184c72 0 113 46 113 113Z'/%3E%3Cpath d='M256 235c72 0 113-46 113-113-72 0-113 46-113 113Z'/%3E%3C/g%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
