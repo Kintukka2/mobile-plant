@@ -20,18 +20,28 @@ There is no install step, but the app does need to be served over `http://`
 rather than opened as a `file://` path — service workers, the manifest and the
 weather fetch are all blocked on `file://`.
 
-**Windows, no runtime required:**
+**Anywhere with Node:**
+
+```bash
+node .claude/serve.js
+```
+
+Then open <http://localhost:8787/>. `PORT` and `HOST` override the defaults;
+the listener is loopback-only unless you set `HOST` yourself.
+
+**Windows, no runtime installed:**
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .claude\serve.ps1
 ```
 
-Then open <http://localhost:8787/>.
+The two are the same server on the same port. The PowerShell one came first,
+because the machine this was written on had no Node and no Python and needed
+something that required no elevation or install; the Node one exists because
+that assumption does not survive the trip to another machine — a cloud
+container has Node and no PowerShell. Neither has any dependencies.
 
-That script is a ~70-line static file server built on raw `TcpListener`. It
-exists because the machine this was written on has no Node and no Python, and
-it needs no elevation or install. If you do have a runtime, anything
-equivalent works:
+Anything else that serves static files works just as well:
 
 ```bash
 python3 -m http.server 8787
@@ -76,9 +86,11 @@ light, and the scheduling engine adjusts from there for **pot size, pot
 material, drainage, room light and season** — separate warm-season and
 dormancy watering intervals, plus feeding cycles that pause in winter.
 
-Every species also carries an ASPCA-based toxicity rating
-(`safe` / `mild` / `toxic` / `very-toxic`), so a household with a cat can see
-the risk before buying.
+Every species also carries ASPCA-based toxicity ratings
+(`safe` / `mild` / `toxic` / `very-toxic`), scored separately for **cats,
+dogs and humans** — the three often differ, and a plant that is merely an
+irritant to you can be a genuine problem for the cat. A household can see the
+risk before buying rather than after.
 
 ### The diary
 
@@ -188,9 +200,12 @@ js/
   photos.js              capture, downscale, re-encode
   schedule.js            watering/feeding engine
   weather.js             Open-Meteo client and forecast-derived nudges
-  views/*.js             one file per screen
+  views/*.js             one per screen; species shares discover.js
   app.js                 router, theme, nav, init
-.claude/serve.ps1        dependency-free static server
+.claude/serve.js         dependency-free static server (Node, any OS)
+.claude/serve.ps1        the same server for Windows without a runtime
+CLAUDE.md                architecture notes and invariants for contributors
+.gitignore               local-only Claude settings, OS cruft
 ```
 
 ---
@@ -209,8 +224,11 @@ weather-dependent parts rather than failing.
 
 ## Roadmap
 
-Propagation tracking and seed-starting are the natural next features — both
-already have space reserved in the species data (`prop` and `seed` fields).
+Propagation tracking and seed-starting are the natural next features. The
+groundwork is already unevenly laid: every one of the 48 species carries a
+populated `prop` field describing how it is propagated, so propagation is
+mostly a matter of surfacing data that exists. `seed` is set on only two
+species and would need filling in first.
 
 ---
 

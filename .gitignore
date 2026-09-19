@@ -1,0 +1,27 @@
+# Claude Code's local permission allowlist. Machine-specific and not shareable:
+# it accumulates absolute paths that embed the local username and directory
+# layout, so it has no meaning in another checkout and should not be published.
+.claude/settings.local.json
+
+# Pre-redesign stylesheet, kept on disk as a local safety net during the
+# overhaul. Git is the place for old versions of a file.
+.claude/styles.cozy.css.bak
+
+# The screenshot/probe harness (shot.ps1, dump.ps1, crop.ps1, zoom.ps1,
+# sync.ps1 and the sprout_preview mirror) deliberately lives in %TEMP% rather
+# than in the repo, so there is nothing to ignore for it here. Noted because
+# its absence is a decision, not an oversight.
+
+# The app has no dependencies and never needs an install step. This entry is
+# here for the one case that does create the directory: reaching for a
+# throwaway `npx serve` in a cloud session. Nothing the app ships ever reads
+# from it, so it must never reach a commit.
+node_modules/
+
+# OS and editor cruft
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+*.swp
+*~
