@@ -206,6 +206,7 @@ js/
 .claude/serve.ps1        the same server for Windows without a runtime
 CLAUDE.md                architecture notes and invariants for contributors
 .gitignore               local-only Claude settings, OS cruft
+.gitattributes           normalises line endings to LF in commits
 ```
 
 ---
