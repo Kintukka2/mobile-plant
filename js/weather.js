@@ -268,11 +268,11 @@ window.Weather = (function () {
           ico: 'thermo',
           title: 'Dry spell ahead — ' + dry + ' days without meaningful rain',
           text: 'Highs are averaging ' + Math.round(heat) + '°C. Warm dry air pulls moisture out of soil ' +
-                'and leaves noticeably faster. Shall I shorten watering intervals by 2 days across your greenhouse?',
+                'and leaves noticeably faster, so let\'s shorten the gap between waterings by two days?',
           action: 'Shorten by 2 days',
           apply: function () {
             plants.forEach(function (p) { Store.updatePlant(p.id, { waterOffset: -2 }); });
-            UI.toast('Watering intervals shortened by 2 days', 'leaf');
+            UI.toast('Shortened watering by two days', 'leaf');
           }
         });
       }
@@ -286,12 +286,12 @@ window.Weather = (function () {
           id: 'wet-spell',
           ico: 'rain',
           title: wet + ' days of rain coming',
-          text: 'Cool damp weather means higher indoor humidity and slower drying. Soil will stay wet for longer, ' +
-                'so this is exactly when overwatering happens. Shall I stretch watering intervals by 2 days?',
+          text: 'Cool damp weather means higher indoor humidity and slower drying. Soil stays wet for longer, ' +
+                'which is exactly when overwatering happens. Shall I stretch the gap by two days?',
           action: 'Stretch by 2 days',
           apply: function () {
             plants.forEach(function (p) { Store.updatePlant(p.id, { waterOffset: 2 }); });
-            UI.toast('Watering intervals stretched by 2 days', 'leaf');
+            UI.toast('Stretched watering by two days', 'leaf');
           }
         });
       }
@@ -304,12 +304,12 @@ window.Weather = (function () {
         id: 'reset-offset',
         ico: 'rotate',
         title: 'Weather has settled down',
-        text: 'You have a weather adjustment active on ' + UI.plural(adjusted.length, 'plant') +
-              ', but the forecast has evened out. Shall I return them to their normal schedules?',
+        text: 'There is still a weather adjustment running on ' + UI.plural(adjusted.length, 'plant') +
+              ', but the forecast has evened out. Shall I put them back to normal?',
         action: 'Reset schedules',
         apply: function () {
           adjusted.forEach(function (p) { Store.updatePlant(p.id, { waterOffset: 0 }); });
-          UI.toast('Schedules back to normal', 'leaf');
+          UI.toast('Back to normal schedules', 'leaf');
         }
       });
     }
@@ -326,7 +326,7 @@ window.Weather = (function () {
           ico: 'snow',
           title: 'Cold nights ahead — down to ' + Math.round(cold) + '°C',
           text: UI.plural(tender.length, 'plant') + ' in your greenhouse would suffer below 12°C. ' +
-                'Move them back from windowsills overnight and draw curtains between the plant and the glass — ' +
+                'Move them back from windowsills overnight and draw the curtains between plant and glass — ' +
                 'the air against a cold pane is far colder than the room.',
           dismissable: true
         });
@@ -339,8 +339,8 @@ window.Weather = (function () {
         id: 'heat-warning',
         ico: 'thermo',
         title: 'Serious heat coming — around ' + Math.round(heat) + '°C',
-        text: 'Move plants back from windows where sun magnifies through glass, and check soil daily rather than ' +
-              'waiting for a reminder. Do not mist in strong sun — droplets act as tiny lenses and scorch leaves.',
+        text: 'Move plants back from windows where the sun magnifies through glass, and check the soil daily ' +
+              'rather than waiting for me. Do not mist in strong sun — droplets act as tiny lenses and scorch leaves.',
         dismissable: true
       });
     }

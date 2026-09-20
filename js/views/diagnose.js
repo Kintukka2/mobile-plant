@@ -50,8 +50,8 @@ window.ViewDiagnose = (function () {
     const plants = Store.activePlants();
 
     let html = '<p class="dim small" style="margin:0 2px 16px;line-height:1.6">' +
-      'Pick the plant that is struggling. Sprout weights the likely causes towards the things that species is ' +
-      'actually prone to — a fern with crispy edges is a different problem from a cactus with crispy edges.' +
+      'Which one is struggling? I weight the likely causes towards what that species is actually prone to — ' +
+      'a fern with crispy edges is a different problem from a cactus with crispy edges.' +
     '</p>';
 
     if (plants.length) {
@@ -93,8 +93,8 @@ window.ViewDiagnose = (function () {
       }).join('') + '</div>';
     } else {
       html += UI.empty('leaf', 'No plants added yet',
-        'You can still use the diagnosis tool — it just will not be able to weight the causes towards a ' +
-        'particular species.', '<button class="btn btn-ghost" data-open="plant">Add a plant</button>');
+        'We can still work through it — I just won\'t be able to weight the causes towards a particular ' +
+        'species.', '<button class="btn btn-ghost" data-open="plant">Add a plant</button>');
     }
 
     html += '<div class="section">' +
@@ -102,7 +102,7 @@ window.ViewDiagnose = (function () {
         '<span class="dx-opt-ico">' + UI.icon('search') + '</span>' +
         '<span style="min-width:0">' +
           '<span class="dx-opt-t">A plant I have not added</span>' +
-          '<span class="dx-opt-d">General diagnosis, without species-specific weighting.</span>' +
+          '<span class="dx-opt-d">We\'ll work it out without species-specific weighting.</span>' +
         '</span>' + UI.icon('chevron', 'muted') +
       '</button>' +
     '</div>';
@@ -228,9 +228,9 @@ window.ViewDiagnose = (function () {
       '<div class="section-head"><h2 class="section-title">What else is true?</h2>' +
         '<span class="section-note">' + (clues.length ? clues.length + ' selected' : 'tick any that apply') + '</span>' +
       '</div>' +
-      '<p class="hint" style="padding:0 2px;margin:0 0 10px">Go and have a proper look — push a finger into the ' +
-        'soil, turn a leaf over, tip the plant out of its pot if you can. Guessing here will only give you a ' +
-        'confident wrong answer.</p>' +
+      '<p class="hint" style="padding:0 2px;margin:0 0 10px">Have a proper look before you answer — finger in ' +
+        'the soil, turn a leaf over, tip it out of the pot if you can. I\'ll only ever be as right as what ' +
+        'you tell me.</p>' +
       '<div class="stack" style="gap:8px">' + (symptom.clues || []).map(function (id) {
         const c = PROBLEM_DATA.CLUES[id];
         if (!c) return '';
@@ -274,8 +274,8 @@ window.ViewDiagnose = (function () {
 
     if (!ranked.length) {
       html += UI.empty('info', 'Nothing fits',
-        'The clues you have ticked rule out every usual cause for this symptom, which is unusual. Try ' +
-        'unticking one you were unsure about.');
+        'Between them, those clues rule out every usual cause for this symptom — which is rare enough that ' +
+        'one of them may not be right. Try unticking whichever you were least sure about.');
     } else {
       html += '<div class="stack" style="gap:14px">' + ranked.map(function (r, i) {
         const c = r.cause;
@@ -451,7 +451,7 @@ window.ViewDiagnose = (function () {
           (clues.length ? '. Noticed: ' + clues.map(function (c) {
             return PROBLEM_DATA.CLUES[c].label.toLowerCase();
           }).join(', ') : '') +
-          (ranked.length ? '. Sprout suggests: ' + ranked[0].cause.name + ' (' +
+          (ranked.length ? '. Most likely: ' + ranked[0].cause.name + ' (' +
             ranked[0].confidence.toLowerCase() + ').' : '');
 
         Store.addLog({ plantId: p.id, kind: 'problem', date: UI.toISO(UI.today()), text: summary });

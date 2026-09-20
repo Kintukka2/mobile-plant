@@ -37,9 +37,9 @@ window.ViewProfile = (function () {
   function locationSheet() {
     const body =
       '<p class="dim small" style="margin:0 0 16px;line-height:1.6">' +
-        'Sprout uses your location for two things: your local forecast, so it can offer to stretch or shorten ' +
-        'watering before a wet or dry spell, and your latitude — which tells it which hemisphere you are in, ' +
-        'and therefore which months are the growing season and which way a bright window faces.' +
+        'I use this for two things: your local forecast, so I can offer to stretch or shorten watering before ' +
+        'a wet or dry spell, and your latitude — which tells me which hemisphere you\'re in, and therefore ' +
+        'which months are the growing season and which way a bright window faces.' +
       '</p>' +
 
       '<div class="field">' +
@@ -88,7 +88,7 @@ window.ViewProfile = (function () {
         timer = setTimeout(function () {
           Weather.searchPlace(q, function (err, places) {
             if (err) {
-              note.textContent = err.message + ' You can still use Sprout without weather.';
+              note.textContent = err.message + ' Everything else works without it.';
               return;
             }
             note.textContent = places.length ? 'Pick the closest match.' : 'No match — try a larger nearby town.';
@@ -147,7 +147,7 @@ window.ViewProfile = (function () {
       const reader = new FileReader();
       reader.onload = function () {
         UI.confirmSheet('Restore this backup?',
-          'Everything currently in Sprout will be replaced by the contents of ' + file.name + '.',
+          'Everything I\'m holding now will be replaced by the contents of ' + file.name + '.',
           'Restore', function () {
             try {
               Store.importAll(reader.result);
@@ -197,7 +197,7 @@ window.ViewProfile = (function () {
        of its bottom spacing. That declaration was inert for as long as .field
        was inline, so this is the first render in which it has any effect. */
     html += '<div class="section"><div class="card">' +
-      '<label class="field" style="margin-bottom:0"><span class="label">What should Sprout call you?</span>' +
+      '<label class="field" style="margin-bottom:0"><span class="label">What should I call you?</span>' +
         '<input class="input" id="p-name" maxlength="30" placeholder="Your name" ' +
           'value="' + UI.attr(prof.name) + '"></label>' +
     '</div></div>';
@@ -212,8 +212,8 @@ window.ViewProfile = (function () {
           return '<button class="chip' + (on ? ' is-on' : '') + '" data-pet="' + p.key + '">' +
             UI.icon(p.ico) + UI.esc(p.label) + '</button>';
         }).join('') + '</div>' +
-        '<p class="hint">Tell Sprout who you live with and it will warn you before you add something ' +
-          'that would hurt them — and stay quiet about the rest. Ratings follow the ASPCA\'s.</p>' +
+        '<p class="hint">Tell me who you live with and I\'ll warn you before you add something that would ' +
+          'hurt them — and stay quiet about the rest. Ratings follow the ASPCA\'s.</p>' +
       '</div>' +
     '</div>';
 
@@ -249,8 +249,8 @@ window.ViewProfile = (function () {
               '<input type="checkbox" id="p-wsync"' + (settings.weatherSync ? ' checked' : '') + ' ' +
                 'style="width:18px;height:18px;accent-color:var(--leaf)">' +
               '<span style="flex:1;min-width:0"><span style="font-weight:600;font-size:14px">Weather-aware watering</span>' +
-                '<span class="tiny muted" style="display:block">Watch the forecast and suggest schedule ' +
-                  'adjustments before dry or wet spells.</span></span>' +
+                '<span class="tiny muted" style="display:block">Let me watch the forecast and suggest ' +
+                  'adjustments before a dry or wet spell.</span></span>' +
             '</label>' +
             '<div class="row" style="gap:8px;margin-top:12px">' +
               '<button class="btn btn-sm btn-soft" data-refresh="1">Refresh forecast</button>' +
@@ -263,8 +263,8 @@ window.ViewProfile = (function () {
               '<span class="fact-ico">' + UI.icon('pin') + '</span>' +
               '<div style="flex:1;min-width:0">' +
                 '<div style="font-weight:650">No location set</div>' +
-                '<p class="tiny muted" style="margin:2px 0 0">Without it Sprout still works — you just lose the ' +
-                  'forecast-based suggestions, and it assumes you are in the ' +
+                '<p class="tiny muted" style="margin:2px 0 0">I work fine without it — you just lose the ' +
+                  'forecast suggestions, and I\'ll assume you\'re in the ' +
                   (hemi === 'south' ? 'southern' : 'northern') + ' hemisphere for seasons.</p>' +
               '</div>' +
             '</div>' +
@@ -294,8 +294,8 @@ window.ViewProfile = (function () {
             (usage.pctUsed > 85 ? 'var(--terra)' : 'var(--leaf)') + '"></div>' +
         '</div>' +
         '<p class="hint">' + usage.photoMB + 'MB of that is ' + UI.plural(usage.photoCount, 'photo') + '. ' +
-          'Browsers allow Sprout around 5MB in total, so photos are shrunk to about 1000px before they are ' +
-          'saved — roughly 100KB each.' +
+          'Browsers give me around 5MB in total, so I shrink photos to about 1000px before saving them — ' +
+          'roughly 100KB each.' +
           (usage.pctUsed > 85 ? ' <strong>You are running low. Delete a few older photos.</strong>' : '') +
         '</p>' +
       '</div>' +
@@ -306,8 +306,8 @@ window.ViewProfile = (function () {
       '<div class="section-head"><h2 class="section-title">Backup</h2></div>' +
       '<div class="card">' +
         '<p class="small dim" style="margin:0 0 12px;line-height:1.6">Everything lives in this browser only — ' +
-          'nothing is uploaded anywhere. That also means clearing your browser data would wipe it, so take a ' +
-          'backup file now and then.</p>' +
+          'I upload nothing, anywhere. That also means clearing your browser data would wipe it, so take a ' +
+          'backup now and then.</p>' +
         '<div class="row" style="gap:8px">' +
           '<button class="btn btn-soft" data-export="1" style="flex:1">Download backup</button>' +
           '<button class="btn btn-ghost" data-import="1" style="flex:1">Restore</button>' +
@@ -320,11 +320,11 @@ window.ViewProfile = (function () {
       '<div class="card">' +
         '<div class="eyebrow">About</div>' +
         '<p class="small dim" style="margin:8px 0 0;line-height:1.65">' +
-          'Sprout carries care data for ' + window.PLANT_DATA.length + ' species and a diagnostic model built ' +
-          'from ' + Object.keys(PROBLEM_DATA.SYMPTOMS).length + ' symptoms and ' +
-          Object.keys(PROBLEM_DATA.CAUSES).length + ' causes. Watering intervals are calculated from the ' +
-          'species baseline, then adjusted for season, room light, pot size, pot material, drainage and your ' +
-          'local forecast — every adjustment is shown on the plant\'s Care tab, so you can disagree with it.' +
+          'I carry care data for ' + window.PLANT_DATA.length + ' species and a diagnostic model built from ' +
+          Object.keys(PROBLEM_DATA.SYMPTOMS).length + ' symptoms and ' +
+          Object.keys(PROBLEM_DATA.CAUSES).length + ' causes. Watering intervals start from the species ' +
+          'baseline, then shift for season, room light, pot size, pot material, drainage and your local ' +
+          'forecast. I show you every adjustment on the plant\'s Care tab, so you can disagree with me.' +
         '</p>' +
       '</div>' +
       '<button class="btn btn-blood btn-block" data-reset="1" style="margin-top:12px">' +
@@ -384,7 +384,7 @@ window.ViewProfile = (function () {
       if (e.target.closest('[data-loc]')) { locationSheet(); return; }
 
       if (e.target.closest('[data-refresh]')) {
-        UI.toast('Fetching your forecast…');
+        UI.toast('Checking your forecast…');
         Weather.refresh(function (err) {
           if (err) { UI.toast(err.message, 'warn'); return; }
           UI.toast('Forecast updated', 'leaf');
@@ -404,8 +404,8 @@ window.ViewProfile = (function () {
 
       if (e.target.closest('[data-reset]')) {
         UI.confirmSheet('Delete everything?',
-          'Every plant, room, diary entry and photo will be permanently removed from this browser. ' +
-          'If you have not downloaded a backup, this cannot be undone.',
+          'Every plant, room, diary entry and photo goes, permanently, from this browser. ' +
+          'If you haven\'t taken a backup, I can\'t get any of it back.',
           'Delete everything', function () {
             Store.resetAll();
             UI.toast('Everything deleted');
@@ -423,12 +423,12 @@ window.ViewProfile = (function () {
   function welcomeSheet() {
     const body =
       '<p class="dim" style="margin:0 0 18px;line-height:1.65">' +
-        'Sprout is a home for your houseplants. Tell it what you have and where they live, and it works out ' +
-        'when each one needs watering — from the species\' real requirements, adjusted for your pot size, ' +
-        'your room\'s light and the season you are actually in.' +
+        'Hi, I\'m Sprout, and this is a home for your houseplants. Tell me what you have and which room ' +
+        'they are in, and we can work out a routine around what each one actually needs — the species\' own ' +
+        'requirements, adjusted for your pot, your light and the season you are really in.' +
       '</p>' +
 
-      '<label class="field"><span class="label">What should we call you?</span>' +
+      '<label class="field"><span class="label">What should I call you?</span>' +
         '<input class="input" id="w-name" maxlength="30" placeholder="Optional"></label>' +
 
       '<div class="field"><span class="label">Any pets at home?</span>' +
@@ -436,13 +436,13 @@ window.ViewProfile = (function () {
           return '<button type="button" class="chip" data-wpet="' + p.key + '">' +
             UI.icon(p.ico) + UI.esc(p.label) + '</button>';
         }).join('') + '</div>' +
-        '<p class="hint">Sprout will warn you about plants that are toxic to them — a surprising number of the ' +
-          'popular ones are.</p>' +
+        '<p class="hint">I\'ll warn you before you add anything that would hurt them. A surprising number of ' +
+          'the popular plants would.</p>' +
       '</div>' +
 
       '<div class="stack" style="gap:8px;margin-top:18px">' +
         '<button class="btn btn-lg" id="w-go">Set up my greenhouse</button>' +
-        '<button class="btn btn-ghost" id="w-skip">I\'ll explore first</button>' +
+        '<button class="btn btn-ghost" id="w-skip">Let me look around first</button>' +
       '</div>';
 
     UI.openSheet('Welcome to Sprout', body, function (root) {

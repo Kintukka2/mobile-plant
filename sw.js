@@ -19,11 +19,14 @@
 /* Bumped for the Viridium overhaul: new stylesheet, new icon system, four
    new typefaces. Any visitor still holding sprout-v1 would otherwise be
    served the old shell from cache and never see a line of it. */
-/* v5: the display face. PP Hatton replaces Italiana, self-hosted in two
+/* v6: the voice. Every view file carries user-facing copy and all of them
+   changed, so a visitor holding v5 would read the old wording indefinitely.
+
+   v5: the display face. PP Hatton replaces Italiana, self-hosted in two
    weights, and two new files join the precache list. A returning visitor
    holding v4 would otherwise be served a shell asking for a font the old
    cache has never heard of. */
-const CACHE = 'sprout-v5-viridium';
+const CACHE = 'sprout-v6-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is

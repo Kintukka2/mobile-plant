@@ -128,7 +128,7 @@ window.ViewDiscover = (function () {
   /* ---------- View ---------- */
 
   function title() { return 'Discover'; }
-  function sub() { return window.PLANT_DATA.length + ' plants, with real care data for each'; }
+  function sub() { return window.PLANT_DATA.length + ' plants I know properly'; }
 
   function render() {
     const list = results();
@@ -195,8 +195,8 @@ window.ViewDiscover = (function () {
                first time a species is added, and it goes wrong in the most
                embarrassing place, which is the screen apologising for not
                having what you searched for. */
-            'Try a different search, or clear the filter. Sprout covers ' + window.PLANT_DATA.length +
-            ' of the most common houseplants — if yours is missing, the closest relative will ' +
+            'Try a different search, or clear the filter. I cover ' + window.PLANT_DATA.length +
+            ' of the most common houseplants — if yours is missing, its closest relative will ' +
             'usually want near-identical care.',
             '<button class="btn btn-ghost" data-reset="1">Clear filters</button>')) +
     '</div>';

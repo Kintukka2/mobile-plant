@@ -91,6 +91,44 @@ When adding a cause, give it an entry in `CAUSES`, list it under at least one
 symptom's `causes`, and add a `SUPPORTS` row — an unreferenced cause is
 unreachable, and one with no supporting clues can never outrank its peers.
 
+## Voice
+
+Sprout speaks **as itself, in the first person**, as a knowledgeable friend
+rather than a system. It uses the reader's name where it has one.
+
+It did not always. The app previously used three grammatical persons at once
+— "Shall I shorten…" in the nudges, "What should we call you?" in the welcome
+sheet, "What should Sprout call you?" in the profile — the last two being the
+same question on two screens. Committing to "I" is what resolved that.
+
+**The persona is zoned.** It speaks on conversational surfaces and goes quiet
+on reference ones:
+
+| Zone | Voice | Where |
+| --- | --- | --- |
+| Conversation | First person, warm | Greetings, nudges, empty states, form hints, confirmations, toasts |
+| Reference | Plain, authoritative, no persona | Species care data, diagnosis explanations and treatment steps, toxicity notes |
+
+A knowledgeable friend reads you the label straight when it matters. A
+cheerful voice explaining which crystals burn a cat's mouth is worse than no
+persona at all. When in doubt about a string, ask whether it is *talking to*
+the reader or *telling them a fact* — the second one takes no personality.
+
+**Rules that keep it from grating.** A greeting is read every morning, and
+warmth that lands in week one can wear out by week three:
+
+- No exclamation marks in anything that repeats
+- One contraction per line, not none and not three
+- Never open two consecutive strings the same way
+- Never tell the reader off. The app is accountable, not them — "I'll only
+  ever be as right as what you tell me", not "guessing will give you a
+  confident wrong answer"
+- Say "Sprout" only when introducing itself. Everywhere else it is "I"
+
+Apostrophes inside single-quoted JS strings need escaping (\'). That is a
+syntax constraint, never a reason to write "I will" where "I'll" belongs —
+the stiffness is visible to the reader and the escape is not.
+
 ## Type
 
 Four faces. `--display` is **PP Hatton, self-hosted in two weights**, and the

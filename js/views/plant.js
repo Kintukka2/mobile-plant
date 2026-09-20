@@ -299,7 +299,7 @@ window.ViewPlant = (function () {
     html += '<div class="section">' +
       '<button class="btn btn-blood btn-block" data-delete="1">' + UI.icon('trash') +
         'Remove ' + UI.esc(Store.displayName(p)) + '</button>' +
-      '<p class="hint center">This also deletes its diary entries and photos.</p>' +
+      '<p class="hint center">Its diary entries and photos go with it.</p>' +
     '</div>';
 
     return html;
@@ -338,7 +338,7 @@ window.ViewPlant = (function () {
 
     if (!logs.length) {
       return html + UI.empty('note', 'The diary is blank',
-        'Every watering you tick off lands here automatically. Add notes, photos and measurements and you will ' +
+        'Every watering you tick off lands here on its own. Add notes, photos and measurements too and you will ' +
         'have a real record of how this plant has changed.');
     }
 
@@ -414,8 +414,8 @@ window.ViewPlant = (function () {
        starting, which is the only thing an empty state can usefully do. */
     if (!shots.length) {
       return UI.empty('camera', 'No photographs yet',
-        'A photo every few weeks turns into a surprisingly satisfying record. ' +
-        'A year of growth is obvious in pictures long before it shows up in the numbers.',
+        'A photo every few weeks turns into a surprisingly satisfying record. A year of growth is obvious in ' +
+        'pictures long before it shows up in the numbers.',
         '<button class="btn" data-quick="photo">' + UI.icon('camera') + 'Add the first photo</button>');
     }
 
@@ -449,8 +449,8 @@ window.ViewPlant = (function () {
 
     if (!logs.length) {
       return html + UI.empty('ruler', 'No measurements yet',
-        'Measure from the soil to the highest growing point, or take the widest leaf. Consistency matters more ' +
-        'than precision — the shape of the curve is the interesting part.');
+        'Measure from the soil to the highest growing point, or take the widest leaf. Be consistent rather than ' +
+        'precise — the shape of the curve is the interesting part.');
     }
 
     const points = logs.map(function (l) {
@@ -749,9 +749,9 @@ window.ViewPlant = (function () {
 
     UI.openSheet('Adjust watering',
       '<p class="dim small" style="margin:0 0 16px;line-height:1.6">' +
-        'Sprout suggests every <strong>' + iv.days + ' days</strong> for this plant. If you know your home ' +
-        'runs hotter, draughtier or damper than the calculation assumes, nudge it here. Sprout keeps the ' +
-        'seasonal and pot adjustments on top of whatever you choose.' +
+        'I make it every <strong>' + iv.days + ' days</strong> for this one. If you know your home runs ' +
+        'hotter, draughtier or damper than I\'m assuming, nudge it here — I\'ll keep the seasonal and pot ' +
+        'adjustments on top of whatever you choose.' +
       '</p>' +
       '<div class="row-wrap" id="tw-opts">' + opts.map(function (o) {
         return '<button class="chip' + (p.waterOffset === o ? ' is-on' : '') + '" data-off="' + o + '">' +
