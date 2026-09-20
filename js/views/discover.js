@@ -171,7 +171,7 @@ window.ViewDiscover = (function () {
               UI.monogram(x.sp.common) +
               '<span style="min-width:0">' +
                 '<span class="dx-opt-t">' + UI.esc(x.sp.common) + '</span>' +
-                '<span class="dx-opt-d">Ideal for ' + UI.esc(x.room.name) +
+                '<span class="dx-opt-d">Ideal for your ' + UI.esc(x.room.name) +
                   (rl ? ' — ' + UI.esc(rl.label.toLowerCase()) : '') + '</span>' +
               '</span>' +
               UI.icon('chevron', 'muted') +
