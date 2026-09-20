@@ -208,6 +208,14 @@ window.ViewGreenhouse = (function () {
           UI.esc(r.room.name + suits) + '</option>';
       }).join('');
 
+    /* The note belongs to the chosen material, so it is looked up rather
+       than written out — LOOKUPS already carries one per material, and the
+       form had been quoting terracotta's regardless of the answer. */
+    function potNote(key) {
+      const m = LOOKUPS.POT_MATERIALS[key];
+      return m ? m.note : '';
+    }
+
     const matOpts = Object.keys(LOOKUPS.POT_MATERIALS).map(function (k) {
       const sel = (editing ? plant.potMaterial : 'plastic') === k ? ' selected' : '';
       return '<option value="' + k + '"' + sel + '>' + UI.esc(LOOKUPS.POT_MATERIALS[k].label) + '</option>';
@@ -229,46 +237,67 @@ window.ViewGreenhouse = (function () {
             '<p class="nudge-p mb-0">' + UI.esc(risk.note) + '</p></div></div>'
         : '') +
 
-      '<label class="field"><span class="label">Give it a name (optional)</span>' +
+      '<label class="field"><span class="label">Give it a nickname?</span>' +
         '<input class="input" id="f-nick" maxlength="40" placeholder="' + UI.attr(sp.common) + '" ' +
         'value="' + UI.attr(editing ? plant.nickname : '') + '">' +
         '<p class="hint">Named plants get looked after. No judgement from me.</p>' +
       '</label>' +
 
-      '<label class="field"><span class="label">Which room?</span>' +
+      '<label class="field"><span class="label">Which room will it live in?</span>' +
         '<select class="select" id="f-room">' + roomOpts + '</select>' +
         (rooms.length ? '' : '<p class="hint">You have no rooms yet — you can add one later and move it in.</p>') +
       '</label>' +
 
-      '<div class="grid grid-2" style="gap:12px">' +
-        '<label class="field" style="margin-bottom:0"><span class="label">Pot width</span>' +
-          '<input class="input" id="f-pot" type="number" min="5" max="120" step="1" ' +
-          'value="' + (editing ? plant.potCm : 15) + '">' +
-          '<p class="hint">Across the top, in cm.</p>' +
+      /* Open when editing, shut when adding. Editing means these values are
+         already someone's answers and hiding them would be hiding the point
+         of the screen; adding means they are defaults nobody has looked at
+         yet, and a 15cm plastic pot with holes is right often enough to be
+         worth one line rather than three fields. */
+      '<details class="disclosure"' + (editing ? ' open' : '') + '>' +
+        '<summary>Do you have a pot ready for this?' +
+          '<span class="disclosure-chev">' + UI.icon('chevron') + '</span>' +
+        '</summary>' +
+        '<div class="disclosure-body">' +
+          '<div class="pot-row">' +
+            '<label class="field"><span class="label">Width (cm)</span>' +
+              '<input class="input" id="f-pot" type="number" min="5" max="120" step="1" ' +
+              'value="' + (editing ? plant.potCm : 15) + '">' +
+            '</label>' +
+            '<label class="field"><span class="label">Material</span>' +
+              '<select class="select" id="f-mat">' + matOpts + '</select>' +
+            '</label>' +
+            '<label class="field"><span class="label">Drainage</span>' +
+              '<select class="select" id="f-drain">' +
+                '<option value="good"' + ((editing ? plant.drainage : 'good') === 'good' ? ' selected' : '') + '>Holes</option>' +
+                '<option value="none"' + ((editing ? plant.drainage : '') === 'none' ? ' selected' : '') + '>No holes</option>' +
+              '</select>' +
+            '</label>' +
+          '</div>' +
+          /* One hint for the row, and it reads the material that is actually
+             selected. It used to say "Terracotta dries faster" under a
+             select showing Plastic — a true sentence about a pot nobody had
+             chosen, which is a hint about the menu rather than the answer.
+             Measure across the top is the only part that holds whatever is
+             picked, so it leads. */
+          '<p class="hint" id="f-pot-note" style="margin-top:12px">Measure across the top. ' +
+            UI.esc(potNote(editing ? plant.potMaterial : 'plastic')) + '</p>' +
+        '</div>' +
+      '</details>' +
+
+      /* Acquired first: it is the fixed fact about the plant, and the date
+         it was last watered is read against it. */
+      '<div class="date-row">' +
+        '<label class="field"><span class="label">' +
+          (editing ? 'Acquired' : 'When did you get it?') + '</span>' +
+          '<input class="input" id="f-acq" type="date" max="' + UI.toISO(UI.today()) + '" ' +
+          'value="' + UI.attr(editing ? plant.acquired : UI.toISO(UI.today())) + '">' +
         '</label>' +
-        '<label class="field" style="margin-bottom:0"><span class="label">Pot material</span>' +
-          '<select class="select" id="f-mat">' + matOpts + '</select>' +
-          '<p class="hint">Terracotta dries faster.</p>' +
+        '<label class="field"><span class="label">Last watered</span>' +
+          '<input class="input" id="f-watered" type="date" max="' + UI.toISO(UI.today()) + '" ' +
+          'value="' + UI.attr(editing ? (plant.lastWatered || '') : UI.toISO(UI.today())) + '">' +
         '</label>' +
       '</div>' +
-
-      '<label class="field" style="margin-top:14px"><span class="label">Drainage</span>' +
-        '<select class="select" id="f-drain">' +
-          '<option value="good"' + ((editing ? plant.drainage : 'good') === 'good' ? ' selected' : '') + '>Has drainage holes</option>' +
-          '<option value="none"' + ((editing ? plant.drainage : '') === 'none' ? ' selected' : '') + '>No drainage holes</option>' +
-        '</select>' +
-      '</label>' +
-
-      '<label class="field"><span class="label">Last watered</span>' +
-        '<input class="input" id="f-watered" type="date" max="' + UI.toISO(UI.today()) + '" ' +
-        'value="' + UI.attr(editing ? (plant.lastWatered || '') : UI.toISO(UI.today())) + '">' +
-        '<p class="hint">Not sure? Leave it blank and I\'ll suggest a drink straight away.</p>' +
-      '</label>' +
-
-      '<label class="field"><span class="label">' + (editing ? 'Acquired' : 'When did you get it?') + '</span>' +
-        '<input class="input" id="f-acq" type="date" max="' + UI.toISO(UI.today()) + '" ' +
-        'value="' + UI.attr(editing ? plant.acquired : UI.toISO(UI.today())) + '">' +
-      '</label>' +
+      '<p class="hint" style="margin-top:8px">Not sure? Let\'s get started now.</p>' +
 
       '<div class="row" style="gap:8px;margin-top:20px">' +
         '<button class="btn btn-ghost" data-act="sheet-cancel" style="flex:1">Cancel</button>' +
@@ -277,6 +306,12 @@ window.ViewGreenhouse = (function () {
       '</div>';
 
     UI.openSheet(editing ? 'Edit ' + Store.displayName(plant) : 'Add ' + sp.common, body, function (root) {
+      const matEl = root.querySelector('#f-mat');
+      const potNoteEl = root.querySelector('#f-pot-note');
+      matEl.addEventListener('change', function () {
+        potNoteEl.textContent = 'Measure across the top. ' + potNote(matEl.value);
+      });
+
       root.querySelector('#f-save').addEventListener('click', function () {
         const data = {
           speciesId: speciesId,

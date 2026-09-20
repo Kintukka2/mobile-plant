@@ -1186,6 +1186,114 @@ img { max-width: 100%; display: block; }
    B5 · Forms
    ========================================================================== */
 
+/* --- Disclosure ---
+   <details>/<summary>, not a div and a click handler: the open/closed state,
+   the keyboard behaviour and the semantics come from the platform, which is
+   the whole argument for it in a codebase with no framework to lean on.
+
+   The pot questions sit behind one. Three controls and their defaults were
+   the tallest thing between the reader and the save button, and all three
+   have answers that are right often enough to leave alone — a 15cm plastic
+   pot with holes. Asked as a question with a default answer, they cost one
+   line until someone actually has a different pot. */
+.disclosure {
+  border: 1px solid var(--hair);
+  border-radius: var(--r);
+  background: var(--glass);
+  margin-bottom: 18px;
+}
+.disclosure > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 15px;
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--ink);
+  /* Both are needed: Safari draws the triangle through a -webkit- pseudo
+     element and ignores list-style, Firefox does the opposite. */
+  list-style: none;
+}
+.disclosure > summary::-webkit-details-marker { display: none; }
+.disclosure > summary:hover { background: var(--glass-2); }
+.disclosure > summary:focus-visible { outline: 1px solid var(--emerald-glow); outline-offset: -2px; }
+/* UI.icon('chevron') points right, so closed is a quarter turn clockwise to
+   point down and open is a quarter turn the other way to point up — the
+   same 180 degrees of travel as a purpose-drawn caret, without adding a
+   second glyph for one component. */
+.disclosure-chev {
+  margin-left: auto;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  color: var(--ink-3);
+  transform: rotate(90deg);
+  transition: transform var(--dur-1) var(--ease);
+}
+.disclosure-chev svg { display: block; width: 16px; height: 16px; }
+.disclosure[open] > summary { border-bottom: 1px solid var(--hair); }
+.disclosure[open] .disclosure-chev { transform: rotate(-90deg); }
+.disclosure-body { padding: 16px 15px 15px; }
+
+/* Three controls abreast: width, material, drainage. The number wants less
+   room than the two selects, hence the uneven tracks rather than three equal
+   thirds. Below 380px the row would put "Glazed ceramic" in a 110px select,
+   so it drops to a single column — one is a phone that cannot take it, the
+   other is the request. */
+.pot-row {
+  display: grid;
+  gap: 9px;
+  grid-template-columns: 0.78fr 1.12fr 1.1fr;
+}
+.pot-row .field { margin-bottom: 0; }
+
+/* Three columns on a phone leave roughly 110px each, and .label's 0.22em
+   tracking put "WIDTH (CM)" onto two lines while its neighbours stayed on
+   one — three controls at two different heights, which reads as a broken
+   grid rather than a tight one. Tracking is the cheapest thing to give back
+   here: it is decoration on a four-character label, where the wrap is not. */
+.pot-row .label {
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+/* The chevron's 40px of right padding is sized for a full-width select. At a
+   third of the row it was eating the answer — "Has holes" came out "Has ho".
+   Pulled in to match the narrower well. */
+.pot-row .select {
+  padding-left: 12px;
+  padding-right: 30px;
+  background-position: right 9px center;
+  background-size: 15px;
+}
+.pot-row .input { padding-left: 12px; padding-right: 12px; }
+
+@media (max-width: 379px) {
+  .pot-row { grid-template-columns: minmax(0, 1fr); }
+  .pot-row .label { font-size: 10px; letter-spacing: 0.22em; }
+}
+
+/* Acquired and last-watered abreast. "When did you get it?" wraps to two
+   lines at this width and "Last watered" does not, which left the two date
+   inputs on different baselines — the row looked misaligned when it was the
+   labels above them that differed. Pushing each input to the bottom of its
+   own column lines the controls up and lets the labels be whatever length
+   the question needs. */
+.date-row {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.date-row .field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+}
+.date-row .field .input { margin-top: auto; }
+
 /* --- Range: the experience scale ---
    A three-stop slider rather than three chips. Chips presented the answers
    as unrelated options; the thing being asked is a single quantity with an
