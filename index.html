@@ -19,17 +19,23 @@
      proportions, an unrelated leaf and a symmetric sprout, so the tab, the
      home screen and the app interior each showed a different plant. Stroke
      is 5% of the artboard at this size; below 32px it thickens, because a
-     hairline does not survive being scaled down any better than Italiana
-     does. -->
+     hairline does not survive being scaled down any better than small type
+     does — the same reasoning the display face takes a heavier weight for. -->
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230A1410'/><g fill='none' stroke='%233FBE8B' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'><path d='M50 84V40'/><path d='M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z'/><path d='M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z'/></g></svg>">
 
-<!-- Type. Italiana carries the display caps, Cormorant Garamond the
-     high-contrast serif range, Jost the UI, Sacramento the rare flourish.
+<!-- Type. PP Hatton carries the display caps and is self-hosted — see the
+     @font-face block in styles.css. Cormorant Garamond holds the
+     high-contrast serif range, Jost the UI, Sacramento the rare flourish;
+     those three still come from Google.
+
      Preconnect because the font CSS blocks first paint; the service worker
-     caches both the CSS and the woff2 files so later loads work offline. -->
+     caches both the CSS and the woff2 files so later loads work offline.
+     The display face needs neither, being served from this origin and
+     precached with the shell — which is why the app is now fully itself on
+     a first offline load rather than after the font cache has filled. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Italiana&family=Jost:wght@300;400;500&family=Sacramento&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500&family=Sacramento&display=swap">
 
 <link rel="stylesheet" href="css/styles.css">
 

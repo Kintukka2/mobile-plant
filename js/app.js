@@ -245,11 +245,15 @@ window.App = (function () {
 
   /* ---------- Splash ----------
      The splash exists to hide one specific ugliness: the wordmark is set in
-     Italiana, and until that file arrives it renders in a fallback serif at
-     the wrong width, so the first thing the user sees is the brand
+     the display face, and until that file arrives it renders in the fallback
+     serif at the wrong width, so the first thing the user sees is the brand
      snapping into shape. document.fonts.ready resolves once the faces are
      in, and the 1.6s ceiling means a dead network costs a moment's wait
-     rather than a permanently covered app. */
+     rather than a permanently covered app.
+
+     It has less to cover than it used to. The display face is served from
+     this origin now and precached with the shell, so it is the three Google
+     faces the ceiling is really there for. */
   function dismissSplash() {
     const el = document.getElementById('splash');
     if (!el) return;

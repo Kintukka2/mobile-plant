@@ -91,6 +91,20 @@ When adding a cause, give it an entry in `CAUSES`, list it under at least one
 symptom's `causes`, and add a `SUPPORTS` row — an unreferenced cause is
 unreachable, and one with no supporting clues can never outrank its peers.
 
+## Type
+
+Four faces. `--display` is **PP Hatton, self-hosted in two weights**, and the
+size picks the weight: **200 at 28px and above, 500 below**. The face spans
+14px to 86px, so the pair stands in for an optical size axis it does not
+have. Any rule naming `--display` must also name a weight — with only two
+installed, anything else is resolved by guesswork.
+
+`--serif` is Cormorant Garamond (body, care sheets, figures), `--sans` is
+Jost (UI, labels), `--script` is Sacramento and appears on the splash only.
+
+The font files live in `css/fonts/` and are listed in `sw.js` ASSETS. Adding
+or replacing one means bumping `CACHE`, exactly like any other cached asset.
+
 ## Conventions
 
 - **Comments explain *why*, not *what*.** The existing comments record the

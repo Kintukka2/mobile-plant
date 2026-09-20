@@ -35,9 +35,9 @@ python3 -m http.server 8787
 npx serve .
 ```
 
-First load pulls four fonts from Google Fonts; after that the service worker
-serves everything, including the fonts, from cache and the app works fully
-offline.
+The display face is served from the app's own directory. First load pulls the
+other three from Google Fonts; after that the service worker serves
+everything, including those, from cache and the app works fully offline.
 
 ---
 
@@ -136,23 +136,28 @@ Two themes, toggled from the top bar and remembered across sessions:
 - **Viridium** — the default. Near-black green (`#0A1410`), nightfall.
 - **Conservatory** — warm ivory (`#F7F3EC`), daylight.
 
-The type system is four faces, each with a role and a size range it actually
-works in:
+The type system is four faces, each with a role:
 
 | Variable | Face | Used for |
 | --- | --- | --- |
-| `--display` | Italiana | Headings, **20px and up only** |
-| `--serif` | Cormorant Garamond | Body copy, care sheets |
-| `--sans` | Jost | UI, buttons, all small tracked caps |
-| `--script` | Sacramento | The "evergreen" tagline |
+| `--display` | PP Hatton, 200 and 500 | Headings, the wordmark, monograms |
+| `--serif` | Cormorant Garamond | Body copy, care sheets, figures |
+| `--sans` | Jost | UI, buttons, small labels |
+| `--script` | Sacramento | The "evergreen" tagline, on the splash only |
 
-The 20px floor on the display face is a measured limit, not a preference.
-Italiana's thin strokes are about a ninth of its cap height, so below 20px
-they ask for roughly one pixel of ink; antialiasing then spreads that across
-two rows at partial coverage and leaves a pale grey line beside a near-black
-stem. Raising the device pixel ratio does not help, because it scales the
-stroke and the pixel grid together. Small tracked caps are therefore the
-sans's job throughout.
+**The display face carries two weights and the size decides which.** It runs
+from 14px on a section label to 86px on a plant tile — six times over — and a
+high-contrast serif wants more weight as it shrinks and less as it grows.
+Hatton has no optical size axis, so the two weights stand in for one: **200
+at 28px and above, 500 below.** Every rule that names `--display` names a
+weight with it, because with two faces installed a request for anything else
+is resolved by guesswork.
+
+The display face is **self-hosted**, subset to Latin, Latin-1 and Latin
+Extended-A, and precached with the app shell. 38KB for the pair. That is
+what makes the app look like itself on a first offline load rather than
+after the font cache has filled. The other three faces still come from
+Google Fonts.
 
 ---
 
@@ -178,6 +183,7 @@ index.html               load order = dependency graph
 manifest.webmanifest     PWA manifest; icons are inline SVG data URIs
 sw.js                    service worker; app shell + separate font cache
 css/styles.css           the whole design system, one file
+css/fonts/*.woff2        the display face, self-hosted, two weights
 js/
   data/lookups.js        light levels, pot materials, enumerations
   data/plants.js         48 curated species

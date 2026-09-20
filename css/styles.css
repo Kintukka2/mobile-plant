@@ -11,8 +11,9 @@
      · Light is a material. Radial glows and specular edges do the work that
        drop shadows do in a light UI.
      · Motion is slow and weighted. Expo-out, 340–620ms, never bouncy.
-     · Type carries the luxury: Italiana caps for display, Cormorant Garamond
-       for editorial serif, Jost for UI, Sacramento for one flourish.
+     · Type carries the luxury: PP Hatton caps for display in two weights,
+       Cormorant Garamond for editorial serif, Jost for UI, Sacramento for
+       one flourish.
 
    Two themes, both premium: "viridium" (dark, default) and "conservatory"
    (light ivory) — set via data-theme on <html>. Part D holds the light map.
@@ -155,7 +156,23 @@
   --line-2:     var(--hair-2);
 
   /* --- Type --- */
-  --display: 'Italiana', 'Cormorant Garamond', Didot, 'Times New Roman', serif;
+  /* PP Hatton, self-hosted. Two weights standing in for an optical size
+     axis the face does not have: the display role runs from 14px on a
+     section title to 86px on a hero tile letter, and a high-contrast serif
+     wants more weight as it shrinks and less as it grows.
+
+       200  at 28px and above
+       500  below 28px
+
+     Every rule that names --display therefore names a weight too. Nothing
+     is left to the browser to synthesise, because with only two faces
+     installed a request for 400 would be resolved by guesswork.
+
+     The fallback is Cormorant Garamond rather than Times: it is already
+     loaded for the serif role, and a missing display face landing on the
+     app's own body serif is a far smaller shock than landing on a system
+     face nothing else here uses. */
+  --display: 'PP Hatton', 'Cormorant Garamond', Didot, 'Times New Roman', serif;
   --serif:   'Cormorant Garamond', Didot, Georgia, 'Times New Roman', serif;
   --sans:    'Jost', 'Futura', 'Century Gothic', -apple-system, BlinkMacSystemFont,
              'Segoe UI', system-ui, sans-serif;
@@ -259,6 +276,40 @@
 }
 
 /* ==========================================================================
+   A1b · The display face
+   --------------------------------------------------------------------------
+   Self-hosted rather than fetched, which is the better arrangement here for
+   three reasons beyond licensing: it removes a render-blocking round trip to
+   two more origins, it makes the app genuinely offline on a first visit
+   rather than once the font cache has filled, and it puts the one typeface
+   carrying the brand under our own version control instead of a third
+   party's.
+
+   Subset to Latin, Latin-1 and Latin Extended-A. The display face is always
+   uppercase, but a plant tile prints the first character of a name the user
+   typed, so accented capitals have to be present.
+
+   'swap' rather than 'block': the splash already covers first paint until
+   document.fonts resolves, so there is nothing to protect against, and a
+   blocked face on a slow connection would hold the whole app behind it.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'PP Hatton';
+  src: url('fonts/hatton-ultralight.woff2') format('woff2');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'PP Hatton';
+  src: url('fonts/hatton-medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ==========================================================================
    A2 · Reset
    ========================================================================== */
 
@@ -335,11 +386,18 @@ img { max-width: 100%; display: block; }
    A3 · Typography
    ========================================================================== */
 
-/* Display caps. Italiana has one weight and very fine serifs, so it wants
-   size and air — tracking tightens as size grows. */
-.d-xl, .d-lg, .d-md {
+/* Display caps. Tracking tightens as size grows, and so does weight — .d-md
+   is 21px and takes the 500, the two above it take the 200. */
+.d-xl, .d-lg {
   font-family: var(--display);
-  font-weight: 400;
+  font-weight: 200;
+  color: var(--ink);
+  text-transform: uppercase;
+  line-height: 1.02;
+}
+.d-md {
+  font-family: var(--display);
+  font-weight: 500;
   color: var(--ink);
   text-transform: uppercase;
   line-height: 1.02;
@@ -436,6 +494,7 @@ img { max-width: 100%; display: block; }
 
 .splash-mark {
   font-family: var(--display);
+  font-weight: 200;
   font-size: clamp(40px, 12vw, 78px);
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -534,7 +593,7 @@ img { max-width: 100%; display: block; }
 .topbar-title {
   font-family: var(--display);
   font-size: clamp(27px, 5.6vw, 38px);
-  font-weight: 400;
+  font-weight: 200;
   letter-spacing: 0.085em;
   text-transform: uppercase;
   line-height: 1.04;
@@ -577,6 +636,7 @@ img { max-width: 100%; display: block; }
 }
 .brand-name {
   font-family: var(--display);
+  font-weight: 500;
   font-size: 23px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -788,41 +848,33 @@ img { max-width: 100%; display: block; }
   border-bottom: 1px solid var(--hair);
 }
 
-/* The sans, not the display face — and this is the one place in the type
-   system where that needs arguing, because a section title sounds like a
-   heading and was set like one.
+/* The display face, and it took a change of typeface to get here.
 
-   It is not a heading, it is a label. "NEEDS YOU TODAY" and "COMING UP" name
-   a group; the reader's eye is meant to pass over them on the way to the
-   rows beneath. That is why it sat at 15px while every other display use in
-   the app is 20px or more, and 15px is where Italiana stops working. Set
-   that way it rendered as though half the ink had failed: the N lost its
-   diagonal, the E and H crossbars went to about fifteen percent grey, the D
-   bowl broke up. The most-repeated piece of typography in the interface, and
-   on every screen it looked like a font that had not finished loading.
+   This is a label rather than a heading — "NEEDS YOU TODAY" names a group
+   and the eye is meant to pass over it on the way to the rows beneath — so
+   it has to stay small, and small was exactly where the old display face
+   failed. At 15px Italiana rendered as though half the ink had gone: the N
+   lost its diagonal, the E and H crossbars fell to about fifteen percent
+   grey, the D bowl broke up. The most-repeated piece of typography in the
+   interface, looking on every screen like a font that had not finished
+   loading. Raising it was not available either, since .s-md plant names are
+   21px and a label as large as the thing it labels stops being a label.
 
-   Raising it is not available. 20px is the floor for this face (see the note
-   on .sheet-title) and .s-md plant names are 21px — a label as large as the
-   thing it labels stops being a label. So the role and the face genuinely
-   disagree, and the face is what gives.
+   So it went to Jost, and the note here used to argue that the role and the
+   face genuinely disagreed and the face was what gave. That was the right
+   call for a face with one weight. It is not the right call now: the 500
+   holds every stroke at 14px, so the label can have the display face back
+   and the app's headings stop speaking in two voices.
 
-   The sans is not a compromise here, it is the idiom this app already uses
-   for exactly this: .label at 10px/0.22em, .section-note at 10px/0.2em
-   directly beside this one, .btn at 11px/0.2em, .gstat-l at 9.5px/0.22em,
-   the nav items. Every small tracked cap in the interface is Jost, all of
-   them crisp, and this was the single outlier. Jost is near-monolinear, so
-   there is no thin stroke to lose at any size.
-
-   14px rather than 15px, and the tracking opened from 0.2em to 0.23em: a
-   monolinear face at one size reads heavier than a high-contrast one, so
-   matching the old optical weight means giving back a little size and
-   spending it on air instead. Tracking is also what keeps this reading as a
-   label rather than as small body copy, and it lines the title up with the
-   0.2em .section-note sitting on the same baseline. */
+   14px and 0.23em are kept from the sans setting rather than reverted to the
+   original 15px/0.2em. The tracking is what makes this read as a label
+   instead of as small body copy, and it lines the title up with the 0.2em
+   .section-note sitting on the same baseline — both true for reasons that
+   had nothing to do with which face was in use. */
 .section-title {
-  font-family: var(--sans);
+  font-family: var(--display);
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: 0.23em;
   text-transform: uppercase;
   color: var(--ink);
@@ -1591,9 +1643,12 @@ img { max-width: 100%; display: block; }
   stroke-width: 1.15;
   opacity: 0.82;
 }
+/* The tile letter spans 15px in a room strip to 86px on a hero, so it is the
+   one place the crossover lives inside a single component. The base is the
+   small case; the two large ones take the 200 below. */
 .tmark-t {
   font-family: var(--display);
-  font-weight: 400;
+  font-weight: 500;
   font-size: 20px;
   line-height: 1;
   letter-spacing: 0.04em;
@@ -1606,8 +1661,8 @@ img { max-width: 100%; display: block; }
    at ~200px on a lookbook card. */
 .rcard-dot  .tmark-t { font-size: 15px; }
 .task-thumb .tmark-t { font-size: 21px; }
-.pcard-img  .tmark-t { font-size: 60px; letter-spacing: 0.06em; }
-.hero-img   .tmark-t { font-size: 86px; letter-spacing: 0.06em; }
+.pcard-img  .tmark-t { font-size: 60px; letter-spacing: 0.06em; font-weight: 200; }
+.hero-img   .tmark-t { font-size: 86px; letter-spacing: 0.06em; font-weight: 200; }
 
 /* ==========================================================================
    C3 · Plant cards
@@ -1790,7 +1845,7 @@ img { max-width: 100%; display: block; }
   background: radial-gradient(110% 90% at 30% 15%, rgba(63, 190, 139, 0.11), transparent 70%);
   font-family: var(--display);
   font-size: 22px;
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1;
   letter-spacing: 0.04em;
   color: var(--ink-2);
@@ -2876,29 +2931,26 @@ img { max-width: 100%; display: block; }
 .sheet-title {
   flex: 1;
   font-family: var(--display);
-  /* 20px, not 17px, because 17px is below the size this face survives.
-     Italiana's thin strokes are about a ninth of its cap height, so at 17px
-     they ask for roughly one pixel of ink — which antialiasing then spreads
-     across two rows at partial coverage, leaving a pale grey line beside a
-     near-black stem. "ADD TO YOUR GREENHOUSE" came out with the crossbars of
-     its T, E and H most of the way to invisible, so the T read as an I.
+  /* 20px was once a floor rather than a choice. Italiana had one weight, its
+     thin strokes were about a ninth of its cap height, and below 20px they
+     asked for roughly one pixel of ink — which antialiasing spread across
+     two rows at partial coverage, leaving a pale grey line beside a
+     near-black stem. "ADD TO YOUR GREENHOUSE" lost the crossbars of its T, E
+     and H, so the T read as an I.
 
-     Raising the device pixel ratio does not help, which is the part worth
-     recording: 1x, 2x and 3x captures of the same heading are equally
-     patchy, because the ratio scales the stroke and the pixel grid together.
-     A previous pass had concluded the opposite — that hairline dropout was a
-     1x rasterisation artifact to be reviewed away at dpr 3 — and that was
-     true of the large sizes, .topbar-title and .d-lg, which are genuinely
-     fine. Generalised into a blanket rule it became a reason to stop looking,
-     and it hid a real defect at the two smallest sizes for several sessions.
+     One observation from that investigation is worth keeping, because it is
+     about method rather than this face: raising the device pixel ratio does
+     not help. 1x, 2x and 3x captures were equally patchy, since the ratio
+     scales the stroke and the pixel grid together. A pass before it had
+     concluded the opposite and filed the dropout as a 1x artifact to review
+     away at dpr 3 — true of the large sizes and wrong everywhere else, which
+     turned a real defect into a reason to stop looking.
 
-     Checked by eye at 1x: 20px holds every stroke, 17px degrades, 15px is
-     half-erased. So 20px is the floor for this face, and a sheet title is a
-     heading — the modal's h1 — so it can simply be given the size. The
-     .section-title below it is a label rather than a heading and cannot be
-     made this loud, which is why that one changes face instead. */
+     The floor is gone now: the display face has a 500 and it holds every
+     stroke at 14px. 20px stays because a modal's heading wants that size,
+     not because anything breaks below it. */
   font-size: 20px;
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: 0.17em;
   text-transform: uppercase;
   color: var(--ink);
@@ -3097,7 +3149,7 @@ img { max-width: 100%; display: block; }
 .empty h3 {
   font-family: var(--display);
   font-size: 20px;
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: 0.17em;
   text-transform: uppercase;
   color: var(--ink);
