@@ -96,6 +96,29 @@ unreachable, and one with no supporting clues can never outrank its peers.
 and the same rating has to wear the same chip on both. Read it; do not write
 the ladder out again at a call site.
 
+`LOOKUPS.LIGHT` is a five-rung ladder keyed by rank: `none` (0) through
+`direct` (4). `none` means no window at all, not "a bit dark" — no species
+lists it as an ideal or a tolerance, so anything ranking or matching rooms
+has to handle it explicitly rather than letting it fall through.
+
+**Hemisphere decides which way is bright, and which season it is.**
+`Store.hemisphere()` resolves in three steps: a latitude from a saved
+location, then an answer the reader gave in Profile, then
+`LOOKUPS.hemisphereFromTimeZone()` reading the device's IANA zone. Only a
+device reporting no zone at all falls back to `'north'`. Getting this wrong
+inverts every aspect label and every season without ever looking broken, so
+`Store.hemisphereIsGuess()` exists — and where a surface would otherwise
+*assert* something hemisphere-dependent, it must go quiet rather than caveat.
+The room form is the worked example: while the hemisphere is only a guess,
+the window aspects render as bare compass points with no light reading, and
+selecting one fills in nothing. Hiding the label while still auto-filling the
+level from the same untrusted table would be the worse of the two, because
+the claim would still be made, just somewhere the reader cannot check it.
+
+Time-zone names canonicalise differently across engines —
+`America/Argentina/Cordoba` and `America/Cordoba` are the same place — which
+is why the southern list carries both spellings.
+
 ## The brand guide
 
 `brand.html` is the design system written down: the mark and its stroke rule,

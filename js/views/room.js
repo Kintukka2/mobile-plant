@@ -68,8 +68,12 @@ window.ViewRoom = (function () {
        in the corner of the card like a rendering fault. */
     const rows = [
       lt ? [lt.ico, 'Light', lt.label, lt.desc] : null,
-      prof ? ['compass', 'Aspect',
-              (LOOKUPS.ASPECT_NAMES[r.aspect] || r.aspect) + '-facing window', prof.note] : null,
+      /* aspectLabel, not name + '-facing window': 'No window' is a valid
+         answer to this question and concatenating produced 'NONE-facing
+         window' for it. The icon follows suit — a compass rose is the wrong
+         picture for a room that faces nowhere. */
+      prof ? [r.aspect === 'NONE' ? 'sunOff' : 'compass', 'Aspect',
+              LOOKUPS.aspectLabel(r.aspect), prof.note] : null,
       hm ? [hm.ico, 'Humidity', hm.label, hm.desc] : null,
       r.notes ? ['note', 'Your notes', r.notes, ''] : null
     ].filter(Boolean);

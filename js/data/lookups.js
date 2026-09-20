@@ -18,6 +18,20 @@ window.LOOKUPS = (function () {
      better for it. Removed, so no future render site can pick it up by
      accident and reintroduce a cartoon into a hairline interface. */
   const LIGHT = {
+    /* Rank 0, and the only rung that is not a quantity of daylight but the
+       absence of a window. An interior bathroom or a windowless hall is a
+       real room people keep plants in, and the app had no way to say so —
+       'Low light' was the floor, which quietly told the reader that a
+       cupboard and a north-facing sill were the same proposition. They are
+       not: one supports a shade-tolerant plant indefinitely, the other
+       supports nothing, and the advice has to differ. */
+    'none': {
+      label: 'No natural light',
+      short: 'None',
+      ico: 'sunOff',
+      desc: 'No window at all. Nothing grows here for long without a lamp — see the note on rotating plants through.',
+      rank: 0
+    },
     'low': {
       label: 'Low light',
       short: 'Low',
@@ -55,7 +69,17 @@ window.LOOKUPS = (function () {
 
   const ASPECT_NAMES = {
     N: 'North', NE: 'North-east', E: 'East', SE: 'South-east',
-    S: 'South', SW: 'South-west', W: 'West', NW: 'North-west'
+    S: 'South', SW: 'South-west', W: 'West', NW: 'North-west',
+    NONE: 'No window'
+  };
+
+  /* Not a compass point, so it is not in ASPECTS — but it belongs in the same
+     question, because "which way does the window face?" has an answer for a
+     room with no window and the form has to accept it. Shared by both
+     hemisphere tables: a cupboard faces nowhere in either one. */
+  const NO_WINDOW = {
+    light: 'none',
+    note: 'No window, so no daylight at all. A plant can live here for a week or two at a time, but it has to go back to a lit room to recover — or sit under a grow lamp.'
   };
 
   // Light profile per aspect in the NORTHERN hemisphere.
@@ -67,7 +91,8 @@ window.LOOKUPS = (function () {
     W:  { light: 'direct',          note: 'Strong afternoon and evening sun, and it brings heat with it.' },
     NE: { light: 'medium',          note: 'Cool, soft light with a little early sun. Kind to ferns and calatheas.' },
     NW: { light: 'medium',          note: 'Moderate light with some late sun in summer.' },
-    N:  { light: 'low',             note: 'No direct sun at all. Only the genuinely shade-tolerant will be happy.' }
+    N:  { light: 'low',             note: 'No direct sun at all. Only the genuinely shade-tolerant will be happy.' },
+    NONE: NO_WINDOW
   };
 
   // Southern hemisphere: north/south swap, east/west morning-vs-afternoon stays.
@@ -79,12 +104,99 @@ window.LOOKUPS = (function () {
     W:  { light: 'direct',          note: 'Strong afternoon and evening sun, and it brings heat with it.' },
     SE: { light: 'medium',          note: 'Cool, soft light with a little early sun. Kind to ferns and calatheas.' },
     SW: { light: 'medium',          note: 'Moderate light with some late sun in summer.' },
-    S:  { light: 'low',             note: 'No direct sun at all. Only the genuinely shade-tolerant will be happy.' }
+    S:  { light: 'low',             note: 'No direct sun at all. Only the genuinely shade-tolerant will be happy.' },
+    NONE: NO_WINDOW
   };
 
   function aspectProfile(aspect, hemisphere) {
     const table = hemisphere === 'south' ? ASPECT_SOUTH : ASPECT_NORTH;
     return table[aspect] || null;
+  }
+
+  /* 'NORTH-facing window' is the right phrase; 'NONE-facing window' is not,
+     and building the label by concatenation gave us the second one as soon as
+     a non-compass answer existed. One function, so every render site says it
+     the same way. */
+  function aspectLabel(aspect) {
+    if (!aspect) return null;
+    if (aspect === 'NONE') return 'No window';
+    return (ASPECT_NAMES[aspect] || aspect) + '-facing window';
+  }
+
+  /* ---------- Hemisphere, when there is no location ----------
+     Which way a window faces means the opposite thing either side of the
+     equator, and so does the season. The app knows this and has always had
+     both tables — but with no location saved it fell back to 'north', which
+     is a coin toss that lands wrong for everyone below the equator. A reader
+     in Sydney was told a south-facing window gets direct sun; in Sydney the
+     south side is the shaded one, and the north side is the bright one.
+
+     The device's IANA time zone answers this for free, with no permission
+     prompt and no network call — 'Australia/Sydney' is as good as a latitude
+     for this one question. A saved location still wins, and the profile lets
+     the reader set it outright, because a list of zone names is a good guess
+     and not a fact.
+
+     Whole-region prefixes first, then the mixed regions named individually.
+     Zones omitted from the mixed lists resolve north, which is the correct
+     default for the northern majority of Pacific, African and American
+     zones. */
+  const SOUTH_PREFIXES = ['Australia/', 'Antarctica/'];
+
+  const SOUTH_ZONES = [
+    /* Indian Ocean — every zone in the region bar the Maldives. */
+    'Indian/Antananarivo', 'Indian/Chagos', 'Indian/Christmas', 'Indian/Cocos',
+    'Indian/Comoro', 'Indian/Kerguelen', 'Indian/Mahe', 'Indian/Mauritius',
+    'Indian/Mayotte', 'Indian/Reunion',
+    /* Pacific — the southern half; Honolulu, Guam, Majuro and friends are north. */
+    'Pacific/Apia', 'Pacific/Auckland', 'Pacific/Bougainville', 'Pacific/Chatham',
+    'Pacific/Easter', 'Pacific/Efate', 'Pacific/Fakaofo', 'Pacific/Fiji',
+    'Pacific/Funafuti', 'Pacific/Galapagos', 'Pacific/Gambier', 'Pacific/Guadalcanal',
+    'Pacific/Kanton', 'Pacific/Enderbury', 'Pacific/Marquesas', 'Pacific/Nauru', 'Pacific/Niue',
+    'Pacific/Norfolk', 'Pacific/Noumea', 'Pacific/Pago_Pago', 'Pacific/Pitcairn',
+    'Pacific/Port_Moresby', 'Pacific/Rarotonga', 'Pacific/Tahiti',
+    'Pacific/Tongatapu', 'Pacific/Wallis',
+    /* Africa below the equator. Nairobi is 1.3 degrees south; Kampala,
+       Libreville and Sao Tome are just north of it. */
+    'Africa/Blantyre', 'Africa/Brazzaville', 'Africa/Bujumbura', 'Africa/Dar_es_Salaam',
+    'Africa/Gaborone', 'Africa/Harare', 'Africa/Johannesburg', 'Africa/Kigali',
+    'Africa/Kinshasa', 'Africa/Luanda', 'Africa/Lubumbashi', 'Africa/Lusaka',
+    'Africa/Maputo', 'Africa/Maseru', 'Africa/Mbabane', 'Africa/Nairobi',
+    'Africa/Windhoek',
+    /* South America below the equator. Bogota, Caracas, Cayenne, Paramaribo
+       and Boa Vista are north of it. */
+    'America/Araguaina', 'America/Asuncion', 'America/Bahia', 'America/Belem',
+    'America/Campo_Grande', 'America/Cuiaba', 'America/Eirunepe', 'America/Fortaleza',
+    'America/Guayaquil', 'America/La_Paz', 'America/Lima', 'America/Maceio',
+    'America/Manaus', 'America/Montevideo', 'America/Noronha', 'America/Porto_Velho',
+    'America/Punta_Arenas', 'America/Recife', 'America/Rio_Branco', 'America/Santarem',
+    'America/Santiago', 'America/Sao_Paulo',
+    /* Atlantic outliers. */
+    'Atlantic/St_Helena', 'Atlantic/Stanley',
+    /* Argentina, in the short form some engines canonicalise it to. The
+       prefix test below catches 'America/Argentina/Cordoba'; Node hands back
+       'America/Cordoba' for the same zone, and browsers disagree with each
+       other about which direction they normalise in. Both spellings listed,
+       because the cost of a wrong guess here is every season and every window
+       aspect inverted for a reader in Buenos Aires. */
+    'America/Buenos_Aires', 'America/Catamarca', 'America/Cordoba',
+    'America/Jujuy', 'America/Mendoza', 'America/Rosario'
+  ];
+
+  function hemisphereFromTimeZone() {
+    let tz = null;
+    try {
+      tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    } catch (e) { /* no Intl, or no zone reported */ }
+    if (!tz) return null;
+
+    /* Every Argentine zone is southern, and there are a dozen of them. */
+    if (tz.indexOf('America/Argentina/') === 0) return 'south';
+
+    for (let i = 0; i < SOUTH_PREFIXES.length; i++) {
+      if (tz.indexOf(SOUTH_PREFIXES[i]) === 0) return 'south';
+    }
+    return SOUTH_ZONES.indexOf(tz) !== -1 ? 'south' : 'north';
   }
 
   /* ---------- Room presets ---------- */
@@ -204,7 +316,8 @@ window.LOOKUPS = (function () {
   };
 
   return {
-    LIGHT, ASPECTS, ASPECT_NAMES, aspectProfile,
+    LIGHT, ASPECTS, ASPECT_NAMES, aspectProfile, aspectLabel,
+    hemisphereFromTimeZone: hemisphereFromTimeZone,
     ROOM_PRESETS, HUMIDITY, DIFFICULTY, TOX, TASKS, LOG_KINDS,
     season, SEASON_META, POT_MATERIALS, DRAINAGE
   };
