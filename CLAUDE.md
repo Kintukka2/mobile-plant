@@ -91,6 +91,35 @@ When adding a cause, give it an entry in `CAUSES`, list it under at least one
 symptom's `causes`, and add a `SUPPORTS` row — an unreferenced cause is
 unreachable, and one with no supporting clues can never outrank its peers.
 
+`js/data/lookups.js` — the label tables. `LOOKUPS.TOX` carries the pill
+`variant` as well as the label, because two views render the toxicity ladder
+and the same rating has to wear the same chip on both. Read it; do not write
+the ladder out again at a call site.
+
+## The brand guide
+
+`brand.html` is the design system written down: the mark and its stroke rule,
+the wordmark, both palettes with every token and what each hue is allowed to
+mean, the type scale, photo ratios, the voice, and a record of the twelve
+decisions that produced them with the reasoning for each.
+
+It is **not part of the app**. It is deliberately absent from `sw.js`
+`ASSETS` and from `manifest.webmanifest` — it is a document for whoever is
+working on Sprout, served alongside the app rather than shipped in it, so it
+never needs a `CACHE` bump of its own.
+
+It links `css/styles.css` rather than transcribing it, and reads every swatch
+value out of the live cascade with `getComputedStyle`. That is the point: a
+guide that restates the tokens starts lying the first time the app moves. If a
+swatch on that page looks wrong, the token is wrong.
+
+```bash
+node .claude/serve.js     # → http://localhost:8787/brand.html
+```
+
+The two sections below are the same rules in prose, kept here because this is
+the file an agent reads first.
+
 ## Voice
 
 Sprout speaks **as itself, in the first person**, as a knowledgeable friend
