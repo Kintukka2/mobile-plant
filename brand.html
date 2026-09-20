@@ -300,6 +300,21 @@ td code{font-family:var(--mono);font-size:11.5px;color:var(--mint)}
   border:1px solid var(--hair-2);border-radius:2px;padding:1px 5px}
 .zone-n{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2)}
 .zone p{font-size:12.5px;color:var(--ink-3);line-height:1.6}
+.vrow{border:1px solid var(--hair);border-radius:var(--r);background:var(--bg-2);overflow:hidden}
+.vrow+.vrow{margin-top:12px}
+.vrow-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  padding:11px 15px;border-bottom:1px solid var(--hair);background:var(--bg-3)}
+.vrow-c{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2)}
+.vrow-n{font-family:var(--mono);font-size:9px;letter-spacing:.06em;color:var(--ink-4)}
+.vline{display:flex;gap:11px;padding:12px 15px;align-items:flex-start}
+.vline+.vline{border-top:1px solid var(--hair)}
+.vtag{flex:0 0 auto;width:38px;font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-4);padding-top:3px}
+.vline p{font-family:var(--serif);font-size:15px;font-weight:300;line-height:1.55;color:var(--ink-2);min-width:0}
+.vline-now p{color:var(--ink-4)}
+.vline-b{background:var(--mint-wash)}
+.vline-b p{color:var(--ink)}
+.vline-b .vtag{color:var(--mint)}
 .notice{border:1px solid rgba(208,138,98,.4);border-left-width:3px;border-radius:var(--r);
   background:var(--terra-soft);padding:15px 17px}
 .notice b{color:var(--ink);font-weight:500}
@@ -327,7 +342,7 @@ td code{font-family:var(--mono);font-size:11.5px;color:var(--mint)}
   <div class="mast-sub">
     <div class="eyebrow">Brand workbench &middot; working document</div>
     <p class="lead" style="margin-top:12px">
-      Eleven decisions, each shown as it stands today beside the change proposed for it.
+      Twelve decisions, each shown as it stands today beside the change proposed for it.
       Pick one per decision; the summary at the foot collects what you chose.
       Nothing here is in the app yet.
     </p>
@@ -344,7 +359,7 @@ td code{font-family:var(--mono);font-size:11.5px;color:var(--mint)}
 
 <!-- ================= INDEX ================= -->
 <section id="index">
-  <div class="sec-head"><h2 class="sec-title">The eleven decisions</h2><span class="sec-note">tap to jump</span></div>
+  <div class="sec-head"><h2 class="sec-title">The twelve decisions</h2><span class="sec-note">tap to jump</span></div>
   <div class="index">
     <a class="idx" href="#d01"><span class="idx-n">01</span><span class="idx-t">Two yellows, or one</span><span class="idx-s" id="s-01" data-set="0">Open</span></a>
     <a class="idx" href="#d02"><span class="idx-n">02</span><span class="idx-t">Urgency and hazard on one colour</span><span class="idx-s" id="s-02" data-set="0">Open</span></a>
@@ -357,6 +372,7 @@ td code{font-family:var(--mono);font-size:11.5px;color:var(--mint)}
     <a class="idx" href="#d09"><span class="idx-n">09</span><span class="idx-t">Which red, if any</span><span class="idx-s" id="s-09" data-set="0">Open</span></a>
     <a class="idx" href="#d10"><span class="idx-n">10</span><span class="idx-t">The display face &mdash; Hatton?</span><span class="idx-s" id="s-10" data-set="0">Open</span></a>
     <a class="idx" href="#d11"><span class="idx-n">11</span><span class="idx-t">One weight or two</span><span class="idx-s" id="s-11" data-set="0">Open</span></a>
+    <a class="idx" href="#d12"><span class="idx-n">12</span><span class="idx-t">How far the voice moves</span><span class="idx-s" id="s-12" data-set="0">Open</span></a>
   </div>
 </section>
 
@@ -1198,6 +1214,106 @@ td code{font-family:var(--mono);font-size:11.5px;color:var(--mint)}
   </div>
 </section>
 
+<!-- ================= D12 ================= -->
+<section id="d12">
+  <div class="sec-head"><h2 class="sec-title">Decision 12 &middot; How far the voice moves</h2><span class="sec-note">eleven real strings</span></div>
+  <div class="decision">
+    <div class="dec-head">
+      <span class="dec-no">12</span>
+      <div class="dec-q">
+        <h3>Voice B fixes who is speaking. This decides how much else changes.</h3>
+        <p>Every &ldquo;Now&rdquo; line below is the app's current text, not a paraphrase.
+          <strong>Light</strong> fixes the person and trims; <strong>Firm</strong> also stops explaining.</p>
+      </div>
+    </div>
+    <div style="padding:20px">
+
+        <div class="vrow">
+          <div class="vrow-h"><span class="vrow-c">Greeting · Today</span><span class="vrow-n">warm register</span></div>
+          <div class="vline vline-now"><span class="vtag">Now</span><p>Two plants are overdue. Nothing dramatic — most plants forgive a late drink far more readily than an early one.</p></div>
+          <div class="vline vline-b"><span class="vtag">Light</span><p>Two plants are overdue. Nothing dramatic — a late drink is forgiven far more readily than an early one.</p></div>
+          <div class="vline vline-c"><span class="vtag">Firm</span><p>Two overdue. A late drink is forgiven more readily than an early one.</p></div>
+        </div>
+        <div class="vrow">
+          <div class="vrow-h"><span class="vrow-c">Weather nudge</span><span class="vrow-n">first person — the defect</span></div>
+          <div class="vline vline-now"><span class="vtag">Now</span><p>Highs are averaging 26°C. Warm dry air pulls moisture out of soil and leaves noticeably faster. Shall I shorten watering intervals by 2 days across your greenhouse?</p></div>
+          <div class="vline vline-b"><span class="vtag">Light</span><p>Ten days without meaningful rain, and highs averaging 26°C. Soil will dry faster than usual. Shorten watering by two days?</p></div>
+          <div class="vline vline-c"><span class="vtag">Firm</span><p>Ten dry days ahead, averaging 26°C. Shorten watering by two days?</p></div>
+        </div>
+        <div class="vrow">
+          <div class="vrow-h"><span class="vrow-c">Welcome sheet</span><span class="vrow-n">first plural — the defect</span></div>
+          <div class="vline vline-now"><span class="vtag">Now</span><p>Sprout is a home for your houseplants. Tell it what you have and where they live, and it works out when each one needs watering — from the species’ real requirements, adjusted for your pot size, your room’s light and the season you are actually in.</p></div>
+          <div class="vline vline-b"><span class="vtag">Light</span><p>A home for your houseplants. Tell Sprout what you have and where it lives, and it works out the watering — from what the species actually wants, not a fixed reminder.</p></div>
+          <div class="vline vline-c"><span class="vtag">Firm</span><p>A home for your houseplants. Add what you grow and where it lives; the watering follows from the species, the pot and the season.</p></div>
+        </div>
+        <div class="vrow">
+          <div class="vrow-h"><span class="vrow-c">Profile field</span><span class="vrow-n">third person — the same question, differently</span></div>
+          <div class="vline vline-now"><span class="vtag">Now</span><p>What should Sprout call you?</p></div>
+          <div class="vline vline-b"><span class="vtag">Light</span><p>What should we call you? → What should Sprout call you?</p></div>
+          <div class="vline vline-c"><span class="vtag">Firm</span><p>Your name</p></div>
+        </div>
+        <div class="vrow">
+          <div class="vrow-h"><span class="vrow-c">Empty greenhouse</span><span class="vrow-n">invitational</span></div>
+          <div class="vline vline-now"><span class="vtag">Now</span><p>Start by adding a room — a windowsill counts — or jump straight in with your first plant.</p></div>
+          <div class="vline vline-b"><span class="vtag">Light</span><p>Start with a room — a windowsill counts — or go straight to your first plant.</p></div>
+          <div class="vline vline-c"><span class="vtag">Firm</span><p>Add a room, or go straight to a plant.</p></div>
+        </div>
+        <div class="vrow">
+          <div class="vrow-h"><span class="vrow-c">Diagnose instruction</span><span class="vrow-n">the scolding one</span></div>
+          <div class="vline vline-now"><span class="vtag">Now</span><p>Go and have a proper look — push a finger into the soil, turn a leaf over, tip the plant out of its pot if you can. Guessing here will only give you a confident wrong answer.</p></div>
+          <div class="vline vline-b"><span class="vtag">Light</span><p>Go and look properly — finger in the soil, leaf turned over, plant out of its pot if you can. Guesses here produce confident wrong answers.</p></div>
+          <div class="vline vline-c"><span class="vtag">Firm</span><p>Check before you tick. Finger in the soil, leaf turned over, plant out of the pot if you can.</p></div>
+        </div>
+        <div class="vrow">
+          <div class="vrow-h"><span class="vrow-c">Form hint · nickname</span><span class="vrow-n">the arch one</span></div>
+          <div class="vline vline-now"><span class="vtag">Now</span><p>Plants with names get looked after. No judgement here.</p></div>
+          <div class="vline vline-b"><span class="vtag">Light</span><p>Named plants get looked after. No judgement.</p></div>
+          <div class="vline vline-c"><span class="vtag">Firm</span><p>Optional.</p></div>
+        </div>
+        <div class="vrow">
+          <div class="vrow-h"><span class="vrow-c">Form hint · watering</span><span class="vrow-n">names itself in the third person</span></div>
+          <div class="vline vline-now"><span class="vtag">Now</span><p>Leave blank if you are not sure — Sprout will simply suggest watering it now.</p></div>
+          <div class="vline vline-b"><span class="vtag">Light</span><p>Leave blank if you are not sure and it will be suggested for watering now.</p></div>
+          <div class="vline vline-c"><span class="vtag">Firm</span><p>Leave blank if unsure.</p></div>
+        </div>
+        <div class="vrow">
+          <div class="vrow-h"><span class="vrow-c">Care note · Monstera</span><span class="vrow-n">long clinical</span></div>
+          <div class="vline vline-now"><span class="vtag">Now</span><p>Water when the top 3–5cm of soil is dry to your finger. Pour slowly until it runs from the drainage holes, then tip away anything left in the saucer.</p></div>
+          <div class="vline vline-b"><span class="vtag">Light</span><p>Water when the top 3–5cm is dry to your finger. Pour slowly until it runs from the holes, then empty the saucer.</p></div>
+          <div class="vline vline-c"><span class="vtag">Firm</span><p>Top 3–5cm dry. Water until it runs through, then empty the saucer.</p></div>
+        </div>
+        <div class="vrow">
+          <div class="vrow-h"><span class="vrow-c">Diagnosis · why</span><span class="vrow-n">long clinical, and the best thing in the app</span></div>
+          <div class="vline vline-now"><span class="vtag">Now</span><p>Waterlogged soil has no air in it. Roots need oxygen as much as water, and when the gaps between soil particles stay flooded the roots suffocate and begin to die. The plant then cannot draw water up, so — confusingly — it wilts and yellows exactly as if it were thirsty. This is the single most common way houseplants are killed, and almost always out of affection.</p></div>
+          <div class="vline vline-b"><span class="vtag">Light</span><p>Waterlogged soil has no air in it. Roots need oxygen as much as water, and when the gaps between particles stay flooded they suffocate. The plant then cannot draw water up, so it wilts and yellows exactly as if it were thirsty. The most common way a houseplant is killed, and almost always out of affection.</p></div>
+          <div class="vline vline-c"><span class="vtag">Firm</span><p>Flooded soil holds no air, so roots suffocate and stop drawing water. The plant then wilts and yellows as though thirsty. The most common way a houseplant dies.</p></div>
+        </div>
+        <div class="vrow">
+          <div class="vrow-h"><span class="vrow-c">Toxicity · Peace Lily</span><span class="vrow-n">high stakes, no room for style</span></div>
+          <div class="vline vline-now"><span class="vtag">Now</span><p>Calcium oxalate crystals — mouth burning, drooling, vomiting. Worth knowing: this is NOT a true lily. True lilies (Lilium, Hemerocallis) cause fatal kidney failure in cats; a peace lily is painful but not deadly.</p></div>
+          <div class="vline vline-b"><span class="vtag">Light</span><p>Calcium oxalate crystals — mouth burning, drooling, vomiting. Worth knowing: this is not a true lily. True lilies cause fatal kidney failure in cats; a peace lily is painful but not deadly.</p></div>
+          <div class="vline vline-c"><span class="vtag">Firm</span><p>Calcium oxalate crystals: mouth burning, drooling, vomiting. Not a true lily — those cause fatal kidney failure in cats. This one is painful, not deadly.</p></div>
+        </div>
+      <p class="hint" style="margin-top:18px">Two patterns are worth noticing before choosing. <strong>Firm reads
+        faster and says less</strong> &mdash; on the diagnosis entry it loses &ldquo;almost always out of
+        affection&rdquo;, which is the line that makes the app sound like it has met a person. <strong>Light keeps
+        the character and still fixes the defect</strong>, because the defect was never the tone; it was three
+        grammatical persons and a habit of telling you off.</p>
+      <p class="hint" style="margin-top:11px">The toxicity row is the one where both converge, and deliberately.
+        Where the cost of being misread is a vet, style gives way.</p>
+    </div>
+    <div class="call"><span class="call-k">The call</span><p><strong>Light.</strong> The long explanations are the
+      best thing in this app &mdash; nothing else on a plant app tells you <em>why</em> flooded soil makes a plant
+      look thirsty. Firm buys reading speed by spending the one asset that is hard to get back. Fix the person, cut
+      the scolding, trim the padding, and leave the knowledge where it is.</p></div>
+    <div class="picks" data-dec="12">
+      <button class="pick" type="button" data-v="Light — fix the person, keep the explaining"><span class="pick-dot"></span>Light touch <span class="rec">rec</span></button>
+      <button class="pick" type="button" data-v="Firm — also stop explaining"><span class="pick-dot"></span>Firm</button>
+      <button class="pick" type="button" data-v="Light for care and diagnosis, Firm for UI microcopy"><span class="pick-dot"></span>Light for prose, Firm for UI</button>
+    </div>
+  </div>
+</section>
+
 <!-- ================= COMPONENTS ================= -->
 <section id="components">
   <div class="sec-head"><h2 class="sec-title">Component reference</h2><span class="sec-note">as built</span></div>
@@ -1245,7 +1361,7 @@ td code{font-family:var(--mono);font-size:11.5px;color:var(--mint)}
 
 <!-- ================= SUMMARY ================= -->
 <section id="summary">
-  <div class="sec-head"><h2 class="sec-title">Your decisions</h2><span class="sec-note" id="sum-count">0 of 11</span></div>
+  <div class="sec-head"><h2 class="sec-title">Your decisions</h2><span class="sec-note" id="sum-count">0 of 12</span></div>
   <div class="summary">
     <div id="sum-body"><p class="hint">Nothing chosen yet. Pick an option in each decision above and it collects here.</p></div>
     <div class="row-wrap" style="margin-top:18px">
@@ -1262,7 +1378,7 @@ td code{font-family:var(--mono);font-size:11.5px;color:var(--mint)}
 (function () {
   var LABELS = {
     '01':'Yellows','02':'Urgency / hazard','03':'Conservatory','04':'The mark',
-    '05':'"evergreen"','06':'Plant tiles','07':'Voice','08':'Photo ratios','09':'Which red','10':'Display face','11':'Display weights'
+    '05':'"evergreen"','06':'Plant tiles','07':'Voice','08':'Photo ratios','09':'Which red','10':'Display face','11':'Display weights','12':'Voice distance'
   };
   var picks = {};
 
@@ -1376,7 +1492,7 @@ td code{font-family:var(--mono);font-size:11.5px;color:var(--mint)}
     });
 
     var keys = Object.keys(picks).sort();
-    document.getElementById('sum-count').textContent = keys.length + ' of 11';
+    document.getElementById('sum-count').textContent = keys.length + ' of 12';
     var body = document.getElementById('sum-body');
     if (!keys.length) {
       body.innerHTML = '<p class="hint">Nothing chosen yet. Pick an option in each decision above and it collects here.</p>';
