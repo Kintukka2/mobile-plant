@@ -312,9 +312,14 @@ td code{font-family:var(--mono);font-size:11.5px;color:var(--mint)}
   text-transform:uppercase;color:var(--ink-4);padding-top:3px}
 .vline p{font-family:var(--serif);font-size:15px;font-weight:300;line-height:1.55;color:var(--ink-2);min-width:0}
 .vline-now p{color:var(--ink-4)}
-.vline-b{background:var(--mint-wash)}
-.vline-b p{color:var(--ink)}
+.vline-b p{color:var(--ink-2)}
 .vline-b .vtag{color:var(--mint)}
+.vline-d{background:var(--mint-wash)}
+.vline-d p{color:var(--ink)}
+.vline-d .vtag{color:var(--mint)}
+.quiet{display:inline-block;margin-left:6px;font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-4);border:1px solid var(--hair-2);border-radius:2px;
+  padding:1px 5px;vertical-align:2px}
 .notice{border:1px solid rgba(208,138,98,.4);border-left-width:3px;border-radius:var(--r);
   background:var(--terra-soft);padding:15px 17px}
 .notice b{color:var(--ink);font-weight:500}
@@ -1223,7 +1228,9 @@ td code{font-family:var(--mono);font-size:11.5px;color:var(--mint)}
       <div class="dec-q">
         <h3>Voice B fixes who is speaking. This decides how much else changes.</h3>
         <p>Every &ldquo;Now&rdquo; line below is the app's current text, not a paraphrase.
-          <strong>Light</strong> fixes the person and trims; <strong>Firm</strong> also stops explaining.</p>
+          <strong>Light</strong> fixes the person and trims. <strong>Firm</strong> also stops explaining.
+          <strong>Persona</strong> answers the question the other way &mdash; it commits to &ldquo;I&rdquo; rather
+          than removing it.</p>
       </div>
     </div>
     <div style="padding:20px">
@@ -1233,83 +1240,107 @@ td code{font-family:var(--mono);font-size:11.5px;color:var(--mint)}
           <div class="vline vline-now"><span class="vtag">Now</span><p>Two plants are overdue. Nothing dramatic — most plants forgive a late drink far more readily than an early one.</p></div>
           <div class="vline vline-b"><span class="vtag">Light</span><p>Two plants are overdue. Nothing dramatic — a late drink is forgiven far more readily than an early one.</p></div>
           <div class="vline vline-c"><span class="vtag">Firm</span><p>Two overdue. A late drink is forgiven more readily than an early one.</p></div>
+          <div class="vline vline-d"><span class="vtag">Persona</span><p>Hi Dan, I think two of your plants are ready for a drink. Don’t stress though — a late one is forgiven far more readily than an early one.</p></div>
         </div>
         <div class="vrow">
           <div class="vrow-h"><span class="vrow-c">Weather nudge</span><span class="vrow-n">first person — the defect</span></div>
           <div class="vline vline-now"><span class="vtag">Now</span><p>Highs are averaging 26°C. Warm dry air pulls moisture out of soil and leaves noticeably faster. Shall I shorten watering intervals by 2 days across your greenhouse?</p></div>
           <div class="vline vline-b"><span class="vtag">Light</span><p>Ten days without meaningful rain, and highs averaging 26°C. Soil will dry faster than usual. Shorten watering by two days?</p></div>
           <div class="vline vline-c"><span class="vtag">Firm</span><p>Ten dry days ahead, averaging 26°C. Shorten watering by two days?</p></div>
+          <div class="vline vline-d"><span class="vtag">Persona</span><p>Looks like we’ve got ten dry days coming, averaging 26°C. Soil will dry faster than usual, so let’s shorten the gap between waterings — okay?</p></div>
         </div>
         <div class="vrow">
           <div class="vrow-h"><span class="vrow-c">Welcome sheet</span><span class="vrow-n">first plural — the defect</span></div>
           <div class="vline vline-now"><span class="vtag">Now</span><p>Sprout is a home for your houseplants. Tell it what you have and where they live, and it works out when each one needs watering — from the species’ real requirements, adjusted for your pot size, your room’s light and the season you are actually in.</p></div>
           <div class="vline vline-b"><span class="vtag">Light</span><p>A home for your houseplants. Tell Sprout what you have and where it lives, and it works out the watering — from what the species actually wants, not a fixed reminder.</p></div>
           <div class="vline vline-c"><span class="vtag">Firm</span><p>A home for your houseplants. Add what you grow and where it lives; the watering follows from the species, the pot and the season.</p></div>
+          <div class="vline vline-d"><span class="vtag">Persona</span><p>Hi, I’m Sprout, and this is a home for your houseplants. Tell me what you’ve got and which room they’re in, and we’ll work out a routine around what each one actually needs.</p></div>
         </div>
         <div class="vrow">
           <div class="vrow-h"><span class="vrow-c">Profile field</span><span class="vrow-n">third person — the same question, differently</span></div>
           <div class="vline vline-now"><span class="vtag">Now</span><p>What should Sprout call you?</p></div>
           <div class="vline vline-b"><span class="vtag">Light</span><p>What should we call you? → What should Sprout call you?</p></div>
           <div class="vline vline-c"><span class="vtag">Firm</span><p>Your name</p></div>
+          <div class="vline vline-d"><span class="vtag">Persona</span><p>What should I call you?</p></div>
         </div>
         <div class="vrow">
           <div class="vrow-h"><span class="vrow-c">Empty greenhouse</span><span class="vrow-n">invitational</span></div>
           <div class="vline vline-now"><span class="vtag">Now</span><p>Start by adding a room — a windowsill counts — or jump straight in with your first plant.</p></div>
           <div class="vline vline-b"><span class="vtag">Light</span><p>Start with a room — a windowsill counts — or go straight to your first plant.</p></div>
           <div class="vline vline-c"><span class="vtag">Firm</span><p>Add a room, or go straight to a plant.</p></div>
+          <div class="vline vline-d"><span class="vtag">Persona</span><p>Let’s start with a room — a windowsill counts. Or jump straight in and add your first plant.</p></div>
         </div>
         <div class="vrow">
           <div class="vrow-h"><span class="vrow-c">Diagnose instruction</span><span class="vrow-n">the scolding one</span></div>
           <div class="vline vline-now"><span class="vtag">Now</span><p>Go and have a proper look — push a finger into the soil, turn a leaf over, tip the plant out of its pot if you can. Guessing here will only give you a confident wrong answer.</p></div>
           <div class="vline vline-b"><span class="vtag">Light</span><p>Go and look properly — finger in the soil, leaf turned over, plant out of its pot if you can. Guesses here produce confident wrong answers.</p></div>
           <div class="vline vline-c"><span class="vtag">Firm</span><p>Check before you tick. Finger in the soil, leaf turned over, plant out of the pot if you can.</p></div>
+          <div class="vline vline-d"><span class="vtag">Persona</span><p>Have a proper look before you answer — finger in the soil, turn a leaf over, tip it out of the pot if you can. I’ll only ever be as right as what you tell me.</p></div>
         </div>
         <div class="vrow">
           <div class="vrow-h"><span class="vrow-c">Form hint · nickname</span><span class="vrow-n">the arch one</span></div>
           <div class="vline vline-now"><span class="vtag">Now</span><p>Plants with names get looked after. No judgement here.</p></div>
           <div class="vline vline-b"><span class="vtag">Light</span><p>Named plants get looked after. No judgement.</p></div>
           <div class="vline vline-c"><span class="vtag">Firm</span><p>Optional.</p></div>
+          <div class="vline vline-d"><span class="vtag">Persona</span><p>Named plants get looked after. No judgement from me.</p></div>
         </div>
         <div class="vrow">
           <div class="vrow-h"><span class="vrow-c">Form hint · watering</span><span class="vrow-n">names itself in the third person</span></div>
           <div class="vline vline-now"><span class="vtag">Now</span><p>Leave blank if you are not sure — Sprout will simply suggest watering it now.</p></div>
           <div class="vline vline-b"><span class="vtag">Light</span><p>Leave blank if you are not sure and it will be suggested for watering now.</p></div>
           <div class="vline vline-c"><span class="vtag">Firm</span><p>Leave blank if unsure.</p></div>
+          <div class="vline vline-d"><span class="vtag">Persona</span><p>Not sure? Leave it blank and I’ll suggest a drink straight away.</p></div>
         </div>
         <div class="vrow">
           <div class="vrow-h"><span class="vrow-c">Care note · Monstera</span><span class="vrow-n">long clinical</span></div>
           <div class="vline vline-now"><span class="vtag">Now</span><p>Water when the top 3–5cm of soil is dry to your finger. Pour slowly until it runs from the drainage holes, then tip away anything left in the saucer.</p></div>
           <div class="vline vline-b"><span class="vtag">Light</span><p>Water when the top 3–5cm is dry to your finger. Pour slowly until it runs from the holes, then empty the saucer.</p></div>
           <div class="vline vline-c"><span class="vtag">Firm</span><p>Top 3–5cm dry. Water until it runs through, then empty the saucer.</p></div>
+          <div class="vline vline-d"><span class="vtag">Persona</span><p>Water when the top 3–5cm is dry to your finger. Pour slowly until it runs from the holes, then tip away whatever is left in the saucer. <span class="quiet">quiet by design</span></p></div>
         </div>
         <div class="vrow">
           <div class="vrow-h"><span class="vrow-c">Diagnosis · why</span><span class="vrow-n">long clinical, and the best thing in the app</span></div>
           <div class="vline vline-now"><span class="vtag">Now</span><p>Waterlogged soil has no air in it. Roots need oxygen as much as water, and when the gaps between soil particles stay flooded the roots suffocate and begin to die. The plant then cannot draw water up, so — confusingly — it wilts and yellows exactly as if it were thirsty. This is the single most common way houseplants are killed, and almost always out of affection.</p></div>
           <div class="vline vline-b"><span class="vtag">Light</span><p>Waterlogged soil has no air in it. Roots need oxygen as much as water, and when the gaps between particles stay flooded they suffocate. The plant then cannot draw water up, so it wilts and yellows exactly as if it were thirsty. The most common way a houseplant is killed, and almost always out of affection.</p></div>
           <div class="vline vline-c"><span class="vtag">Firm</span><p>Flooded soil holds no air, so roots suffocate and stop drawing water. The plant then wilts and yellows as though thirsty. The most common way a houseplant dies.</p></div>
+          <div class="vline vline-d"><span class="vtag">Persona</span><p>Waterlogged soil has no air in it. Roots need oxygen as much as water, and when the gaps between particles stay flooded they suffocate — so the plant cannot draw water up, and it wilts and yellows exactly as if it were thirsty. It is the most common way a houseplant dies, and almost always out of love. <span class="quiet">quiet by design</span></p></div>
         </div>
         <div class="vrow">
           <div class="vrow-h"><span class="vrow-c">Toxicity · Peace Lily</span><span class="vrow-n">high stakes, no room for style</span></div>
           <div class="vline vline-now"><span class="vtag">Now</span><p>Calcium oxalate crystals — mouth burning, drooling, vomiting. Worth knowing: this is NOT a true lily. True lilies (Lilium, Hemerocallis) cause fatal kidney failure in cats; a peace lily is painful but not deadly.</p></div>
           <div class="vline vline-b"><span class="vtag">Light</span><p>Calcium oxalate crystals — mouth burning, drooling, vomiting. Worth knowing: this is not a true lily. True lilies cause fatal kidney failure in cats; a peace lily is painful but not deadly.</p></div>
           <div class="vline vline-c"><span class="vtag">Firm</span><p>Calcium oxalate crystals: mouth burning, drooling, vomiting. Not a true lily — those cause fatal kidney failure in cats. This one is painful, not deadly.</p></div>
+          <div class="vline vline-d"><span class="vtag">Persona</span><p>Calcium oxalate crystals — mouth burning, drooling, vomiting. Worth knowing: this is not a true lily. True lilies cause fatal kidney failure in cats; a peace lily is painful but not deadly. <span class="quiet">quiet by design</span></p></div>
         </div>
-      <p class="hint" style="margin-top:18px">Two patterns are worth noticing before choosing. <strong>Firm reads
-        faster and says less</strong> &mdash; on the diagnosis entry it loses &ldquo;almost always out of
-        affection&rdquo;, which is the line that makes the app sound like it has met a person. <strong>Light keeps
-        the character and still fixes the defect</strong>, because the defect was never the tone; it was three
-        grammatical persons and a habit of telling you off.</p>
-      <p class="hint" style="margin-top:11px">The toxicity row is the one where both converge, and deliberately.
-        Where the cost of being misread is a vet, style gives way.</p>
+      <p class="hint" style="margin-top:18px"><strong>Persona is not the defect returning.</strong> The fault was
+        three grammatical persons in one app, not the first person as such. Committing to &ldquo;I&rdquo; resolves it
+        exactly as completely as removing &ldquo;I&rdquo; does &mdash; it simply answers in the other direction, and
+        it is the only one of the four that produces something you would recognise as a voice rather than a style
+        guide.</p>
+      <p class="hint" style="margin-top:11px">Notice where it has gone <span class="quiet">quiet by design</span>.
+        The last three rows are reference, not conversation: a care instruction, a mechanism, a poisoning. A
+        knowledgeable friend reads you the label straight when it matters, and the persona earns its warmth
+        elsewhere by not spending it here. Written the other way &mdash; a cheerful voice explaining which
+        crystals burn a cat's mouth &mdash; it would be worse than no persona at all.</p>
+      <p class="hint" style="margin-top:11px">The one real risk is repetition. A greeting is read every morning,
+        and warmth that lands the first week can grate by the third. That is a writing constraint rather than an
+        argument against: no exclamation marks in anything that repeats, no more than one contraction per line,
+        and never the same opener twice in a row.</p>
+      <p class="hint" style="margin-top:11px">Firm reads faster and says less &mdash; on the diagnosis row it loses
+        &ldquo;almost always out of affection&rdquo;, the one clause that sounds like it was written by someone who
+        has met a person. Light keeps the character but does not add one; it is a tidy-up rather than a voice.</p>
     </div>
-    <div class="call"><span class="call-k">The call</span><p><strong>Light.</strong> The long explanations are the
-      best thing in this app &mdash; nothing else on a plant app tells you <em>why</em> flooded soil makes a plant
-      look thirsty. Firm buys reading speed by spending the one asset that is hard to get back. Fix the person, cut
-      the scolding, trim the padding, and leave the knowledge where it is.</p></div>
+    <div class="call"><span class="call-k">The call</span><p><strong>Persona, zoned.</strong> I recommended Light
+      before this option existed and I would not now. Light is a correction; this is a decision. It fixes the person
+      as completely, it turns the one genuinely unkind line in the app &mdash; &ldquo;guessing will only give you a
+      confident wrong answer&rdquo; &mdash; into shared responsibility, and it gives a plant-care app the thing it
+      most wants, which is someone on your side about a thing you feel guilty about. The zoning is the whole craft:
+      it speaks on the conversational surfaces and goes quiet on the reference ones.</p></div>
     <div class="picks" data-dec="12">
-      <button class="pick" type="button" data-v="Light — fix the person, keep the explaining"><span class="pick-dot"></span>Light touch <span class="rec">rec</span></button>
+      <button class="pick" type="button" data-v="Persona, zoned — speaks in conversation, quiet in reference"><span class="pick-dot"></span>Persona, zoned <span class="rec">rec</span></button>
+      <button class="pick" type="button" data-v="Persona everywhere, including care and diagnosis"><span class="pick-dot"></span>Persona everywhere</button>
+      <button class="pick" type="button" data-v="Light — fix the person, keep the explaining"><span class="pick-dot"></span>Light touch</button>
       <button class="pick" type="button" data-v="Firm — also stop explaining"><span class="pick-dot"></span>Firm</button>
-      <button class="pick" type="button" data-v="Light for care and diagnosis, Firm for UI microcopy"><span class="pick-dot"></span>Light for prose, Firm for UI</button>
     </div>
   </div>
 </section>
