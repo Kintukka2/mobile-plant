@@ -271,10 +271,31 @@ window.App = (function () {
       ? document.fonts.ready
       : Promise.resolve();
 
-    // Hold the mark on screen briefly even on a warm cache — a splash that
-    // vanishes in 40ms just reads as a flicker.
-    ready.then(function () { setTimeout(lift, 420); });
-    setTimeout(lift, 1600);
+    /* Two clocks, and the floor is the one that matters now.
+
+       The hold used to be 420ms after the fonts resolved, which on a warm
+       cache is almost immediately — and the entrance runs to about 2.1s.
+       So the splash was being pulled away in the middle of its own
+       animation: the last letters of SPROUT had not landed, the script was
+       still half wiped, and the rule had not drawn. The screen looked
+       unfinished because it *was* unfinished, every single time the cache
+       was warm.
+
+       MIN_MS is measured from when this runs rather than from fonts-ready,
+       so the entrance always completes and gets a beat to be looked at
+       before the dissolve starts. MAX_MS is unchanged in purpose — a dead
+       network costs a moment's wait rather than a permanently covered app —
+       and moved up to clear the floor. */
+    const MIN_MS = 2300;
+    const MAX_MS = 3600;
+    const startedAt = Date.now();
+
+    function liftAfterFloor() {
+      setTimeout(lift, Math.max(0, MIN_MS - (Date.now() - startedAt)));
+    }
+
+    ready.then(liftAfterFloor);
+    setTimeout(lift, MAX_MS);
   }
 
   /* ---------- Navigation chrome ---------- */

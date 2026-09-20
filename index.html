@@ -78,7 +78,12 @@
      fallback face. app.js lifts it on the first render. -->
 <div class="splash" id="splash">
   <div class="splash-inner">
-    <div class="splash-mark">SPROUT</div>
+    <!-- One span per letter so the wordmark can be revealed a letter at a
+         time. Split here rather than in JS because the splash has to be on
+         screen and animating before any script has run — that is the whole
+         of its job. aria-label carries the word, since six separate letters
+         is not what a screen reader should announce. -->
+    <div class="splash-mark" role="img" aria-label="Sprout"><span aria-hidden="true">S</span><span aria-hidden="true">P</span><span aria-hidden="true">R</span><span aria-hidden="true">O</span><span aria-hidden="true">U</span><span aria-hidden="true">T</span></div>
     <div class="splash-script">evergreen</div>
     <div class="splash-rule"><i></i></div>
   </div>
