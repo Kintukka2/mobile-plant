@@ -327,7 +327,7 @@ window.ViewProfile = (function () {
           'local forecast — every adjustment is shown on the plant\'s Care tab, so you can disagree with it.' +
         '</p>' +
       '</div>' +
-      '<button class="btn btn-danger btn-block" data-reset="1" style="margin-top:12px">' +
+      '<button class="btn btn-blood btn-block" data-reset="1" style="margin-top:12px">' +
         UI.icon('trash') + 'Delete everything</button>' +
       '<p class="hint center">Wipes all plants, rooms, diary entries and photos from this browser.</p>' +
     '</div>';

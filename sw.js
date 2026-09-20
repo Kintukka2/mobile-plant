@@ -19,7 +19,12 @@
 /* Bumped for the Viridium overhaul: new stylesheet, new icon system, four
    new typefaces. Any visitor still holding sprout-v1 would otherwise be
    served the old shell from cache and never see a line of it. */
-const CACHE = 'sprout-v3-viridium';
+/* v4: the brand decisions. New colour tokens, the oxblood rung, six fixed
+   plant tints, one mark across the favicon, the install icon and the
+   sidebar, a 4:5 hero and a theme that respects the device on first open.
+   Every one of those lives in a precached file, so a returning visitor
+   holding v3 would be served the old shell and see none of it. */
+const CACHE = 'sprout-v4-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is

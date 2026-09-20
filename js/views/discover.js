@@ -97,8 +97,8 @@ window.ViewDiscover = (function () {
            makes by saying nothing per card. */
         (risk
           ? '<div class="pcard-foot">' +
-              UI.pill(risk.worst === 'mild' ? 'Mild' : 'Toxic',
-                      risk.worst === 'mild' ? 'sun' : 'terra-hi', 'paw') +
+              UI.pill(risk.worst === 'mild' ? 'Mild' : risk.worst === 'toxic' ? 'Toxic' : 'Highly toxic',
+                      risk.worst === 'mild' ? 'sun' : risk.worst === 'toxic' ? 'terra' : 'blood', 'paw') +
             '</div>'
           : '') +
       '</div>' +
@@ -475,7 +475,7 @@ window.ViewSpecies = (function () {
     /* Kept in step with ViewPlant.toxPill deliberately — the same rating has
        to wear the same pill on a species page and on your own plant. */
     const variant = rating === 'safe' ? '' : rating === 'mild' ? 'sun' :
-                    rating === 'toxic' ? 'terra' : 'terra-hi';
+                    rating === 'toxic' ? 'terra' : 'blood';
     return UI.pill(label + ': ' + t.label, variant, ico);
   }
 

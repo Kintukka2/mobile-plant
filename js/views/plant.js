@@ -85,7 +85,7 @@ window.ViewPlant = (function () {
        stay rare enough to mean something. */
     if (risk) pills.push(UI.pill(LOOKUPS.TOX[risk.worst].label,
                                  risk.worst === 'mild' ? 'sun' :
-                                 risk.worst === 'toxic' ? 'terra' : 'terra-hi'));
+                                 risk.worst === 'toxic' ? 'terra' : 'blood'));
 
     return '<div class="hero">' +
       '<div class="hero-img" data-cover="1">' +
@@ -297,7 +297,7 @@ window.ViewPlant = (function () {
 
     /* --- Danger zone --- */
     html += '<div class="section">' +
-      '<button class="btn btn-danger btn-block" data-delete="1">' + UI.icon('trash') +
+      '<button class="btn btn-blood btn-block" data-delete="1">' + UI.icon('trash') +
         'Remove ' + UI.esc(Store.displayName(p)) + '</button>' +
       '<p class="hint center">This also deletes its diary entries and photos.</p>' +
     '</div>';
@@ -311,8 +311,13 @@ window.ViewPlant = (function () {
        solid. Four steps in three hues: the last two share terracotta and
        separate on fill, because 'toxic' and 'very-toxic' used to be clay
        and pink and no one could tell which of those was the worse one. */
+    /* Oxblood is the top rung only. Twenty-two of the forty-eight species
+       are 'toxic' to cats and one is 'very-toxic'; putting the filled chip on
+       both would mark half the catalogue and it would stop being read. The
+       one that qualifies does so for cardiac glycosides rather than a sore
+       mouth, which is the distinction the rung exists to make. */
     const variant = rating === 'safe' ? '' : rating === 'mild' ? 'sun' :
-                    rating === 'toxic' ? 'terra' : 'terra-hi';
+                    rating === 'toxic' ? 'terra' : 'blood';
     return UI.pill(label + ': ' + t.label, variant, ico);
   }
 
@@ -779,7 +784,7 @@ window.ViewPlant = (function () {
         (isCover
           ? '<button class="btn btn-soft" disabled>Already the cover photo</button>'
           : '<button class="btn btn-soft" data-p="cover">Make this the cover photo</button>') +
-        '<button class="btn btn-danger" data-p="del">Delete photo</button>' +
+        '<button class="btn btn-blood" data-p="del">Delete photo</button>' +
       '</div>',
       function (root) {
         root.addEventListener('click', function (e) {

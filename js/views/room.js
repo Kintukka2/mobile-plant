@@ -175,7 +175,7 @@ window.ViewRoom = (function () {
 
     /* --- Danger zone --- */
     html += '<div class="section">' +
-      '<button class="btn btn-danger btn-block" data-delete="1">' + UI.icon('trash') + 'Delete this room</button>' +
+      '<button class="btn btn-blood btn-block" data-delete="1">' + UI.icon('trash') + 'Delete this room</button>' +
       '<p class="hint center">Plants inside will not be deleted — they simply become unassigned.</p>' +
     '</div>';
 

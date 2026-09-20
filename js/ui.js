@@ -41,7 +41,7 @@ window.UI = (function () {
     gear:      '<circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.2 5.2l2.1 2.1M16.7 16.7l2.1 2.1M18.8 5.2l-2.1 2.1M7.3 16.7l-2.1 2.1"/>',
     sun:       '<circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/>',
     pin:       '<path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/>',
-    sprout:    '<path d="M12 21v-8"/><path d="M12 13c0-3 2-5 6-5 0 3-2 5-6 5Z"/><path d="M12 13c0-3-2-5-6-5 0 3 2 5 6 5Z"/>',
+    sprout:    '<path d="M12 20.5V9.5"/><path d="M12 14C8.5 14 6.5 11.75 6.5 8.5c3.5 0 5.5 2.25 5.5 5.5Z"/><path d="M12 11c3.5 0 5.5-2.25 5.5-5.5-3.5 0-5.5 2.25-5.5 5.5Z"/>',
     scissors:  '<circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><path d="M8 7.5 20 18M8 16.5 20 6"/>',
     bell:      '<path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 19a2 2 0 0 0 4 0"/>',
     info:      '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8.2v.1"/>',
@@ -89,6 +89,12 @@ window.UI = (function () {
        point of a per-species toxicity row. */
     dog:       '<path d="M5.5 5.5 8 8.2V13a4 4 0 0 0 4 4 4 4 0 0 0 4-4V8.2l2.5-2.7c.6 1.6.8 3.2.8 4.8 0 1 .4 1.6 1.2 2.2-1 .6-1.6 1.4-1.8 2.6-.4 2.6-2.6 4.4-6.7 4.4s-6.3-1.8-6.7-4.4c-.2-1.2-.8-2-1.8-2.6.8-.6 1.2-1.2 1.2-2.2 0-1.6.2-3.2.8-4.8Z"/><circle cx="10" cy="11" r="1"/><circle cx="14" cy="11" r="1"/>',
     person:    '<circle cx="12" cy="7" r="3.4"/><path d="M5.5 20.5c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/>',
+
+    /* The brand mark, drawn on the icon grid so it can sit in a row of
+       glyphs. The favicon, the install icon and the sidebar lockup are the
+       same three paths at other scales — one drawing, four placements,
+       where there used to be four drawings. */
+    mark:      '<path d="M12 20.5V9.5"/><path d="M12 14C8.5 14 6.5 11.75 6.5 8.5c3.5 0 5.5 2.25 5.5 5.5Z"/><path d="M12 11c3.5 0 5.5-2.25 5.5-5.5-3.5 0-5.5 2.25-5.5 5.5Z"/>',
 
     /* --- Diagnosis glyphs ---
        Every cause in PROBLEM_DATA names one of these. They are deliberately
@@ -365,7 +371,7 @@ window.UI = (function () {
       '<p class="dim" style="margin:0 0 20px;line-height:1.6">' + esc(message) + '</p>' +
       '<div class="row" style="gap:8px">' +
         '<button class="btn btn-ghost" data-act="sheet-cancel" style="flex:1">Cancel</button>' +
-        '<button class="btn ' + (danger ? 'btn-terra' : '') + '" data-act="confirm-yes" style="flex:1">' +
+        '<button class="btn ' + (danger ? 'btn-blood' : '') + '" data-act="confirm-yes" style="flex:1">' +
           esc(confirmLabel || 'Confirm') + '</button>' +
       '</div>',
       function (body) {
@@ -484,21 +490,22 @@ window.UI = (function () {
      gradient here, where no stylesheet could reach it, so every tile in
      Conservatory was a hole punched in the page.
 
-     The band is 100–143°, yellow-green to green, and it is narrower than it
-     used to be for a reason worth recording. It ran to 186° — cyan — which
-     was invisible at 11% lightness, where everything is a dark teal, and
-     unmissable at 90%, where the same hue is a pale cornflower blue. Half
-     the tiles in the daylight theme came out the one colour this app has
-     deliberately no use for. A hue band has to be judged at the lightness
-     it will actually be printed at, in every theme that prints it.
+     It used to compute a hue: 100–143°, forty-four steps off the same hash.
+     That band is too narrow and too dark to carry forty-four values — two
+     plants could land a degree apart and render identically, so the identity
+     it promised was not delivered. Six hand-picked pairs are a number the eye
+     can genuinely separate, and they vary in lightness as well as hue, which
+     is what does most of the work at this luminance.
 
-     One hash, one hue, two palettes. A third theme needs six tokens and not
-     a line of JavaScript. */
-  function tintVars(str) {
+     Returning an index rather than a colour is the important part. The class
+     resolves through the theme's own tokens, so switching theme re-tints
+     every plate on screen — where an inline literal would have gone stale,
+     since views are only redrawn on navigation and a theme switch is not one. */
+  function tintClass(str) {
     const s = String(str);
     let h = 0;
     for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 1021;
-    return '--tile-h:' + (100 + (h % 44)) + ';--tile-lift:' + (h % 7);
+    return 'tmark-' + (h % 6);
   }
 
   /* Contents of a plant tile: the photo if there is one, otherwise a tinted
@@ -519,7 +526,7 @@ window.UI = (function () {
        room monogram, so the two use one vocabulary instead of two. */
     const s = String(label || '').trim();
     const ch = s ? s.charAt(0).toUpperCase() : '·';
-    return '<span class="tmark" style="' + tintVars(seed || 'plant') + '">' +
+    return '<span class="tmark ' + tintClass(seed || 'plant') + '">' +
            '<span class="tmark-t">' + esc(ch) + '</span></span>';
   }
 
@@ -681,7 +688,7 @@ window.UI = (function () {
     MONTHS: MONTHS, DAYS: DAYS,
     toast: toast, openSheet: openSheet, closeSheet: closeSheet, sheetIsOpen: sheetIsOpen,
     confirmSheet: confirmSheet, lightbox: lightbox, empty: empty, pill: pill,
-    lineChart: lineChart, plantTile: plantTile, monogram: monogram,
+    lineChart: lineChart, plantTile: plantTile, monogram: monogram, tintClass: tintClass,
     eyebrow: eyebrow, script: script, ornament: ornament,
     sectionHead: sectionHead, stat: stat, specSheet: specSheet,
     syncTabScroll: syncTabScroll, keepTabsInView: keepTabsInView
