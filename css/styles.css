@@ -567,6 +567,23 @@ img { max-width: 100%; display: block; }
 
 /* --- Topbar --- */
 
+/* The bar bleeds out to the edges of .main and pads itself back in.
+
+   It sits inside .main, which carries the page's side gutter — so a
+   background painted on the bar stopped short of each edge, and the cards
+   scrolling underneath were visible through those two strips, unblurred,
+   either side of a floating plate. The blur made it worse rather than
+   hiding it: a sharp band of moving content beside a frosted one.
+
+   The gutter is read from --pad rather than repeated, because .main's
+   padding changes at both desktop breakpoints and a bleed that does not
+   follow it reintroduces the same seam a size later.
+
+   A 100vw layer centred on the bar was the first attempt and was wrong:
+   left:50% centres on the element, and on desktop .main is pushed right by
+   the sidebar, so the layer hung 130px off the right of the document and
+   put a horizontal scrollbar on every wide page. Bleeding by the gutter
+   cannot overhang, because the gutter is what it is cancelling. */
 .topbar {
   position: sticky;
   top: 0;
@@ -574,7 +591,8 @@ img { max-width: 100%; display: block; }
   display: flex;
   align-items: flex-end;
   gap: 14px;
-  padding: 26px 0 16px;
+  padding: 26px var(--pad) 16px;
+  margin-inline: calc(var(--pad) * -1);
   background: linear-gradient(to bottom, var(--bg-1) 58%, rgba(10, 20, 16, 0));
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -601,6 +619,18 @@ img { max-width: 100%; display: block; }
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  /* Hatton reports a content area of about 1.15em, against a line box of
+     1.04em — so the half-leading is negative and the caps' ink starts a
+     fraction above the box. Measured at the 27px end: the ink top sits
+     0.46px outside, and overflow:hidden shaved it, taking a slice off the
+     top of every title. On a 3x screen that is a visible flat edge across
+     T, O, D, A and Y.
+     The overflow has to stay — it is what gives a long plant name its
+     ellipsis. So the clip box grows instead: padding extends it upward, and
+     the matching negative margin puts the baseline back where the layout
+     had it, leaving every other measurement on this bar untouched. */
+  padding-top: 0.08em;
+  margin-top: -0.08em;
 }
 
 .topbar-sub {
@@ -1155,6 +1185,98 @@ img { max-width: 100%; display: block; }
 /* ==========================================================================
    B5 · Forms
    ========================================================================== */
+
+/* --- Range: the experience scale ---
+   A three-stop slider rather than three chips. Chips presented the answers
+   as unrelated options; the thing being asked is a single quantity with an
+   order to it, and a track you drag along says that in the shape of the
+   control rather than in the labels.
+
+   Fully custom because the native thumb and track are drawn by the platform
+   and land somewhere between blue and grey in an app that is neither.
+   -webkit- and -moz- pseudo-elements cannot be combined in one selector:
+   a browser drops the whole rule the moment it meets a pseudo-element it
+   does not know, so each engine's thumb needs its own declaration block. */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 22px;
+  margin: 0;
+  background: none;
+  cursor: pointer;
+}
+.slider:focus { outline: none; }
+.slider:focus-visible { outline: 1px solid var(--emerald-glow); outline-offset: 4px; }
+
+.slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 99px;
+  border: 1px solid var(--hair);
+  background: var(--track);
+  box-shadow: var(--track-in);
+}
+.slider::-moz-range-track {
+  height: 6px;
+  border-radius: 99px;
+  border: 1px solid var(--hair);
+  background: var(--track);
+  box-shadow: var(--track-in);
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 99px;
+  border: 1px solid transparent;
+  background: linear-gradient(175deg, var(--emerald-lit), var(--emerald));
+  box-shadow: var(--sheen), 0 2px 10px -3px rgba(47, 154, 112, 0.55);
+  /* Half the thumb minus half the track, so it rides centred on the rail.
+     -webkit- offsets the thumb from the top of the track box; Firefox
+     centres it for us, which is why only this one needs the margin. */
+  margin-top: -8px;
+  transition: filter var(--dur-1) var(--ease), transform var(--dur-1) var(--ease);
+}
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 99px;
+  border: 1px solid transparent;
+  background: linear-gradient(175deg, var(--emerald-lit), var(--emerald));
+  box-shadow: var(--sheen), 0 2px 10px -3px rgba(47, 154, 112, 0.55);
+  transition: filter var(--dur-1) var(--ease), transform var(--dur-1) var(--ease);
+}
+.slider:active::-webkit-slider-thumb { transform: scale(1.08); filter: brightness(1.08); }
+.slider:active::-moz-range-thumb { transform: scale(1.08); filter: brightness(1.08); }
+
+/* The two ends of the scale, named. Tabular figures are irrelevant here but
+   the ends must not drift apart as the label above them changes length, so
+   they are pinned by the flex rather than centred on the track. */
+.slider-ends {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 9px;
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+}
+
+/* The reading of the current position, in the body serif so it is a sentence
+   about the reader rather than another label on the control. */
+.slider-value {
+  font-family: var(--serif);
+  font-size: 19px;
+  color: var(--ink);
+  margin-bottom: 14px;
+  min-height: 1.4em;
+}
+.slider-value.is-unset { color: var(--ink-3); font-style: italic; }
 
 /* display:block is load-bearing, not tidying. Almost every .field in the app
    is a <label> wrapping its own control — which is the right markup, since it
@@ -3552,10 +3674,14 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
 
   .tabbar { display: none; }
 
+  /* --pad rather than a literal, because .topbar bleeds by exactly this
+     value to reach the edges. A number typed here and not there is how the
+     bar stops short of the gutter again one breakpoint later. */
   .main {
+    --pad: 34px;
     margin-left: var(--side-w);
     max-width: none;
-    padding: 0 34px 60px;
+    padding: 0 var(--pad) 60px;
   }
 
   .topbar-back { display: none; }
@@ -3596,7 +3722,7 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
 
 @media (min-width: 1240px) {
   :root { --side-w: 284px; }
-  .main { padding: 0 52px 64px; }
+  .main { --pad: 52px; padding: 0 var(--pad) 64px; }
 }
 
 /* Beyond this the line length gets uncomfortable, so cap and centre. */
