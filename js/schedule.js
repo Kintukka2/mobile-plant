@@ -308,6 +308,21 @@ window.Schedule = (function () {
     if (!sp || !room || !room.light) return null;
 
     const roomLight = room.light;
+
+    /* No species lists 'none' in its avoid array — the value did not exist
+       when that data was written — so a windowless room would otherwise fall
+       through to the generic "expect slow, stretched growth", which is the
+       wrong scale of warning. Nothing grows in the dark. Say so, and say
+       what to do instead, because the reader almost certainly knows their
+       bathroom has no window and wants the plan rather than the diagnosis. */
+    if (roomLight === 'none') {
+      return {
+        verdict: 'bad',
+        text: room.name + ' has no daylight, so nothing will hold its leaves here for long. ' +
+              'Rotate it back to a lit room every week or two, or put a grow lamp over it.'
+      };
+    }
+
     if (roomLight === sp.light.ideal) {
       return { verdict: 'ideal', text: 'This is exactly the light it wants.' };
     }
@@ -338,7 +353,11 @@ window.Schedule = (function () {
     if (!sp) return [];
     return Store.get().rooms.map(function (room) {
       let score = 0;
-      if (!room.light) score = 1;
+      /* Below the 'unknown light' score of 1, not equal to it: a room we know
+         nothing about might suit the plant, and a room with no window is
+         known not to. Suggesting one would be worse than saying nothing. */
+      if (room.light === 'none') score = -1;
+      else if (!room.light) score = 1;
       else if (room.light === sp.light.ideal) score = 4;
       else if ((sp.light.tolerates || []).indexOf(room.light) !== -1) score = 3;
       else if ((sp.light.avoid || []).indexOf(room.light) !== -1) score = 0;

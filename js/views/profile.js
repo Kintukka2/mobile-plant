@@ -264,12 +264,32 @@ window.ViewProfile = (function () {
               '<div style="flex:1;min-width:0">' +
                 '<div style="font-weight:650">No location set</div>' +
                 '<p class="tiny muted" style="margin:2px 0 0">I work fine without it — you just lose the ' +
-                  'forecast suggestions, and I\'ll assume you\'re in the ' +
-                  (hemi === 'south' ? 'southern' : 'northern') + ' hemisphere for seasons.</p>' +
+                  'forecast suggestions.</p>' +
               '</div>' +
             '</div>' +
             '<button class="btn btn-block" data-loc="1" style="margin-top:12px">' + UI.icon('pin') +
-              'Set my location</button>') +
+              'Set my location</button>' +
+            /* Without a latitude this is the one thing I still have to know,
+               because it decides the seasons and which way the bright
+               windows face. The time zone gives a good guess; this is where
+               the reader overrules it, and it has to be here rather than
+               buried, since a wrong answer inverts every piece of light
+               advice in the app without ever looking wrong. */
+            '<hr class="divider">' +
+            '<div class="label" style="margin-bottom:8px">Which half of the world?</div>' +
+            '<div class="row-wrap">' +
+              '<button class="chip' + (hemi === 'north' ? ' is-on' : '') + '" data-hemi="north">' +
+                'Northern</button>' +
+              '<button class="chip' + (hemi === 'south' ? ' is-on' : '') + '" data-hemi="south">' +
+                'Southern</button>' +
+            '</div>' +
+            '<p class="hint">' +
+              (Store.hemisphereIsGuess()
+                ? 'I\'ve guessed ' + (hemi === 'south' ? 'southern' : 'northern') +
+                  ' from your device\'s time zone. It decides your seasons, and which way your bright ' +
+                  'windows face — tap the other one if I have it wrong.'
+                : 'Set by you. This decides your seasons, and which way your bright windows face.') +
+            '</p>') +
       '</div>' +
     '</div>';
 
@@ -377,6 +397,13 @@ window.ViewProfile = (function () {
       if (exp) {
         const key = exp.getAttribute('data-exp');
         Store.updateProfile({ experience: Store.get().profile.experience === key ? null : key });
+        App.refresh();
+        return;
+      }
+
+      const hemiBtn = e.target.closest('[data-hemi]');
+      if (hemiBtn) {
+        Store.updateProfile({ hemisphere: hemiBtn.getAttribute('data-hemi') });
         App.refresh();
         return;
       }

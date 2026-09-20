@@ -22,7 +22,7 @@ window.Store = (function () {
       version: 1,
       profile: {
         name: '',
-        hemisphere: null,       // 'north' | 'south' — inferred from location
+        hemisphere: null,       // 'north' | 'south' — from location, or set by hand
         location: null,         // { label, lat, lon }
         pets: [],               // ['cats','dogs']
         experience: null,       // 'new' | 'some' | 'confident'
@@ -98,8 +98,23 @@ window.Store = (function () {
     save();
   }
 
+  /* A saved latitude, or an answer the reader gave outright, is knowledge.
+     Failing both, the device's time zone is a good enough guess to beat the
+     alternative, which was assuming north and inverting every season and
+     every window aspect for everyone below the equator. 'north' remains the
+     last resort for a device that reports no zone at all.
+
+     hemisphereIsGuess() exists so the UI can say which of those three it is
+     working from — an inference the reader can correct should not be
+     presented in the same voice as one they gave us. */
   function hemisphere() {
-    return get().profile.hemisphere || 'north';
+    return get().profile.hemisphere ||
+           LOOKUPS.hemisphereFromTimeZone() ||
+           'north';
+  }
+
+  function hemisphereIsGuess() {
+    return !get().profile.hemisphere;
   }
 
   /* ---------- Rooms ---------- */
@@ -378,6 +393,7 @@ window.Store = (function () {
   return {
     load: load, save: save, get: get, uid: uid,
     updateProfile: updateProfile, hemisphere: hemisphere,
+    hemisphereIsGuess: hemisphereIsGuess,
     addRoom: addRoom, updateRoom: updateRoom, getRoom: getRoom, deleteRoom: deleteRoom,
     plantsInRoom: plantsInRoom,
     addPlant: addPlant, updatePlant: updatePlant, getPlant: getPlant, deletePlant: deletePlant,

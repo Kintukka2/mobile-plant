@@ -322,7 +322,13 @@ window.ViewGreenhouse = (function () {
         UI.monogram(p.name, 'mono-sm') + UI.esc(p.name) + '</button>';
     }).join('');
 
+    /* 'No window' sits at the top, next to 'Not sure', because it is the
+       other answer that is not a compass point — a windowless bathroom is a
+       real room with real plants in it, and the list previously had no way
+       to say so. The compass options then follow in order. */
     const aspectOpts = '<option value="">Not sure</option>' +
+      '<option value="NONE"' + (editing && room.aspect === 'NONE' ? ' selected' : '') + '>' +
+        'No window — no natural light</option>' +
       LOOKUPS.ASPECTS.map(function (a) {
         const prof = LOOKUPS.aspectProfile(a, hemi);
         return '<option value="' + a + '"' + (editing && room.aspect === a ? ' selected' : '') + '>' +
@@ -335,6 +341,19 @@ window.ViewGreenhouse = (function () {
         return '<option value="' + k + '"' + (editing && room.light === k ? ' selected' : '') + '>' +
           UI.esc(LOOKUPS.LIGHT[k].label) + '</option>';
       }).join('');
+
+    /* Which way is the bright way is the single fact this question turns on,
+       and it is the opposite fact either side of the equator. Naming the
+       hemisphere the guesses come from — and saying where to correct it —
+       is the difference between advice a reader can trust and advice that is
+       silently backwards for them. */
+    const aspectHint = hemi === 'south'
+      ? 'Tell me this and I\'ll work out the light level. I\'m reading these for the southern hemisphere, ' +
+        'so north-facing is your bright side' +
+        (Store.hemisphereIsGuess() ? ' — set your location in Profile if that\'s wrong.' : '.')
+      : 'Tell me this and I\'ll work out the light level. I\'m reading these for the northern hemisphere, ' +
+        'so south-facing is your bright side' +
+        (Store.hemisphereIsGuess() ? ' — set your location in Profile if that\'s wrong.' : '.');
 
     const humidOpts = ['', 'low', 'medium', 'high'].map(function (k) {
       const labels = { '': 'Average', low: 'Dry (heated, airy)', medium: 'Average', high: 'Humid (bathroom, kitchen)' };
@@ -354,8 +373,7 @@ window.ViewGreenhouse = (function () {
 
       '<label class="field"><span class="label">Which way does the window face?</span>' +
         '<select class="select" id="r-aspect">' + aspectOpts + '</select>' +
-        '<p class="hint" id="r-aspect-note">Tell me this and I\'ll work out the light level for you. It ' +
-          'comes out differently ' + (hemi === 'south' ? 'below' : 'above') + ' the equator, which I account for.</p>' +
+        '<p class="hint" id="r-aspect-note">' + UI.esc(aspectHint) + '</p>' +
       '</label>' +
 
       '<label class="field"><span class="label">Light level</span>' +
