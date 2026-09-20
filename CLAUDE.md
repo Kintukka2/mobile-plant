@@ -107,8 +107,15 @@ location, then an answer the reader gave in Profile, then
 `LOOKUPS.hemisphereFromTimeZone()` reading the device's IANA zone. Only a
 device reporting no zone at all falls back to `'north'`. Getting this wrong
 inverts every aspect label and every season without ever looking broken, so
-`Store.hemisphereIsGuess()` exists to let the UI say which of the three it
-is working from. Time-zone names canonicalise differently across engines —
+`Store.hemisphereIsGuess()` exists — and where a surface would otherwise
+*assert* something hemisphere-dependent, it must go quiet rather than caveat.
+The room form is the worked example: while the hemisphere is only a guess,
+the window aspects render as bare compass points with no light reading, and
+selecting one fills in nothing. Hiding the label while still auto-filling the
+level from the same untrusted table would be the worse of the two, because
+the claim would still be made, just somewhere the reader cannot check it.
+
+Time-zone names canonicalise differently across engines —
 `America/Argentina/Cordoba` and `America/Cordoba` are the same place — which
 is why the southern list carries both spellings.
 

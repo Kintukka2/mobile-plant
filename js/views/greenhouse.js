@@ -322,17 +322,37 @@ window.ViewGreenhouse = (function () {
         UI.monogram(p.name, 'mono-sm') + UI.esc(p.name) + '</button>';
     }).join('');
 
+    /* The '— bright' half of each option is a claim, and the claim inverts
+       across the equator. Until we know which side the reader is on, the
+       option says only which way the window faces, which is a fact they can
+       check themselves. The suffix returns the moment the hemisphere is
+       settled — by a saved location, or by the two chips below the field.
+
+       Hiding the suffix while auto-filling the light level from the same
+       untrusted table would be worse than leaving the suffix on: the claim
+       would still be made, just somewhere the reader cannot see it. So the
+       autofill is gated on the same flag. */
+    let hemiConfirmed = !Store.hemisphereIsGuess();
+
     /* 'No window' sits at the top, next to 'Not sure', because it is the
        other answer that is not a compass point — a windowless bathroom is a
        real room with real plants in it, and the list previously had no way
-       to say so. The compass options then follow in order. */
+       to say so. It needs no hemisphere: a cupboard faces nowhere on either
+       side of the equator, so it keeps its suffix and its autofill
+       throughout. The compass options then follow in order. */
+    function aspectOptionText(a) {
+      const name = LOOKUPS.ASPECT_NAMES[a] + '-facing';
+      if (!hemiConfirmed) return name;
+      const prof = LOOKUPS.aspectProfile(a, Store.hemisphere());
+      return name + ' — ' + LOOKUPS.LIGHT[prof.light].short.toLowerCase();
+    }
+
     const aspectOpts = '<option value="">Not sure</option>' +
       '<option value="NONE"' + (editing && room.aspect === 'NONE' ? ' selected' : '') + '>' +
         'No window — no natural light</option>' +
       LOOKUPS.ASPECTS.map(function (a) {
-        const prof = LOOKUPS.aspectProfile(a, hemi);
         return '<option value="' + a + '"' + (editing && room.aspect === a ? ' selected' : '') + '>' +
-          UI.esc(LOOKUPS.ASPECT_NAMES[a] + '-facing — ' + LOOKUPS.LIGHT[prof.light].short.toLowerCase()) +
+          UI.esc(aspectOptionText(a)) +
         '</option>';
       }).join('');
 
@@ -343,17 +363,31 @@ window.ViewGreenhouse = (function () {
       }).join('');
 
     /* Which way is the bright way is the single fact this question turns on,
-       and it is the opposite fact either side of the equator. Naming the
-       hemisphere the guesses come from — and saying where to correct it —
-       is the difference between advice a reader can trust and advice that is
-       silently backwards for them. */
-    const aspectHint = hemi === 'south'
-      ? 'Tell me this and I\'ll work out the light level. I\'m reading these for the southern hemisphere, ' +
-        'so north-facing is your bright side' +
-        (Store.hemisphereIsGuess() ? ' — set your location in Profile if that\'s wrong.' : '.')
-      : 'Tell me this and I\'ll work out the light level. I\'m reading these for the northern hemisphere, ' +
-        'so south-facing is your bright side' +
-        (Store.hemisphereIsGuess() ? ' — set your location in Profile if that\'s wrong.' : '.');
+       and it is the opposite fact either side of the equator. Once settled,
+       say which way we are reading it, so the reader can check us. */
+    function settledHint() {
+      return Store.hemisphere() === 'south'
+        ? 'I\'m reading these for the southern hemisphere, so north-facing is your bright side.'
+        : 'I\'m reading these for the northern hemisphere, so south-facing is your bright side.';
+    }
+
+    /* Unsettled, the honest thing is to ask rather than to guess and caveat.
+       It is one tap, it is asked where it matters rather than two screens
+       away in Profile, and it is answered once for good — so this block is
+       gone by the second room. The time-zone guess is named but deliberately
+       not pre-selected: a preselected chip is a confirmation the reader did
+       not give. */
+    const hemiAsk =
+      '<div id="r-hemi-ask" style="margin-top:10px">' +
+        '<p class="hint" style="margin-bottom:8px">Before I can read these windows I need to know which ' +
+          'side of the equator you\'re on — it decides which way your bright windows face.</p>' +
+        '<div class="row-wrap">' +
+          '<button type="button" class="chip" data-room-hemi="north">Northern</button>' +
+          '<button type="button" class="chip" data-room-hemi="south">Southern</button>' +
+        '</div>' +
+        '<p class="hint" style="margin-top:8px">Your device\'s time zone suggests ' +
+          (hemi === 'south' ? 'southern' : 'northern') + '. You can change it later in Profile.</p>' +
+      '</div>';
 
     const humidOpts = ['', 'low', 'medium', 'high'].map(function (k) {
       const labels = { '': 'Average', low: 'Dry (heated, airy)', medium: 'Average', high: 'Humid (bathroom, kitchen)' };
@@ -371,10 +405,17 @@ window.ViewGreenhouse = (function () {
         '<input class="input" id="r-name" maxlength="40" placeholder="Living Room" ' +
         'value="' + UI.attr(editing ? room.name : '') + '"></label>' +
 
-      '<label class="field"><span class="label">Which way does the window face?</span>' +
+      /* A div, not a label. The hemisphere chips live inside this field, and
+         a label wrapping them would hand every chip tap to the select as
+         well. `for` keeps the caption tied to the control without it. */
+      '<div class="field"><label class="label" for="r-aspect">Which way does the window face?</label>' +
         '<select class="select" id="r-aspect">' + aspectOpts + '</select>' +
-        '<p class="hint" id="r-aspect-note">' + UI.esc(aspectHint) + '</p>' +
-      '</label>' +
+        '<p class="hint" id="r-aspect-note">' +
+          UI.esc(hemiConfirmed
+            ? 'Tell me this and I\'ll work out the light level. ' + settledHint()
+            : 'Tell me this and I\'ll work out the light level.') + '</p>' +
+        (hemiConfirmed ? '' : hemiAsk) +
+      '</div>' +
 
       '<label class="field"><span class="label">Light level</span>' +
         '<select class="select" id="r-light">' + lightOpts + '</select>' +
@@ -401,10 +442,15 @@ window.ViewGreenhouse = (function () {
       const lightEl  = root.querySelector('#r-light');
       const lightNote = root.querySelector('#r-light-note');
 
+      /* The empty-state line is a promise, so it has to track whether the
+         promise can be kept: with the hemisphere unsettled, picking an
+         aspect deliberately fills nothing in. */
       function describeLight() {
         const v = lightEl.value;
-        lightNote.textContent = v ? LOOKUPS.LIGHT[v].desc
-          : 'Pick a window aspect above and I\'ll fill this in.';
+        if (v) { lightNote.textContent = LOOKUPS.LIGHT[v].desc; return; }
+        lightNote.textContent = hemiConfirmed
+          ? 'Pick a window aspect above and I\'ll fill this in.'
+          : 'Answer the equator question above and I\'ll fill this in from the window — or just set it yourself.';
       }
       describeLight();
 
@@ -416,14 +462,48 @@ window.ViewGreenhouse = (function () {
         });
       });
 
-      aspectEl.addEventListener('change', function () {
-        const prof = LOOKUPS.aspectProfile(aspectEl.value, hemi);
-        if (prof) {
-          lightEl.value = prof.light;
-          describeLight();
-          root.querySelector('#r-aspect-note').textContent = prof.note;
-        }
-      });
+      const aspectNote = root.querySelector('#r-aspect-note');
+
+      /* Fill the light level from the aspect — but only from a hemisphere we
+         actually have, and always for 'No window', which needs none. */
+      function applyAspect() {
+        const v = aspectEl.value;
+        if (!v) return;
+        if (v !== 'NONE' && !hemiConfirmed) return;
+        const prof = LOOKUPS.aspectProfile(v, Store.hemisphere());
+        if (!prof) return;
+        lightEl.value = prof.light;
+        describeLight();
+        aspectNote.textContent = prof.note;
+      }
+
+      aspectEl.addEventListener('change', applyAspect);
+
+      /* Answering here writes it to the profile for good, then brings the
+         field to life in place: the options grow their light suffix and the
+         current pick fills the level. Rebuilding the page would have been
+         simpler and would have closed the sheet out from under the reader
+         mid-form. */
+      const hemiAskEl = root.querySelector('#r-hemi-ask');
+      if (hemiAskEl) {
+        hemiAskEl.querySelectorAll('[data-room-hemi]').forEach(function (b) {
+          b.addEventListener('click', function () {
+            Store.updateProfile({ hemisphere: b.getAttribute('data-room-hemi') });
+            hemiConfirmed = true;
+            hemiAskEl.remove();
+            LOOKUPS.ASPECTS.forEach(function (a) {
+              const opt = aspectEl.querySelector('option[value="' + a + '"]');
+              if (opt) opt.textContent = aspectOptionText(a);
+            });
+            aspectNote.textContent = 'Tell me this and I\'ll work out the light level. ' + settledHint();
+            /* Before applyAspect, which returns early when no aspect is
+               picked yet — and would leave the light hint still telling the
+               reader to answer a question that is no longer on screen. */
+            describeLight();
+            applyAspect();
+          });
+        });
+      }
 
       lightEl.addEventListener('change', describeLight);
 
