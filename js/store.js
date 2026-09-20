@@ -171,6 +171,10 @@ window.Store = (function () {
       potCm: data.potCm || 15,
       potMaterial: data.potMaterial || 'plastic',
       drainage: data.drainage || 'good',
+      /* The three above always hold a usable pot, because the schedule needs
+         one to reason about. This records whether anyone actually answered:
+         true means the values are Sprout's assumption, not the reader's. */
+      potPending: !!data.potPending,
       coverPhotoId: null,
       lastWatered: data.lastWatered || null,
       lastFertilised: data.lastFertilised || null,

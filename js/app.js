@@ -282,11 +282,25 @@ window.App = (function () {
   function renderNav() {
     const overdue = Schedule.overdueCount();
 
+    /* A plus rather than a count: there is nothing to tally, the point is
+       that a step is missing. Rooms are what the light and humidity of every
+       schedule hang off, so a greenhouse with none is the one setup gap
+       worth marking on the furniture rather than waiting for the reader to
+       wander into the tab and find an empty state. It clears itself the
+       moment a first room exists. */
+    const noRooms = !Store.get().rooms.length;
+
+    function badge(key, cls) {
+      if (key === 'today' && overdue) return '<span class="' + cls + '">' + overdue + '</span>';
+      if (key === 'greenhouse' && noRooms) return '<span class="' + cls + ' is-hint">+</span>';
+      return '';
+    }
+
     document.getElementById('tabbar').innerHTML = TABS.map(function (t) {
       const on = t.key === current.name || isChildOf(t.key, current.name);
       return '<button class="tab' + (on ? ' is-active' : '') + '" data-path="' + UI.attr(t.path) + '">' +
         UI.icon(t.icon) +
-        (t.key === 'today' && overdue ? '<span class="tab-badge">' + overdue + '</span>' : '') +
+        badge(t.key, 'tab-badge') +
         '<span>' + UI.esc(t.label) + '</span>' +
       '</button>';
     }).join('');
@@ -295,7 +309,7 @@ window.App = (function () {
       const on = t.key === current.name || isChildOf(t.key, current.name);
       return '<button class="side-link' + (on ? ' is-active' : '') + '" data-path="' + UI.attr(t.path) + '">' +
         UI.icon(t.icon) + '<span>' + UI.esc(t.label) + '</span>' +
-        (t.key === 'today' && overdue ? '<span class="side-count">' + overdue + '</span>' : '') +
+        badge(t.key, 'side-count') +
       '</button>';
     }).join('');
 
@@ -369,7 +383,16 @@ window.App = (function () {
       if (e.target.id === 'sheet-backdrop') UI.closeSheet();
     });
 
-    document.getElementById('sheet-body').addEventListener('click', function (e) {
+    /* The plate, not the body. UI.liftSheetActions() moves a sheet's trailing
+       button row out of #sheet-body and into #sheet-foot so the primary
+       action stays pinned — which put every Cancel button outside the element
+       this delegate was bound to, and a click on one reached nothing. It
+       looked like a dead button on one screen; it was dead on every sheet
+       whose actions get lifted, which is all of them bar the confirm dialog,
+       and that one only works because it binds its Cancel directly.
+       #sheet contains both the body and the footer, so the row is covered
+       wherever it ends up. */
+    document.getElementById('sheet').addEventListener('click', function (e) {
       const cancel = e.target.closest && e.target.closest('[data-act="sheet-cancel"]');
       if (cancel) UI.closeSheet();
     });

@@ -216,6 +216,12 @@ window.ViewGreenhouse = (function () {
       return m ? m.note : '';
     }
 
+    function potHint(key, pending) {
+      return pending
+        ? 'I\'ll assume a typical 15cm plastic pot with holes until you tell me otherwise.'
+        : potNote(key);
+    }
+
     const matOpts = Object.keys(LOOKUPS.POT_MATERIALS).map(function (k) {
       const sel = (editing ? plant.potMaterial : 'plastic') === k ? ' selected' : '';
       return '<option value="' + k + '"' + sel + '>' + UI.esc(LOOKUPS.POT_MATERIALS[k].label) + '</option>';
@@ -258,13 +264,26 @@ window.ViewGreenhouse = (function () {
           '<span class="disclosure-chev">' + UI.icon('chevron') + '</span>' +
         '</summary>' +
         '<div class="disclosure-body">' +
-          '<div class="pot-row">' +
+          /* The question on the summary has a "no", so the section has to
+             offer one. Ticking it leaves the three fields at their defaults
+             — the schedule still needs a pot to reason about, and a typical
+             15cm plastic one is the right assumption — but records that
+             nobody answered, so the plant page can ask again later and the
+             edit form comes back with the box still ticked rather than
+             presenting a guess as a decision. */
+          '<label class="row pot-pending" style="gap:10px;cursor:pointer">' +
+            '<input type="checkbox" id="f-pot-pending"' +
+              ((editing ? plant.potPending : false) ? ' checked' : '') + '>' +
+            '<span>I haven\'t potted it yet</span>' +
+          '</label>' +
+
+          '<div class="pot-row" id="f-pot-fields">' +
+            '<label class="field"><span class="label">Material</span>' +
+              '<select class="select" id="f-mat">' + matOpts + '</select>' +
+            '</label>' +
             '<label class="field"><span class="label">Width (cm)</span>' +
               '<input class="input" id="f-pot" type="number" min="5" max="120" step="1" ' +
               'value="' + (editing ? plant.potCm : 15) + '">' +
-            '</label>' +
-            '<label class="field"><span class="label">Material</span>' +
-              '<select class="select" id="f-mat">' + matOpts + '</select>' +
             '</label>' +
             '<label class="field"><span class="label">Drainage</span>' +
               '<select class="select" id="f-drain">' +
@@ -273,14 +292,13 @@ window.ViewGreenhouse = (function () {
               '</select>' +
             '</label>' +
           '</div>' +
-          /* One hint for the row, and it reads the material that is actually
-             selected. It used to say "Terracotta dries faster" under a
-             select showing Plastic — a true sentence about a pot nobody had
-             chosen, which is a hint about the menu rather than the answer.
-             Measure across the top is the only part that holds whatever is
-             picked, so it leads. */
-          '<p class="hint" id="f-pot-note" style="margin-top:12px">Measure across the top. ' +
-            UI.esc(potNote(editing ? plant.potMaterial : 'plastic')) + '</p>' +
+          /* The note reads the material that is actually selected. It used to
+             say "Terracotta dries faster" under a select showing Plastic — a
+             true sentence about a pot nobody had chosen, which is a hint
+             about the menu rather than about the answer. */
+          '<p class="hint" id="f-pot-note" style="margin-top:12px">' +
+            UI.esc(potHint(editing ? plant.potMaterial : 'plastic',
+                           editing ? !!plant.potPending : false)) + '</p>' +
         '</div>' +
       '</details>' +
 
@@ -308,15 +326,30 @@ window.ViewGreenhouse = (function () {
     UI.openSheet(editing ? 'Edit ' + Store.displayName(plant) : 'Add ' + sp.common, body, function (root) {
       const matEl = root.querySelector('#f-mat');
       const potNoteEl = root.querySelector('#f-pot-note');
-      matEl.addEventListener('change', function () {
-        potNoteEl.textContent = 'Measure across the top. ' + potNote(matEl.value);
-      });
+      const pendEl = root.querySelector('#f-pot-pending');
+      const potFields = root.querySelector('#f-pot-fields');
+
+      /* Disabled rather than hidden: the fields keep their values, which are
+         the ones that get saved and fed to the schedule, and the reader can
+         see what is being assumed on their behalf instead of being told. */
+      function syncPending() {
+        const pending = pendEl.checked;
+        potFields.classList.toggle('is-off', pending);
+        potFields.querySelectorAll('input, select').forEach(function (el) {
+          el.disabled = pending;
+        });
+        potNoteEl.textContent = potHint(matEl.value, pending);
+      }
+      pendEl.addEventListener('change', syncPending);
+      matEl.addEventListener('change', syncPending);
+      syncPending();
 
       root.querySelector('#f-save').addEventListener('click', function () {
         const data = {
           speciesId: speciesId,
           nickname: root.querySelector('#f-nick').value.trim(),
           roomId: root.querySelector('#f-room').value || null,
+          potPending: root.querySelector('#f-pot-pending').checked,
           potCm: Math.max(5, Math.min(120, Number(root.querySelector('#f-pot').value) || 15)),
           potMaterial: root.querySelector('#f-mat').value,
           drainage: root.querySelector('#f-drain').value,
@@ -352,10 +385,14 @@ window.ViewGreenhouse = (function () {
     const editing = !!room;
     const hemi = Store.hemisphere();
 
-    const presetChips = LOOKUPS.ROOM_PRESETS.map(function (p) {
-      return '<button type="button" class="chip" data-preset="' + UI.attr(p.name) + '">' +
-        UI.monogram(p.name, 'mono-sm') + UI.esc(p.name) + '</button>';
-    }).join('');
+    /* Eleven chips took four rows and most of the sheet's opening screen to
+       offer what is really one question with a list of answers. A select
+       says the same thing in one line and leaves the room name — the field
+       the chips were filling in — visible without scrolling. */
+    const presetOpts = '<option value="">Choose a room type…</option>' +
+      LOOKUPS.ROOM_PRESETS.map(function (p) {
+        return '<option value="' + UI.attr(p.name) + '">' + UI.esc(p.name) + '</option>';
+      }).join('');
 
     /* The '— bright' half of each option is a claim, and the claim inverts
        across the equator. Until we know which side the reader is on, the
@@ -433,8 +470,8 @@ window.ViewGreenhouse = (function () {
 
     const body =
       (editing ? '' :
-        '<div class="field"><span class="label">Quick start</span>' +
-          '<div class="row-wrap">' + presetChips + '</div></div>') +
+        '<label class="field"><span class="label">Quick start</span>' +
+          '<select class="select" id="r-preset">' + presetOpts + '</select></label>') +
 
       '<label class="field"><span class="label">Room name</span>' +
         '<input class="input" id="r-name" maxlength="40" placeholder="Living Room" ' +
@@ -452,14 +489,19 @@ window.ViewGreenhouse = (function () {
         (hemiConfirmed ? '' : hemiAsk) +
       '</div>' +
 
-      '<label class="field"><span class="label">Light level</span>' +
-        '<select class="select" id="r-light">' + lightOpts + '</select>' +
-        '<p class="hint" id="r-light-note"></p>' +
-      '</label>' +
-
-      '<label class="field"><span class="label">Humidity</span>' +
-        '<select class="select" id="r-humid">' + humidOpts + '</select>' +
-      '</label>' +
+      '<div class="env-row">' +
+        '<label class="field"><span class="label">Light level</span>' +
+          '<select class="select" id="r-light">' + lightOpts + '</select>' +
+        '</label>' +
+        '<label class="field"><span class="label">Humidity</span>' +
+          '<select class="select" id="r-humid">' + humidOpts + '</select>' +
+        '</label>' +
+      '</div>' +
+      /* The light note sits under the pair rather than inside the light
+         column: it runs to three lines for some values, and a hint that tall
+         inside one half of a two-column row drags the other half's control
+         out of line with it. */
+      '<p class="hint" id="r-light-note" style="margin:8px 0 18px"></p>' +
 
       '<label class="field"><span class="label">Notes (optional)</span>' +
         '<textarea class="textarea" id="r-notes" maxlength="400" ' +
@@ -489,13 +531,20 @@ window.ViewGreenhouse = (function () {
       }
       describeLight();
 
-      root.querySelectorAll('[data-preset]').forEach(function (b) {
-        b.addEventListener('click', function () {
-          nameEl.value = b.getAttribute('data-preset');
-          root.querySelectorAll('[data-preset]').forEach(function (o) { o.classList.remove('is-on'); });
-          b.classList.add('is-on');
+      /* The preset is a shortcut for typing the name, so it only means
+         anything while the name still matches it. Type over "Hallway" and
+         the select claiming Hallway is stale — it was still sitting there
+         selected, describing a room that no longer existed. Rather than
+         track edits, the two are compared: whatever the name says wins. */
+      const presetEl = root.querySelector('#r-preset');
+      if (presetEl) {
+        presetEl.addEventListener('change', function () {
+          if (presetEl.value) nameEl.value = presetEl.value;
         });
-      });
+        nameEl.addEventListener('input', function () {
+          if (presetEl.value && nameEl.value.trim() !== presetEl.value) presetEl.value = '';
+        });
+      }
 
       const aspectNote = root.querySelector('#r-aspect-note');
 
