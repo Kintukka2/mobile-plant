@@ -1,0 +1,991 @@
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sprout Brand Workbench</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Italiana&family=Jost:wght@300;400;500&family=Sacramento&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+/* ==========================================================================
+   Sprout — Brand Workbench
+   --------------------------------------------------------------------------
+   Set in Sprout's own design system, because a brand guide that does not
+   look like the brand is arguing against itself. Viridium is the default;
+   the toggle at the top switches the whole page to Conservatory, which is
+   how Decision 03 gets judged rather than described.
+
+   Workbench annotation — the parts of this page that are scaffolding rather
+   than brand — is distinguished by FORM, never by an extra hue: dashed
+   hairlines and monospace labels. That is the same rule Decision 02 proposes
+   for hazard, applied here first.
+   ========================================================================== */
+
+/* --- Viridium: the default, declared on bare :root --- */
+:root {
+  --bg-0:#050A08; --bg-1:#0A1410; --bg-2:#0E1B15; --bg-3:#13251D; --bg-4:#193024;
+  --glass:rgba(255,255,255,.045); --glass-2:rgba(255,255,255,.075); --glass-3:rgba(255,255,255,.11);
+  --hair:rgba(214,237,226,.10); --hair-2:rgba(214,237,226,.17); --hair-3:rgba(214,237,226,.28);
+  --ink:#F3F6F1; --ink-2:rgba(228,240,232,.72); --ink-3:rgba(206,226,214,.50); --ink-4:rgba(196,218,206,.32);
+  --emerald-deep:#0F3A29; --emerald:#1F6B4C; --emerald-lit:#2F9A70; --emerald-glow:#3FBE8B;
+  --mint:#9FD3BE; --mint-2:#C9E7D9; --mint-wash:rgba(63,190,139,.11);
+  --gold:#C8A96B; --gold-lit:#DFC58F; --gold-wash:rgba(200,169,107,.13);
+  --sun:#E0B255; --sun-soft:rgba(224,178,85,.14); --sun-ink:#EBCB8B;
+  --terra:#D08A62; --terra-soft:rgba(208,138,98,.14); --terra-ink:#E2AC8C; --terra-hi-ink:#23120A;
+  --btn-ink:#F4FBF7;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.40); --shadow:0 8px 24px -8px rgba(0,0,0,.60);
+  --sheen:inset 0 1px 0 rgba(255,255,255,.055);
+  --track:rgba(0,0,0,.22); --track-in:inset 0 1px 2px rgba(0,0,0,.30); --seg-on:rgba(255,255,255,.14);
+  --field:rgba(0,0,0,.22);
+  --tile-sat:26%; --tile-lum:11; --tile-sat-2:22%; --tile-lum-2:8;
+  --tile-sheen:63,190,139; --tile-ink:rgba(232,240,233,.82);
+
+  --display:'Italiana','Cormorant Garamond',Didot,'Times New Roman',serif;
+  --serif:'Cormorant Garamond',Didot,Georgia,'Times New Roman',serif;
+  --sans:'Jost','Futura','Century Gothic',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --script:'Sacramento','Segoe Script',cursive;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+
+  --r-sm:2px; --r:3px; --r-lg:6px;
+  --ease:cubic-bezier(.16,1,.30,1);
+  --dur-1:180ms; --dur-2:340ms;
+}
+
+/* --- Conservatory --- */
+:root[data-sprout="conservatory"] {
+  --bg-0:#EDE6DA; --bg-1:#F7F3EC; --bg-2:#FFFCF7; --bg-3:#FBF6EE; --bg-4:#F1E9DC;
+  --glass:rgba(255,252,247,.70); --glass-2:rgba(255,252,247,.86); --glass-3:rgba(250,245,236,.94);
+  --hair:rgba(28,54,43,.13); --hair-2:rgba(28,54,43,.22); --hair-3:rgba(28,54,43,.34);
+  --ink:#13231B; --ink-2:#32443A; --ink-3:#5C6F66; --ink-4:#92A199;
+  --emerald-deep:#0B2E21; --emerald:#1B6045; --emerald-lit:#237A57; --emerald-glow:#1B6045;
+  --mint:#2C6B51; --mint-2:#1D5240; --mint-wash:rgba(27,96,69,.10);
+  --gold:#9C7C35; --gold-lit:#7E6226; --gold-wash:rgba(156,124,53,.13);
+  --sun:#A9761B; --sun-soft:rgba(169,118,27,.12); --sun-ink:#7A5310;
+  --terra:#A0552C; --terra-soft:rgba(160,85,44,.12); --terra-ink:#7C3E1B; --terra-hi-ink:#FFF6EE;
+  --btn-ink:#FFFCF7;
+  --shadow-sm:0 1px 2px rgba(28,54,43,.10); --shadow:0 10px 30px -10px rgba(28,54,43,.17);
+  --sheen:inset 0 1px 0 rgba(255,255,255,.85);
+  --track:rgba(28,54,43,.055); --track-in:inset 0 1px 2px rgba(28,54,43,.13),inset 0 -1px 0 rgba(255,255,255,.7);
+  --seg-on:#FFFCF7; --field:rgba(28,54,43,.038);
+  --tile-sat:21%; --tile-lum:89; --tile-sat-2:25%; --tile-lum-2:81;
+  --tile-sheen:255,252,247; --tile-ink:rgba(19,35,27,.72);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg-1); color:var(--ink);
+  font-family:var(--sans); font-weight:300; font-size:15px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1040px; margin:0 auto; padding-block:0 90px; padding-left:20px; padding-right:20px}
+h1,h2,h3,h4,p{margin:0}
+svg{display:block}
+
+/* --- Type roles --- */
+.d-lg{font-family:var(--display);font-weight:400;text-transform:uppercase;letter-spacing:.075em;font-size:clamp(30px,6vw,46px);line-height:1.04}
+.d-md{font-family:var(--display);font-weight:400;text-transform:uppercase;letter-spacing:.12em;font-size:22px;line-height:1.1}
+.s-md{font-family:var(--serif);font-weight:300;font-size:21px;line-height:1.25}
+.script{font-family:var(--script);color:var(--mint);line-height:1}
+.eyebrow{font-family:var(--sans);font-size:10px;font-weight:400;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-3)}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:0}
+.hint{font-size:13px;color:var(--ink-3);line-height:1.62}
+.lead{font-family:var(--serif);font-size:clamp(17px,2.6vw,20px);font-weight:300;color:var(--ink-2);line-height:1.55;max-width:62ch}
+p+p{margin-top:12px}
+strong{font-weight:500;color:var(--ink)}
+em{font-style:italic}
+
+/* --- Masthead --- */
+.mast{padding-block:44px 30px;border-bottom:1px solid var(--hair-2);margin-bottom:38px}
+.mast-mark{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.wordmark{font-family:var(--display);text-transform:uppercase;letter-spacing:.2em;text-indent:.2em;font-size:32px;line-height:1;color:var(--ink)}
+.mast-sub{margin-top:18px}
+
+/* --- Theme switch --- */
+.themebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:22px}
+.seg{display:inline-flex;gap:2px;padding:3px;border:1px solid var(--hair);border-radius:var(--r);background:var(--track);box-shadow:var(--track-in)}
+.seg button{
+  padding:8px 15px;border:0;border-radius:var(--r-sm);background:none;color:var(--ink-2);
+  font-family:var(--sans);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;
+  transition:color var(--dur-2) var(--ease),background var(--dur-2) var(--ease);
+}
+.seg button[aria-pressed="true"]{background:var(--seg-on);color:var(--ink);box-shadow:var(--sheen),var(--shadow-sm)}
+
+/* --- Section rhythm --- */
+section{margin-bottom:64px;scroll-margin-top:20px}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;
+  padding-bottom:11px;margin-bottom:22px;border-bottom:1px solid var(--hair)}
+.sec-title{font-family:var(--sans);font-size:14px;font-weight:400;letter-spacing:.23em;
+  text-transform:uppercase;color:var(--ink);line-height:1.3}
+.sec-note{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-4);white-space:nowrap}
+
+/* --- Decision plate --- */
+.decision{border:1px dashed var(--hair-3);border-radius:var(--r-lg);padding:0;overflow:hidden;background:var(--glass)}
+.dec-head{display:flex;align-items:flex-start;gap:14px;padding:20px;border-bottom:1px dashed var(--hair-2);flex-wrap:wrap}
+.dec-no{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-4);
+  border:1px solid var(--hair-2);border-radius:var(--r-sm);padding:3px 8px;flex:0 0 auto}
+.dec-q{flex:1;min-width:220px}
+.dec-q h3{font-family:var(--serif);font-size:21px;font-weight:400;line-height:1.25;color:var(--ink)}
+.dec-q p{margin-top:5px;font-size:13.5px;color:var(--ink-3);line-height:1.55}
+
+.split{display:grid;grid-template-columns:1fr;gap:1px;background:var(--hair)}
+@media(min-width:760px){.split{grid-template-columns:1fr 1fr}}
+.pane{background:var(--bg-2);padding:20px;min-width:0}
+.pane-k{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.pane-k b{font-family:var(--sans);font-size:9.5px;font-weight:400;letter-spacing:.22em;text-transform:uppercase}
+.pane-now .pane-k b{color:var(--ink-4)}
+.pane-new .pane-k b{color:var(--mint)}
+.pane-k i{flex:1;height:1px;background:var(--hair-2)}
+
+/* --- The call --- */
+.call{display:flex;align-items:flex-start;gap:11px;padding:16px 20px;border-top:1px dashed var(--hair-2);background:var(--bg-3)}
+.call-k{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-4);flex:0 0 auto;padding-top:2px}
+.call p{font-size:13.5px;color:var(--ink-2);line-height:1.6}
+
+/* --- Choice buttons --- */
+.picks{display:flex;flex-wrap:wrap;gap:8px;padding:16px 20px;border-top:1px dashed var(--hair-2)}
+.pick{
+  display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border:1px solid var(--hair-2);
+  border-radius:99px;background:var(--glass);color:var(--ink-2);font-family:var(--sans);font-size:12px;
+  letter-spacing:.05em;cursor:pointer;transition:all var(--dur-1) var(--ease);text-align:left
+}
+.pick:hover{border-color:var(--hair-3);color:var(--ink)}
+.pick[aria-pressed="true"]{border-color:rgba(63,190,139,.5);background:var(--mint-wash);color:var(--mint-2)}
+.pick-dot{width:7px;height:7px;border-radius:99px;background:var(--ink-4);flex:0 0 auto;transition:background var(--dur-1) var(--ease)}
+.pick[aria-pressed="true"] .pick-dot{background:var(--emerald-glow)}
+.rec{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--mint);
+  border:1px solid rgba(63,190,139,.35);border-radius:2px;padding:1px 5px}
+
+/* --- Swatches --- */
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(146px,1fr));gap:10px}
+.sw{border:1px solid var(--hair);border-radius:var(--r);overflow:hidden;background:var(--bg-2)}
+.sw-chip{height:58px;border-bottom:1px solid var(--hair)}
+.sw-b{padding:9px 11px}
+.sw-n{font-family:var(--mono);font-size:10.5px;color:var(--ink-2);word-break:break-all}
+.sw-h{font-family:var(--mono);font-size:10.5px;color:var(--ink-4);margin-top:2px;text-transform:uppercase}
+
+/* --- Ladder --- */
+.ladder{display:flex;flex-wrap:wrap;gap:12px;align-items:stretch}
+.rung{flex:1 1 130px;min-width:0;border:1px solid var(--hair);border-radius:var(--r);padding:13px;background:var(--bg-3)}
+.rung-top{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.bead{width:9px;height:9px;border-radius:99px;flex:0 0 auto}
+.rung-k{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3)}
+.rung-v{font-family:var(--mono);font-size:10px;color:var(--ink-4);text-transform:uppercase}
+
+/* --- Sprout components, reproduced --- */
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border:1px solid rgba(63,190,139,.24);
+  border-radius:99px;background:var(--mint-wash);color:var(--mint-2);font-size:11px;letter-spacing:.07em;
+  white-space:nowrap;line-height:1.5}
+.pill svg{width:13px;height:13px;stroke-width:1.5}
+.pill-grey{border-color:var(--hair-2);background:var(--glass);color:var(--ink-2)}
+.pill-sun{border-color:rgba(224,178,85,.3);background:var(--sun-soft);color:var(--sun-ink)}
+.pill-gold{border-color:rgba(200,169,107,.34);background:var(--gold-wash);color:var(--gold-lit)}
+.pill-terra{border-color:rgba(208,138,98,.3);background:var(--terra-soft);color:var(--terra-ink)}
+.pill-terra-hi{border-color:var(--terra);background:var(--terra);color:var(--terra-hi-ink);font-weight:500;letter-spacing:.09em}
+.pill-terra-hi svg{color:var(--terra-hi-ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:11px 19px;border:1px solid transparent;
+  border-radius:var(--r);background:linear-gradient(175deg,var(--emerald-lit),var(--emerald));color:var(--btn-ink);
+  font-family:var(--sans);font-size:11px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;white-space:nowrap;
+  box-shadow:var(--sheen),0 2px 12px -4px rgba(47,154,112,.5)}
+.btn-ghost{background:none;border-color:var(--hair-2);color:var(--ink-2);box-shadow:none}
+.btn-soft{background:var(--mint-wash);border-color:rgba(63,190,139,.26);color:var(--mint-2);box-shadow:none}
+.btn-danger{background:none;border-color:rgba(208,138,98,.36);color:var(--terra);box-shadow:none}
+.row-wrap{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+.stack{display:flex;flex-direction:column;gap:13px}
+
+/* --- Marks --- */
+.marks{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:12px}
+.markcell{border:1px solid var(--hair);border-radius:var(--r);background:var(--bg-3);padding:14px;text-align:center}
+.markcell .box{display:grid;place-items:center;height:76px}
+.markcell .cap{font-family:var(--mono);font-size:9.5px;color:var(--ink-4);margin-top:8px;line-height:1.4}
+.sizerow{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap}
+.sizecell{text-align:center}
+.sizecell .cap{font-family:var(--mono);font-size:9.5px;color:var(--ink-4);margin-top:7px}
+
+/* --- Tiles --- */
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:10px}
+.tile{position:relative;aspect-ratio:4/5;border:1px solid var(--hair);border-radius:var(--r);overflow:hidden;
+  display:grid;place-items:center}
+.tile-t{font-family:var(--display);font-size:34px;line-height:1;letter-spacing:.04em;color:var(--tile-ink);text-transform:uppercase}
+.tile-c{font-family:var(--mono);font-size:9px;color:var(--ink-4);margin-top:5px;text-align:center;word-break:break-word}
+
+/* --- Ratios --- */
+.ratios{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end}
+.ratio{flex:0 1 150px}
+.ratio .frame{width:100%;border:1px solid var(--hair-2);border-radius:var(--r);
+  background:radial-gradient(80% 70% at 28% 18%,rgba(63,190,139,.22),transparent 70%),var(--bg-3);
+  display:grid;place-items:center;max-width:100%}
+.ratio .cap{font-family:var(--mono);font-size:9.5px;color:var(--ink-4);margin-top:7px}
+
+/* --- Voice --- */
+.voice{border:1px solid var(--hair);border-radius:var(--r);background:var(--bg-3);padding:17px}
+.voice+.voice{margin-top:12px}
+.voice-k{display:flex;align-items:center;gap:9px;margin-bottom:11px;flex-wrap:wrap}
+.voice-n{font-family:var(--serif);font-size:17px;color:var(--ink)}
+.voice-t{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-4)}
+.voice p{font-family:var(--serif);font-size:16px;font-weight:300;color:var(--ink-2);line-height:1.62}
+.voice .second{margin-top:11px;padding-top:11px;border-top:1px solid var(--hair)}
+.quote{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink-2);line-height:1.6;
+  padding-left:15px;border-left:1px solid var(--hair-2)}
+.quote+.quote{margin-top:10px}
+.qs{display:block;font-family:var(--mono);font-style:normal;font-size:9.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-4);margin-top:4px}
+
+/* --- Index --- */
+.index{display:grid;gap:1px;background:var(--hair);border:1px solid var(--hair);border-radius:var(--r-lg);overflow:hidden}
+.idx{display:flex;align-items:center;gap:13px;padding:13px 16px;background:var(--bg-2);color:inherit;
+  text-decoration:none;transition:background var(--dur-1) var(--ease)}
+.idx:hover{background:var(--bg-3)}
+.idx-n{font-family:var(--mono);font-size:10.5px;color:var(--ink-4);flex:0 0 auto}
+.idx-t{flex:1;min-width:0;font-size:13.5px;color:var(--ink-2)}
+.idx-s{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-4);flex:0 0 auto}
+.idx-s[data-set="1"]{color:var(--mint)}
+
+/* --- Summary --- */
+.summary{border:1px solid rgba(63,190,139,.3);border-radius:var(--r-lg);background:var(--mint-wash);padding:20px}
+.sumrow{display:flex;gap:11px;padding:8px 0;border-bottom:1px solid var(--hair);font-size:13px;align-items:baseline}
+.sumrow:last-child{border-bottom:0}
+.sumrow b{font-family:var(--mono);font-size:10.5px;color:var(--ink-4);flex:0 0 auto;font-weight:400}
+.sumrow span{color:var(--ink-2)}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--hair);vertical-align:top}
+th{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-4);font-weight:400}
+td code{font-family:var(--mono);font-size:11.5px;color:var(--mint)}
+.scroll{overflow-x:auto}
+
+:focus-visible{outline:1px solid var(--emerald-glow);outline-offset:2px}
+@media(max-width:540px){
+  .sec-head{flex-wrap:wrap;gap:4px 12px}
+  .sec-title{font-size:12.5px;letter-spacing:.17em;min-width:0}
+  .sec-note{white-space:normal}
+  .wordmark{font-size:27px}
+}
+.mono,code{overflow-wrap:anywhere}
+@media(prefers-reduced-motion:reduce){*{transition-duration:60ms!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <div class="mast-mark">
+    <span class="wordmark">SPROUT</span>
+    <span class="script" style="font-size:27px">evergreen</span>
+  </div>
+  <div class="mast-sub">
+    <div class="eyebrow">Brand workbench &middot; working document</div>
+    <p class="lead" style="margin-top:12px">
+      Eight decisions, each shown as it stands today beside the change proposed for it.
+      Pick one per decision; the summary at the foot collects what you chose.
+      Nothing here is in the app yet.
+    </p>
+  </div>
+  <div class="themebar">
+    <span class="eyebrow">Theme</span>
+    <div class="seg" role="group" aria-label="Theme">
+      <button type="button" id="t-vir" aria-pressed="true">Viridium</button>
+      <button type="button" id="t-con" aria-pressed="false">Conservatory</button>
+    </div>
+    <span class="hint" style="font-size:12px">Switching re-renders every swatch and component below.</span>
+  </div>
+</header>
+
+<!-- ================= INDEX ================= -->
+<section id="index">
+  <div class="sec-head"><h2 class="sec-title">The eight decisions</h2><span class="sec-note">tap to jump</span></div>
+  <div class="index">
+    <a class="idx" href="#d01"><span class="idx-n">01</span><span class="idx-t">Two yellows, or one</span><span class="idx-s" id="s-01" data-set="0">Open</span></a>
+    <a class="idx" href="#d02"><span class="idx-n">02</span><span class="idx-t">Urgency and hazard on one colour</span><span class="idx-s" id="s-02" data-set="0">Open</span></a>
+    <a class="idx" href="#d03"><span class="idx-n">03</span><span class="idx-t">What Conservatory is for</span><span class="idx-s" id="s-03" data-set="0">Open</span></a>
+    <a class="idx" href="#d04"><span class="idx-n">04</span><span class="idx-t">Four sprigs, no mark</span><span class="idx-s" id="s-04" data-set="0">Open</span></a>
+    <a class="idx" href="#d05"><span class="idx-n">05</span><span class="idx-t">What &ldquo;evergreen&rdquo; is</span><span class="idx-s" id="s-05" data-set="0">Open</span></a>
+    <a class="idx" href="#d06"><span class="idx-n">06</span><span class="idx-t">The plant tile hash</span><span class="idx-s" id="s-06" data-set="0">Open</span></a>
+    <a class="idx" href="#d07"><span class="idx-n">07</span><span class="idx-t">Who is speaking</span><span class="idx-s" id="s-07" data-set="0">Open</span></a>
+    <a class="idx" href="#d08"><span class="idx-n">08</span><span class="idx-t">Three photo ratios</span><span class="idx-s" id="s-08" data-set="0">Open</span></a>
+  </div>
+</section>
+
+<!-- ================= PALETTE ================= -->
+<section id="palette">
+  <div class="sec-head"><h2 class="sec-title">Palette as it stands</h2><span class="sec-note" id="pal-theme">Viridium</span></div>
+  <p class="hint" style="margin-bottom:20px;max-width:62ch">
+    Every colour token in the system, with its literal value. Switch the theme above to see the
+    Conservatory values in the same places. Alpha tokens show over the current ground.
+  </p>
+  <div class="swatches" id="swatches"></div>
+</section>
+
+<!-- ================= TYPE ================= -->
+<section id="type">
+  <div class="sec-head"><h2 class="sec-title">Type</h2><span class="sec-note">five faces</span></div>
+  <div class="stack">
+    <div class="pane" style="border:1px solid var(--hair);border-radius:var(--r-lg)">
+      <div class="pane-k"><b style="color:var(--ink-4)">Italiana &middot; display</b><i></i></div>
+      <div class="d-lg">MY GREENHOUSE</div>
+      <p class="hint" style="margin-top:10px">Headings and the wordmark. <strong>20px is the floor.</strong> Below it the thin strokes
+        ask for about one pixel of ink and antialiasing spreads that into grey — the crossbars go first.</p>
+      <div class="row-wrap" style="margin-top:14px;align-items:flex-end">
+        <div><div style="font-family:var(--display);font-size:26px;letter-spacing:.12em">DIAGNOSE</div><div class="mono" style="color:var(--ink-4);margin-top:4px">26px &check;</div></div>
+        <div><div style="font-family:var(--display);font-size:20px;letter-spacing:.12em">DIAGNOSE</div><div class="mono" style="color:var(--ink-4);margin-top:4px">20px &check; floor</div></div>
+        <div><div style="font-family:var(--display);font-size:15px;letter-spacing:.12em">DIAGNOSE</div><div class="mono" style="color:var(--terra);margin-top:4px">15px &times; breaks</div></div>
+      </div>
+    </div>
+    <div class="pane" style="border:1px solid var(--hair);border-radius:var(--r-lg)">
+      <div class="pane-k"><b style="color:var(--ink-4)">Cormorant Garamond &middot; editorial serif</b><i></i></div>
+      <div class="s-md">Monstera deliciosa</div>
+      <p style="font-family:var(--serif);font-size:16px;color:var(--ink-2);line-height:1.62;margin-top:8px;max-width:62ch">
+        Water when the top 3–5cm of soil is dry to your finger. Pour slowly until it runs from the
+        drainage holes, then tip away anything left in the saucer.</p>
+    </div>
+    <div class="pane" style="border:1px solid var(--hair);border-radius:var(--r-lg)">
+      <div class="pane-k"><b style="color:var(--ink-4)">Jost &middot; interface</b><i></i></div>
+      <div class="row-wrap">
+        <span class="eyebrow">Watering</span><span class="eyebrow">Needs you today</span><span class="eyebrow">Pets &amp; people</span>
+      </div>
+      <p class="hint" style="margin-top:10px">Every small tracked cap in the app. Near-monolinear, so nothing drops out at any size.</p>
+    </div>
+    <div class="pane" style="border:1px solid var(--hair);border-radius:var(--r-lg)">
+      <div class="pane-k"><b style="color:var(--ink-4)">Sacramento &middot; flourish</b><i></i></div>
+      <div class="script" style="font-size:34px">Good morning</div>
+      <p class="hint" style="margin-top:10px">Once per screen at most, never for anything functional. See Decision 05.</p>
+    </div>
+    <div class="pane" style="border:1px dashed var(--hair-3);border-radius:var(--r-lg)">
+      <div class="pane-k"><b style="color:var(--mint)">IBM Plex Mono &middot; proposed addition</b><i></i></div>
+      <div class="mono" style="font-size:15px;color:var(--ink-2)">--emerald-glow &nbsp; #3FBE8B &nbsp; 8 days</div>
+      <p class="hint" style="margin-top:10px">The system has no monospace. A design document needs one for tokens, hex values and
+        anywhere figures must line up. Proposed rather than existing — this page is using it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= D01 ================= -->
+<section id="d01">
+  <div class="sec-head"><h2 class="sec-title">Decision 01 &middot; The yellows</h2><span class="sec-note">defect</span></div>
+  <div class="decision">
+    <div class="dec-head">
+      <span class="dec-no">01</span>
+      <div class="dec-q">
+        <h3>There are two yellows, and they contradict each other</h3>
+        <p>The system claims a closed set of four hues. It ships five.</p>
+      </div>
+    </div>
+    <div class="split">
+      <div class="pane pane-now">
+        <div class="pane-k"><b>Now</b><i></i></div>
+        <div class="swatches" style="grid-template-columns:1fr 1fr;margin-bottom:16px">
+          <div class="sw"><div class="sw-chip" style="background:#C8A96B"></div><div class="sw-b"><div class="sw-n">--gold</div><div class="sw-h">#C8A96B &middot; 14 uses</div></div></div>
+          <div class="sw"><div class="sw-chip" style="background:#E0B255"></div><div class="sw-b"><div class="sw-n">--sun</div><div class="sw-h">#E0B255 &middot; 3 uses</div></div></div>
+        </div>
+        <p class="hint" style="margin-bottom:12px">The same severity level wears both, in the same card:</p>
+        <div class="scroll"><table>
+          <tr><td><code>.sev-med</code></td><td>text</td><td><span style="color:var(--sun)">&#9679;</span> <span class="mono" style="color:var(--ink-3)">--sun</span></td></tr>
+          <tr><td><code>.sev-med .dx-cause-mark</code></td><td>glyph</td><td><span style="color:var(--gold)">&#9679;</span> <span class="mono" style="color:var(--ink-3)">--gold</span></td></tr>
+          <tr><td><code>.drop-due</code></td><td>water in 1–2 days</td><td><span style="color:var(--sun)">&#9679;</span> <span class="mono" style="color:var(--ink-3)">--sun</span></td></tr>
+          <tr><td><code>.drop-now</code></td><td>water today</td><td><span style="color:var(--gold)">&#9679;</span> <span class="mono" style="color:var(--ink-3)">--gold</span></td></tr>
+        </table></div>
+        <p class="hint" style="margin-top:12px">A two-step ladder expressed in two colours this close is not read as a ladder.</p>
+      </div>
+      <div class="pane pane-new">
+        <div class="pane-k"><b>Proposed</b><i></i></div>
+        <p class="hint" style="margin-bottom:14px">One champagne. Three rungs, each unmistakable from the others.</p>
+        <div class="ladder">
+          <div class="rung"><div class="rung-top"><span class="bead" style="background:var(--emerald-glow)"></span><span class="rung-k">Fine</span></div><div class="rung-v">--emerald-glow</div><div class="rung-v">#3FBE8B</div></div>
+          <div class="rung"><div class="rung-top"><span class="bead" style="background:var(--gold)"></span><span class="rung-k">Soon</span></div><div class="rung-v">--gold</div><div class="rung-v">#C8A96B</div></div>
+          <div class="rung"><div class="rung-top"><span class="bead" style="background:var(--terra)"></span><span class="rung-k">Now</span></div><div class="rung-v">--terra</div><div class="rung-v">#D08A62</div></div>
+        </div>
+        <p class="hint" style="margin-top:16px"><code style="font-family:var(--mono);color:var(--mint)">--sun</code> is deleted;
+          its three uses move to <code style="font-family:var(--mono);color:var(--mint)">--gold</code>. Where a finer
+          step is genuinely needed, the wash-to-fill move from Decision 02 carries it instead of a second hue.</p>
+      </div>
+    </div>
+    <div class="call"><span class="call-k">The call</span><p>Two yellows buy a distinction nobody can see, and cost the closed palette its claim. Collapse them.</p></div>
+    <div class="picks" data-dec="01">
+      <button class="pick" type="button" data-v="Collapse to one champagne"><span class="pick-dot"></span>Collapse to one champagne <span class="rec">rec</span></button>
+      <button class="pick" type="button" data-v="Keep two with a strict rule"><span class="pick-dot"></span>Keep two, strict rule</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= D02 ================= -->
+<section id="d02">
+  <div class="sec-head"><h2 class="sec-title">Decision 02 &middot; Urgency and hazard</h2><span class="sec-note">structural</span></div>
+  <div class="decision">
+    <div class="dec-head">
+      <span class="dec-no">02</span>
+      <div class="dec-q">
+        <h3>A late watering and a poisoned cat are the same colour</h3>
+        <p>Terracotta currently carries five unrelated meanings across two different axes.</p>
+      </div>
+    </div>
+    <div class="split">
+      <div class="pane pane-now">
+        <div class="pane-k"><b>Now</b><i></i></div>
+        <p class="hint" style="margin-bottom:14px">All five, at the weight the app gives them:</p>
+        <div class="row-wrap" style="gap:8px">
+          <span class="pill pill-terra">3 days overdue</span>
+          <span class="pill pill-terra">Act quickly</span>
+          <span class="pill pill-terra">Toxic</span>
+          <span class="pill pill-terra-hi">Highly toxic</span>
+          <button class="btn btn-danger" type="button">Delete room</button>
+        </div>
+        <p class="hint" style="margin-top:16px">Time-based and harm-based facts are indistinguishable. Only
+          <em>highly toxic</em> separates itself, and it does so by fill — which is the mechanism the proposal
+          generalises.</p>
+      </div>
+      <div class="pane pane-new">
+        <div class="pane-k"><b>Proposed</b><i></i></div>
+        <p class="hint" style="margin-bottom:12px"><strong>Urgency</strong> — recoverable, time-based. Always wash + hairline, never filled.</p>
+        <div class="row-wrap" style="gap:8px;margin-bottom:18px">
+          <span class="pill pill-grey">Water in 6 days</span>
+          <span class="pill pill-gold">Due today</span>
+          <span class="pill pill-terra">3 days overdue</span>
+        </div>
+        <p class="hint" style="margin-bottom:12px"><strong>Hazard</strong> — factual, about harm. Always filled, always carries a glyph.</p>
+        <div class="row-wrap" style="gap:8px">
+          <span class="pill pill-terra-hi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="9" r="2"/><circle cx="12" cy="6.5" r="2"/><circle cx="17" cy="9" r="2"/><path d="M12 11c3 0 5 2 5 4.2S14.8 20 12 20s-5-2.6-5-4.8S9 11 12 11Z"/></svg>Toxic to cats</span>
+          <span class="pill pill-terra-hi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a7.5 7.5 0 0 1 7.5 7.5c0 2.6-1.3 3.8-2 4.6-.5.6-.5 1.4-.5 2.4a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 7 17.5c0-1 0-1.8-.5-2.4-.7-.8-2-2-2-4.6A7.5 7.5 0 0 1 12 3Z"/><circle cx="9.3" cy="11" r="1.3"/><circle cx="14.7" cy="11" r="1.3"/></svg>Highly toxic</span>
+        </div>
+        <p class="hint" style="margin-top:16px">One filled chip anywhere on a screen means <em>this can hurt something</em>.
+          The palette stays closed — the distinction is form, not a fifth hue.</p>
+      </div>
+    </div>
+    <div class="call"><span class="call-k">The call</span><p>Split the two axes by fill, not by hue. A new colour would reopen the set that Decision 01 just closed.</p></div>
+    <div class="picks" data-dec="02">
+      <button class="pick" type="button" data-v="Split by form: fill = hazard, wash = urgency"><span class="pick-dot"></span>Split by form (fill vs wash) <span class="rec">rec</span></button>
+      <button class="pick" type="button" data-v="Separate hue for hazard"><span class="pick-dot"></span>Separate hue for hazard</button>
+      <button class="pick" type="button" data-v="Leave as is"><span class="pick-dot"></span>Leave as is</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= D03 ================= -->
+<section id="d03">
+  <div class="sec-head"><h2 class="sec-title">Decision 03 &middot; Conservatory</h2><span class="sec-note">theme status</span></div>
+  <div class="decision">
+    <div class="dec-head">
+      <span class="dec-no">03</span>
+      <div class="dec-q">
+        <h3>Is the daylight theme a product, or a courtesy?</h3>
+        <p>Use the toggle at the top of this page to judge it. Everything you have read so far re-renders.</p>
+      </div>
+    </div>
+    <div class="split">
+      <div class="pane pane-now">
+        <div class="pane-k"><b>Now</b><i></i></div>
+        <ul style="margin:0;padding-left:18px;color:var(--ink-2);font-size:13.5px;line-height:1.75">
+          <li>A token remap plus four override rules</li>
+          <li>Real care in the shadows and the segmented groove</li>
+          <li>No component was designed <em>in</em> it</li>
+          <li><strong>The OS setting is ignored.</strong> A phone in light mode opens a near-black app</li>
+        </ul>
+        <p class="hint" style="margin-top:14px">That last one is a live bug, not a preference:
+          <code style="font-family:var(--mono);color:var(--mint)">app.js</code> reads localStorage only, and
+          <code style="font-family:var(--mono);color:var(--mint)">prefers-color-scheme</code> is never consulted.</p>
+      </div>
+      <div class="pane pane-new">
+        <div class="pane-k"><b>Proposed</b><i></i></div>
+        <p class="hint" style="margin-bottom:14px">Two changes, separable:</p>
+        <div class="stack">
+          <div class="rung"><div class="rung-k" style="margin-bottom:6px">First load</div>
+            <p class="hint">Honour <code style="font-family:var(--mono);color:var(--mint)">prefers-color-scheme</code>
+              when nothing is stored. An explicit choice still wins forever after.</p></div>
+          <div class="rung"><div class="rung-k" style="margin-bottom:6px">Status</div>
+            <p class="hint">Promote to first-class: components may carry per-theme decisions where the ground
+              genuinely demands one, rather than inheriting a remap and hoping.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="call"><span class="call-k">The call</span><p>A plant app is opened at a sunny window. Respecting the OS setting is a bug fix either way; first-class status is the judgement.</p></div>
+    <div class="picks" data-dec="03">
+      <button class="pick" type="button" data-v="First-class + respect OS preference"><span class="pick-dot"></span>First-class + respect OS <span class="rec">rec</span></button>
+      <button class="pick" type="button" data-v="Courtesy remap, but respect OS preference"><span class="pick-dot"></span>Courtesy, but respect OS</button>
+      <button class="pick" type="button" data-v="Leave as is"><span class="pick-dot"></span>Leave as is</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= D04 ================= -->
+<section id="d04">
+  <div class="sec-head"><h2 class="sec-title">Decision 04 &middot; The mark</h2><span class="sec-note">identity</span></div>
+  <div class="decision">
+    <div class="dec-head">
+      <span class="dec-no">04</span>
+      <div class="dec-q">
+        <h3>Four drawings of the same idea, none of them the mark</h3>
+        <p>The tab, the home screen and the app interior each show a different sprig.</p>
+      </div>
+    </div>
+    <div class="split">
+      <div class="pane pane-now">
+        <div class="pane-k"><b>Now</b><i></i></div>
+        <div class="marks">
+          <div class="markcell"><div class="box">
+            <svg width="54" height="54" viewBox="0 0 100 100" fill="none" stroke="var(--emerald-glow)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/></svg>
+          </div><div class="cap">favicon<br>stroke 5</div></div>
+          <div class="markcell"><div class="box">
+            <svg width="54" height="54" viewBox="0 0 100 100" fill="none" stroke="var(--emerald-glow)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M50 80V42"/><path d="M50 60C37 60 30 51 30 39c13 0 20 9 20 21Z"/><path d="M50 48c13 0 20-9 20-21-13 0-20 9-20 21Z"/></svg>
+          </div><div class="cap">apple-touch<br>stroke 4</div></div>
+          <div class="markcell"><div class="box">
+            <svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="var(--emerald-glow)" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 4 13c0-5 4-9 16-9 0 12-4 16-9 16Z"/><path d="M4 20c4-4 7-6 11-7"/></svg>
+          </div><div class="cap">UI.icon('leaf')<br>in-app</div></div>
+          <div class="markcell"><div class="box">
+            <svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="var(--emerald-glow)" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-8"/><path d="M12 13c0-3 2-5 6-5 0 3-2 5-6 5Z"/><path d="M12 13c0-3-2-5-6-5 0 3 2 5 6 5Z"/></svg>
+          </div><div class="cap">UI.icon('sprout')<br>in-app</div></div>
+        </div>
+        <p class="hint" style="margin-top:14px">Two sprigs with different proportions, one unrelated leaf, one symmetric
+          sprout. <code style="font-family:var(--mono);color:var(--mint)">.brand-mark</code> is disabled outright —
+          the app is typography-only inside, while the tab shows a drawing that appears nowhere in it.</p>
+      </div>
+      <div class="pane pane-new">
+        <div class="pane-k"><b>Proposed</b><i></i></div>
+        <p class="hint" style="margin-bottom:14px">One mark, from the favicon's geometry: a stem with two opposed leaves,
+          alternating. Asymmetry is the point — it reads as growth rather than a logo of a plant.</p>
+        <div class="sizerow">
+          <div class="sizecell"><svg width="72" height="72" viewBox="0 0 100 100" fill="none" stroke="var(--emerald-glow)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/></svg><div class="cap">72px / sw 5</div></div>
+          <div class="sizecell"><svg width="40" height="40" viewBox="0 0 100 100" fill="none" stroke="var(--emerald-glow)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/></svg><div class="cap">40px / sw 6</div></div>
+          <div class="sizecell"><svg width="24" height="24" viewBox="0 0 100 100" fill="none" stroke="var(--emerald-glow)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"><path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/></svg><div class="cap">24px / sw 8</div></div>
+          <div class="sizecell"><svg width="16" height="16" viewBox="0 0 100 100" fill="none" stroke="var(--emerald-glow)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"><path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/></svg><div class="cap">16px / sw 10</div></div>
+        </div>
+        <p class="hint" style="margin-top:16px"><strong>Stroke does not scale linearly.</strong> Below 32px it thickens
+          to hold — the same reasoning as Italiana's 20px floor, applied to line rather than type.</p>
+        <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--hair)">
+          <div class="eyebrow" style="margin-bottom:11px">Lockup</div>
+          <div style="display:flex;align-items:center;gap:13px;flex-wrap:wrap">
+            <svg width="34" height="34" viewBox="0 0 100 100" fill="none" stroke="var(--emerald-glow)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/></svg>
+            <span style="font-family:var(--display);text-transform:uppercase;letter-spacing:.2em;text-indent:.2em;font-size:25px">SPROUT</span>
+          </div>
+          <p class="hint" style="margin-top:11px">Mark sits at the wordmark's cap height. Clear space on all sides equals
+            that cap height. Below 120px wide the wordmark is dropped and the mark stands alone.</p>
+        </div>
+      </div>
+    </div>
+    <div class="call"><span class="call-k">The call</span><p>Adopt one mark and derive favicon, install icon and in-app glyph from it. Retire the other three drawings.</p></div>
+    <div class="picks" data-dec="04">
+      <button class="pick" type="button" data-v="One mark, used everywhere including in-app"><span class="pick-dot"></span>One mark, used in-app too <span class="rec">rec</span></button>
+      <button class="pick" type="button" data-v="Unify the icons but keep the app typography-only"><span class="pick-dot"></span>Unify icons, app stays type-only</button>
+      <button class="pick" type="button" data-v="Leave as is"><span class="pick-dot"></span>Leave as is</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= D05 ================= -->
+<section id="d05">
+  <div class="sec-head"><h2 class="sec-title">Decision 05 &middot; &ldquo;evergreen&rdquo;</h2><span class="sec-note">nomenclature</span></div>
+  <div class="decision">
+    <div class="dec-head">
+      <span class="dec-no">05</span>
+      <div class="dec-q">
+        <h3>Tagline, descriptor, or part of the lockup?</h3>
+        <p>It is the only use of Sacramento in the product, and it currently sits in three places with three jobs.</p>
+      </div>
+    </div>
+    <div class="split">
+      <div class="pane pane-now">
+        <div class="pane-k"><b>Now</b><i></i></div>
+        <div class="stack">
+          <div class="rung"><div class="rung-k" style="margin-bottom:8px">Splash</div>
+            <div style="font-family:var(--display);text-transform:uppercase;letter-spacing:.22em;text-indent:.22em;font-size:26px">SPROUT</div>
+            <div class="script" style="font-size:22px;margin-top:-2px">evergreen</div></div>
+          <div class="rung"><div class="rung-k" style="margin-bottom:8px">Sidebar &middot; permanent</div>
+            <div style="font-family:var(--display);text-transform:uppercase;letter-spacing:.2em;text-indent:.2em;font-size:21px">SPROUT</div>
+            <div class="script" style="font-size:18px;margin-top:-5px">evergreen</div></div>
+          <div class="rung"><div class="rung-k" style="margin-bottom:8px">Browser tab</div>
+            <div class="mono" style="color:var(--ink-2);font-size:13px">Sprout — evergreen</div></div>
+        </div>
+        <p class="hint" style="margin-top:14px">A flourish that appears on every screen is no longer a flourish. In the
+          sidebar it sits above the navigation for the whole session.</p>
+      </div>
+      <div class="pane pane-new">
+        <div class="pane-k"><b>Proposed</b><i></i></div>
+        <p class="hint" style="margin-bottom:14px"><strong>Tagline.</strong> First impressions only — splash, install,
+          anywhere the product introduces itself. Removed from the persistent sidebar, where it competes with the nav
+          and spends its novelty.</p>
+        <div class="rung" style="margin-bottom:12px">
+          <div class="rung-k" style="margin-bottom:8px">Splash &middot; keeps it</div>
+          <div style="font-family:var(--display);text-transform:uppercase;letter-spacing:.22em;text-indent:.22em;font-size:26px">SPROUT</div>
+          <div class="script" style="font-size:22px;margin-top:-2px">evergreen</div>
+        </div>
+        <div class="rung">
+          <div class="rung-k" style="margin-bottom:8px">Sidebar &middot; mark + wordmark only</div>
+          <div style="display:flex;align-items:center;gap:11px">
+            <svg width="26" height="26" viewBox="0 0 100 100" fill="none" stroke="var(--emerald-glow)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/></svg>
+            <span style="font-family:var(--display);text-transform:uppercase;letter-spacing:.2em;text-indent:.2em;font-size:21px">SPROUT</span>
+          </div>
+        </div>
+        <p class="hint" style="margin-top:14px">Keeps the script rare, which is the only thing that makes it worth having.</p>
+      </div>
+    </div>
+    <div class="call"><span class="call-k">The call</span><p>Tagline, not lockup. Scarcity is the whole value of a single script face.</p></div>
+    <div class="picks" data-dec="05">
+      <button class="pick" type="button" data-v="Tagline — first impressions only"><span class="pick-dot"></span>Tagline, first impressions only <span class="rec">rec</span></button>
+      <button class="pick" type="button" data-v="Permanent part of the lockup"><span class="pick-dot"></span>Part of the lockup</button>
+      <button class="pick" type="button" data-v="Descriptor, set in the sans"><span class="pick-dot"></span>Descriptor in the sans</button>
+      <button class="pick" type="button" data-v="Retire it"><span class="pick-dot"></span>Retire it</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= D06 ================= -->
+<section id="d06">
+  <div class="sec-head"><h2 class="sec-title">Decision 06 &middot; Plant tiles</h2><span class="sec-note">most-seen surface</span></div>
+  <div class="decision">
+    <div class="dec-head">
+      <span class="dec-no">06</span>
+      <div class="dec-q">
+        <h3>The hash promises identity and delivers near-identical squares</h3>
+        <p>This is what a new user sees most of — every plant without a photo.</p>
+      </div>
+    </div>
+    <div class="split">
+      <div class="pane pane-now">
+        <div class="pane-k"><b>Now</b><i></i></div>
+        <p class="hint" style="margin-bottom:12px">Name hashed to 100–143&deg;, 26% saturation, 11% lightness. Eight real species:</p>
+        <div class="tiles" id="tiles-now"></div>
+        <p class="hint" style="margin-top:14px">Forty-four hue steps compressed into a band that narrow, at that
+          saturation and lightness, is a difference you have to be told about. The colour is also defined in
+          <code style="font-family:var(--mono);color:var(--mint)">ui.js</code>, outside the token system.</p>
+      </div>
+      <div class="pane pane-new">
+        <div class="pane-k"><b>Proposed</b><i></i></div>
+        <p class="hint" style="margin-bottom:12px">Six hand-picked tints, assigned by the same hash. Same mechanism,
+          differences you can actually see — and the set lives in the tokens.</p>
+        <div class="tiles" id="tiles-new"></div>
+        <p class="hint" style="margin-top:14px">Still within the house greens, still low-saturation, still one material
+          lit from one side. The band simply stops pretending to hold more information than it can.</p>
+      </div>
+    </div>
+    <div class="call"><span class="call-k">The call</span><p>Keep the idea, fix the execution. A fixed set is legible, nameable and belongs in the design system rather than in a view helper.</p></div>
+    <div class="picks" data-dec="06">
+      <button class="pick" type="button" data-v="Fixed set of six tints, hash-assigned"><span class="pick-dot"></span>Fixed set of six tints <span class="rec">rec</span></button>
+      <button class="pick" type="button" data-v="Keep the hash as is"><span class="pick-dot"></span>Keep the hash</button>
+      <button class="pick" type="button" data-v="Tint by light requirement — make it meaningful"><span class="pick-dot"></span>Tint by light requirement</button>
+      <button class="pick" type="button" data-v="Drop the tint, one neutral plate"><span class="pick-dot"></span>Drop the tint entirely</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= D07 ================= -->
+<section id="d07">
+  <div class="sec-head"><h2 class="sec-title">Decision 07 &middot; Voice</h2><span class="sec-note">~1,500 strings</span></div>
+  <div class="decision">
+    <div class="dec-head">
+      <span class="dec-no">07</span>
+      <div class="dec-q">
+        <h3>The app speaks in three grammatical persons</h3>
+        <p>Not a matter of taste — the same question is asked two different ways on two screens.</p>
+      </div>
+    </div>
+    <div class="split">
+      <div class="pane pane-now">
+        <div class="pane-k"><b>Now</b><i></i></div>
+        <div class="quote">Shall I shorten watering intervals by 2 days across your greenhouse?
+          <span class="qs">first person singular &middot; weather.js &times;3</span></div>
+        <div class="quote">What should we call you?
+          <span class="qs">first person plural &middot; welcome sheet</span></div>
+        <div class="quote">What should Sprout call you?
+          <span class="qs">third person &middot; profile &middot; the same question</span></div>
+        <p class="hint" style="margin-top:16px">Beneath that, the register splits three ways too: care sheets are long
+          and clinical, interface copy is clipped and dry, greetings are warm. And it has a habit of telling you off —
+          <em>&ldquo;Guessing here will only give you a confident wrong answer.&rdquo;</em></p>
+      </div>
+      <div class="pane pane-new">
+        <div class="pane-k"><b>Proposed</b><i></i></div>
+        <p class="hint" style="margin-bottom:14px">Three candidates, each writing the welcome paragraph and then the
+          weather nudge — the place where &ldquo;Shall I&rdquo; currently lives.</p>
+
+        <div class="voice">
+          <div class="voice-k"><span class="voice-n">A &middot; The quiet expert</span><span class="voice-t">second person &middot; imperative</span></div>
+          <p>Tell Sprout what you grow and where it lives. It works out when each plant needs water — from the species'
+            real requirements, adjusted for your pot, your light and the season.</p>
+          <p class="second">Ten dry days ahead, averaging 26&deg;C. Warm dry air pulls moisture from soil faster.
+            Shorten watering by two days?</p>
+        </div>
+
+        <div class="voice">
+          <div class="voice-k"><span class="voice-n">B &middot; The field notebook</span><span class="voice-t">current voice, person fixed &middot; tightened</span></div>
+          <p>A home for your houseplants. Tell Sprout what you have and where it lives, and it works out the watering —
+            from what the species actually wants, not a fixed reminder.</p>
+          <p class="second">Ten days without meaningful rain, and highs averaging 26&deg;C. Soil will dry faster than
+            usual. Shorten watering by two days?</p>
+        </div>
+
+        <div class="voice">
+          <div class="voice-k"><span class="voice-n">C &middot; The plain instrument</span><span class="voice-t">functional &middot; no character</span></div>
+          <p>Add your plants and rooms. Sprout calculates watering intervals from species data, pot size, room light
+            and season.</p>
+          <p class="second">Forecast: 10 dry days, average high 26&deg;C. Recommended: shorten watering intervals by 2 days.</p>
+        </div>
+
+        <p class="hint" style="margin-top:16px">All three drop <em>I</em> and <em>we</em>. Sprout is named only where the
+          product genuinely has to be. The question mark stays — asking is right; sounding like a person asking is not.</p>
+      </div>
+    </div>
+    <div class="call"><span class="call-k">The call</span><p><strong>B.</strong> The existing voice is the app's best asset and C throws it away. Keep the character, fix the person, cut the length. Stage the rewrite: interface copy, then diagnosis, then the species data.</p></div>
+    <div class="picks" data-dec="07">
+      <button class="pick" type="button" data-v="Voice B — field notebook, person fixed"><span class="pick-dot"></span>B &middot; Field notebook <span class="rec">rec</span></button>
+      <button class="pick" type="button" data-v="Voice A — quiet expert"><span class="pick-dot"></span>A &middot; Quiet expert</button>
+      <button class="pick" type="button" data-v="Voice C — plain instrument"><span class="pick-dot"></span>C &middot; Plain instrument</button>
+      <button class="pick" type="button" data-v="None of these — describe a different voice"><span class="pick-dot"></span>None &mdash; I'll describe it</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= D08 ================= -->
+<section id="d08">
+  <div class="sec-head"><h2 class="sec-title">Decision 08 &middot; Photo ratios</h2><span class="sec-note">three in play</span></div>
+  <div class="decision">
+    <div class="dec-head">
+      <span class="dec-no">08</span>
+      <div class="dec-q">
+        <h3>The same photograph is cropped three ways</h3>
+        <p>Whatever the owner framed, at least one placement fights it.</p>
+      </div>
+    </div>
+    <div class="split">
+      <div class="pane pane-now">
+        <div class="pane-k"><b>Now</b><i></i></div>
+        <div class="ratios">
+          <div class="ratio"><div class="frame" style="aspect-ratio:3/2"><span class="eyebrow">Hero</span></div><div class="cap">3 : 2</div></div>
+          <div class="ratio" style="flex-basis:104px"><div class="frame" style="aspect-ratio:4/5"><span class="eyebrow">Card</span></div><div class="cap">4 : 5</div></div>
+          <div class="ratio" style="flex-basis:92px"><div class="frame" style="aspect-ratio:1"><span class="eyebrow">Grid</span></div><div class="cap">1 : 1</div></div>
+        </div>
+        <p class="hint" style="margin-top:14px">3:2 landscape sits on the hero — the largest, most important placement,
+          and the one that looks emptiest when there is no photograph.</p>
+      </div>
+      <div class="pane pane-new">
+        <div class="pane-k"><b>Proposed</b><i></i></div>
+        <div class="ratios">
+          <div class="ratio" style="flex-basis:130px"><div class="frame" style="aspect-ratio:4/5"><span class="eyebrow">Subject</span></div><div class="cap">4 : 5 &middot; hero + card</div></div>
+          <div class="ratio" style="flex-basis:92px"><div class="frame" style="aspect-ratio:1"><span class="eyebrow">Grid</span></div><div class="cap">1 : 1 &middot; grid + thumb</div></div>
+        </div>
+        <p class="hint" style="margin-top:16px">Plants are vertical. 4:5 wherever the plant is the subject, 1:1 for
+          grids and thumbnails. One crop to shoot for, one to scan.</p>
+        <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--hair)">
+          <div class="eyebrow" style="margin-bottom:9px">Photo direction</div>
+          <ul style="margin:0;padding-left:18px;color:var(--ink-2);font-size:13px;line-height:1.75">
+            <li>Lit from one side — matches &ldquo;light is a material&rdquo;</li>
+            <li>Plant fills the frame; no room context</li>
+            <li>Uncluttered ground, no props</li>
+            <li>Shot at the plant's own height, not looking down</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="call"><span class="call-k">The call</span><p>Two ratios. Retire 3:2 and give the hero the portrait crop the subject actually is.</p></div>
+    <div class="picks" data-dec="08">
+      <button class="pick" type="button" data-v="Two ratios — 4:5 subject, 1:1 grid"><span class="pick-dot"></span>Two: 4:5 and 1:1 <span class="rec">rec</span></button>
+      <button class="pick" type="button" data-v="One ratio everywhere — 4:5"><span class="pick-dot"></span>One: 4:5 everywhere</button>
+      <button class="pick" type="button" data-v="Keep all three, define the canonical crop"><span class="pick-dot"></span>Keep three, define canonical</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= COMPONENTS ================= -->
+<section id="components">
+  <div class="sec-head"><h2 class="sec-title">Component reference</h2><span class="sec-note">as built</span></div>
+  <div class="stack">
+    <div class="pane" style="border:1px solid var(--hair);border-radius:var(--r-lg)">
+      <div class="pane-k"><b style="color:var(--ink-4)">Pills</b><i></i></div>
+      <div class="row-wrap">
+        <span class="pill">Pet safe</span><span class="pill pill-grey">Living Room</span>
+        <span class="pill pill-sun">Due today</span><span class="pill pill-gold">Not fed yet</span>
+        <span class="pill pill-terra">Toxic</span><span class="pill pill-terra-hi">Highly toxic</span>
+      </div>
+    </div>
+    <div class="pane" style="border:1px solid var(--hair);border-radius:var(--r-lg)">
+      <div class="pane-k"><b style="color:var(--ink-4)">Buttons</b><i></i></div>
+      <div class="row-wrap">
+        <button class="btn" type="button">Water now</button>
+        <button class="btn btn-soft" type="button">Log a feed</button>
+        <button class="btn btn-ghost" type="button">Cancel</button>
+        <button class="btn btn-danger" type="button">Delete room</button>
+      </div>
+    </div>
+    <div class="pane" style="border:1px solid var(--hair);border-radius:var(--r-lg)">
+      <div class="pane-k"><b style="color:var(--ink-4)">Status beads</b><i></i></div>
+      <div class="ladder">
+        <div class="rung"><div class="rung-top"><span class="bead" style="background:var(--emerald-glow);box-shadow:0 0 0 3px rgba(63,190,139,.15)"></span><span class="rung-k">Water in 8 days</span></div><div class="rung-v">.drop-ok</div></div>
+        <div class="rung"><div class="rung-top"><span class="bead" style="background:var(--sun);box-shadow:0 0 0 3px rgba(224,178,85,.15)"></span><span class="rung-k">In 2 days</span></div><div class="rung-v">.drop-due &middot; --sun</div></div>
+        <div class="rung"><div class="rung-top"><span class="bead" style="background:var(--gold);box-shadow:0 0 0 3px rgba(200,169,107,.17)"></span><span class="rung-k">Today</span></div><div class="rung-v">.drop-now &middot; --gold</div></div>
+        <div class="rung"><div class="rung-top"><span class="bead" style="background:var(--terra);box-shadow:0 0 0 3px rgba(208,138,98,.17)"></span><span class="rung-k">3 days late</span></div><div class="rung-v">.drop-over</div></div>
+      </div>
+      <p class="hint" style="margin-top:12px">The two middle beads are Decision 01 in its natural habitat.</p>
+    </div>
+    <div class="pane" style="border:1px solid var(--hair);border-radius:var(--r-lg)">
+      <div class="pane-k"><b style="color:var(--ink-4)">Monograms</b><i></i></div>
+      <div class="row-wrap" style="gap:12px">
+        <span style="display:inline-grid;place-items:center;width:46px;height:46px;border:1px solid var(--hair-2);border-radius:var(--r-sm);background:radial-gradient(110% 90% at 30% 15%,rgba(63,190,139,.11),transparent 70%);font-family:var(--display);font-size:22px;color:var(--ink-2)">L</span>
+        <span style="display:inline-grid;place-items:center;width:46px;height:46px;border:1px solid var(--hair-2);border-radius:var(--r-sm);background:radial-gradient(110% 90% at 30% 15%,rgba(63,190,139,.11),transparent 70%);font-family:var(--display);font-size:22px;color:var(--ink-2)">B</span>
+        <span style="display:inline-grid;place-items:center;width:46px;height:46px;border:1px solid var(--hair-2);border-radius:var(--r-sm);background:radial-gradient(110% 90% at 30% 15%,rgba(63,190,139,.11),transparent 70%);font-family:var(--display);font-size:22px;color:var(--ink-2)">K</span>
+      </div>
+      <p class="hint" style="margin-top:11px">Rooms are identified by their initial in the display face. No pictograms.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SUMMARY ================= -->
+<section id="summary">
+  <div class="sec-head"><h2 class="sec-title">Your decisions</h2><span class="sec-note" id="sum-count">0 of 8</span></div>
+  <div class="summary">
+    <div id="sum-body"><p class="hint">Nothing chosen yet. Pick an option in each decision above and it collects here.</p></div>
+    <div class="row-wrap" style="margin-top:18px">
+      <button class="btn btn-soft" type="button" id="reset">Clear all</button>
+    </div>
+    <p class="hint" style="margin-top:14px">Choices are remembered in this browser only. Read them back to me and I'll
+      implement — nothing here touches the app on its own.</p>
+  </div>
+</section>
+
+</div>
+
+<script>
+(function () {
+  var LABELS = {
+    '01':'Yellows','02':'Urgency / hazard','03':'Conservatory','04':'The mark',
+    '05':'"evergreen"','06':'Plant tiles','07':'Voice','08':'Photo ratios'
+  };
+  var picks = {};
+
+  try { picks = JSON.parse(localStorage.getItem('sprout.brand.v1') || '{}') || {}; } catch (e) { picks = {}; }
+
+  /* ---------- Theme ---------- */
+  var vir = document.getElementById('t-vir'), con = document.getElementById('t-con'),
+      palTheme = document.getElementById('pal-theme');
+
+  function setTheme(name) {
+    document.documentElement.setAttribute('data-sprout', name);
+    var isCon = name === 'conservatory';
+    vir.setAttribute('aria-pressed', String(!isCon));
+    con.setAttribute('aria-pressed', String(isCon));
+    palTheme.textContent = isCon ? 'Conservatory' : 'Viridium';
+    drawSwatches(isCon);
+    try { localStorage.setItem('sprout.brand.theme', name); } catch (e) {}
+  }
+  vir.addEventListener('click', function () { setTheme('viridium'); });
+  con.addEventListener('click', function () { setTheme('conservatory'); });
+
+  /* ---------- Swatches ----------
+     Values are listed literally rather than computed, so the page states what
+     the stylesheet states and a drift between them is visible. */
+  var PAL = {
+    viridium: [
+      ['--bg-1','#0A1410','page'],['--bg-2','#0E1B15','surface'],['--bg-3','#13251D','raised'],
+      ['--ink','#F3F6F1','primary ink'],['--ink-3','rgba(206,226,214,.50)','quiet ink'],
+      ['--emerald','#1F6B4C','deep'],['--emerald-lit','#2F9A70','button'],['--emerald-glow','#3FBE8B','accent'],
+      ['--mint','#9FD3BE','glyphs'],['--mint-2','#C9E7D9','pill ink'],
+      ['--gold','#C8A96B','champagne'],['--sun','#E0B255','second yellow'],
+      ['--terra','#D08A62','terracotta'],['--hair-2','rgba(214,237,226,.17)','hairline']
+    ],
+    conservatory: [
+      ['--bg-1','#F7F3EC','page'],['--bg-2','#FFFCF7','surface'],['--bg-3','#FBF6EE','raised'],
+      ['--ink','#13231B','primary ink'],['--ink-3','#5C6F66','quiet ink'],
+      ['--emerald','#1B6045','deep'],['--emerald-lit','#237A57','button'],['--emerald-glow','#1B6045','accent'],
+      ['--mint','#2C6B51','glyphs'],['--mint-2','#1D5240','pill ink'],
+      ['--gold','#9C7C35','champagne'],['--sun','#A9761B','second yellow'],
+      ['--terra','#A0552C','terracotta'],['--hair-2','rgba(28,54,43,.22)','hairline']
+    ]
+  };
+
+  function drawSwatches(isCon) {
+    var list = PAL[isCon ? 'conservatory' : 'viridium'], host = document.getElementById('swatches');
+    host.innerHTML = list.map(function (s) {
+      return '<div class="sw"><div class="sw-chip" style="background:' + s[1] + '"></div>' +
+             '<div class="sw-b"><div class="sw-n">' + s[0] + '</div>' +
+             '<div class="sw-h">' + s[1] + '</div>' +
+             '<div class="sw-h" style="text-transform:none">' + s[2] + '</div></div></div>';
+    }).join('');
+  }
+
+  /* ---------- Tiles ----------
+     The current hash, reproduced exactly from UI.tintVars, beside a fixed set. */
+  var SPECIES = ['Monstera','Golden Pothos','Snake Plant','ZZ Plant','Spider Plant','Boston Fern','Jade Plant','Peace Lily'];
+
+  function hashOf(str) {
+    var h = 0;
+    for (var i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) % 1021;
+    return h;
+  }
+
+  var FIXED = [
+    ['#1E4A38','#16382A'],['#2A4A22','#1F381A'],['#153F3C','#0F2F2D'],
+    ['#384A1C','#2A3715'],['#1B3D48','#142E36'],['#3A3520','#2B2718']
+  ];
+  var FIXED_LIGHT = [
+    ['#DCEBE2','#CBDFD3'],['#E2EAD3','#D2DCC0'],['#D6E8E6','#C3DAD7'],
+    ['#E6EAD2','#D6DCBE'],['#D8E4EA','#C5D5DE'],['#E9E5D6','#DAD4C0']
+  ];
+
+  function drawTiles() {
+    var isCon = document.documentElement.getAttribute('data-sprout') === 'conservatory';
+
+    document.getElementById('tiles-now').innerHTML = SPECIES.map(function (n) {
+      var h = hashOf(n), hue = 100 + (h % 44), lift = h % 7;
+      var sat = isCon ? 21 : 26, lum = (isCon ? 89 : 11) + lift;
+      var sat2 = isCon ? 25 : 22, lum2 = isCon ? 81 : 8;
+      var bg = 'linear-gradient(152deg, hsl(' + hue + ' ' + sat + '% ' + lum + '%), hsl(' + (hue + 22) + ' ' + sat2 + '% ' + lum2 + '%))';
+      return '<div><div class="tile" style="background:' + bg + '">' +
+             '<span class="tile-t">' + n.charAt(0) + '</span></div>' +
+             '<div class="tile-c">' + hue + '&deg;</div></div>';
+    }).join('');
+
+    var set = isCon ? FIXED_LIGHT : FIXED;
+    document.getElementById('tiles-new').innerHTML = SPECIES.map(function (n) {
+      var pair = set[hashOf(n) % set.length];
+      var bg = 'linear-gradient(152deg, ' + pair[0] + ', ' + pair[1] + ')';
+      return '<div><div class="tile" style="background:' + bg + '">' +
+             '<span class="tile-t">' + n.charAt(0) + '</span></div>' +
+             '<div class="tile-c">' + pair[0] + '</div></div>';
+    }).join('');
+  }
+
+  var _setTheme = setTheme;
+  setTheme = function (n) { _setTheme(n); drawTiles(); };
+
+  /* ---------- Picks ---------- */
+  function render() {
+    document.querySelectorAll('.picks').forEach(function (group) {
+      var id = group.getAttribute('data-dec');
+      group.querySelectorAll('.pick').forEach(function (b) {
+        b.setAttribute('aria-pressed', String(picks[id] === b.getAttribute('data-v')));
+      });
+      var badge = document.getElementById('s-' + id);
+      if (badge) {
+        badge.textContent = picks[id] ? 'Chosen' : 'Open';
+        badge.setAttribute('data-set', picks[id] ? '1' : '0');
+      }
+    });
+
+    var keys = Object.keys(picks).sort();
+    document.getElementById('sum-count').textContent = keys.length + ' of 8';
+    var body = document.getElementById('sum-body');
+    if (!keys.length) {
+      body.innerHTML = '<p class="hint">Nothing chosen yet. Pick an option in each decision above and it collects here.</p>';
+      return;
+    }
+    body.innerHTML = keys.map(function (k) {
+      return '<div class="sumrow"><b>' + k + '</b><span>' + LABELS[k] + ' &mdash; ' + picks[k] + '</span></div>';
+    }).join('');
+  }
+
+  document.querySelectorAll('.picks').forEach(function (group) {
+    group.addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('.pick') : null;
+      if (!b) return;
+      var id = group.getAttribute('data-dec'), v = b.getAttribute('data-v');
+      if (picks[id] === v) delete picks[id]; else picks[id] = v;
+      try { localStorage.setItem('sprout.brand.v1', JSON.stringify(picks)); } catch (err) {}
+      render();
+    });
+  });
+
+  document.getElementById('reset').addEventListener('click', function () {
+    picks = {};
+    try { localStorage.removeItem('sprout.brand.v1'); } catch (e) {}
+    render();
+  });
+
+  /* ---------- Boot ---------- */
+  var stored = 'viridium';
+  try { stored = localStorage.getItem('sprout.brand.theme') || 'viridium'; } catch (e) {}
+  setTheme(stored === 'conservatory' ? 'conservatory' : 'viridium');
+  render();
+})();
+</script>
