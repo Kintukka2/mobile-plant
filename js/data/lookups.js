@@ -200,19 +200,32 @@ window.LOOKUPS = (function () {
   }
 
   /* ---------- Room presets ---------- */
+  /* Each preset suggests its own mark, so picking "Bathroom" from the quick
+     start fills the icon in too and the reader only overrules it if they
+     want something else. */
   const ROOM_PRESETS = [
-    { name: 'Living Room' },
-    { name: 'Bedroom' },
-    { name: 'Kitchen' },
-    { name: 'Bathroom' },
-    { name: 'Study' },
-    { name: 'Hallway' },
-    { name: 'Balcony' },
-    { name: 'Sunroom' },
-    { name: 'Dining Room' },
-    { name: 'Entryway' },
-    { name: 'Patio' },
-    { name: 'Office' }
+    { name: 'Living Room', icon: 'sofa' },
+    { name: 'Bedroom',     icon: 'bed' },
+    { name: 'Kitchen',     icon: 'hob' },
+    { name: 'Bathroom',    icon: 'bath' },
+    { name: 'Study',       icon: 'book' },
+    { name: 'Hallway',     icon: 'stairs' },
+    { name: 'Balcony',     icon: 'railing' },
+    { name: 'Sunroom',     icon: 'glasshouse' },
+    { name: 'Dining Room', icon: 'cutlery' },
+    { name: 'Entryway',    icon: 'door' },
+    { name: 'Patio',       icon: 'parasol' },
+    { name: 'Office',      icon: 'monitor' }
+  ];
+
+  /* What the room icon picker offers. The twelve above, then the five light
+     levels — a room is as often "the bright one" as it is a named function,
+     and those glyphs already exist for LIGHT, so a second drawing of a sun
+     would be one more thing to keep in step for no gain. */
+  const ROOM_ICONS = [
+    'sofa', 'bed', 'hob', 'bath', 'book', 'stairs',
+    'railing', 'glasshouse', 'cutlery', 'door', 'parasol', 'monitor',
+    'sun', 'cloudSun', 'cloud', 'moon', 'sunOff'
   ];
 
 
@@ -318,7 +331,7 @@ window.LOOKUPS = (function () {
   return {
     LIGHT, ASPECTS, ASPECT_NAMES, aspectProfile, aspectLabel,
     hemisphereFromTimeZone: hemisphereFromTimeZone,
-    ROOM_PRESETS, HUMIDITY, DIFFICULTY, TOX, TASKS, LOG_KINDS,
+    ROOM_PRESETS, ROOM_ICONS, HUMIDITY, DIFFICULTY, TOX, TASKS, LOG_KINDS,
     season, SEASON_META, POT_MATERIALS, DRAINAGE
   };
 })();

@@ -35,6 +35,13 @@ window.ViewProfile = (function () {
     return 2;   /* nothing stored — rest in the middle */
   }
 
+  /* The thumb's position as a percentage of the rail, for the filled part of
+     the track. The ends land exactly on 0 and 100 so the fill never stops a
+     pixel short of a thumb parked at either end. */
+  function expFill(index) {
+    return Math.round(((index - 1) / (EXPERIENCE.length - 1)) * 100) + '%';
+  }
+
   function expReading(key) {
     for (let i = 0; i < EXPERIENCE.length; i++) {
       if (EXPERIENCE[i].key === key) return EXPERIENCE[i].label;
@@ -253,8 +260,10 @@ window.ViewProfile = (function () {
         '<div class="slider-value' + (prof.experience ? '' : ' is-unset') + '" id="p-exp-value">' +
           UI.esc(expReading(prof.experience)) +
         '</div>' +
-        '<input class="slider" type="range" id="p-exp" min="1" max="3" step="1" ' +
-          'value="' + expIndex + '" aria-label="How are you with plants?" ' +
+        '<input class="slider' + (prof.experience ? '' : ' is-unset') + '" type="range" id="p-exp" ' +
+          'min="1" max="3" step="1" value="' + expIndex + '" ' +
+          'style="--fill:' + expFill(expIndex) + '" ' +
+          'aria-label="How are you with plants?" ' +
           'aria-valuetext="' + UI.attr(expReading(prof.experience)) + '">' +
         '<div class="slider-ends"><span>Beginner</span><span>Experienced</span></div>' +
       '</div>' +
@@ -419,6 +428,8 @@ window.ViewProfile = (function () {
         Store.updateProfile({ experience: picked.key });
         expValue.textContent = picked.label;
         expValue.classList.remove('is-unset');
+        exp.classList.remove('is-unset');
+        exp.style.setProperty('--fill', expFill(Number(exp.value)));
         exp.setAttribute('aria-valuetext', picked.label);
       });
     }

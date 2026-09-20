@@ -69,7 +69,7 @@ window.ViewPlant = (function () {
     const age = UI.fromISO(p.acquired);
 
     const pills = [];
-    if (room) pills.push('<span class="pill pill-grey">' + UI.monogram(room.name, 'mono-sm') +
+    if (room) pills.push('<span class="pill pill-grey">' + UI.roomMark(room, 'mono-sm') +
                          UI.esc(room.name) + '</span>');
     if (sp) pills.push(UI.pill(LOOKUPS.DIFFICULTY[sp.difficulty].label, 'grey'));
     if (match) {

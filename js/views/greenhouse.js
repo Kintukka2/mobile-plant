@@ -89,7 +89,7 @@ window.ViewGreenhouse = (function () {
     const room = plant.roomId ? Store.getRoom(plant.roomId) : null;
 
     const foot = context === 'room' ? '' : (room
-      ? '<span class="pill pill-grey">' + UI.monogram(room.name, 'mono-sm') +
+      ? '<span class="pill pill-grey">' + UI.roomMark(room, 'mono-sm') +
           UI.esc(room.name) + '</span>'
       : UI.pill('No room', 'grey'));
 
@@ -116,7 +116,7 @@ window.ViewGreenhouse = (function () {
 
     return '<button class="rcard" data-room="' + UI.attr(room.id) + '">' +
       '<div class="rcard-top">' +
-        UI.monogram(room.name) +
+        UI.roomMark(room) +
         '<div style="min-width:0">' +
           '<div class="rcard-name">' + UI.esc(room.name) + '</div>' +
           '<div class="rcard-sub">' + UI.esc(bits.join(' · ')) + '</div>' +
@@ -391,7 +391,21 @@ window.ViewGreenhouse = (function () {
        the chips were filling in — visible without scrolling. */
     const presetOpts = '<option value="">Choose a room type…</option>' +
       LOOKUPS.ROOM_PRESETS.map(function (p) {
-        return '<option value="' + UI.attr(p.name) + '">' + UI.esc(p.name) + '</option>';
+        return '<option value="' + UI.attr(p.name) + '" data-icon="' + UI.attr(p.icon) + '">' +
+          UI.esc(p.name) + '</option>';
+      }).join('');
+
+    /* The picker, plus a first cell that means "no icon" — which is not an
+       absence but a choice: the room wears its initial in the display face,
+       which is what every room looked like before this existed and still
+       reads well in a strip. */
+    const chosenIcon = editing ? (room.icon || '') : '';
+    const iconCells =
+      '<button type="button" class="ico-cell' + (chosenIcon ? '' : ' is-on') + '" data-icon="" ' +
+        'aria-label="No icon — use the initial">' + UI.monogram(editing ? room.name : 'A') + '</button>' +
+      LOOKUPS.ROOM_ICONS.map(function (k) {
+        return '<button type="button" class="ico-cell' + (chosenIcon === k ? ' is-on' : '') + '" ' +
+          'data-icon="' + k + '" aria-label="' + k + '">' + UI.icon(k) + '</button>';
       }).join('');
 
     /* The '— bright' half of each option is a claim, and the claim inverts
@@ -469,13 +483,24 @@ window.ViewGreenhouse = (function () {
     }).join('');
 
     const body =
-      (editing ? '' :
-        '<label class="field"><span class="label">Quick start</span>' +
-          '<select class="select" id="r-preset">' + presetOpts + '</select></label>') +
+      (editing
+        ? '<label class="field"><span class="label">Room name</span>' +
+            '<input class="input" id="r-name" maxlength="40" placeholder="Living Room" ' +
+            'value="' + UI.attr(room.name) + '"></label>'
+        /* The preset is a shortcut for filling the name in, so the two
+           belong side by side — separated, the select read as a question of
+           its own that had to be answered before the name could be. */
+        : '<div class="name-row">' +
+            '<label class="field"><span class="label">Quick start</span>' +
+              '<select class="select" id="r-preset">' + presetOpts + '</select></label>' +
+            '<label class="field"><span class="label">Room name</span>' +
+              '<input class="input" id="r-name" maxlength="40" placeholder="Living Room" ' +
+              'value=""></label>' +
+          '</div>') +
 
-      '<label class="field"><span class="label">Room name</span>' +
-        '<input class="input" id="r-name" maxlength="40" placeholder="Living Room" ' +
-        'value="' + UI.attr(editing ? room.name : '') + '"></label>' +
+      '<div class="field"><span class="label">Icon</span>' +
+        '<div class="ico-grid" id="r-icons">' + iconCells + '</div>' +
+      '</div>' +
 
       /* A div, not a label. The hemisphere chips live inside this field, and
          a label wrapping them would hand every chip tap to the select as
@@ -536,14 +561,50 @@ window.ViewGreenhouse = (function () {
          the select claiming Hallway is stale — it was still sitting there
          selected, describing a room that no longer existed. Rather than
          track edits, the two are compared: whatever the name says wins. */
+      /* The chosen icon lives here rather than on a hidden input: it is read
+         once on save and nothing else needs it in the DOM. */
+      let iconValue = chosenIcon;
+      const iconGrid = root.querySelector('#r-icons');
+
+      function selectIcon(key) {
+        iconValue = key || '';
+        iconGrid.querySelectorAll('.ico-cell').forEach(function (c) {
+          c.classList.toggle('is-on', (c.getAttribute('data-icon') || '') === iconValue);
+        });
+      }
+      iconGrid.addEventListener('click', function (e) {
+        const cell = e.target.closest('.ico-cell');
+        if (cell) selectIcon(cell.getAttribute('data-icon'));
+      });
+
       const presetEl = root.querySelector('#r-preset');
       if (presetEl) {
+        /* "Choose a room type…" is an instruction, and it kept standing
+           there after the reader had typed a name — reading as a step still
+           owed rather than one skipped on purpose. Once the name is their
+           own, the placeholder says Custom instead: the same empty value,
+           described as the decision it now is. */
+        function syncPresetLabel() {
+          presetEl.options[0].textContent = nameEl.value.trim()
+            ? 'Custom'
+            : 'Choose a room type…';
+        }
+
         presetEl.addEventListener('change', function () {
-          if (presetEl.value) nameEl.value = presetEl.value;
+          if (!presetEl.value) return;
+          nameEl.value = presetEl.value;
+          const opt = presetEl.options[presetEl.selectedIndex];
+          const ico = opt && opt.getAttribute('data-icon');
+          if (ico) selectIcon(ico);
+          syncPresetLabel();
         });
+
         nameEl.addEventListener('input', function () {
           if (presetEl.value && nameEl.value.trim() !== presetEl.value) presetEl.value = '';
+          syncPresetLabel();
         });
+
+        syncPresetLabel();
       }
 
       const aspectNote = root.querySelector('#r-aspect-note');
@@ -596,6 +657,7 @@ window.ViewGreenhouse = (function () {
         if (!name) { UI.toast('Give the room a name first', 'warn'); nameEl.focus(); return; }
         const data = {
           name: name,
+          icon: iconValue || null,
           light: lightEl.value || null,
           aspect: aspectEl.value || null,
           humid: root.querySelector('#r-humid').value || null,

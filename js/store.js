@@ -122,10 +122,14 @@ window.Store = (function () {
     const room = {
       id: uid('room'),
       name: data.name || 'New Room',
-      /* No emoji field. A room is identified by its initial set in the
-         display face — see UI.monogram — so there is nothing to store and
-         nothing for the user to pick. The old potted-plant default meant
-         every room in a new greenhouse looked identical anyway. */
+      /* A key into UI's own glyph table, never an emoji. The old emoji field
+         was removed because a potted-plant default made every room in a new
+         greenhouse look identical, and the host OS drew a different picture
+         on every device. These are drawn in the app's own monoline hand, so
+         a strip of them reads as one set — and null still means the initial
+         in the display face, which is the honest fallback for a room the
+         reader has not characterised. */
+      icon: data.icon || null,
       light: data.light || null,
       aspect: data.aspect || null,
       humid: data.humid || null,
