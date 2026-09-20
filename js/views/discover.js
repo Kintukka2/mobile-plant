@@ -378,7 +378,7 @@ window.ViewSpecies = (function () {
           '<span class="section-note">your rooms</span></div>' +
         '<div class="stack" style="gap:8px">' + rooms.map(function (r) {
           return '<div class="dx-opt" style="margin:0;cursor:default">' +
-            UI.monogram(r.room.name) +
+            UI.roomMark(r.room) +
             '<span style="min-width:0">' +
               '<span class="dx-opt-t">' + UI.esc(r.room.name) + '</span>' +
               '<span class="dx-opt-d">' + (r.score >= 4 ? 'Ideal light for it' : 'It would cope here') +

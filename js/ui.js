@@ -22,6 +22,31 @@ window.UI = (function () {
   /* ---------- Icons (inline SVG, no dependencies) ---------- */
   const PATHS = {
     home:      '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/>',
+
+    /* --- Room marks ---
+       A room can wear one of these instead of its initial. Same 24x24
+       artboard, same 1.35 stroke, same round joins as everything above:
+       drawn as furniture seen straight on, so a strip of them reads as one
+       set rather than twelve separate pictures. Two or three paths each —
+       at 22px inside the room plate, a fourth stops being legible and starts
+       being texture. */
+    sofa:      '<path d="M5 12V8.5A2.5 2.5 0 0 1 7.5 6h9A2.5 2.5 0 0 1 19 8.5V12"/><rect x="3" y="12" width="18" height="6" rx="2"/><path d="M6 18v1.8M18 18v1.8"/>',
+    bed:       '<path d="M3 19V7"/><path d="M3 13h13a5 5 0 0 1 5 5v1"/><path d="M3 19h18"/><rect x="5" y="9.4" width="5.4" height="3.6" rx="1.5"/>',
+    hob:       '<path d="M4 11h15"/><path d="M5.5 11v4a4 4 0 0 0 4 4h4a4 4 0 0 0 4-4v-4"/><path d="M19 12h1.6a1.6 1.6 0 0 1 0 3.2H19"/><path d="M9 7.6c0-1.1 1-1.6 1-2.7M13.5 7.6c0-1.1 1-1.6 1-2.7"/>',
+    bath:      '<path d="M5 11V6.6A2.1 2.1 0 0 1 9.2 6"/><path d="M3 11h18v2.2a4.8 4.8 0 0 1-4.8 4.8H7.8A4.8 4.8 0 0 1 3 13.2Z"/><path d="M7 18v1.8M17 18v1.8"/>',
+    book:      '<path d="M4 19V6a2 2 0 0 1 2-2h12v15"/><path d="M6 19h12"/><path d="M6 19a2 2 0 0 1 0-4h12"/>',
+    /* A coat rail was the first drawing for a hallway and it did not survive
+       the size: three stems with a hook on the end came out as three bars
+       with a smudge, closer to a crown than to anything you hang a coat on.
+       Stairs read at 22px because the shape is the whole of the meaning. */
+    stairs:    '<path d="M4 20v-3.5h4v-3.5h4V9.5h4V6"/><path d="M3 20h18"/>',
+    railing:   '<path d="M3 20h18"/><path d="M4.5 20v-7h15v7"/><path d="M4.5 13h15"/><path d="M9 13v7M15 13v7"/>',
+    glasshouse:'<path d="M3 20V10l9-6 9 6v10"/><path d="M2 20h20"/><path d="M12 4.5V20M3 12.5h18"/>',
+    cutlery:   '<path d="M6 3v5a2.4 2.4 0 0 0 4.8 0V3"/><path d="M8.4 10.4V21"/><path d="M17.4 3c-1.3 1.7-1.9 3.4-1.9 5.4 0 1.7.8 2.7 1.9 2.9V21"/>',
+    door:      '<path d="M5 21V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v17"/><path d="M3 21h18"/><circle cx="15.6" cy="12.4" r="1"/>',
+    parasol:   '<path d="M12 11.5V21"/><path d="M4 11.5a8 8 0 0 1 16 0Z"/><path d="M3 21h18"/>',
+    monitor:   '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M9 20h6"/><path d="M12 16v4"/>',
+
     leaf:      '<path d="M11 20A7 7 0 0 1 4 13c0-5 4-9 16-9 0 12-4 16-9 16Z"/><path d="M4 20c4-4 7-6 11-7"/>',
     grid:      '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
     search:    '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',
@@ -540,6 +565,18 @@ window.UI = (function () {
      nothing the word "Living Room" underneath it has not already said. A
      monogram says the same thing in the app's own voice, and a wall of them
      reads as a set rather than as a ransom note. */
+  /* A room's plate: its chosen icon, or its initial when it has none. The
+     two share the .mono frame so a greenhouse of mixed rooms still reads as
+     one column — only what is inside the square changes. */
+  function roomMark(room, extra) {
+    const name = room && room.name ? room.name : '';
+    if (room && room.icon && PATHS[room.icon]) {
+      return '<span class="mono mono-ico' + (extra ? ' ' + extra : '') + '" aria-hidden="true">' +
+             icon(room.icon) + '</span>';
+    }
+    return monogram(name, extra);
+  }
+
   function monogram(str, extra) {
     const s = String(str || '').trim();
     const ch = s ? s.charAt(0).toUpperCase() : '·';
@@ -687,6 +724,7 @@ window.UI = (function () {
     fmtDate: fmtDate, relDays: relDays, relDue: relDue, plural: plural, deg: deg,
     MONTHS: MONTHS, DAYS: DAYS,
     toast: toast, openSheet: openSheet, closeSheet: closeSheet, sheetIsOpen: sheetIsOpen,
+    roomMark: roomMark,
     confirmSheet: confirmSheet, lightbox: lightbox, empty: empty, pill: pill,
     lineChart: lineChart, plantTile: plantTile, monogram: monogram, tintClass: tintClass,
     eyebrow: eyebrow, script: script, ornament: ornament,

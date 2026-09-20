@@ -39,28 +39,34 @@ window.ViewToday = (function () {
     return '<div class="greeting-card">' +
       '<h2 class="greeting-hi">' + partOfDay() + UI.esc(name) + '</h2>' +
       '<p class="greeting-line">' + UI.esc(line) + '</p>' +
+      /* Three counts, and they have to be three counts. The third slot has
+         been wrong twice. First it held a season glyph under the label
+         SPRING — two figures and a pictogram, which never read as a set
+         because the first two answer *how many* and a drawing answers
+         *which*. Then it held the word "Spring" in the serif, which fixed
+         the category but not the mismatch: a 25px word beside two 34px
+         numerals sat on a different baseline and pushed its own caption out
+         of line with its neighbours', so the row still had one foreign body
+         in it.
+
+         Rooms is the honest third number. It is a count, it aligns, and it
+         finishes the sentence the row is really making — seven want you
+         today, across three rooms, out of nine. The season lost nothing:
+         the greeting line above already ends with the season's advice, and
+         on a seasonal turn the nudge below announces it by name, so putting
+         it here was the third time of saying it. */
       (sum.plantCount ? '<div class="greeting-stats">' +
-        '<div><div class="gstat-n">' + sum.plantCount + '</div>' +
-             '<div class="gstat-l">' + (sum.plantCount === 1 ? 'plant' : 'plants') + '</div></div>' +
+        /* Due today leads and stands apart. The three are not one kind of
+           number: the first is a call to act today and the other two are
+           standing totals, so a rule between them says which is which
+           faster than reading the captions does. */
         '<div><div class="gstat-n">' + sum.dueCount + '</div>' +
              '<div class="gstat-l">due today</div></div>' +
-        /* Three counts, and they have to be three counts. This slot has been
-           wrong twice. First it held a season glyph under the label SPRING —
-           two figures and a pictogram, which never read as a set because the
-           first two answer *how many* and a drawing answers *which*. Then it
-           held the word "Spring" in the serif, which fixed the category but
-           not the mismatch: a 25px word beside two 34px numerals sat on a
-           different baseline and pushed its own caption out of line with its
-           neighbours', so the row still had one foreign body in it.
-
-           Rooms is the honest third number. It is a count, it aligns, and it
-           finishes the sentence the row is really making — nine plants
-           across three rooms, seven of them want you today. The season lost
-           nothing: the greeting line above already ends with the season's
-           advice, and on a seasonal turn the nudge below announces it by
-           name, so putting it here was the third time of saying it. */
+        '<div class="gstat-split" aria-hidden="true"></div>' +
         '<div><div class="gstat-n">' + sum.roomCount + '</div>' +
              '<div class="gstat-l">' + (sum.roomCount === 1 ? 'room' : 'rooms') + '</div></div>' +
+        '<div><div class="gstat-n">' + sum.plantCount + '</div>' +
+             '<div class="gstat-l">' + (sum.plantCount === 1 ? 'plant' : 'plants') + '</div></div>' +
       '</div>' : '') +
     '</div>';
   }

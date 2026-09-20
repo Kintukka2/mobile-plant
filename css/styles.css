@@ -1311,6 +1311,69 @@ img { max-width: 100%; display: block; }
   .pot-row .label { font-size: 10px; letter-spacing: 0.22em; }
 }
 
+/* Quick start beside the room name. The select carries short answers and
+   the name is what the reader is really filling in, so the name takes the
+   larger share. */
+.name-row {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 0.95fr 1.05fr;
+}
+.name-row .field { margin-bottom: 0; }
+.name-row .select { padding-left: 12px; padding-right: 30px; background-position: right 9px center; background-size: 15px; }
+.name-row .input { padding-left: 12px; padding-right: 12px; }
+.name-row + .field { margin-top: 18px; }
+@media (max-width: 379px) {
+  .name-row { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* The room icon picker. A wrapping grid of equal cells rather than a strip:
+   seventeen of them plus the initial would scroll sideways on a phone, and a
+   set you have to drag through stops reading as a set. */
+.ico-grid {
+  display: grid;
+  gap: 7px;
+  grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+}
+.ico-cell {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 1px solid var(--hair);
+  border-radius: var(--r-sm);
+  background: var(--glass);
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: border-color var(--dur-1) var(--ease), color var(--dur-1) var(--ease),
+              background var(--dur-1) var(--ease);
+}
+.ico-cell svg { width: 20px; height: 20px; }
+.ico-cell:hover { border-color: var(--hair-3); color: var(--ink-2); }
+.ico-cell:focus-visible { outline: 1px solid var(--emerald-glow); outline-offset: 2px; }
+.ico-cell.is-on {
+  border-color: rgba(63, 190, 139, 0.45);
+  background: var(--mint-wash);
+  color: var(--mint-2);
+}
+/* The first cell holds a letter rather than a glyph, so it carries .mono —
+   whose own 46px frame and border would draw a box inside this box. */
+.ico-cell .mono {
+  width: auto;
+  height: auto;
+  border: 0;
+  background: none;
+  font-size: 17px;
+  color: inherit;
+}
+
+/* A room plate showing its icon instead of its initial. Same frame, same
+   size — only the contents differ, which is what keeps a mixed strip
+   reading as one column. */
+.mono-ico svg { width: 22px; height: 22px; }
+.mono-sm.mono-ico svg { width: 12px; height: 12px; }
+.mono-lg.mono-ico svg { width: 26px; height: 26px; }
+
 /* Light and humidity abreast. Both are one-line selects with short answers,
    so the pair costs the same height as either alone. */
 .env-row {
@@ -1367,18 +1430,29 @@ img { max-width: 100%; display: block; }
 .slider:focus { outline: none; }
 .slider:focus-visible { outline: 1px solid var(--emerald-glow); outline-offset: 4px; }
 
+/* The travelled part of the rail is filled. --fill is written by the view on
+   every input, because a range input gives CSS no handle on its own value —
+   there is no :nth or attribute that tracks it once the thumb has moved.
+   Unset takes the mint wash rather than the solid: the bar still shows where
+   the thumb is, without asserting an answer the reader has not given. */
+.slider {
+  --fill: 0%;
+  --fill-ink: var(--emerald-lit);
+}
+.slider.is-unset { --fill-ink: var(--mint-wash); }
+
 .slider::-webkit-slider-runnable-track {
   height: 6px;
   border-radius: 99px;
   border: 1px solid var(--hair);
-  background: var(--track);
+  background: linear-gradient(to right, var(--fill-ink) 0 var(--fill), var(--track) var(--fill));
   box-shadow: var(--track-in);
 }
 .slider::-moz-range-track {
   height: 6px;
   border-radius: 99px;
   border: 1px solid var(--hair);
-  background: var(--track);
+  background: linear-gradient(to right, var(--fill-ink) 0 var(--fill), var(--track) var(--fill));
   box-shadow: var(--track-in);
 }
 
@@ -1739,22 +1813,38 @@ img { max-width: 100%; display: block; }
   margin-bottom: 10px;
 }
 
+/* No max-width. 44ch is the right measure for a column of running prose and
+   the wrong one for a single line inside a card: on a phone it wrapped to
+   three lines with a third of the card empty beside it, which reads as a
+   layout that has lost its right edge rather than as a comfortable measure.
+   The card's own padding is the constraint, and at desktop widths the line
+   is one or two lines long whatever it is given. */
 .greeting-line {
   font-family: var(--serif);
   font-size: clamp(17px, 3.4vw, 21px);
   font-weight: 300;
   color: var(--ink-2);
   line-height: 1.5;
-  max-width: 44ch;
 }
 
 .greeting-stats {
   display: flex;
   flex-wrap: wrap;
-  gap: 30px;
+  align-items: center;
+  gap: 26px;
   margin-top: 24px;
   padding-top: 20px;
   border-top: 1px solid var(--hair);
+}
+
+/* Separates the one number that asks for something today from the two that
+   simply count what you have. A hairline rather than a wider gap, because
+   the row wraps on a narrow phone and a gap large enough to read as a
+   division would be indistinguishable from the wrap. */
+.gstat-split {
+  align-self: stretch;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--hair-2) 22%, var(--hair-2) 78%, transparent);
 }
 
 .gstat-n {
