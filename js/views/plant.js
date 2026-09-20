@@ -307,18 +307,17 @@ window.ViewPlant = (function () {
 
   function toxPill(ico, label, rating) {
     const t = LOOKUPS.TOX[rating] || LOOKUPS.TOX.safe;
-    /* safe / mild / toxic / very-toxic -> mint, champagne, clay wash, clay
-       solid. Four steps in three hues: the last two share terracotta and
-       separate on fill, because 'toxic' and 'very-toxic' used to be clay
-       and pink and no one could tell which of those was the worse one. */
-    /* Oxblood is the top rung only. Twenty-two of the forty-eight species
-       are 'toxic' to cats and one is 'very-toxic'; putting the filled chip on
-       both would mark half the catalogue and it would stop being read. The
-       one that qualifies does so for cardiac glycosides rather than a sore
-       mouth, which is the distinction the rung exists to make. */
-    const variant = rating === 'safe' ? '' : rating === 'mild' ? 'sun' :
-                    rating === 'toxic' ? 'terra' : 'blood';
-    return UI.pill(label + ': ' + t.label, variant, ico);
+    /* safe / mild / toxic / very-toxic -> plain, champagne, clay wash,
+       oxblood fill. Oxblood is the top rung only: twenty-two of the
+       forty-eight species are 'toxic' to cats and one is 'very-toxic', so
+       putting the filled chip on both would mark half the catalogue and it
+       would stop being read. The one that qualifies does so for cardiac
+       glycosides rather than a sore mouth, which is the distinction the
+       rung exists to make.
+       The variant comes from LOOKUPS.TOX rather than a ladder written out
+       here, because ViewDiscover renders the same ratings and the two
+       copies drifted the last time the top rung moved. */
+    return UI.pill(label + ': ' + t.label, t.variant, ico);
   }
 
   /* ======================================================================

@@ -472,11 +472,10 @@ window.ViewSpecies = (function () {
 
   function toxPill(ico, label, rating) {
     const t = LOOKUPS.TOX[rating] || LOOKUPS.TOX.safe;
-    /* Kept in step with ViewPlant.toxPill deliberately — the same rating has
-       to wear the same pill on a species page and on your own plant. */
-    const variant = rating === 'safe' ? '' : rating === 'mild' ? 'sun' :
-                    rating === 'toxic' ? 'terra' : 'blood';
-    return UI.pill(label + ': ' + t.label, variant, ico);
+    /* In step with ViewPlant.toxPill by construction now, not by care: the
+       variant lives on LOOKUPS.TOX and both views read it. The same rating
+       has to wear the same pill on a species page and on your own plant. */
+    return UI.pill(label + ': ' + t.label, t.variant, ico);
   }
 
   function mount(root, params) {

@@ -121,12 +121,20 @@ window.LOOKUPS = (function () {
     'hard':   { label: 'Fussy', ico: 'dial', desc: 'Particular about humidity, light or water. Rewarding once settled.' }
   };
 
-  /* ---------- Toxicity ---------- */
+  /* ---------- Toxicity ----------
+     `variant` is the pill variant UI.pill() takes, not a class name, and it
+     lives here because two views render this ladder — a species page and
+     your own plant — and the same rating has to wear the same chip on both.
+     It used to be a `pill` field naming a class, which nothing read: both
+     views computed the variant themselves. When the top rung moved to
+     oxblood the dead field kept saying pill-terra-hi, and a rule stated in
+     one place and contradicted in another is worse than no rule. One
+     source, both readers. */
   const TOX = {
-    'safe':          { label: 'Pet safe',       pill: 'pill', ico: 'shield' },
-    'mild':          { label: 'Mildly toxic',   pill: 'pill-sun', ico: 'warn'   },
-    'toxic':         { label: 'Toxic',          pill: 'pill-terra', ico: 'ban'    },
-    'very-toxic':    { label: 'Highly toxic',   pill: 'pill-terra-hi', ico: 'skull'  }
+    'safe':          { label: 'Pet safe',      variant: '',      ico: 'shield' },
+    'mild':          { label: 'Mildly toxic',  variant: 'sun',   ico: 'warn'   },
+    'toxic':         { label: 'Toxic',         variant: 'terra', ico: 'ban'    },
+    'very-toxic':    { label: 'Highly toxic',  variant: 'blood', ico: 'skull'  }
   };
 
   /* ---------- Care task types ----------
