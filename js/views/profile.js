@@ -18,11 +18,29 @@ window.ViewProfile = (function () {
     { key: 'dogs', label: 'Dogs', ico: 'dog' }
   ];
 
+  /* Order is load-bearing now that this is a slider: the array index is the
+     position on the rail, so these three must stay least-to-most experienced
+     and a new rung has to be inserted in the right place rather than pushed
+     on the end. */
   const EXPERIENCE = [
     { key: 'new',       label: 'Just starting out' },
     { key: 'some',      label: 'Killed a few, learning' },
     { key: 'confident', label: 'Confident' }
   ];
+
+  function expToIndex(key) {
+    for (let i = 0; i < EXPERIENCE.length; i++) {
+      if (EXPERIENCE[i].key === key) return i + 1;
+    }
+    return 2;   /* nothing stored — rest in the middle */
+  }
+
+  function expReading(key) {
+    for (let i = 0; i < EXPERIENCE.length; i++) {
+      if (EXPERIENCE[i].key === key) return EXPERIENCE[i].label;
+    }
+    return 'Slide to tell me';
+  }
 
   function title() { return 'You'; }
   function sub() {
@@ -212,18 +230,34 @@ window.ViewProfile = (function () {
           return '<button class="chip' + (on ? ' is-on' : '') + '" data-pet="' + p.key + '">' +
             UI.icon(p.ico) + UI.esc(p.label) + '</button>';
         }).join('') + '</div>' +
-        '<p class="hint">Tell me who you live with and I\'ll warn you before you add something that would ' +
-          'hurt them — and stay quiet about the rest. Ratings follow the ASPCA\'s.</p>' +
+        '<p class="hint">Do you have any pets at home? Tag the relevant icon and I\'ll make sure to warn ' +
+          'you about any risks.</p>' +
       '</div>' +
     '</div>';
 
-    /* --- Experience --- */
+    /* --- Experience ---
+       A slider, not three chips. The chips laid the answers out as three
+       unrelated buttons when what is being asked is one quantity with an
+       order to it — and the order is the whole of the meaning. Dragging
+       along a rail says that in the shape of the control.
+
+       The stored keys are unchanged: position 1, 2 and 3 are still 'new',
+       'some' and 'confident'. With nothing stored the thumb rests in the
+       middle, because a range input has no null position to sit at, and the
+       reading above it says so rather than letting a default masquerade as
+       an answer. */
+    const expIndex = expToIndex(prof.experience);
     html += '<div class="section">' +
       '<div class="section-head"><h2 class="section-title">How are you with plants?</h2></div>' +
-      '<div class="card"><div class="row-wrap">' + EXPERIENCE.map(function (x) {
-        return '<button class="chip' + (prof.experience === x.key ? ' is-on' : '') + '" ' +
-          'data-exp="' + x.key + '">' + UI.esc(x.label) + '</button>';
-      }).join('') + '</div></div>' +
+      '<div class="card">' +
+        '<div class="slider-value' + (prof.experience ? '' : ' is-unset') + '" id="p-exp-value">' +
+          UI.esc(expReading(prof.experience)) +
+        '</div>' +
+        '<input class="slider" type="range" id="p-exp" min="1" max="3" step="1" ' +
+          'value="' + expIndex + '" aria-label="How are you with plants?" ' +
+          'aria-valuetext="' + UI.attr(expReading(prof.experience)) + '">' +
+        '<div class="slider-ends"><span>Beginner</span><span>Experienced</span></div>' +
+      '</div>' +
     '</div>';
 
     /* --- Location & weather --- */
@@ -371,6 +405,24 @@ window.ViewProfile = (function () {
       });
     }
 
+    /* 'input', not the delegated click handler, and no App.refresh() — a
+       re-render mid-drag would replace the element under the reader's
+       finger and drop the gesture. The reading updates in place instead,
+       and the value is written on every step, so letting go is all the
+       saving it needs. */
+    const exp = root.querySelector('#p-exp');
+    if (exp) {
+      const expValue = root.querySelector('#p-exp-value');
+      exp.addEventListener('input', function () {
+        const picked = EXPERIENCE[Number(exp.value) - 1];
+        if (!picked) return;
+        Store.updateProfile({ experience: picked.key });
+        expValue.textContent = picked.label;
+        expValue.classList.remove('is-unset');
+        exp.setAttribute('aria-valuetext', picked.label);
+      });
+    }
+
     const wsync = root.querySelector('#p-wsync');
     if (wsync) {
       wsync.addEventListener('change', function () {
@@ -389,14 +441,6 @@ window.ViewProfile = (function () {
         const at = pets.indexOf(key);
         if (at === -1) pets.push(key); else pets.splice(at, 1);
         Store.updateProfile({ pets: pets });
-        App.refresh();
-        return;
-      }
-
-      const exp = e.target.closest('[data-exp]');
-      if (exp) {
-        const key = exp.getAttribute('data-exp');
-        Store.updateProfile({ experience: Store.get().profile.experience === key ? null : key });
         App.refresh();
         return;
       }
