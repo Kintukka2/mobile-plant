@@ -31,6 +31,8 @@
   --gold:#C8A96B; --gold-lit:#DFC58F; --gold-wash:rgba(200,169,107,.13);
   --sun:#E0B255; --sun-soft:rgba(224,178,85,.14); --sun-ink:#EBCB8B;
   --terra:#D08A62; --terra-soft:rgba(208,138,98,.14); --terra-ink:#E2AC8C; --terra-hi-ink:#23120A;
+  /* Proposed fourth rung — irreversible harm. Fill only; see Decision 09. */
+  --blood:#6E2320; --blood-ink:#F6EDE9; --blood-edge:rgba(110,35,32,.85);
   --btn-ink:#F4FBF7;
   --shadow-sm:0 1px 2px rgba(0,0,0,.40); --shadow:0 8px 24px -8px rgba(0,0,0,.60);
   --sheen:inset 0 1px 0 rgba(255,255,255,.055);
@@ -61,6 +63,7 @@
   --gold:#9C7C35; --gold-lit:#7E6226; --gold-wash:rgba(156,124,53,.13);
   --sun:#A9761B; --sun-soft:rgba(169,118,27,.12); --sun-ink:#7A5310;
   --terra:#A0552C; --terra-soft:rgba(160,85,44,.12); --terra-ink:#7C3E1B; --terra-hi-ink:#FFF6EE;
+  --blood:#6E2320; --blood-ink:#FBF4F1; --blood-edge:rgba(110,35,32,.9);
   --btn-ink:#FFFCF7;
   --shadow-sm:0 1px 2px rgba(28,54,43,.10); --shadow:0 10px 30px -10px rgba(28,54,43,.17);
   --sheen:inset 0 1px 0 rgba(255,255,255,.85);
@@ -181,6 +184,15 @@ section{margin-bottom:64px;scroll-margin-top:20px}
 .pill-terra{border-color:rgba(208,138,98,.3);background:var(--terra-soft);color:var(--terra-ink)}
 .pill-terra-hi{border-color:var(--terra);background:var(--terra);color:var(--terra-hi-ink);font-weight:500;letter-spacing:.09em}
 .pill-terra-hi svg{color:var(--terra-hi-ink)}
+.pill-blood{border-color:var(--blood-edge);background:var(--blood);color:var(--blood-ink);font-weight:500;letter-spacing:.09em}
+.pill-blood svg{color:var(--blood-ink)}
+.btn-blood{background:var(--blood);border-color:var(--blood-edge);color:var(--blood-ink);box-shadow:var(--sheen)}
+.redcard{border:1px solid var(--hair);border-radius:var(--r);overflow:hidden;background:var(--bg-2)}
+.redcard .fillbar{padding:13px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.redcard .fillbar span{font-family:var(--sans);font-size:11px;letter-spacing:.16em;text-transform:uppercase}
+.redcard .meta{padding:10px 14px 12px;border-top:1px solid var(--hair)}
+.redcard .meta div{font-family:var(--mono);font-size:10px;color:var(--ink-4);line-height:1.6}
+.redcard .meta b{color:var(--ink-2);font-weight:400}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:11px 19px;border:1px solid transparent;
   border-radius:var(--r);background:linear-gradient(175deg,var(--emerald-lit),var(--emerald));color:var(--btn-ink);
   font-family:var(--sans);font-size:11px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;white-space:nowrap;
@@ -273,7 +285,7 @@ td code{font-family:var(--mono);font-size:11.5px;color:var(--mint)}
   <div class="mast-sub">
     <div class="eyebrow">Brand workbench &middot; working document</div>
     <p class="lead" style="margin-top:12px">
-      Eight decisions, each shown as it stands today beside the change proposed for it.
+      Nine decisions, each shown as it stands today beside the change proposed for it.
       Pick one per decision; the summary at the foot collects what you chose.
       Nothing here is in the app yet.
     </p>
@@ -290,7 +302,7 @@ td code{font-family:var(--mono);font-size:11.5px;color:var(--mint)}
 
 <!-- ================= INDEX ================= -->
 <section id="index">
-  <div class="sec-head"><h2 class="sec-title">The eight decisions</h2><span class="sec-note">tap to jump</span></div>
+  <div class="sec-head"><h2 class="sec-title">The nine decisions</h2><span class="sec-note">tap to jump</span></div>
   <div class="index">
     <a class="idx" href="#d01"><span class="idx-n">01</span><span class="idx-t">Two yellows, or one</span><span class="idx-s" id="s-01" data-set="0">Open</span></a>
     <a class="idx" href="#d02"><span class="idx-n">02</span><span class="idx-t">Urgency and hazard on one colour</span><span class="idx-s" id="s-02" data-set="0">Open</span></a>
@@ -300,6 +312,7 @@ td code{font-family:var(--mono);font-size:11.5px;color:var(--mint)}
     <a class="idx" href="#d06"><span class="idx-n">06</span><span class="idx-t">The plant tile hash</span><span class="idx-s" id="s-06" data-set="0">Open</span></a>
     <a class="idx" href="#d07"><span class="idx-n">07</span><span class="idx-t">Who is speaking</span><span class="idx-s" id="s-07" data-set="0">Open</span></a>
     <a class="idx" href="#d08"><span class="idx-n">08</span><span class="idx-t">Three photo ratios</span><span class="idx-s" id="s-08" data-set="0">Open</span></a>
+    <a class="idx" href="#d09"><span class="idx-n">09</span><span class="idx-t">Which red, if any</span><span class="idx-s" id="s-09" data-set="0">Open</span></a>
   </div>
 </section>
 
@@ -425,6 +438,7 @@ td code{font-family:var(--mono);font-size:11.5px;color:var(--mint)}
           <span class="pill pill-terra">Toxic</span>
           <span class="pill pill-terra-hi">Highly toxic</span>
           <button class="btn btn-danger" type="button">Delete room</button>
+        <button class="btn btn-blood" type="button">Delete room</button>
         </div>
         <p class="hint" style="margin-top:16px">Time-based and harm-based facts are indistinguishable. Only
           <em>highly toxic</em> separates itself, and it does so by fill — which is the mechanism the proposal
@@ -432,25 +446,54 @@ td code{font-family:var(--mono);font-size:11.5px;color:var(--mint)}
       </div>
       <div class="pane pane-new">
         <div class="pane-k"><b>Proposed</b><i></i></div>
+        <p class="hint" style="margin-bottom:14px">Three ways to make the split. The measurements in Decision 09 rule out
+          one of them on their own.</p>
+        <div class="rung" style="margin-bottom:12px">
+          <div class="rung-k" style="margin-bottom:8px">i &middot; Form only</div>
+          <div class="row-wrap" style="gap:7px"><span class="pill pill-terra">3 days overdue</span><span class="pill pill-terra-hi">Toxic to cats</span></div>
+        </div>
+        <div class="rung" style="margin-bottom:12px">
+          <div class="rung-k" style="margin-bottom:8px">ii &middot; Colour only &mdash; not available</div>
+          <div class="row-wrap" style="gap:7px"><span class="pill pill-terra">3 days overdue</span><span class="pill" style="background:none;border-color:var(--blood);color:var(--blood)">Toxic to cats</span></div>
+          <p class="hint" style="margin-top:8px">That chip is a deep red outline on the near-black ground &mdash;
+            <strong>1.72:1</strong>. It is in the page; you almost cannot see it. Deep red cannot outline on Viridium.</p>
+        </div>
+        <div class="rung" style="margin-bottom:16px">
+          <div class="rung-k" style="margin-bottom:8px">iii &middot; Both</div>
+          <div class="row-wrap" style="gap:7px"><span class="pill pill-terra">3 days overdue</span><span class="pill pill-blood">Toxic to cats</span></div>
+        </div>
         <p class="hint" style="margin-bottom:12px"><strong>Urgency</strong> — recoverable, time-based. Always wash + hairline, never filled.</p>
         <div class="row-wrap" style="gap:8px;margin-bottom:18px">
           <span class="pill pill-grey">Water in 6 days</span>
           <span class="pill pill-gold">Due today</span>
           <span class="pill pill-terra">3 days overdue</span>
         </div>
-        <p class="hint" style="margin-bottom:12px"><strong>Hazard</strong> — factual, about harm. Always filled, always carries a glyph.</p>
+        <p class="hint" style="margin-bottom:12px"><strong>Irreversible harm</strong> — a poisoned animal, a deleted record.
+          Always filled, always carries a glyph.</p>
         <div class="row-wrap" style="gap:8px">
           <span class="pill pill-terra-hi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="9" r="2"/><circle cx="12" cy="6.5" r="2"/><circle cx="17" cy="9" r="2"/><path d="M12 11c3 0 5 2 5 4.2S14.8 20 12 20s-5-2.6-5-4.8S9 11 12 11Z"/></svg>Toxic to cats</span>
           <span class="pill pill-terra-hi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a7.5 7.5 0 0 1 7.5 7.5c0 2.6-1.3 3.8-2 4.6-.5.6-.5 1.4-.5 2.4a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 7 17.5c0-1 0-1.8-.5-2.4-.7-.8-2-2-2-4.6A7.5 7.5 0 0 1 12 3Z"/><circle cx="9.3" cy="11" r="1.3"/><circle cx="14.7" cy="11" r="1.3"/></svg>Highly toxic</span>
         </div>
-        <p class="hint" style="margin-top:16px">One filled chip anywhere on a screen means <em>this can hurt something</em>.
-          The palette stays closed — the distinction is form, not a fifth hue.</p>
+        <div class="row-wrap" style="gap:8px;margin-top:10px">
+          <span class="pill pill-blood"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="9" r="2"/><circle cx="12" cy="6.5" r="2"/><circle cx="17" cy="9" r="2"/><path d="M12 11c3 0 5 2 5 4.2S14.8 20 12 20s-5-2.6-5-4.8S9 11 12 11Z"/></svg>Toxic to cats</span>
+          <button class="btn btn-blood" type="button">Delete room</button>
+        </div>
+        <p class="hint" style="margin-top:16px">One filled chip anywhere on a screen means <em>this cannot be undone</em>.
+          Counter-intuitively the filled deep red is <em>quieter</em> on this ground than today's outlined terracotta —
+          1.72:1 against 6.69:1 — so Delete becomes heavy rather than loud, which is what the stylesheet always asked for.</p>
+        <p class="hint" style="margin-top:12px"><strong>One caveat, stated plainly.</strong> Red against green is the most
+          common colour-blindness axis, and this system already uses emerald for &ldquo;fine&rdquo;. Roughly one man in
+          twelve cannot separate them reliably. The fill-and-glyph rule is what carries the meaning for them, which is
+          why <em>both</em> beats colour alone rather than merely adding to it.</p>
       </div>
     </div>
-    <div class="call"><span class="call-k">The call</span><p>Split the two axes by fill, not by hue. A new colour would reopen the set that Decision 01 just closed.</p></div>
+    <div class="call"><span class="call-k">The call</span><p><strong>Both.</strong> The measurements make the choice
+      for us: a deep red only works filled, so taking the colour takes the form rule with it. The fifth hue is earned
+      here because it marks a different <em>kind</em> of statement — irreversible rather than merely urgent — and it
+      never appears on the same axis as the other four.</p></div>
     <div class="picks" data-dec="02">
-      <button class="pick" type="button" data-v="Split by form: fill = hazard, wash = urgency"><span class="pick-dot"></span>Split by form (fill vs wash) <span class="rec">rec</span></button>
-      <button class="pick" type="button" data-v="Separate hue for hazard"><span class="pick-dot"></span>Separate hue for hazard</button>
+      <button class="pick" type="button" data-v="Both — deep red, always filled"><span class="pick-dot"></span>Both &mdash; deep red, always filled <span class="rec">rec</span></button>
+      <button class="pick" type="button" data-v="Form only — no new colour"><span class="pick-dot"></span>Form only, no new colour</button>
       <button class="pick" type="button" data-v="Leave as is"><span class="pick-dot"></span>Leave as is</button>
     </div>
   </div>
@@ -778,6 +821,121 @@ td code{font-family:var(--mono);font-size:11.5px;color:var(--mint)}
   </div>
 </section>
 
+<!-- ================= D09 ================= -->
+<section id="d09">
+  <div class="sec-head"><h2 class="sec-title">Decision 09 &middot; Which red</h2><span class="sec-note">measured</span></div>
+  <div class="decision">
+    <div class="dec-head">
+      <span class="dec-no">09</span>
+      <div class="dec-q">
+        <h3>A fourth rung for what cannot be undone</h3>
+        <p>Only if Decision 02 takes the colour. Every figure below is a WCAG contrast ratio against the real grounds.</p>
+      </div>
+    </div>
+    <div class="split">
+      <div class="pane pane-now">
+        <div class="pane-k"><b>The rule it creates</b><i></i></div>
+        <p class="hint" style="margin-bottom:14px">Four rungs, and the fourth is not simply &ldquo;more urgent&rdquo;.
+          It marks a different kind of fact: <strong>this cannot be taken back</strong>. A poisoned animal and a deleted
+          plant record belong together; an overdue watering does not.</p>
+        <div class="ladder" style="margin-bottom:16px">
+          <div class="rung"><div class="rung-top"><span class="bead" style="background:var(--emerald-glow)"></span><span class="rung-k">Fine</span></div><div class="rung-v">#3FBE8B</div></div>
+          <div class="rung"><div class="rung-top"><span class="bead" style="background:var(--gold)"></span><span class="rung-k">Soon</span></div><div class="rung-v">#C8A96B</div></div>
+          <div class="rung"><div class="rung-top"><span class="bead" style="background:var(--terra)"></span><span class="rung-k">Urgent</span></div><div class="rung-v">#D08A62</div></div>
+          <div class="rung" style="border-color:var(--blood-edge)"><div class="rung-top"><span class="bead" style="background:var(--blood)"></span><span class="rung-k">Irreversible</span></div><div class="rung-v">#6E2320</div></div>
+        </div>
+        <p class="hint">The first three are a ramp and read as one. The fourth steps off it — darker than the ground
+          it sits on rather than lighter, which is why it registers as a different class of thing rather than a
+          fourth degree of the same one.</p>
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--hair)">
+          <div class="eyebrow" style="margin-bottom:10px">Where it is allowed</div>
+          <ul style="margin:0;padding-left:18px;color:var(--ink-2);font-size:13px;line-height:1.75">
+            <li>Toxicity, where the household actually keeps that animal</li>
+            <li>Delete and reset — anything with no undo</li>
+            <li><strong>Filled only.</strong> Never an outline, never text, never a hairline</li>
+            <li>Never on the same row as terracotta doing urgency</li>
+          </ul>
+        </div>
+      </div>
+      <div class="pane pane-new">
+        <div class="pane-k"><b>Candidates</b><i></i></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px">
+        <div class="redcard">
+          <div class="fillbar" style="background:#6E2320"><span style="color:#F6EDE9">Oxblood</span>
+            <span style="color:#F6EDE9;font-family:var(--mono);letter-spacing:0;font-size:10px">#6E2320</span></div>
+          <div class="meta">
+            <div>ivory on fill &nbsp;<b>10.01:1</b></div>
+            <div>as text on dark &nbsp;<b style="color:var(--terra)">1.72:1</b></div>
+            <div>as text on ivory &nbsp;<b>9.87:1</b></div>
+            <div>hsl(2 55 28)</div>
+            <div style="text-transform:none;margin-top:6px;color:var(--ink-3)">Brown-shifted. Unmistakably red, still earthy.</div>
+          </div>
+        </div>
+        <div class="redcard">
+          <div class="fillbar" style="background:#5C2E2A"><span style="color:#F6EDE9">Charcoal red</span>
+            <span style="color:#F6EDE9;font-family:var(--mono);letter-spacing:0;font-size:10px">#5C2E2A</span></div>
+          <div class="meta">
+            <div>ivory on fill &nbsp;<b>10.25:1</b></div>
+            <div>as text on dark &nbsp;<b style="color:var(--terra)">1.68:1</b></div>
+            <div>as text on ivory &nbsp;<b>10.10:1</b></div>
+            <div>hsl(5 37 26)</div>
+            <div style="text-transform:none;margin-top:6px;color:var(--ink-3)">Most desaturated. Closest to the words you used.</div>
+          </div>
+        </div>
+        <div class="redcard">
+          <div class="fillbar" style="background:#73262B"><span style="color:#F6EDE9">Deep garnet</span>
+            <span style="color:#F6EDE9;font-family:var(--mono);letter-spacing:0;font-size:10px">#73262B</span></div>
+          <div class="meta">
+            <div>ivory on fill &nbsp;<b>9.44:1</b></div>
+            <div>as text on dark &nbsp;<b style="color:var(--terra)">1.82:1</b></div>
+            <div>as text on ivory &nbsp;<b>9.30:1</b></div>
+            <div>hsl(356 50 30)</div>
+            <div style="text-transform:none;margin-top:6px;color:var(--ink-3)">Turns toward wine — cooler than the palette.</div>
+          </div>
+        </div>
+        <div class="redcard">
+          <div class="fillbar" style="background:#7B1E2B"><span style="color:#F6EDE9">Bordeaux</span>
+            <span style="color:#F6EDE9;font-family:var(--mono);letter-spacing:0;font-size:10px">#7B1E2B</span></div>
+          <div class="meta">
+            <div>ivory on fill &nbsp;<b>9.34:1</b></div>
+            <div>as text on dark &nbsp;<b style="color:var(--terra)">1.84:1</b></div>
+            <div>as text on ivory &nbsp;<b>9.20:1</b></div>
+            <div>hsl(352 61 30)</div>
+            <div style="text-transform:none;margin-top:6px;color:var(--ink-3)">Most saturated, most magenta. Fights the earth tones.</div>
+          </div>
+        </div>
+        <div class="redcard">
+          <div class="fillbar" style="background:#8C2F2B"><span style="color:#F6EDE9">Brick</span>
+            <span style="color:#F6EDE9;font-family:var(--mono);letter-spacing:0;font-size:10px">#8C2F2B</span></div>
+          <div class="meta">
+            <div>ivory on fill &nbsp;<b>7.53:1</b></div>
+            <div>as text on dark &nbsp;<b style="color:var(--terra)">2.28:1</b></div>
+            <div>as text on ivory &nbsp;<b>7.43:1</b></div>
+            <div>hsl(2 53 36)</div>
+            <div style="text-transform:none;margin-top:6px;color:var(--ink-3)">Lightest, so nearest terracotta — least separation.</div>
+          </div>
+        </div>
+        </div>
+        <p class="hint" style="margin-top:16px">Every candidate fails as text on the dark ground and every one
+          succeeds as a fill. That is not a close call between options — it is the same verdict five times, and it
+          is what makes &ldquo;filled only&rdquo; a measurement rather than a preference.</p>
+      </div>
+    </div>
+    <div class="call"><span class="call-k">The call</span><p><strong>Oxblood #6E2320.</strong> Charcoal red measures
+      marginally better and matches your description more literally, but at 37% saturation it reads as dark brown on a
+      near-black green ground — and a warning colour that has to be explained is not doing its job. Oxblood keeps the
+      earth in it while still landing as red.</p></div>
+    <div class="picks" data-dec="09">
+      <button class="pick" type="button" data-v="Oxblood #6E2320"><span class="pick-dot"></span>Oxblood #6E2320 <span class="rec">rec</span></button>
+      <button class="pick" type="button" data-v="Charcoal red #5C2E2A"><span class="pick-dot"></span>Charcoal red #5C2E2A</button>
+      <button class="pick" type="button" data-v="Deep garnet #73262B"><span class="pick-dot"></span>Deep garnet #73262B</button>
+      <button class="pick" type="button" data-v="Bordeaux #7B1E2B"><span class="pick-dot"></span>Bordeaux #7B1E2B</button>
+      <button class="pick" type="button" data-v="Brick #8C2F2B"><span class="pick-dot"></span>Brick #8C2F2B</button>
+      <button class="pick" type="button" data-v="No new red — form only"><span class="pick-dot"></span>No new red</button>
+    </div>
+  </div>
+</section>
+
 <!-- ================= COMPONENTS ================= -->
 <section id="components">
   <div class="sec-head"><h2 class="sec-title">Component reference</h2><span class="sec-note">as built</span></div>
@@ -788,6 +946,7 @@ td code{font-family:var(--mono);font-size:11.5px;color:var(--mint)}
         <span class="pill">Pet safe</span><span class="pill pill-grey">Living Room</span>
         <span class="pill pill-sun">Due today</span><span class="pill pill-gold">Not fed yet</span>
         <span class="pill pill-terra">Toxic</span><span class="pill pill-terra-hi">Highly toxic</span>
+        <span class="pill pill-blood">Toxic to cats</span>
       </div>
     </div>
     <div class="pane" style="border:1px solid var(--hair);border-radius:var(--r-lg)">
@@ -823,7 +982,7 @@ td code{font-family:var(--mono);font-size:11.5px;color:var(--mint)}
 
 <!-- ================= SUMMARY ================= -->
 <section id="summary">
-  <div class="sec-head"><h2 class="sec-title">Your decisions</h2><span class="sec-note" id="sum-count">0 of 8</span></div>
+  <div class="sec-head"><h2 class="sec-title">Your decisions</h2><span class="sec-note" id="sum-count">0 of 9</span></div>
   <div class="summary">
     <div id="sum-body"><p class="hint">Nothing chosen yet. Pick an option in each decision above and it collects here.</p></div>
     <div class="row-wrap" style="margin-top:18px">
@@ -840,7 +999,7 @@ td code{font-family:var(--mono);font-size:11.5px;color:var(--mint)}
 (function () {
   var LABELS = {
     '01':'Yellows','02':'Urgency / hazard','03':'Conservatory','04':'The mark',
-    '05':'"evergreen"','06':'Plant tiles','07':'Voice','08':'Photo ratios'
+    '05':'"evergreen"','06':'Plant tiles','07':'Voice','08':'Photo ratios','09':'Which red'
   };
   var picks = {};
 
@@ -954,7 +1113,7 @@ td code{font-family:var(--mono);font-size:11.5px;color:var(--mint)}
     });
 
     var keys = Object.keys(picks).sort();
-    document.getElementById('sum-count').textContent = keys.length + ' of 8';
+    document.getElementById('sum-count').textContent = keys.length + ' of 9';
     var body = document.getElementById('sum-body');
     if (!keys.length) {
       body.innerHTML = '<p class="hint">Nothing chosen yet. Pick an option in each decision above and it collects here.</p>';
