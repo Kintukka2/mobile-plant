@@ -486,12 +486,23 @@ img { max-width: 100%; display: block; }
   background:
     radial-gradient(760px 520px at 50% 42%, rgba(47, 154, 112, 0.22), transparent 70%),
     var(--bg-0);
-  transition: opacity var(--dur-3) var(--ease), visibility var(--dur-3);
+  /* Slower than --dur-3, and only on the way out: the app behind it is
+     already painted, so the dissolve is the one moment on this screen that
+     can afford to be unhurried. */
+  transition: opacity 760ms var(--ease), visibility 760ms;
 }
 .splash.is-out { opacity: 0; visibility: hidden; }
 
 .splash-inner { text-align: center; padding: 0 28px; }
 
+/* The wordmark arrives a letter at a time.
+
+   It used to animate as one block, with the tracking opening from 0.34em to
+   0.22em as it rose. That reads well in isolation and badly here: the whole
+   word shifting width while it fades is the same motion as a font swapping
+   underneath it, which is the exact ugliness this screen exists to hide.
+   Per-letter, the tracking never moves — each glyph resolves in its final
+   position, and what travels is focus rather than metrics. */
 .splash-mark {
   font-family: var(--display);
   font-weight: 200;
@@ -501,18 +512,38 @@ img { max-width: 100%; display: block; }
   color: var(--ink);
   /* Optical centring: tracking adds a trailing gap after the last letter. */
   text-indent: 0.22em;
-  animation: markIn 1000ms var(--ease) both;
 }
+.splash-mark span {
+  display: inline-block;
+  animation: letterIn 900ms var(--ease) both;
+}
+/* 70ms apart. Faster and it reads as one blurred block; slower and the eye
+   starts reading the letters as a countdown rather than a word assembling. */
+.splash-mark span:nth-child(1) { animation-delay: 60ms; }
+.splash-mark span:nth-child(2) { animation-delay: 130ms; }
+.splash-mark span:nth-child(3) { animation-delay: 200ms; }
+.splash-mark span:nth-child(4) { animation-delay: 270ms; }
+.splash-mark span:nth-child(5) { animation-delay: 340ms; }
+.splash-mark span:nth-child(6) { animation-delay: 410ms; }
 
+/* The script is wiped in from the left rather than faded, because that is
+   how the word would actually be written. The opacity keyframe rides along
+   so a browser that drops the clip-path still gets a clean fade instead of
+   an instant appearance. */
 .splash-script {
   font-family: var(--script);
   font-size: clamp(26px, 7vw, 40px);
   color: var(--mint);
   margin-top: -2px;
-  animation: markIn 1000ms var(--ease) 180ms both;
+  /* Descenders in the script face sit below the line box; without the pad
+     the clip would shave the tails of g and the y-descenders as it passes. */
+  padding-bottom: 0.12em;
+  animation: scriptIn 1000ms var(--ease-io) 780ms both;
 }
 
-/* A hairline with a specular sweep travelling along it. */
+/* A hairline with a specular sweep travelling along it. It draws itself out
+   from the centre first — an empty rule sitting under a word that has not
+   arrived yet was the one element on this screen that began finished. */
 .splash-rule {
   margin: 20px auto 0;
   width: 132px;
@@ -520,18 +551,27 @@ img { max-width: 100%; display: block; }
   background: var(--hair);
   position: relative;
   overflow: hidden;
+  animation: ruleIn 700ms var(--ease) 1360ms both;
 }
 .splash-rule i {
   position: absolute;
   inset: 0;
   background: linear-gradient(90deg, transparent, var(--mint), transparent);
   transform: translateX(-100%);
-  animation: sweep 1700ms var(--ease-io) 420ms infinite;
+  animation: sweep 1700ms var(--ease-io) 1900ms infinite;
 }
 
-@keyframes markIn {
-  from { opacity: 0; transform: translateY(14px); letter-spacing: 0.34em; }
-  to   { opacity: 1; transform: none; }
+@keyframes letterIn {
+  from { opacity: 0; transform: translateY(20px); filter: blur(7px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+@keyframes scriptIn {
+  from { opacity: 0; clip-path: inset(0 100% 0 0); }
+  to   { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+@keyframes ruleIn {
+  from { transform: scaleX(0); opacity: 0; }
+  to   { transform: scaleX(1); opacity: 1; }
 }
 @keyframes sweep {
   to { transform: translateX(100%); }
@@ -4064,6 +4104,13 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
      and the settled last one are the same place, so the instrument reads
      true. */
   .sheet, .toast, .sheet-backdrop, .lightbox { animation: none !important; }
+  /* Same reasoning as the sheet above, and the same harness trap: these
+     three carry fill-mode both and start at a translate, a clip and a scale
+     respectively, so a shortened duration would leave a reader — or a
+     screenshot — looking at a blurred, half-wiped, collapsed splash. */
+  .splash-mark span, .splash-script, .splash-rule, .splash-rule i {
+    animation: none !important;
+  }
   .grain { display: none; }
   .reveal > * { animation-delay: 0ms !important; }
   .card:hover, .task:hover, .pcard:hover, .rcard:hover,
