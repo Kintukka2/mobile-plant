@@ -11,8 +11,9 @@
      · Light is a material. Radial glows and specular edges do the work that
        drop shadows do in a light UI.
      · Motion is slow and weighted. Expo-out, 340–620ms, never bouncy.
-     · Type carries the luxury: Italiana caps for display, Cormorant Garamond
-       for editorial serif, Jost for UI, Sacramento for one flourish.
+     · Type carries the luxury: PP Hatton caps for display in two weights,
+       Cormorant Garamond for editorial serif, Jost for UI, Sacramento for
+       one flourish.
 
    Two themes, both premium: "viridium" (dark, default) and "conservatory"
    (light ivory) — set via data-theme on <html>. Part D holds the light map.
@@ -64,8 +65,12 @@
   --gold-wash: rgba(200, 169, 107, 0.13);
 
   /* --- Semantic accents --- */
-  --sun:        #E0B255;
-  --sun-soft:   rgba(224, 178, 85, 0.14);
+  /* --sun is gone. It was a second champagne a few degrees off --gold, and
+     the two contradicted each other: .sev-med took its text from one and its
+     cause mark from the other, inside the same card. A two-step ladder
+     expressed in colours that close is not read as a ladder. Where a finer
+     step is genuinely needed the form carries it — .drop-now still breathes
+     where .drop-due sits still. */
   /* There was a --sky here, a cornflower blue, used for watering and for the
      weather glyph. It is gone. Emerald, ivory, champagne and terracotta is a
      closed set that holds together; a fifth hue borrowed from utility-app
@@ -88,6 +93,26 @@
   --terra:      #D08A62;
   --terra-soft: rgba(208, 138, 98, 0.14);
 
+  /* --- Oxblood. The fourth rung, and the only one that is not a degree of
+     the other three: it marks a fact that cannot be taken back — an animal
+     that can be seriously harmed, an action with no undo.
+
+     Fill only, in both themes. Measured against this ground it reads 1.72:1
+     as text or a hairline, which is invisible; as a fill under ivory it
+     reads between 7.4 and 11.6:1, which is better than the emerald primary
+     manages. That asymmetry is not a preference, it is why the rule is
+     "always filled" — the colour has no other legible use here.
+
+     It also steps *down* from the ground rather than up, which is what makes
+     it read as a different class of thing rather than a fourth degree of
+     urgency. The pink that used to hold this slot differed only in hue, at
+     the same lightness, and nobody could order the two. --- */
+  --blood:      #6E2320;
+  --blood-lit:  #8A2C28;
+  --blood-deep: #571B19;
+  --blood-ink:  #F6EDE9;
+  --blood-edge: rgba(110, 35, 32, 0.85);
+
   /* Pill text. These exist because .pill-sun and .pill-terra used to set
      their text with a literal hex — #EBCB8B and #E2AC8C, both pale tints
      chosen to sit on near-black. The conservatory theme dutifully overrode
@@ -97,7 +122,6 @@
      terracotta, legible only if you already knew what they said. Exactly
      the mistake the plant tiles made with their gradient. If a theme can
      override the wash, it must be able to override the ink. */
-  --sun-ink:    #EBCB8B;
   --terra-ink:  #E2AC8C;
   --terra-hi-ink: #23120A;
 
@@ -132,7 +156,23 @@
   --line-2:     var(--hair-2);
 
   /* --- Type --- */
-  --display: 'Italiana', 'Cormorant Garamond', Didot, 'Times New Roman', serif;
+  /* PP Hatton, self-hosted. Two weights standing in for an optical size
+     axis the face does not have: the display role runs from 14px on a
+     section title to 86px on a hero tile letter, and a high-contrast serif
+     wants more weight as it shrinks and less as it grows.
+
+       200  at 28px and above
+       500  below 28px
+
+     Every rule that names --display therefore names a weight too. Nothing
+     is left to the browser to synthesise, because with only two faces
+     installed a request for 400 would be resolved by guesswork.
+
+     The fallback is Cormorant Garamond rather than Times: it is already
+     loaded for the serif role, and a missing display face landing on the
+     app's own body serif is a far smaller shock than landing on a system
+     face nothing else here uses. */
+  --display: 'PP Hatton', 'Cormorant Garamond', Didot, 'Times New Roman', serif;
   --serif:   'Cormorant Garamond', Didot, Georgia, 'Times New Roman', serif;
   --sans:    'Jost', 'Futura', 'Century Gothic', -apple-system, BlinkMacSystemFont,
              'Segoe UI', system-ui, sans-serif;
@@ -196,11 +236,29 @@
      Lightnesses are unitless because .tmark multiplies them by 1% after
      adding the per-plant lift. --tile-sheen is bare channels so the same
      token can take a computed alpha. */
-  --tile-sat:   26%;
-  --tile-lum:   11;
-  --tile-sat-2: 22%;
-  --tile-lum-2: 8;
+  /* --- Photoless plant plates ---
+     Six hand-picked pairs rather than a hue computed from a name hash. The
+     hash spanned 100–143° at 26% saturation and 11% lightness, which is a
+     band too narrow and too dark to hold forty-four steps: two plants could
+     land a degree apart and render identically, so the differentiation it
+     promised was not delivered. Six is a number the eye can actually tell
+     apart, and lightness varies across the set as well as hue, which is what
+     does most of the work at this luminance.
+
+     Cyan is deliberately absent. An earlier band ran to 186°, invisible here
+     and a pale cornflower blue in Conservatory — half the tiles in the
+     daylight theme came out the one colour this app has no use for.
+
+     ui.js picks the index from the same name hash as before, so a plant keeps
+     its identity; only the palette it draws from has changed. --- */
+  --tint-0a: #1B4636;  --tint-0b: #123024;
+  --tint-1a: #2F4A22;  --tint-1b: #213517;
+  --tint-2a: #21403C;  --tint-2b: #162E2B;
+  --tint-3a: #3E4722;  --tint-3b: #2C3317;
+  --tint-4a: #163A2C;  --tint-4b: #0E281E;
+  --tint-5a: #4A4529;  --tint-5b: #35311C;
   --tile-sheen: 63, 190, 139;
+  --tile-sheen-a: 0.13;
   --tile-ink:   rgba(232, 240, 233, 0.82);
 
   /* --- Motion --- */
@@ -215,6 +273,40 @@
   --side-w: 260px;
   --pad:    22px;
   --maxw:   1080px;
+}
+
+/* ==========================================================================
+   A1b · The display face
+   --------------------------------------------------------------------------
+   Self-hosted rather than fetched, which is the better arrangement here for
+   three reasons beyond licensing: it removes a render-blocking round trip to
+   two more origins, it makes the app genuinely offline on a first visit
+   rather than once the font cache has filled, and it puts the one typeface
+   carrying the brand under our own version control instead of a third
+   party's.
+
+   Subset to Latin, Latin-1 and Latin Extended-A. The display face is always
+   uppercase, but a plant tile prints the first character of a name the user
+   typed, so accented capitals have to be present.
+
+   'swap' rather than 'block': the splash already covers first paint until
+   document.fonts resolves, so there is nothing to protect against, and a
+   blocked face on a slow connection would hold the whole app behind it.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'PP Hatton';
+  src: url('fonts/hatton-ultralight.woff2') format('woff2');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'PP Hatton';
+  src: url('fonts/hatton-medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
 }
 
 /* ==========================================================================
@@ -294,11 +386,18 @@ img { max-width: 100%; display: block; }
    A3 · Typography
    ========================================================================== */
 
-/* Display caps. Italiana has one weight and very fine serifs, so it wants
-   size and air — tracking tightens as size grows. */
-.d-xl, .d-lg, .d-md {
+/* Display caps. Tracking tightens as size grows, and so does weight — .d-md
+   is 21px and takes the 500, the two above it take the 200. */
+.d-xl, .d-lg {
   font-family: var(--display);
-  font-weight: 400;
+  font-weight: 200;
+  color: var(--ink);
+  text-transform: uppercase;
+  line-height: 1.02;
+}
+.d-md {
+  font-family: var(--display);
+  font-weight: 500;
   color: var(--ink);
   text-transform: uppercase;
   line-height: 1.02;
@@ -395,6 +494,7 @@ img { max-width: 100%; display: block; }
 
 .splash-mark {
   font-family: var(--display);
+  font-weight: 200;
   font-size: clamp(40px, 12vw, 78px);
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -493,7 +593,7 @@ img { max-width: 100%; display: block; }
 .topbar-title {
   font-family: var(--display);
   font-size: clamp(27px, 5.6vw, 38px);
-  font-weight: 400;
+  font-weight: 200;
   letter-spacing: 0.085em;
   text-transform: uppercase;
   line-height: 1.04;
@@ -527,22 +627,32 @@ img { max-width: 100%; display: block; }
 
 .sidebar { display: none; }
 
-.brand { display: flex; flex-direction: column; gap: 1px; }
+.brand { display: flex; align-items: center; gap: 11px; }
+.brand-glyph {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  color: var(--emerald-glow);
+}
 .brand-name {
   font-family: var(--display);
-  font-size: 25px;
+  font-weight: 500;
+  font-size: 23px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--ink);
   text-indent: 0.2em;
 }
-.brand-script {
-  font-family: var(--script);
-  font-size: 21px;
-  color: var(--mint);
-  margin-top: -6px;
-  padding-left: 3px;
+/* .brand-script is gone from the sidebar. The script is the one flourish in
+   the app and it only works while it stays rare; sitting above the
+   navigation for a whole session is not rare. It keeps the splash, where the
+   product is introducing itself, and the mark takes its place here. */
+.brand-mark-lock {
+  display: flex;
+  align-items: center;
+  gap: 11px;
 }
+.brand-mark-lock svg { flex: 0 0 auto; }
 /* Legacy hook — the leaf glyph was dropped when the wordmark came in. */
 .brand-mark { display: none; }
 
@@ -738,41 +848,33 @@ img { max-width: 100%; display: block; }
   border-bottom: 1px solid var(--hair);
 }
 
-/* The sans, not the display face — and this is the one place in the type
-   system where that needs arguing, because a section title sounds like a
-   heading and was set like one.
+/* The display face, and it took a change of typeface to get here.
 
-   It is not a heading, it is a label. "NEEDS YOU TODAY" and "COMING UP" name
-   a group; the reader's eye is meant to pass over them on the way to the
-   rows beneath. That is why it sat at 15px while every other display use in
-   the app is 20px or more, and 15px is where Italiana stops working. Set
-   that way it rendered as though half the ink had failed: the N lost its
-   diagonal, the E and H crossbars went to about fifteen percent grey, the D
-   bowl broke up. The most-repeated piece of typography in the interface, and
-   on every screen it looked like a font that had not finished loading.
+   This is a label rather than a heading — "NEEDS YOU TODAY" names a group
+   and the eye is meant to pass over it on the way to the rows beneath — so
+   it has to stay small, and small was exactly where the old display face
+   failed. At 15px Italiana rendered as though half the ink had gone: the N
+   lost its diagonal, the E and H crossbars fell to about fifteen percent
+   grey, the D bowl broke up. The most-repeated piece of typography in the
+   interface, looking on every screen like a font that had not finished
+   loading. Raising it was not available either, since .s-md plant names are
+   21px and a label as large as the thing it labels stops being a label.
 
-   Raising it is not available. 20px is the floor for this face (see the note
-   on .sheet-title) and .s-md plant names are 21px — a label as large as the
-   thing it labels stops being a label. So the role and the face genuinely
-   disagree, and the face is what gives.
+   So it went to Jost, and the note here used to argue that the role and the
+   face genuinely disagreed and the face was what gave. That was the right
+   call for a face with one weight. It is not the right call now: the 500
+   holds every stroke at 14px, so the label can have the display face back
+   and the app's headings stop speaking in two voices.
 
-   The sans is not a compromise here, it is the idiom this app already uses
-   for exactly this: .label at 10px/0.22em, .section-note at 10px/0.2em
-   directly beside this one, .btn at 11px/0.2em, .gstat-l at 9.5px/0.22em,
-   the nav items. Every small tracked cap in the interface is Jost, all of
-   them crisp, and this was the single outlier. Jost is near-monolinear, so
-   there is no thin stroke to lose at any size.
-
-   14px rather than 15px, and the tracking opened from 0.2em to 0.23em: a
-   monolinear face at one size reads heavier than a high-contrast one, so
-   matching the old optical weight means giving back a little size and
-   spending it on air instead. Tracking is also what keeps this reading as a
-   label rather than as small body copy, and it lines the title up with the
-   0.2em .section-note sitting on the same baseline. */
+   14px and 0.23em are kept from the sans setting rather than reverted to the
+   original 15px/0.2em. The tracking is what makes this read as a label
+   instead of as small body copy, and it lines the title up with the 0.2em
+   .section-note sitting on the same baseline — both true for reasons that
+   had nothing to do with which face was in use. */
 .section-title {
-  font-family: var(--sans);
+  font-family: var(--display);
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: 0.23em;
   text-transform: uppercase;
   color: var(--ink);
@@ -878,28 +980,30 @@ img { max-width: 100%; display: block; }
 }
 .btn-soft:hover { background: rgba(63, 190, 139, 0.17); border-color: rgba(63, 190, 139, 0.4); filter: none; }
 
-/* Terracotta, not pink. This was the last consumer of --rose, and a pink
-   Delete button was the single most out-of-place object in the app: four
-   hues everywhere else, and then a pastel from a different product on the
-   one control that cannot be undone. Terracotta is the app's colour for
-   "stop and think", which is precisely the sentence a delete button needs
-   to say. Outlined rather than filled, deliberately — a destructive action
-   should be findable, never the brightest thing on the screen. */
-.btn-danger {
-  background: none;
-  border-color: rgba(208, 138, 98, 0.36);
-  color: var(--terra);
-  box-shadow: none;
-}
-.btn-danger:hover { background: var(--terra-soft); border-color: rgba(208, 138, 98, 0.55); filter: none; }
+/* .btn-danger and .btn-terra are gone. Both were outlined terracotta and
+   both have been replaced by .btn-blood, which keeps their intent — a
+   destructive control should be findable and never the brightest thing on
+   the screen — and measures better at it: 2.21:1 against this ground where
+   the outline read 6.69:1. The outline was the loudest of the options, not
+   the quietest, which is the opposite of what the note here used to claim. */
 
-.btn-terra {
-  background: none;
-  border-color: rgba(208, 138, 98, 0.36);
-  color: var(--terra);
-  box-shadow: none;
+/* Destructive actions. Declared after .btn and every other variant on
+   purpose: at equal specificity the later rule wins, and a version of this
+   placed earlier lost its background to .btn's emerald gradient — a delete
+   button that rendered in the primary green.
+
+   Built like the primary but without its glow. The glow is a lift, and a
+   lift is an invitation; this control should be easy to find and no fun at
+   all to press. The result is quieter on the page than the outline it
+   replaces — 2.21:1 against the ground where terracotta read 6.69:1 — while
+   being the most legible button in the app once you are actually reading it. */
+.btn-blood {
+  background: linear-gradient(175deg, var(--blood-lit), var(--blood-deep));
+  border-color: var(--blood-edge);
+  color: var(--blood-ink);
+  box-shadow: var(--sheen);
 }
-.btn-terra:hover { background: var(--terra-soft); border-color: rgba(208, 138, 98, 0.55); filter: none; }
+.btn-blood:hover { filter: brightness(1.12); box-shadow: var(--sheen), var(--shadow-sm); }
 
 /* --- Icon buttons --- */
 
@@ -955,7 +1059,9 @@ img { max-width: 100%; display: block; }
 
 .pill-grey { border-color: var(--hair-2); background: var(--glass); color: var(--ink-2); }
 .pill-mint { border-color: rgba(63, 190, 139, 0.3);  background: var(--mint-wash); color: var(--mint-2); }
-.pill-sun  { border-color: rgba(224, 178, 85, 0.3);  background: var(--sun-soft);  color: var(--sun-ink); }
+/* The class name stays — seven call sites across the views name it, and the
+   name describes the role rather than the hex. Only the colour moves. */
+.pill-sun  { border-color: rgba(200, 169, 107, 0.34); background: var(--gold-wash); color: var(--gold-lit); }
 .pill-terra{ border-color: rgba(208, 138, 98, 0.3);  background: var(--terra-soft);color: var(--terra-ink); }
 
 /* The top of the severity scale — highly toxic, act quickly. There was a
@@ -981,6 +1087,19 @@ img { max-width: 100%; display: block; }
   letter-spacing: 0.09em;
 }
 .pill-terra-hi svg { color: var(--terra-hi-ink); }
+
+/* Oxblood, filled, and it carries a glyph at every call site. Reserved for a
+   toxicity rating of 'very-toxic' against an animal the household actually
+   keeps. One species in the catalogue qualifies; putting it on 'toxic' would
+   mark 22 of 48 and the chip would stop being read. */
+.pill-blood {
+  border-color: var(--blood-edge);
+  background: var(--blood);
+  color: var(--blood-ink);
+  font-weight: 500;
+  letter-spacing: 0.09em;
+}
+.pill-blood svg { color: var(--blood-ink); }
 
 .chip {
   display: inline-flex;
@@ -1020,7 +1139,7 @@ img { max-width: 100%; display: block; }
   background: var(--ink-4);
 }
 .drop-ok   { background: var(--emerald-glow); box-shadow: 0 0 0 3px rgba(63, 190, 139, 0.15); }
-.drop-due  { background: var(--sun);          box-shadow: 0 0 0 3px rgba(224, 178, 85, 0.15); }
+.drop-due  { background: var(--gold);         box-shadow: 0 0 0 3px rgba(200, 169, 107, 0.15); }
 .drop-now  { background: var(--gold);         box-shadow: 0 0 0 3px rgba(200, 169, 107, 0.17); }
 .drop-over { background: var(--terra);        box-shadow: 0 0 0 3px rgba(208, 138, 98, 0.17); }
 
@@ -1031,7 +1150,7 @@ img { max-width: 100%; display: block; }
    as a different *kind* of state rather than a further one. */
 
 .sev-high { color: var(--terra); }
-.sev-med  { color: var(--sun); }
+.sev-med  { color: var(--gold); }
 
 /* ==========================================================================
    B5 · Forms
@@ -1495,11 +1614,11 @@ img { max-width: 100%; display: block; }
    near-identical dark greens, reading as six empty placeholders. The
    initial distinguishes them, survives being shrunk to 34px, and speaks the
    same monogram language as the room plates. */
-/* The photoless plant plate. UI.plantTile sets --tile-h and --tile-lift from
-   a hash of the plant's name; everything else — how saturated, how light,
-   which way the highlight rakes — belongs to the theme, so one gradient
-   serves both. The fallbacks matter: a tile rendered before its inline style
-   lands still gets a plausible mid-green rather than a black square. */
+/* The plate carries its tint as a class rather than an inline gradient, so a
+   theme switch re-tints every tile on screen without re-rendering a view —
+   which an inline literal could not do, since the views are only redrawn on
+   navigation. .tmark-0 is the fallback for a plate rendered before its class
+   lands. */
 .tmark {
   position: absolute;
   inset: 0;
@@ -1507,12 +1626,15 @@ img { max-width: 100%; display: block; }
   place-items: center;
   color: var(--mint);
   background:
-    radial-gradient(120% 100% at 18% 0%,
-      rgba(var(--tile-sheen), calc(0.1 + var(--tile-lift, 3) * 0.012)), transparent 62%),
-    linear-gradient(152deg,
-      hsl(var(--tile-h, 150) var(--tile-sat) calc((var(--tile-lum) + var(--tile-lift, 3)) * 1%)),
-      hsl(calc(var(--tile-h, 150) + 22) var(--tile-sat-2) calc(var(--tile-lum-2) * 1%)));
+    radial-gradient(120% 100% at 18% 0%, rgba(var(--tile-sheen), var(--tile-sheen-a)), transparent 62%),
+    linear-gradient(152deg, var(--tint-0a), var(--tint-0b));
 }
+.tmark-0 { background: radial-gradient(120% 100% at 18% 0%, rgba(var(--tile-sheen), var(--tile-sheen-a)), transparent 62%), linear-gradient(152deg, var(--tint-0a), var(--tint-0b)); }
+.tmark-1 { background: radial-gradient(120% 100% at 18% 0%, rgba(var(--tile-sheen), var(--tile-sheen-a)), transparent 62%), linear-gradient(152deg, var(--tint-1a), var(--tint-1b)); }
+.tmark-2 { background: radial-gradient(120% 100% at 18% 0%, rgba(var(--tile-sheen), var(--tile-sheen-a)), transparent 62%), linear-gradient(152deg, var(--tint-2a), var(--tint-2b)); }
+.tmark-3 { background: radial-gradient(120% 100% at 18% 0%, rgba(var(--tile-sheen), var(--tile-sheen-a)), transparent 62%), linear-gradient(152deg, var(--tint-3a), var(--tint-3b)); }
+.tmark-4 { background: radial-gradient(120% 100% at 18% 0%, rgba(var(--tile-sheen), var(--tile-sheen-a)), transparent 62%), linear-gradient(152deg, var(--tint-4a), var(--tint-4b)); }
+.tmark-5 { background: radial-gradient(120% 100% at 18% 0%, rgba(var(--tile-sheen), var(--tile-sheen-a)), transparent 62%), linear-gradient(152deg, var(--tint-5a), var(--tint-5b)); }
 .tmark svg {
   width: 44%;
   height: 44%;
@@ -1521,9 +1643,12 @@ img { max-width: 100%; display: block; }
   stroke-width: 1.15;
   opacity: 0.82;
 }
+/* The tile letter spans 15px in a room strip to 86px on a hero, so it is the
+   one place the crossover lives inside a single component. The base is the
+   small case; the two large ones take the 200 below. */
 .tmark-t {
   font-family: var(--display);
-  font-weight: 400;
+  font-weight: 500;
   font-size: 20px;
   line-height: 1;
   letter-spacing: 0.04em;
@@ -1536,8 +1661,8 @@ img { max-width: 100%; display: block; }
    at ~200px on a lookbook card. */
 .rcard-dot  .tmark-t { font-size: 15px; }
 .task-thumb .tmark-t { font-size: 21px; }
-.pcard-img  .tmark-t { font-size: 60px; letter-spacing: 0.06em; }
-.hero-img   .tmark-t { font-size: 86px; letter-spacing: 0.06em; }
+.pcard-img  .tmark-t { font-size: 60px; letter-spacing: 0.06em; font-weight: 200; }
+.hero-img   .tmark-t { font-size: 86px; letter-spacing: 0.06em; font-weight: 200; }
 
 /* ==========================================================================
    C3 · Plant cards
@@ -1720,7 +1845,7 @@ img { max-width: 100%; display: block; }
   background: radial-gradient(110% 90% at 30% 15%, rgba(63, 190, 139, 0.11), transparent 70%);
   font-family: var(--display);
   font-size: 22px;
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1;
   letter-spacing: 0.04em;
   color: var(--ink-2);
@@ -1799,10 +1924,14 @@ img { max-width: 100%; display: block; }
 
 .hero-body { min-width: 0; }
 
+/* 4:5, not 3:2. A plant is a vertical object, and the hero is the one
+   placement where the photograph is the subject rather than a thumbnail —
+   so it takes the portrait crop and the grid keeps the square. Three ratios
+   meant whatever the owner framed, at least one placement fought it. */
 .hero-img {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 4 / 5;
   object-fit: cover;
   border: 1px solid var(--hair);
   border-radius: var(--r-lg);
@@ -2802,29 +2931,26 @@ img { max-width: 100%; display: block; }
 .sheet-title {
   flex: 1;
   font-family: var(--display);
-  /* 20px, not 17px, because 17px is below the size this face survives.
-     Italiana's thin strokes are about a ninth of its cap height, so at 17px
-     they ask for roughly one pixel of ink — which antialiasing then spreads
-     across two rows at partial coverage, leaving a pale grey line beside a
-     near-black stem. "ADD TO YOUR GREENHOUSE" came out with the crossbars of
-     its T, E and H most of the way to invisible, so the T read as an I.
+  /* 20px was once a floor rather than a choice. Italiana had one weight, its
+     thin strokes were about a ninth of its cap height, and below 20px they
+     asked for roughly one pixel of ink — which antialiasing spread across
+     two rows at partial coverage, leaving a pale grey line beside a
+     near-black stem. "ADD TO YOUR GREENHOUSE" lost the crossbars of its T, E
+     and H, so the T read as an I.
 
-     Raising the device pixel ratio does not help, which is the part worth
-     recording: 1x, 2x and 3x captures of the same heading are equally
-     patchy, because the ratio scales the stroke and the pixel grid together.
-     A previous pass had concluded the opposite — that hairline dropout was a
-     1x rasterisation artifact to be reviewed away at dpr 3 — and that was
-     true of the large sizes, .topbar-title and .d-lg, which are genuinely
-     fine. Generalised into a blanket rule it became a reason to stop looking,
-     and it hid a real defect at the two smallest sizes for several sessions.
+     One observation from that investigation is worth keeping, because it is
+     about method rather than this face: raising the device pixel ratio does
+     not help. 1x, 2x and 3x captures were equally patchy, since the ratio
+     scales the stroke and the pixel grid together. A pass before it had
+     concluded the opposite and filed the dropout as a 1x artifact to review
+     away at dpr 3 — true of the large sizes and wrong everywhere else, which
+     turned a real defect into a reason to stop looking.
 
-     Checked by eye at 1x: 20px holds every stroke, 17px degrades, 15px is
-     half-erased. So 20px is the floor for this face, and a sheet title is a
-     heading — the modal's h1 — so it can simply be given the size. The
-     .section-title below it is a label rather than a heading and cannot be
-     made this loud, which is why that one changes face instead. */
+     The floor is gone now: the display face has a 500 and it holds every
+     stroke at 14px. 20px stays because a modal's heading wants that size,
+     not because anything breaks below it. */
   font-size: 20px;
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: 0.17em;
   text-transform: uppercase;
   color: var(--ink);
@@ -3023,7 +3149,7 @@ img { max-width: 100%; display: block; }
 .empty h3 {
   font-family: var(--display);
   font-size: 20px;
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: 0.17em;
   text-transform: uppercase;
   color: var(--ink);
@@ -3233,10 +3359,17 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
   --gold-lit:  #7E6226;
   --gold-wash: rgba(156, 124, 53, 0.13);
 
-  --sun:   #A9761B;
   --terra: #A0552C;
-  --sun-soft:   rgba(169, 118, 27, 0.12);
   --terra-soft: rgba(160, 85, 44, 0.12);
+
+  /* Unchanged across themes. A colour that means "cannot be undone" should
+     not soften because the lights came on, and it measures 9.87:1 against
+     ivory as readily as it does under it. */
+  --blood:      #6E2320;
+  --blood-lit:  #8A2C28;
+  --blood-deep: #571B19;
+  --blood-ink:  #FBF4F1;
+  --blood-edge: rgba(110, 35, 32, 0.9);
 
   /* Pill ink, darkened past the accent itself. The wash behind it is only a
      12% tint, so there is very little contrast to work with and the text has
@@ -3245,7 +3378,6 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
      glancing at a pill and squinting at one. Small type on a tinted ground
      wants more contrast than large type on the same ground, which is why
      these are not simply the accent tokens reused. */
-  --sun-ink:   #7A5310;
   --terra-ink: #7C3E1B;
 
   /* Ivory on the filled pill, since conservatory's terracotta is the dark
@@ -3311,11 +3443,16 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
      gradient already runs light-to-dark in that direction on paper, the
      sheen only has to agree with it — a breath of ivory rather than the
      mint glow, which on a 90%-light plate read as fluorescence. */
-  --tile-sat:   21%;
-  --tile-lum:   89;
-  --tile-sat-2: 25%;
-  --tile-lum-2: 81;
+  /* The same six, inverted. A plant keeps its index through a theme switch,
+     so it keeps its identity rather than being reassigned a colour. */
+  --tint-0a: #D9E8DF;  --tint-0b: #C6DBCF;
+  --tint-1a: #E0E8D0;  --tint-1b: #CEDABB;
+  --tint-2a: #D6E4E0;  --tint-2b: #C2D5CF;
+  --tint-3a: #E5E8CE;  --tint-3b: #D4DAB8;
+  --tint-4a: #D2E4D8;  --tint-4b: #BDD6C7;
+  --tint-5a: #EAE6D2;  --tint-5b: #DBD5BC;
   --tile-sheen: 255, 252, 247;
+  --tile-sheen-a: 0.5;
   --tile-ink:   rgba(19, 35, 27, 0.72);
 
   /* Legacy aliases, re-pointed so the views' inline styles stay coherent. */
@@ -3445,7 +3582,7 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
      .hero-sci will otherwise blow the column out past its share. */
   .hero {
     display: grid;
-    grid-template-columns: minmax(0, 42%) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 32%) minmax(0, 1fr);
     align-items: center;
     gap: 40px;
     margin-bottom: 44px;
@@ -3470,6 +3607,16 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
     margin-right: auto;
   }
   .d-xl { font-size: clamp(44px, 3.2vw, 62px); }
+}
+
+/* The portrait crop cannot also run the full measure on a phone. At 430px
+   that is a 386x482 plate — taller than the fold, before the plant's own
+   name has appeared — and on a species page, where there is never a
+   photograph, it is 482px of empty tint. Narrowing it keeps the 4:5 crop and
+   gives the plate back its proportion to the page. Desktop is already
+   handled by the .hero grid, which gives the plate 32% of the spread. */
+@media (max-width: 720px) {
+  .hero-img { max-width: 78%; margin-inline: auto; }
 }
 
 /* Landscape phones: the splash and hero otherwise eat the whole fold. */

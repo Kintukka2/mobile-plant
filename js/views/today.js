@@ -24,14 +24,14 @@ window.ViewToday = (function () {
 
     let line;
     if (!sum.plantCount) {
-      line = 'Add your first plant and Sprout will work out when it needs watering, how much, and when to feed it.';
+      line = 'Add your first plant and I\'ll work out when it needs water, how much, and when to feed it.';
     } else if (sum.overdueCount) {
       line = UI.plural(sum.overdueCount, 'plant') + ' ' + (sum.overdueCount === 1 ? 'is' : 'are') +
-             ' overdue. Nothing dramatic — most plants forgive a late drink far more readily than an early one.';
+             ' ready for a drink. Nothing dramatic — a late one is forgiven far more readily than an early one.';
     } else if (sum.dueCount) {
-      line = UI.plural(sum.dueCount, 'job') + ' to do today. ' + sum.seasonMeta.note;
+      line = UI.plural(sum.dueCount, 'job') + ' for today. ' + sum.seasonMeta.note;
     } else if (sum.soonCount) {
-      line = 'Nothing needs you today. ' + UI.plural(sum.soonCount, 'job') + ' coming up in the next few days.';
+      line = 'Nothing needs you today. ' + UI.plural(sum.soonCount, 'job') + ' coming up over the next few days.';
     } else {
       line = 'Everything is watered, fed and content. ' + sum.seasonMeta.note;
     }
@@ -137,7 +137,7 @@ window.ViewToday = (function () {
     const kind = LOOKUPS.TASKS[t.type];
 
     const when = t.never
-      ? (t.type === 'water' ? 'Never watered — start today' : 'Not fed yet this season')
+      ? (t.type === 'water' ? 'Not watered yet — start today' : 'Not fed yet this season')
       : UI.relDue(t.days);
 
     return '<div class="task' + (t.overdue ? ' is-overdue' : '') + '" ' +
@@ -197,8 +197,8 @@ window.ViewToday = (function () {
     if (!plants.length) {
       return greeting() + '<div class="section">' +
         UI.empty('leaf', 'No plants yet',
-          'Sprout has care data for ' + window.PLANT_DATA.length + ' common houseplants — ' +
-            'watering intervals, light, feeding, toxicity and propagation.',
+          'I\'ve got care data for ' + window.PLANT_DATA.length + ' common houseplants — watering ' +
+            'intervals, light, feeding, toxicity and how to propagate them.',
           '<button class="btn btn-lg" data-open="plant">' + UI.icon('plus') + 'Add your first plant</button>') +
       '</div>' + weatherStrip();
     }
@@ -217,7 +217,7 @@ window.ViewToday = (function () {
         : '<div class="card center all-clear">' +
             '<span class="all-clear-mark">' + UI.icon('leaf') + '</span>' +
             '<p class="all-clear-t">All caught up</p>' +
-            '<p class="tiny muted mt-0">Nothing is thirsty. ' + UI.esc(sub()) + '.</p>' +
+            '<p class="tiny muted mt-0">Nothing is thirsty today. ' + UI.esc(sub()) + '.</p>' +
           '</div>') +
     '</div>';
 
@@ -248,8 +248,8 @@ window.ViewToday = (function () {
         '<span class="nudge-ico">' + UI.icon('pin') + '</span>' +
         '<div class="grow" style="min-width:0">' +
           '<div class="nudge-t">Add your location</div>' +
-          '<p class="nudge-p">Sprout will then watch your forecast and offer to stretch or ' +
-            'shorten watering when a wet or dry spell is on the way.</p>' +
+          '<p class="nudge-p">Then I can watch your forecast and offer to stretch or shorten ' +
+            'watering when a wet or dry spell is on the way.</p>' +
           '<div class="row" style="gap:8px">' +
             '<button class="btn btn-sm" data-goto="/profile">Set up</button>' +
           '</div>' +

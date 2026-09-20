@@ -156,7 +156,7 @@ window.ViewGreenhouse = (function () {
         const results = searchSpecies(q).slice(0, 40);
         if (!results.length) {
           list.innerHTML = '<p class="muted small center" style="padding:18px 0">' +
-            'No match. Try a common name, or add the closest relative — the care will be similar.</p>';
+            'No match. Try a common name, or add the closest relative — the care will be near enough.</p>';
           return;
         }
         list.innerHTML = results.map(function (sp) {
@@ -232,7 +232,7 @@ window.ViewGreenhouse = (function () {
       '<label class="field"><span class="label">Give it a name (optional)</span>' +
         '<input class="input" id="f-nick" maxlength="40" placeholder="' + UI.attr(sp.common) + '" ' +
         'value="' + UI.attr(editing ? plant.nickname : '') + '">' +
-        '<p class="hint">Plants with names get looked after. No judgement here.</p>' +
+        '<p class="hint">Named plants get looked after. No judgement from me.</p>' +
       '</label>' +
 
       '<label class="field"><span class="label">Which room?</span>' +
@@ -262,7 +262,7 @@ window.ViewGreenhouse = (function () {
       '<label class="field"><span class="label">Last watered</span>' +
         '<input class="input" id="f-watered" type="date" max="' + UI.toISO(UI.today()) + '" ' +
         'value="' + UI.attr(editing ? (plant.lastWatered || '') : UI.toISO(UI.today())) + '">' +
-        '<p class="hint">Leave blank if you are not sure — Sprout will simply suggest watering it now.</p>' +
+        '<p class="hint">Not sure? Leave it blank and I\'ll suggest a drink straight away.</p>' +
       '</label>' +
 
       '<label class="field"><span class="label">' + (editing ? 'Acquired' : 'When did you get it?') + '</span>' +
@@ -297,7 +297,7 @@ window.ViewGreenhouse = (function () {
         } else {
           const created = Store.addPlant(data);
           UI.closeSheet();
-          UI.toast(Store.displayName(created) + ' joined your greenhouse', 'leaf');
+          UI.toast(Store.displayName(created) + ' is in your greenhouse', 'leaf');
           App.go('/plant/' + created.id);
         }
       });
@@ -354,8 +354,8 @@ window.ViewGreenhouse = (function () {
 
       '<label class="field"><span class="label">Which way does the window face?</span>' +
         '<select class="select" id="r-aspect">' + aspectOpts + '</select>' +
-        '<p class="hint" id="r-aspect-note">This sets the light level for you — and it works out differently ' +
-          (hemi === 'south' ? 'below' : 'above') + ' the equator, which Sprout accounts for.</p>' +
+        '<p class="hint" id="r-aspect-note">Tell me this and I\'ll work out the light level for you. It ' +
+          'comes out differently ' + (hemi === 'south' ? 'below' : 'above') + ' the equator, which I account for.</p>' +
       '</label>' +
 
       '<label class="field"><span class="label">Light level</span>' +
@@ -386,7 +386,7 @@ window.ViewGreenhouse = (function () {
       function describeLight() {
         const v = lightEl.value;
         lightNote.textContent = v ? LOOKUPS.LIGHT[v].desc
-          : 'Pick a window aspect above and Sprout will fill this in.';
+          : 'Pick a window aspect above and I\'ll fill this in.';
       }
       describeLight();
 
@@ -441,12 +441,12 @@ window.ViewGreenhouse = (function () {
         '<button class="dx-opt" data-add="plant" style="margin:0">' +
           '<span class="dx-opt-ico">' + UI.icon('leaf') + '</span><span>' +
             '<span class="dx-opt-t">A plant</span>' +
-            '<span class="dx-opt-d">Pick the species and Sprout builds its care schedule.</span>' +
+            '<span class="dx-opt-d">Pick the species and I\'ll build its care schedule.</span>' +
           '</span></button>' +
         '<button class="dx-opt" data-add="room" style="margin:0">' +
           '<span class="dx-opt-ico">' + UI.icon('home') + '</span><span>' +
             '<span class="dx-opt-t">A room</span>' +
-            '<span class="dx-opt-d">Tag it with its window aspect and Sprout works out the light.</span>' +
+            '<span class="dx-opt-d">Tag it with its window aspect and I\'ll work out the light.</span>' +
           '</span></button>' +
       '</div>',
       function (root) {
@@ -500,7 +500,7 @@ window.ViewGreenhouse = (function () {
          also quietly names the organising idea of the view — rooms — which
          the body copy immediately goes on to explain. */
       return UI.empty('leaf', 'Room to grow',
-        'Start by adding a room — a windowsill counts — or jump straight in with your first plant.',
+        'Let\'s start with a room — a windowsill counts. Or jump straight in and add your first plant.',
         '<div class="row" style="gap:8px;justify-content:center">' +
           '<button class="btn btn-ghost" data-open="room">Add a room</button>' +
           '<button class="btn" data-open="plant">Add a plant</button>' +
@@ -522,7 +522,7 @@ window.ViewGreenhouse = (function () {
           '<button class="btn btn-soft btn-block" data-open="room" style="margin-top:12px">' +
             UI.icon('plus') + 'Add another room</button>'
         : UI.empty('home', 'No rooms yet',
-            'Rooms are how Sprout works out light levels. Tag one with its window aspect and every plant in it gets a schedule tuned to that spot.',
+            'Rooms are how I work out light levels. Tag one with its window aspect and every plant in it gets a schedule tuned to that spot.',
             '<button class="btn" data-open="room">Add your first room</button>');
 
       if (unassigned.length) {
@@ -530,7 +530,7 @@ window.ViewGreenhouse = (function () {
           '<div class="section-head"><h2 class="section-title">Not in a room yet</h2>' +
           '<span class="section-note">' + UI.plural(unassigned.length, 'plant') + '</span></div>' +
           '<div class="grid grid-plants">' + unassigned.map(plantCard).join('') + '</div>' +
-          '<p class="hint" style="padding:0 2px">Assign these to a room and Sprout can factor the light into their watering.</p>' +
+          '<p class="hint" style="padding:0 2px">Put these in a room and I can factor the light into their watering.</p>' +
         '</div>';
       }
     } else {
@@ -542,7 +542,7 @@ window.ViewGreenhouse = (function () {
           '</div>' +
           '<button class="btn btn-soft btn-block" data-open="plant" style="margin-top:12px">' +
             UI.icon('plus') + 'Add a plant</button>'
-        : UI.empty('leaf', 'No plants yet', 'Add your first and Sprout will build its care schedule from real species data.',
+        : UI.empty('leaf', 'No plants yet', 'Add your first and I\'ll build its care schedule from real species data.',
             '<button class="btn" data-open="plant">Add a plant</button>');
     }
 

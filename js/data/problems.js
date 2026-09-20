@@ -319,7 +319,7 @@ window.PROBLEM_DATA = (function () {
         'Remove any leaves that have gone fully yellow or mushy. They will not recover and they invite fungus.',
         'Once recovered, water by weight and feel rather than by calendar — lift the pot, and learn what dry feels like.'
       ],
-      prevent: 'Always check the soil before watering rather than watering on a fixed day. Sprout\'s schedule is a prompt to check, not an instruction to pour.'
+      prevent: 'Always check the soil before watering rather than watering on a fixed day. My schedule is a prompt to check, not an instruction to pour.'
     },
 
     'root-rot': {
@@ -349,7 +349,7 @@ window.PROBLEM_DATA = (function () {
         'Give it a few hours. Most plants perk back up remarkably fast.',
         'Trim off leaves that have gone fully crisp — they cannot green up again.',
         'If the compost has visibly shrunk from the pot sides, repot into fresh mix.',
-        'Shorten the watering interval in Sprout so the reminder arrives sooner next time.'
+        'Shorten the watering interval here so the reminder arrives sooner next time.'
       ],
       prevent: 'Check the soil before the reminder is due, especially in summer or after a run of hot days. Thirsty plants in small pots may need water twice as often in a heatwave.'
     },
@@ -363,7 +363,7 @@ window.PROBLEM_DATA = (function () {
         'Settle into a rhythm: water thoroughly, let it dry to the right point, water thoroughly again.',
         'Use the same method every time rather than a small splash some days and a soak on others.',
         'Check the soil with your finger before each watering so you learn the plant\'s actual pace.',
-        'Log each watering in Sprout — the history quickly shows whether you are being erratic.'
+        'Log each watering — the history quickly shows whether you are being erratic.'
       ],
       prevent: 'One thorough watering when the plant is ready beats frequent small top-ups, which only ever wet the surface.'
     },
@@ -412,7 +412,7 @@ window.PROBLEM_DATA = (function () {
         'In a genuinely dark home, a simple LED grow light on a timer for 10–12 hours a day works well and is inexpensive.',
         'Introduce brighter light over a week or two rather than all at once, so it does not scorch.'
       ],
-      prevent: 'Match the plant to the room rather than the room to the plant. Sprout\'s room light tags will flag a mismatch when you add a plant.'
+      prevent: 'Match the plant to the room rather than the room to the plant. My room light tags will flag a mismatch when you add one.'
     },
 
     'too-much-light': {
@@ -455,7 +455,7 @@ window.PROBLEM_DATA = (function () {
         'A badly leaning plant can be pruned back and allowed to regrow with regular rotation.',
         'For tall or top-heavy plants, a stake or moss pole gives support while it rebalances.'
       ],
-      prevent: 'Rotate a quarter turn each time you water. Sprout can log a rotate task alongside watering.'
+      prevent: 'Rotate a quarter turn each time you water. I can log a rotate task alongside the watering.'
     },
 
     /* ---------------- Feeding & roots ---------------- */

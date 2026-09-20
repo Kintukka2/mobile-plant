@@ -19,7 +19,14 @@
 /* Bumped for the Viridium overhaul: new stylesheet, new icon system, four
    new typefaces. Any visitor still holding sprout-v1 would otherwise be
    served the old shell from cache and never see a line of it. */
-const CACHE = 'sprout-v3-viridium';
+/* v6: the voice. Every view file carries user-facing copy and all of them
+   changed, so a visitor holding v5 would read the old wording indefinitely.
+
+   v5: the display face. PP Hatton replaces Italiana, self-hosted in two
+   weights, and two new files join the precache list. A returning visitor
+   holding v4 would otherwise be served a shell asking for a font the old
+   cache has never heard of. */
+const CACHE = 'sprout-v6-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is
@@ -27,6 +34,9 @@ const CACHE = 'sprout-v3-viridium';
    Google serves these from a second origin with immutable, hash-named URLs,
    so a cached entry can never go stale — the only way it changes is if the
    URL changes, at which point it is a different entry. */
+/* Still three faces from Google — Cormorant, Jost and Sacramento. The
+   display face left this cache when it became ours: it is in ASSETS above,
+   versioned with the shell, and no longer at the mercy of a second origin. */
 const FONT_CACHE = 'sprout-fonts-v1';
 const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 
@@ -37,6 +47,11 @@ const ASSETS = [
   'index.html',
   'manifest.webmanifest',
   'css/styles.css',
+  /* The display face. Self-hosted, so unlike the Google faces it can be
+     precached by name at install — which is what makes a first offline load
+     look like the app rather than like its fallback stack. */
+  'css/fonts/hatton-ultralight.woff2',
+  'css/fonts/hatton-medium.woff2',
   'js/data/lookups.js',
   'js/data/plants.js',
   'js/data/problems.js',

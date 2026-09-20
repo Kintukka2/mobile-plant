@@ -89,8 +89,8 @@ window.ViewRoom = (function () {
         '<span class="nudge-ico">' + UI.icon('compass') + '</span>' +
         '<div class="grow">' +
           '<div class="nudge-t">Tag this room\'s light</div>' +
-          '<p class="nudge-p">Tell Sprout which way the window faces and it will work out ' +
-            'the light level — then every schedule in here gets tuned to it.</p>' +
+          '<p class="nudge-p">Tell me which way the window faces and I\'ll work out the light level — ' +
+            'then every schedule in here gets tuned to it.</p>' +
           '<div class="row" style="gap:8px">' +
             '<button class="btn btn-sm" data-edit="1">Set the aspect</button>' +
           '</div>' +
@@ -175,8 +175,8 @@ window.ViewRoom = (function () {
 
     /* --- Danger zone --- */
     html += '<div class="section">' +
-      '<button class="btn btn-danger btn-block" data-delete="1">' + UI.icon('trash') + 'Delete this room</button>' +
-      '<p class="hint center">Plants inside will not be deleted — they simply become unassigned.</p>' +
+      '<button class="btn btn-blood btn-block" data-delete="1">' + UI.icon('trash') + 'Delete this room</button>' +
+      '<p class="hint center">The plants inside stay — they just won\'t have a room.</p>' +
     '</div>';
 
     return html;
