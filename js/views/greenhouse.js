@@ -806,17 +806,12 @@ window.ViewGreenhouse = (function () {
     if (tab === 'rooms') {
       const unassigned = plants.filter(function (p) { return !p.roomId; });
 
-      const drawnCount = rooms.filter(function (r) { return r.shape; }).length;
       html += rooms.length
-        ? /* The plan card sits above the rooms it draws. Its note says how
-             much of the greenhouse is on it, which is the one thing a reader
-             with a half-traced home wants to know before opening it. */
+        ? /* The plan card sits above the rooms it draws. */
           '<button class="nudge is-link plan-card" data-go="/plan">' +
             '<span class="nudge-ico">' + UI.icon('compass') + '</span>' +
-            '<div class="grow"><div class="nudge-t">Your plan</div>' +
-              '<p class="nudge-p mb-0">' + (drawnCount
-                ? (drawnCount === rooms.length ? 'Every room is drawn. ' : UI.plural(drawnCount, 'room') + ' of ' + rooms.length + ' drawn. ') + 'Open it to place plants where the light is.'
-                : 'Trace your home and I\'ll read each room\'s light from its windows.') + '</p></div>' +
+            '<div class="grow"><div class="nudge-t">Update greenhouse</div>' +
+              '<p class="nudge-p mb-0">Map out your home using the planner</p></div>' +
             UI.icon('chevron', 'muted') +
           '</button>' +
           /* The plan is one thing and the rooms are many things; a hairline
