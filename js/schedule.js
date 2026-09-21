@@ -382,24 +382,35 @@ window.Schedule = (function () {
     const pets = Store.get().profile.pets || [];
     if (!pets.length || !sp || !sp.tox) return null;
 
+    const order = { 'mild': 1, 'toxic': 2, 'very-toxic': 3 };
     const risks = [];
     pets.forEach(function (pet) {
-      const rating = sp.tox[pet];
-      if (rating && rating !== 'safe') {
-        risks.push({ pet: pet, rating: rating });
-      }
+      /* "Other" has no column of its own — the species data rates cats,
+         dogs and people — so it borrows the worse of the two animals. A
+         rabbit or a bird is not a cat, but a plant that would hurt either
+         of those is not one to leave within reach of anything. */
+      const keys = pet === 'other' ? ['cats', 'dogs'] : [pet];
+      let rating = null;
+      keys.forEach(function (k) {
+        const r = sp.tox[k];
+        if (r && r !== 'safe' && (!rating || order[r] > order[rating])) rating = r;
+      });
+      if (rating) risks.push({ pet: pet, rating: rating });
     });
     if (!risks.length) return null;
 
     const worst = risks.reduce(function (acc, r) {
-      const order = { 'mild': 1, 'toxic': 2, 'very-toxic': 3 };
       return order[r.rating] > order[acc.rating] ? r : acc;
     }, risks[0]);
+
+    /* The names feed "Not safe for your cats or dogs". "Other" would read as
+       "your other", so once it is in the mix the line says "your pets". */
+    const names = risks.some(function (r) { return r.pet === 'other'; }) ? ['pets'] : risks.map(function (r) { return r.pet; });
 
     return {
       risks: risks,
       worst: worst.rating,
-      pets: risks.map(function (r) { return r.pet; }),
+      pets: names,
       note: sp.tox.note
     };
   }

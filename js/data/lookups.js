@@ -376,7 +376,34 @@ window.LOOKUPS = (function () {
                note: 'Without drainage you must water less and more carefully — there is nowhere for excess water to go.' }
   };
 
+
+  /* ---------- The two profile questions ----------
+     Asked twice — on the splash at first run and again in Profile — so the
+     answers live here rather than in either view.
+
+     Pets drive the toxicity warnings. "Other" has no rating of its own in
+     the species data, which scores cats, dogs and people; Schedule.petRisk
+     reads it as the worse of cats and dogs.
+
+     Experience is a slider in Profile, and the array index is the position
+     on its rail, so these stay least-to-most experienced and a new rung is
+     inserted where it belongs rather than pushed on the end. */
+  const PETS = [
+    { key: 'cats',  label: 'Cats',  ico: 'paw' },
+    { key: 'dogs',  label: 'Dogs',  ico: 'dog' },
+    { key: 'other', label: 'Other', ico: 'heart' }
+  ];
+
+  const EXPERIENCE = [
+    { key: 'new',       label: 'Completely new' },
+    { key: 'some',      label: 'Figuring it out' },
+    { key: 'few',       label: 'I have a few plants' },
+    { key: 'confident', label: 'I\'m confident' },
+    { key: 'green',     label: 'I have a green thumb' }
+  ];
+
   return {
+    PETS: PETS, EXPERIENCE: EXPERIENCE,
     LIGHT, ASPECTS, ASPECT_NAMES, aspectProfile, aspectLabel,
     hemisphereFromTimeZone: hemisphereFromTimeZone,
     ROOM_PRESETS, ROOM_ICONS, HUMIDITY, DIFFICULTY, TOX, TASKS, LOG_KINDS,

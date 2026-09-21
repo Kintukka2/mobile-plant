@@ -509,6 +509,104 @@ img { max-width: 100%; display: block; }
   transition: opacity 760ms var(--ease), visibility 760ms;
 }
 .splash.is-out { opacity: 0; visibility: hidden; }
+.splash-inner { transition: opacity 520ms var(--ease-io), transform 520ms var(--ease-io); }
+.splash-inner.is-quiet { opacity: 0; transform: translateY(-12px); pointer-events: none; }
+
+/* ---- First-run introduction, on the splash ----
+   Same field, same face. A small wordmark keeps the scene continuous while
+   the questions take the centre one at a time; the dots and the skip sit
+   low and quiet so the question is the only thing at eye level. */
+.ob {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 0 28px;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  transition: opacity 380ms var(--ease-io);
+}
+.ob.is-leaving { opacity: 0; pointer-events: none; }
+.ob-brand {
+  position: absolute; top: calc(env(safe-area-inset-top, 0px) + 9vh);
+  font-family: var(--display); font-weight: 500; font-size: 13px;
+  letter-spacing: 0.34em; text-indent: 0.34em; text-transform: uppercase;
+  color: var(--ink-3);
+  animation: obIn 900ms var(--ease) 260ms both;
+}
+.ob-stage { width: 100%; max-width: 420px; }
+.ob-step { display: flex; flex-direction: column; align-items: center; width: 100%; }
+.ob-step > * { animation: obIn 720ms var(--ease) both; }
+.ob-step > *:nth-child(2) { animation-delay: 90ms; }
+.ob-step > *:nth-child(3) { animation-delay: 180ms; }
+.ob-step > *:nth-child(4) { animation-delay: 270ms; }
+.ob-step.is-leaving > * { animation: obOut 360ms var(--ease-io) both; }
+.ob-step.is-leaving > *:nth-child(2) { animation-delay: 40ms; }
+.ob-step.is-leaving > *:nth-child(3) { animation-delay: 80ms; }
+.ob-step.is-leaving > *:nth-child(4) { animation-delay: 120ms; }
+.ob-q {
+  font-family: var(--display); font-weight: 200;
+  font-size: clamp(28px, 7.4vw, 40px); line-height: 1.15; letter-spacing: 0.05em;
+  color: var(--ink); text-align: center; text-wrap: balance;
+  margin: 0 0 26px;
+}
+.ob-input {
+  width: 100%; max-width: 360px;
+  background: none; border: 0; border-bottom: 1px solid var(--hair-3); border-radius: 0;
+  color: var(--ink); font-family: var(--serif); font-size: 28px; text-align: center;
+  padding: 6px 0 12px; outline: none;
+  transition: border-color var(--dur-2) var(--ease);
+}
+.ob-input::placeholder { color: var(--ink-4); }
+.ob-input:focus { border-bottom-color: var(--mint); }
+/* The rule turning mint is the focus cue; the global outline drew a box
+   around a field that is meant to be a line. */
+.ob-input:focus-visible { outline: none; }
+.ob-hint {
+  font-family: var(--sans); font-size: 13.5px; line-height: 1.55;
+  color: var(--ink-3); text-align: center; text-wrap: balance;
+  max-width: 36ch; margin: 16px auto 0;
+}
+.ob-note { min-height: 1.5em; color: var(--mint); }
+.ob-actions { margin-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; }
+.ob-actions .btn { min-width: 220px; }
+.ob-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.ob-chip { padding: 11px 18px; font-size: 13.5px; }
+.ob-opts { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 360px; }
+.ob-opt {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  width: 100%; padding: 14px 18px;
+  border: 1px solid var(--hair-2); border-radius: var(--r);
+  background: var(--glass); color: var(--ink);
+  font-family: var(--serif); font-size: 18px; text-align: center;
+  cursor: pointer;
+  transition: border-color var(--dur-1) var(--ease), background var(--dur-1) var(--ease), transform var(--dur-1) var(--ease);
+}
+.ob-opt small { font-family: var(--sans); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-4); }
+.ob-opt.is-hinted { border-color: var(--hair-3); }
+.ob-opt.is-on { border-color: var(--mint); background: var(--mint-wash); }
+.ob-opt.is-on small { color: var(--mint); }
+.ob-opt:active { transform: scale(0.985); }
+.ob-dots { position: absolute; bottom: calc(env(safe-area-inset-bottom, 0px) + 10vh); display: flex; gap: 9px; animation: obIn 900ms var(--ease) 420ms both; }
+.ob-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--hair-3); transition: background var(--dur-2) var(--ease), transform var(--dur-2) var(--ease); }
+.ob-dot.is-on { background: var(--mint); transform: scale(1.3); }
+.ob-dot.is-done { background: var(--ink-4); }
+.ob-skip {
+  position: absolute; bottom: calc(env(safe-area-inset-bottom, 0px) + 4.5vh);
+  background: none; border: 0; padding: 8px 12px;
+  font-family: var(--sans); font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--ink-4); cursor: pointer;
+  animation: obIn 900ms var(--ease) 600ms both;
+}
+@keyframes obIn {
+  from { opacity: 0; transform: translateY(18px); filter: blur(6px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+@keyframes obOut {
+  from { opacity: 1; transform: none; filter: blur(0); }
+  to   { opacity: 0; transform: translateY(-14px); filter: blur(6px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ob-step > *, .ob-step.is-leaving > *, .ob-brand, .ob-dots, .ob-skip { animation: none; }
+}
 
 .splash-inner { text-align: center; padding: 0 28px; }
 

@@ -13,26 +13,17 @@ window.ViewProfile = (function () {
      at 13px two paws would make the rows indistinguishable, and this is the
      one control in the app where picking the wrong row means a warning you
      needed never arrives. */
-  const PETS = [
-    { key: 'cats', label: 'Cats', ico: 'paw' },
-    { key: 'dogs', label: 'Dogs', ico: 'dog' }
-  ];
-
-  /* Order is load-bearing now that this is a slider: the array index is the
-     position on the rail, so these three must stay least-to-most experienced
-     and a new rung has to be inserted in the right place rather than pushed
-     on the end. */
-  const EXPERIENCE = [
-    { key: 'new',       label: 'Just starting out' },
-    { key: 'some',      label: 'Killed a few, learning' },
-    { key: 'confident', label: 'Confident' }
-  ];
+  /* Both tables live in LOOKUPS because the first-run introduction asks the
+     same two questions on the splash, and two copies of a list of answers
+     would drift the first time one was edited. */
+  const PETS = LOOKUPS.PETS;
+  const EXPERIENCE = LOOKUPS.EXPERIENCE;
 
   function expToIndex(key) {
     for (let i = 0; i < EXPERIENCE.length; i++) {
       if (EXPERIENCE[i].key === key) return i + 1;
     }
-    return 2;   /* nothing stored — rest in the middle */
+    return Math.ceil(EXPERIENCE.length / 2);   /* nothing stored — rest in the middle */
   }
 
   /* The thumb's position as a percentage of the rail, for the filled part of
@@ -266,7 +257,7 @@ window.ViewProfile = (function () {
         '<div class="slider-shell' + (prof.experience ? '' : ' is-unset') + '" id="p-exp-shell" ' +
           'style="--fill:' + expFill(expIndex) + '">' +
           '<div class="slider-rail"><div class="slider-fill"></div></div>' +
-          '<input class="slider" type="range" id="p-exp" min="1" max="3" step="1" ' +
+          '<input class="slider" type="range" id="p-exp" min="1" max="' + EXPERIENCE.length + '" step="1" ' +
             'value="' + expIndex + '" aria-label="How are you with plants?" ' +
             'aria-valuetext="' + UI.attr(expReading(prof.experience)) + '">' +
           '<div class="slider-travel" aria-hidden="true"><div class="slider-thumb"></div></div>' +
@@ -462,25 +453,17 @@ window.ViewProfile = (function () {
      First run
      ====================================================================== */
 
+  /* Just the introduction and the two doors. The name and pet fields that
+     used to sit here are asked on the splash now, one at a time, before this
+     sheet opens; asking again would be the same question twice in a minute. */
   function welcomeSheet() {
+    const name = (Store.get().profile.name || '').trim();
     const body =
       '<p class="dim" style="margin:0 0 18px;line-height:1.65">' +
-        'Hi, I\'m Sprout, and this is a home for your houseplants. Tell me what you have and which room ' +
+        'Hi' + (name ? ' ' + UI.esc(name) : '') + ', I\'m Sprout, and this is a home for your houseplants. Tell me what you have and which room ' +
         'they are in, and we can work out a routine around what each one actually needs — the species\' own ' +
         'requirements, adjusted for your pot, your light and the season you are really in.' +
       '</p>' +
-
-      '<label class="field"><span class="label">What should I call you?</span>' +
-        '<input class="input" id="w-name" maxlength="30" placeholder="Optional"></label>' +
-
-      '<div class="field"><span class="label">Any pets at home?</span>' +
-        '<div class="row-wrap">' + PETS.map(function (p) {
-          return '<button type="button" class="chip" data-wpet="' + p.key + '">' +
-            UI.icon(p.ico) + UI.esc(p.label) + '</button>';
-        }).join('') + '</div>' +
-        '<p class="hint">I\'ll warn you before you add anything that would hurt them. A surprising number of ' +
-          'the popular plants would.</p>' +
-      '</div>' +
 
       '<div class="stack" style="gap:8px;margin-top:18px">' +
         '<button class="btn btn-lg" id="w-go">Set up my greenhouse</button>' +
@@ -488,19 +471,7 @@ window.ViewProfile = (function () {
       '</div>';
 
     UI.openSheet('Welcome to Sprout', body, function (root) {
-      const pets = [];
-
-      root.querySelectorAll('[data-wpet]').forEach(function (b) {
-        b.addEventListener('click', function () {
-          const key = b.getAttribute('data-wpet');
-          const at = pets.indexOf(key);
-          if (at === -1) { pets.push(key); b.classList.add('is-on'); }
-          else { pets.splice(at, 1); b.classList.remove('is-on'); }
-        });
-      });
-
       function save() {
-        Store.updateProfile({ name: root.querySelector('#w-name').value.trim(), pets: pets });
         Store.updateSettings({ seenWelcome: true });
       }
 
