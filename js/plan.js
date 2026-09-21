@@ -24,7 +24,13 @@
 window.Plan = (function () {
 
   const WALL = 0, WINDOW = 1, OPENING = 2;
-  const GW = 30, GH = 24;                 // the grid, in cells
+  /* The drawable grid, in cells — 24m by 20m at the default half-metre
+     cell. Wider than any flat needs on purpose: the grid is also the only
+     thing on the canvas when nothing is drawn yet, and at 30 by 24 a pinch
+     outwards ran off the end of it and left the plan floating in a void.
+     The resting frame shows a window onto the middle of it, so there is
+     always more grid in every direction. */
+  const GW = 48, GH = 40;                 // the grid, in cells
 
   const RANKS = ['none', 'low', 'medium', 'bright-indirect', 'direct'];
   function keyOf(rank) { return RANKS[Math.max(0, Math.min(4, rank))]; }

@@ -17,9 +17,17 @@
 window.ViewPlan = (function () {
 
   const P = 24;                       // px per grid cell in Plan view
+  /* A loaded floorplan starts this wide, whatever the grid measures. It was
+     the grid's own width, so widening the grid would have stretched every
+     backdrop already lined up under one. */
+  const BD_W = 720;
   const A = 22, B = 11;               // isometric half-widths per cell
   const WALL = Plan.WALL, WINDOW = Plan.WINDOW, OPENING = Plan.OPENING;
   const GW = Plan.GW, GH = Plan.GH;
+  /* The window onto the grid before anything is drawn, in cells, centred.
+     Framing the whole grid instead would put the reader at the far end of a
+     zoom-out with nowhere left to go. */
+  const HOME_W = 20, HOME_H = 16;
 
   /* Editor state, kept across renders of this view but never saved. */
   let mode = 'plan';                  // 'plan' | 'home'
@@ -77,13 +85,16 @@ window.ViewPlan = (function () {
   let fitBox = null;
   function fitOf() {
     const list = drawn();
-    if (!list.length) return { x: 0, y: 0, w: GW * P, h: GH * P };
+    if (!list.length) return homeBox();
     const all = []; list.forEach(function (r) { r.shape.pts.forEach(function (p) { all.push(p); }); });
     const b = Plan.bbox(all), pad = 2, minW = 12, minH = 9;
     let x0 = b.x0 - pad, y0 = b.y0 - pad, x1 = b.x1 + pad, y1 = b.y1 + pad;
     if (x1 - x0 < minW) { const m = (x0 + x1) / 2; x0 = m - minW / 2; x1 = m + minW / 2; }
     if (y1 - y0 < minH) { const m = (y0 + y1) / 2; y0 = m - minH / 2; y1 = m + minH / 2; }
     return { x: x0 * P, y: y0 * P, w: (x1 - x0) * P, h: (y1 - y0) * P };
+  }
+  function homeBox() {
+    return { x: (GW - HOME_W) / 2 * P, y: (GH - HOME_H) / 2 * P, w: HOME_W * P, h: HOME_H * P };
   }
   function sameBox(a, b) { return !!a && !!b && a.x === b.x && a.y === b.y && a.w === b.w && a.h === b.h; }
   function centreView() { const v = curView(); v.k = 1; v.cx = 0; v.cy = 0; if (mode === 'plan') fitBox = fitOf(); }
@@ -136,7 +147,7 @@ window.ViewPlan = (function () {
     let h = '';
     if (pl.backdrop && pl.backdrop.src) {
       const b = pl.backdrop;
-      h += '<image href="' + UI.attr(b.src) + '" x="' + b.x + '" y="' + b.y + '" width="' + (GW * P * b.scale) + '" opacity="' + b.opacity + '" preserveAspectRatio="xMinYMin meet" style="pointer-events:none"></image>';
+      h += '<image href="' + UI.attr(b.src) + '" x="' + b.x + '" y="' + b.y + '" width="' + (BD_W * b.scale) + '" opacity="' + b.opacity + '" preserveAspectRatio="xMinYMin meet" style="pointer-events:none"></image>';
     }
     h += '<g>';
     for (let i = 0; i <= GW; i++) h += '<line x1="' + (i * P) + '" y1="0" x2="' + (i * P) + '" y2="' + (GH * P) + '" stroke="var(' + (i % 2 ? '--plan-grid' : '--plan-grid-2') + ')"/>';
@@ -228,7 +239,10 @@ window.ViewPlan = (function () {
     const Z = wallPx(), list = drawn();
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
     function consider(x, y, z) { const p = iso(x, y, z); minX = Math.min(minX, p[0]); maxX = Math.max(maxX, p[0]); minY = Math.min(minY, p[1]); maxY = Math.max(maxY, p[1]); }
-    if (!list.length) { consider(0, 0, 0); consider(GW, 0, 0); consider(0, GH, 0); consider(GW, GH, 0); }
+    if (!list.length) {
+      const a = (GW - HOME_W) / 2, b = (GH - HOME_H) / 2;
+      consider(a, b, 0); consider(a + HOME_W, b, 0); consider(a, b + HOME_H, 0); consider(a + HOME_W, b + HOME_H, 0);
+    }
     list.forEach(function (r) { r.shape.pts.forEach(function (p) { consider(p.x, p.y, 0); consider(p.x, p.y, Z); }); });
     let sunAt = null;
     if (Plan.known() && list.length) {
@@ -243,7 +257,8 @@ window.ViewPlan = (function () {
 
     let h = '';
     if (!list.length) {
-      canvas.innerHTML = '<polygon points="' + pts([iso(0, 0, 0), iso(GW, 0, 0), iso(GW, GH, 0), iso(0, GH, 0)]) + '" style="fill:var(--plan-floor-x);stroke:var(--plan-wall-edge)"/>';
+      const a = (GW - HOME_W) / 2, b2 = (GH - HOME_H) / 2;
+      canvas.innerHTML = '<polygon points="' + pts([iso(a, b2, 0), iso(a + HOME_W, b2, 0), iso(a + HOME_W, b2 + HOME_H, 0), iso(a, b2 + HOME_H, 0)]) + '" style="fill:var(--plan-floor-x);stroke:var(--plan-wall-edge)"/>';
       return;
     }
     const ordered = list.slice().sort(function (a, b) { const ca = Plan.centroid(a.shape.pts), cb = Plan.centroid(b.shape.pts); return (ca.x + ca.y) - (cb.x + cb.y); });
@@ -341,6 +356,11 @@ window.ViewPlan = (function () {
       } else {
         h += '<p class="hint">Upload an image of your floorplan. Then use <b>Add a room</b> to trace over it and create each room. Set the dimensions, add windows and you\'re ready to go. Tick the checkbox when you are done.</p>' +
           '<p class="hint" style="margin-top:8px">Or skip this step and draw rooms freehand.</p>';
+      }
+      /* Kept within reach after the invitation has gone: the beat a reader
+         comes back for is usually windows or north, not the grid. */
+      if (window.Tour) {
+        h += '<p style="margin-top:12px"><button class="link-btn" data-tour="1">Watch the walkthrough again</button></p>';
       }
     }
     h += '</div>';
@@ -684,6 +704,7 @@ window.ViewPlan = (function () {
     else n.hidden = true;
     root.querySelector('#pl-reshape').hidden = !(mode === 'plan' && sel && sel.type === 'room');
     root.querySelector('#pl-quick-add').hidden = !(mode === 'plan' && sel && sel.type === 'room' && !drawing);
+    root.querySelector('#pl-invite').hidden = !(mode === 'plan' && !drawing && !list.length && window.Tour);
     const wt = root.querySelector('#pl-walls-toggle');
     wt.hidden = mode !== 'home' || !list.length;
     wt.textContent = ui.hideInner ? 'Show inside walls' : 'Hide inside walls';
@@ -740,6 +761,14 @@ window.ViewPlan = (function () {
     input.click();
   }
 
+  /* Where both the invitation's quiet link and the walkthrough's last
+     button land: Step 2 open, the add tool armed, nothing drawn for them. */
+  function startTracing() {
+    ui.open[2] = true;
+    tool = 'add'; drawing = { pts: [] }; mode = 'plan'; sel = null;
+    redraw();
+  }
+
   /* ======================================================================
      Rooms: create, reshape, edit
      ====================================================================== */
@@ -785,6 +814,17 @@ window.ViewPlan = (function () {
           '<button class="plan-stage-btn is-bottom" id="pl-walls-toggle" hidden></button>' +
           '<button class="plan-stage-btn is-left" id="pl-view-reset" hidden>Centre</button>' +
           '<button class="plan-stage-btn is-left is-bottom" id="pl-quick-add" hidden>' + UI.icon('plus') + 'Add a plant</button>' +
+          /* Offered, not asked. An empty grid has nothing to interrupt, so
+             the invitation lives on it rather than in a dialog over it, and
+             it goes the moment a first room exists. */
+          '<div class="plan-invite" id="pl-invite" hidden>' +
+            '<div class="plan-invite-t">Nothing drawn yet</div>' +
+            '<p class="hint">I\'ll build a sample flat and name each part as it appears, if it helps to see one first.</p>' +
+            '<div class="stack" style="gap:9px;align-items:center">' +
+              '<button class="btn btn-sm" data-tour="1">' + UI.icon('sparkle') + 'Watch me build one</button>' +
+              '<button class="link-btn" id="pl-trace">or trace one yourself</button>' +
+            '</div>' +
+          '</div>' +
         '</div>' +
       '</div>' +
       '<div class="plan-panel" id="pl-panel"></div>' +
@@ -805,6 +845,8 @@ window.ViewPlan = (function () {
       if (e.target.closest('.plan-tools [data-open-compass]')) { openCompass(); return; }
       if (e.target.closest('[data-open-dims]')) { openDims(sel && sel.type === 'room' ? sel.id : null); return; }
       if (e.target.closest('#pl-quick-add')) { if (sel && sel.type === 'room') quickAdd(room(sel.id)); return; }
+      if (e.target.closest('[data-tour]')) { Tour.open(startTracing); return; }
+      if (e.target.closest('#pl-trace')) { startTracing(); return; }
     });
 
     /* ---- Canvas: wheel, pinch, pan, drag ---- */

@@ -17,7 +17,7 @@ property that makes this project what it is.
 
 - **Classic `<script>` tags.** Not `type="module"`.
 - **Globals are the module system.** Each file assigns exactly one namespace:
-  `UI`, `Store`, `Schedule`, `Plan`, `Weather`, `Photos`, `Onboard`,
+  `UI`, `Store`, `Schedule`, `Plan`, `Weather`, `Photos`, `Onboard`, `Tour`,
   `PLANT_DATA`, `PROBLEM_DATA`, `LOOKUPS`, `App`, and one `View*` per screen.
 - **Load order in `index.html` is the dependency graph.** Data and utilities
   first, views next, router last.
