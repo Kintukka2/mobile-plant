@@ -52,6 +52,8 @@ window.Store = (function () {
         weatherSync: true,
         seenWelcome: false,
         onboarded: false,       // the first-run questions were answered or skipped
+        remind: false,          // morning reminders, off until the reader asks
+        remindHour: 8,          // local hour they arrive
         adjustments: {}         // plantId -> days offset accepted from a weather nudge
       }
     };
@@ -84,6 +86,10 @@ window.Store = (function () {
   function save() {
     try {
       localStorage.setItem(KEY, JSON.stringify(state));
+      /* The reminder digest is derived from exactly this, so it is rebuilt
+         wherever this is written rather than at a handful of call sites
+         that would drift apart. Notify coalesces and never throws. */
+      if (window.Notify) Notify.sync();
       return true;
     } catch (e) {
       if (e && (e.name === 'QuotaExceededError' || e.code === 22)) {

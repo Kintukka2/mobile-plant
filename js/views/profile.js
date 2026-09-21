@@ -266,6 +266,51 @@ window.ViewProfile = (function () {
       '</div>' +
     '</div>';
 
+    /* --- Reminders ---
+       The permission prompt is never asked for on its own account: the
+       toggle asks, and only after the reader has reached for it. A cold
+       prompt on a first visit is the quickest way to be refused for good,
+       and a refusal cannot be taken back from inside the page. */
+    if (window.Notify) {
+      const nState = Notify.state();
+      const on = !!settings.remind && nState === 'granted';
+      const hour = typeof settings.remindHour === 'number' ? settings.remindHour : 8;
+      html += '<div class="section">' +
+        '<div class="section-head"><h2 class="section-title">Reminders</h2>' +
+          '<span class="section-note">one a day, at most</span></div>' +
+        '<div class="card">' +
+          '<label class="row" style="gap:10px;cursor:pointer">' +
+            '<input type="checkbox" id="p-remind"' + (on ? ' checked' : '') +
+              (nState === 'unsupported' || nState === 'denied' ? ' disabled' : '') + ' ' +
+              'style="width:18px;height:18px;accent-color:var(--leaf)">' +
+            '<span style="flex:1;min-width:0"><span style="font-weight:600;font-size:14px">Remind me in the mornings</span>' +
+              '<span class="tiny muted" style="display:block">Only on the days something is actually due. ' +
+                'Nothing due, nothing from me.</span></span>' +
+          '</label>' +
+          (on
+            ? '<hr class="divider">' +
+              '<label class="field" style="margin:0"><span class="label">What time</span>' +
+                '<select class="input select" id="p-remind-hour">' +
+                  [6, 7, 8, 9, 10, 11, 12, 17, 18, 19].map(function (h) {
+                    const lbl = h === 12 ? 'Midday' : (h > 12 ? (h - 12) + ' pm' : h + ' am');
+                    return '<option value="' + h + '"' + (h === hour ? ' selected' : '') + '>' + lbl + '</option>';
+                  }).join('') +
+                '</select></label>' +
+              '<div class="row" style="gap:8px;margin-top:12px">' +
+                '<button class="btn btn-sm btn-soft" data-remind-test="1">' + UI.icon('bell') + 'Send me one now</button>' +
+              '</div>' +
+              '<p class="hint">' + UI.esc(remindPreview()) + '</p>'
+            : nState === 'denied'
+              ? '<p class="hint">Your browser is blocking notifications for Sprout. That switch lives in the ' +
+                'browser\'s own settings for this site, not in here.</p>'
+              : nState === 'unsupported'
+                ? '<p class="hint">This browser cannot show notifications. On an iPhone, add Sprout to the ' +
+                  'Home Screen first and they start working.</p>'
+                : '') +
+        '</div>' +
+      '</div>';
+    }
+
     /* --- Location & weather --- */
     const line = Weather.currentLine();
     html += '<div class="section">' +
@@ -396,6 +441,40 @@ window.ViewProfile = (function () {
       });
     }
 
+    const remind = root.querySelector('#p-remind');
+    if (remind) {
+      remind.addEventListener('change', function () {
+        if (!remind.checked) {
+          Store.updateSettings({ remind: false });
+          UI.toast('Reminders off', 'leaf');
+          App.refresh();
+          return;
+        }
+        /* Checked optimistically, then corrected: a permission sheet the
+           reader dismisses must leave the switch where it really is. */
+        remind.checked = false;
+        Notify.ask().then(function (result) {
+          if (result !== 'granted') {
+            UI.toast(result === 'denied' ? 'Your browser said no to notifications' : 'Reminders need permission', 'warn');
+            App.refresh();
+            return;
+          }
+          Store.updateSettings({ remind: true });
+          UI.toast('Reminders on', 'leaf');
+          App.refresh();
+        });
+      });
+    }
+
+    const rhour = root.querySelector('#p-remind-hour');
+    if (rhour) {
+      rhour.addEventListener('change', function () {
+        Store.updateSettings({ remindHour: Number(rhour.value) });
+        UI.toast('I\'ll check in then', 'leaf');
+        App.refresh();
+      });
+    }
+
     const wsync = root.querySelector('#p-wsync');
     if (wsync) {
       wsync.addEventListener('change', function () {
@@ -407,6 +486,15 @@ window.ViewProfile = (function () {
     }
 
     root.addEventListener('click', function (e) {
+      if (e.target.closest('[data-remind-test]')) {
+        const msg = Notify.todayMessage();
+        if (!msg) { UI.toast('Nothing is due today, so there is nothing to send', 'leaf'); return; }
+        Notify.show(msg).then(function (ok) {
+          if (!ok) UI.toast('I could not show that one', 'warn');
+        });
+        return;
+      }
+
       const pet = e.target.closest('[data-pet]');
       if (pet) {
         const key = pet.getAttribute('data-pet');
@@ -456,6 +544,15 @@ window.ViewProfile = (function () {
   /* Just the introduction and the two doors. The name and pet fields that
      used to sit here are asked on the splash now, one at a time, before this
      sheet opens; asking again would be the same question twice in a minute. */
+  /* What the next reminder will actually say, shown under the switch. A
+     reader deciding whether to be interrupted should be able to see the
+     interruption first. */
+  function remindPreview() {
+    const today = Notify.todayMessage();
+    if (today) return 'Today it would say: ' + today.title + '.';
+    return 'Nothing is due today, so today it would stay quiet.';
+  }
+
   function welcomeSheet() {
     const name = (Store.get().profile.name || '').trim();
     const body =
