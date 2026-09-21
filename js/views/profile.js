@@ -504,11 +504,15 @@ window.ViewProfile = (function () {
         Store.updateSettings({ seenWelcome: true });
       }
 
+      /* Straight into the planner, the same door the empty greenhouse
+         opens. It used to drop the reader into the add-a-room form, which
+         made a described room the default and the plan an afterthought —
+         the opposite of the order the greenhouse itself now leads with. The
+         quiet "or just add a room" route is one tap back. */
       root.querySelector('#w-go').addEventListener('click', function () {
         save();
         UI.closeSheet();
-        App.go('/greenhouse');
-        setTimeout(function () { ViewGreenhouse.roomSheet(null); }, 320);
+        App.go('/plan');
       });
 
       root.querySelector('#w-skip').addEventListener('click', function () {

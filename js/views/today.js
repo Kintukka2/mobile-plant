@@ -86,6 +86,7 @@ window.ViewToday = (function () {
         '<button class="gstat gstat-go" data-goto="/greenhouse/rooms">' +
           '<div class="gstat-n">' + sum.roomCount + '</div>' +
           '<div class="gstat-l">' + (sum.roomCount === 1 ? 'room' : 'rooms') + '</div></button>' +
+        '<div class="gstat-split" aria-hidden="true"></div>' +
         '<button class="gstat gstat-go" data-goto="/greenhouse/plants">' +
           '<div class="gstat-n">' + sum.plantCount + '</div>' +
           '<div class="gstat-l">' + (sum.plantCount === 1 ? 'plant' : 'plants') + '</div></button>' +

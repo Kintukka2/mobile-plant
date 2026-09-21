@@ -28,7 +28,7 @@ window.ViewPlan = (function () {
   let drawing = null;                 // { pts: [], forRoomId } while tracing corners
   let drag = null;
   let ghostEl = null;
-  const ui = { step1Open: undefined, hideInner: false };
+  const ui = { open: { 1: undefined, 2: undefined, 3: undefined, 4: undefined }, hideInner: false };
   const views = { plan: { k: 1, cx: 0, cy: 0 }, home: { k: 1, cx: 0, cy: 0 } };
   let baseVB = null;
   const pointers = new Map();
@@ -68,7 +68,30 @@ window.ViewPlan = (function () {
 
   /* ---------- Pan and zoom ---------- */
   function curView() { return views[mode]; }
-  function viewChanged() { const v = curView(); return v.k !== 1 || v.cx !== 0 || v.cy !== 0; }
+  /* The plan's resting view is the drawn rooms, framed, not the whole grid.
+     A home traced in one corner of a 30x24 grid sat small and off-centre,
+     and the reader had to pinch it into view every visit. The frame is taken
+     once per visit and on Centre, not on every draw: taken on every draw it
+     would follow a room being dragged, and the room would look pinned while
+     the rest of the plan slid the other way. */
+  let fitBox = null;
+  function fitOf() {
+    const list = drawn();
+    if (!list.length) return { x: 0, y: 0, w: GW * P, h: GH * P };
+    const all = []; list.forEach(function (r) { r.shape.pts.forEach(function (p) { all.push(p); }); });
+    const b = Plan.bbox(all), pad = 2, minW = 12, minH = 9;
+    let x0 = b.x0 - pad, y0 = b.y0 - pad, x1 = b.x1 + pad, y1 = b.y1 + pad;
+    if (x1 - x0 < minW) { const m = (x0 + x1) / 2; x0 = m - minW / 2; x1 = m + minW / 2; }
+    if (y1 - y0 < minH) { const m = (y0 + y1) / 2; y0 = m - minH / 2; y1 = m + minH / 2; }
+    return { x: x0 * P, y: y0 * P, w: (x1 - x0) * P, h: (y1 - y0) * P };
+  }
+  function sameBox(a, b) { return !!a && !!b && a.x === b.x && a.y === b.y && a.w === b.w && a.h === b.h; }
+  function centreView() { const v = curView(); v.k = 1; v.cx = 0; v.cy = 0; if (mode === 'plan') fitBox = fitOf(); }
+  function viewChanged() {
+    const v = curView();
+    if (v.k !== 1 || v.cx !== 0 || v.cy !== 0) return true;
+    return mode === 'plan' && !sameBox(fitBox, fitOf());
+  }
   function applyView(x, y, w, h) {
     baseVB = { x: x, y: y, w: w, h: h };
     const v = curView(), w2 = w / v.k, h2 = h / v.k;
@@ -107,7 +130,8 @@ window.ViewPlan = (function () {
   }
 
   function drawPlan() {
-    applyView(0, 0, GW * P, GH * P);
+    if (!fitBox) fitBox = fitOf();
+    applyView(fitBox.x, fitBox.y, fitBox.w, fitBox.h);
     const pl = plan();
     let h = '';
     if (pl.backdrop && pl.backdrop.src) {
@@ -165,7 +189,6 @@ window.ViewPlan = (function () {
       const q = drag.rect;
       h += '<rect x="' + (q.x * P) + '" y="' + (q.y * P) + '" width="' + (q.w * P) + '" height="' + (q.h * P) + '" style="fill:var(--mint-wash);stroke:var(--emerald-glow);stroke-dasharray:4 4;stroke-width:1.5;pointer-events:none"/>';
     }
-    h += compassRose(GW * P - 44, 40, 22);
     canvas.innerHTML = h;
   }
 
@@ -284,22 +307,31 @@ window.ViewPlan = (function () {
     panelHome();
   }
 
-  function step(n, title, extra) {
-    return '<div class="section-head"><h2 class="section-title"><span class="plan-step">Step ' + n + '</span>' + UI.esc(title) + '</h2>' + (extra || '') + '</div>';
+  /* Every step folds, and every step starts folded: the plan opens as a
+     plan, with four headings under it, not a page of instructions. Opening
+     one is remembered for the visit, not saved — a fold is a way of clearing
+     the page, not a setting. Two exceptions open a step by themselves:
+     loading a floorplan image opens Step 1, and Step 2 will not fold while a
+     room is being drawn, because the Finish and Undo buttons live inside it. */
+  function stepOpen(n) {
+    if (n === 2 && drawing) return true;
+    return ui.open[n] === true;
+  }
+
+  function step(n, title, done) {
+    return '<div class="section-head plan-toggle" data-toggle="' + n + '"><h2 class="section-title"><span class="plan-step">Step ' + n + '</span>' + UI.esc(title) + '</h2>' +
+      '<span class="row" style="gap:8px">' + (done ? UI.pill('Done', 'mint') : '') + '<span class="plan-chev' + (stepOpen(n) ? ' is-open' : '') + '"></span></span></div>';
   }
 
   function panelHome() {
     const pl = plan(), list = rooms(), undrawn = list.filter(function (r) { return !r.shape; });
     let h = '';
 
-    /* Step 1 — the floorplan image, collapsible once ticked done. */
-    const open1 = ui.step1Open !== undefined ? ui.step1Open : !pl.done;
-    h += '<div class="section plan-sec">' +
-      '<div class="section-head plan-toggle" data-toggle="step1"><h2 class="section-title"><span class="plan-step">Step 1</span>Build your floorplan</h2>' +
-        '<span class="row" style="gap:8px">' + (pl.done ? UI.pill('Done', 'mint') : '') + '<span class="plan-chev' + (open1 ? ' is-open' : '') + '"></span></span></div>';
-    if (open1) {
+    /* Step 1 — the floorplan image. */
+    h += '<div class="section plan-sec">' + step(1, 'Build your floorplan', pl.done);
+    if (stepOpen(1)) {
       h += '<div class="row" style="justify-content:space-between;margin-bottom:10px">' +
-        (pl.backdrop ? '' : '<label class="btn btn-ghost btn-sm" style="cursor:pointer">Load a floorplan image<input type="file" id="pl-bd-file" accept="image/*" hidden></label>') +
+        (pl.backdrop ? '' : '<button class="btn btn-ghost btn-sm" id="pl-bd-load">Load a floorplan image</button>') +
         '<label class="plan-check"><input type="checkbox" id="pl-done"' + (pl.done ? ' checked' : '') + '> Done with the floorplan</label></div>';
       if (pl.backdrop) {
         h += '<div class="grid-2"><label class="field" style="margin:0"><span class="label">Opacity</span><input class="input" id="pl-bd-op" type="range" min="0.1" max="1" step="0.05" value="' + pl.backdrop.opacity + '"></label>' +
@@ -314,8 +346,10 @@ window.ViewPlan = (function () {
     h += '</div>';
 
     /* Step 2 — rooms. */
-    h += '<div class="section plan-sec">' + step(2, 'Manage rooms');
-    if (drawing) {
+    h += '<div class="section plan-sec">' + step(2, 'Manage rooms', list.length > 0 && !undrawn.length);
+    if (!stepOpen(2)) {
+      /* folded */
+    } else if (drawing) {
       h += '<p class="hint" style="margin:0 0 10px">Tap each corner in turn. Tap the first corner again to close the room, or drag instead to draw a plain box.</p>' +
         '<div class="row"><button class="btn btn-sm" id="pl-draw-finish"' + (drawing.pts.length < 3 ? ' disabled' : '') + '>Finish room</button>' +
         '<button class="btn btn-ghost btn-sm" id="pl-draw-undo"' + (!drawing.pts.length ? ' disabled' : '') + '>Undo corner</button>' +
@@ -337,19 +371,21 @@ window.ViewPlan = (function () {
 
     /* Step 3 — north. */
     const known = Plan.known();
-    h += '<div class="section plan-sec">' + step(3, 'Which way is north?') +
-      '<div class="row" style="justify-content:space-between">' +
+    h += '<div class="section plan-sec">' + step(3, 'Which way is north?', known);
+    if (stepOpen(3)) h += '<div class="row" style="justify-content:space-between">' +
         '<span class="row" style="gap:10px"><svg class="plan-mini-rose" viewBox="-30 -30 60 60" data-open-compass="1" aria-hidden="true">' + compassRose(0, 0, 22, 'var(--bg-4)') + '</svg>' +
           (known ? UI.pill('North set · ' + Math.round(pl.north) + '°', 'mint') : UI.pill(pl.northConfirmed ? 'Hemisphere needed' : 'Not set yet', 'sun')) + '</span>' +
         '<button class="btn btn-sm' + (known ? ' btn-ghost' : '') + '" id="pl-open-compass">' + (known ? 'Change' : 'Set north') + '</button></div>' +
-      (known ? '' : '<p class="hint">I shade each room by its light only once north is confirmed. Tapping the compass on the plan opens the same dial.</p>') +
-    '</div>';
+      (known ? '' : '<p class="hint">I shade each room by its light only once north is confirmed. Tapping the compass on the plan opens the same dial.</p>');
+    h += '</div>';
 
     /* Step 4 — plants. */
     const plants = Store.activePlants();
     const loose = plants.filter(function (p) { return !(p.pos && Plan.roomAt(p.pos.x, p.pos.y)); });
-    h += '<div class="section plan-sec">' + step(4, 'Add plants');
-    if (!plants.length) {
+    h += '<div class="section plan-sec">' + step(4, 'Add plants', plants.length > 0 && !loose.length);
+    if (!stepOpen(4)) {
+      /* folded */
+    } else if (!plants.length) {
       h += '<p class="hint">No plants yet. Add one in the greenhouse and it will appear here to place.</p>';
     } else if (loose.length) {
       h += '<div class="plan-tray">' + loose.map(function (p) {
@@ -374,15 +410,17 @@ window.ViewPlan = (function () {
   function panelRoom(r) {
     const sh = r.shape, d = roomDims(r), sun = Plan.sunReach(r), pl = plan();
     const here = plantsOnPlan().filter(function (p) { return Plan.roomAt(p.pos.x, p.pos.y) === r; });
-    let h = '<div class="section plan-sec"><div class="section-head"><h2 class="section-title"><button class="plan-back" id="pl-back" aria-label="Back">' + CHEV + '</button>Room</h2><span class="section-note">' + sh.pts.length + ' walls</span></div>';
-    h += '<label class="field" style="margin:0"><span class="label">Name</span><input class="input" id="pl-room-name" value="' + UI.attr(r.name) + '"></label>';
-    h += '<label class="plan-check" style="margin-top:10px"><input type="checkbox" id="pl-room-outdoor"' + (sh.outdoor ? ' checked' : '') + '> Outdoors?</label>' +
-      (sh.outdoor ? '<p class="hint" style="margin-top:6px">Every side with nothing built beyond it is open to the sky, so there is no need to mark windows here.</p>' : '');
-    h += '<hr class="plan-rule">';
-    h += '<div class="grid-2"><label class="field" style="margin:0"><span class="label">Width</span><input class="input" id="pl-dim-w" type="number" step="0.1" min="0.5" inputmode="decimal" value="' + (Math.round(d.w * 10) / 10) + '"></label>' +
-      '<label class="field" style="margin:0"><span class="label">Depth</span><input class="input" id="pl-dim-h" type="number" step="0.1" min="0.5" inputmode="decimal" value="' + (Math.round(d.h * 10) / 10) + '"></label></div>' +
-      '<p class="hint">In metres, as written on your floorplan. Typing a size here sets the scale for every room, so one measured room is enough.' + (pl.scaleFrom === r.id ? ' The plan is scaled from this one.' : '') + '</p>';
-    h += '<hr class="plan-rule">';
+    /* The heading is the name. A "Room" title over a Name field said the same
+       thing twice; the field now sits where the title was, in the title's
+       own type, with a dotted rule under it as the only sign it can be
+       typed into. */
+    let h = '<div class="section plan-sec"><div class="section-head"><h2 class="section-title plan-title-edit"><button class="plan-back" id="pl-back" aria-label="Back">' + CHEV + '</button>' +
+      '<input class="plan-title-input" id="pl-room-name" value="' + UI.attr(r.name) + '" placeholder="Room name" aria-label="Room name" maxlength="30" autocomplete="off"></h2>' +
+      '<label class="plan-check" style="flex:0 0 auto;margin-left:12px"><input type="checkbox" id="pl-room-outdoor"' + (sh.outdoor ? ' checked' : '') + '> Outdoors?</label></div>';
+    if (sh.outdoor) h += '<p class="hint" style="margin:0 0 12px">Every side with nothing built beyond it is open to the sky, so there is no need to mark windows here.</p>';
+    /* Sizes left this panel for the ruler on the stage: one measured room
+       scales the whole plan, so asking for a width and depth on every room
+       implied each one needed typing. */
     h += '<span class="label" style="display:flex;align-items:center;gap:8px;margin-bottom:2px">Wall / Window / Opening <button class="plan-help" id="pl-walls-help" aria-label="What do these mean?">?</button></span>' +
       '<p class="hint" style="margin:0 0 10px">Tap to cycle through the options.</p><div class="grid-2">' +
       Plan.edges(sh).map(function (e) {
@@ -402,9 +440,10 @@ window.ViewPlan = (function () {
         return '<button class="plan-row" data-sel-plant="' + UI.attr(p.id) + '"><span class="plan-row-nm">' + UI.esc(Store.displayName(p)) + '</span>' + verdictPill(Plan.verdict(Store.species(p), Plan.pointRank(r, p.pos.x, p.pos.y))) + '</button>';
       }).join('') + '</div></div>';
     }
-    h += '<div class="section plan-sec"><div class="row"><button class="btn btn-sm" id="pl-done-sel">Done</button>' +
-      '<button class="btn btn-ghost btn-sm" id="pl-room-more">' + UI.icon('sliders') + 'Icon, humidity, notes</button>' +
-      '<button class="btn btn-blood btn-sm" id="pl-room-delete">Remove room</button></div></div>';
+    h += '<div class="section plan-sec"><div class="stack" style="gap:10px">' +
+      '<button class="btn btn-ghost btn-sm" id="pl-room-more" style="align-self:flex-start">' + UI.icon('sliders') + 'Icon, humidity, notes</button>' +
+      '<div class="row"><button class="btn btn-sm" id="pl-done-sel">Done</button>' +
+      '<button class="btn btn-blood btn-sm" id="pl-room-delete">Remove room</button></div></div></div>';
     panel.innerHTML = h;
   }
 
@@ -488,13 +527,134 @@ window.ViewPlan = (function () {
         function up() { dial.removeEventListener('pointermove', move); dial.removeEventListener('pointerup', up); Store.save(); }
         dial.addEventListener('pointermove', move); dial.addEventListener('pointerup', up);
       });
-      document.getElementById('sheet').addEventListener('click', function onClick(e) {
-        const hemi = e.target.closest('[data-pl-hemi]');
-        if (hemi) { Store.updateProfile({ hemisphere: hemi.getAttribute('data-pl-hemi') }); UI.closeSheet(); setTimeout(openCompass, 230); return; }
-        if (e.target.closest('[data-act="pl-north-confirm"]')) { Store.updatePlan({ northConfirmed: true }); UI.closeSheet(); UI.toast('North confirmed', 'leaf'); redraw(); return; }
-        if (e.target.closest('[data-act="pl-north-clear"]')) { Store.updatePlan({ northConfirmed: false }); UI.closeSheet(); redraw(); return; }
-      }, { once: false });
+      /* Bound to the buttons, not the sheet plate. The plate outlives every
+         sheet, so a delegate added there stacked up one copy per opening and
+         a hemisphere chip ended up reopening the dial as many times as it had
+         ever been shown. The buttons are rebuilt each time, so these go with
+         them. */
+      sheet.querySelectorAll('[data-pl-hemi]').forEach(function (b) {
+        b.addEventListener('click', function () { Store.updateProfile({ hemisphere: b.getAttribute('data-pl-hemi') }); UI.closeSheet(); setTimeout(openCompass, 230); });
+      });
+      const ok = sheet.querySelector('[data-act="pl-north-confirm"]');
+      if (ok) ok.addEventListener('click', function () { Store.updatePlan({ northConfirmed: true }); UI.closeSheet(); UI.toast('North confirmed', 'leaf'); redraw(); });
+      const clr = sheet.querySelector('[data-act="pl-north-clear"]');
+      if (clr) clr.addEventListener('click', function () { Store.updatePlan({ northConfirmed: false }); UI.closeSheet(); redraw(); });
     });
+  }
+
+  /* The best free cell in one room for one species: the same heatmap the
+     shading uses, so a plant dropped here lands where the room would have
+     been shaded greenest, never somewhere the reader could see disagrees
+     with the colour. Ties go to the cell nearest the middle, and a cell
+     another plant already stands on is passed over so two never stack.
+     While north is unknown there is no verdict, and the middle will do. */
+  const VERDICT_ORDER = { ideal: 0, ok: 1, poor: 2, bad: 3 };
+  function bestSpotIn(r, sp) {
+    const c = Plan.centroid(r.shape.pts), b = Plan.bbox(r.shape.pts);
+    const taken = plantsOnPlan().map(function (p) { return Math.floor(p.pos.x) + ',' + Math.floor(p.pos.y); });
+    const heat = {};
+    Plan.heatCells(sp).forEach(function (h) { if (h.room === r) heat[h.x + ',' + h.y] = VERDICT_ORDER[h.v]; });
+    let best = null;
+    for (let cx = Math.floor(b.x0); cx < Math.ceil(b.x1); cx++) {
+      for (let cy = Math.floor(b.y0); cy < Math.ceil(b.y1); cy++) {
+        const x = cx + 0.5, y = cy + 0.5, key = cx + ',' + cy;
+        if (!Plan.pointIn(r.shape.pts, x, y) || taken.indexOf(key) !== -1) continue;
+        const score = heat[key] !== undefined ? heat[key] : 1, d = Math.hypot(x - c.x, y - c.y);
+        if (!best || score < best.score || (score === best.score && d < best.d)) best = { x: x, y: y, score: score, d: d };
+      }
+    }
+    return best ? { x: best.x, y: best.y } : { x: Math.round(c.x * 4) / 4, y: Math.round(c.y * 4) / 4 };
+  }
+
+  function placeIn(p, r) {
+    const spot = bestSpotIn(r, Store.species(p)), moved = p.roomId !== r.id;
+    Store.updatePlant(p.id, { roomId: r.id, pos: spot });
+    UI.toast((moved ? 'Moved to ' : 'Placed in ') + r.name, 'leaf');
+    redraw();
+  }
+
+  /* Every plant not already standing in this room, nearest first: the ones
+     with no place on the plan yet, then the ones in other rooms. Tapping one
+     drops it at its best spot here without a drag — the tray in Step 4 is a
+     long scroll away from a room the reader is looking at. */
+  function quickAdd(r) {
+    const here = plantsOnPlan().filter(function (p) { return Plan.roomAt(p.pos.x, p.pos.y) === r; });
+    const rest = Store.activePlants().filter(function (p) { return here.indexOf(p) === -1; });
+    const loose = rest.filter(function (p) { return !(p.pos && Plan.roomAt(p.pos.x, p.pos.y)); });
+    const elsewhere = rest.filter(function (p) { return loose.indexOf(p) === -1; });
+    function row(p) {
+      const r0 = p.roomId ? Store.getRoom(p.roomId) : null, sp = Store.species(p), at = bestSpotIn(r, sp);
+      const v = Plan.verdict(sp, Plan.pointRank(r, at.x, at.y));
+      return '<button class="plan-row" data-quick-plant="' + UI.attr(p.id) + '"><span class="plan-row-nm">' + UI.esc(Store.displayName(p)) +
+        (r0 && r0 !== r ? ' <small>' + UI.esc(r0.name) + '</small>' : '') + '</span>' + (v ? verdictPill(v) : '') + '</button>';
+    }
+    let body = '';
+    if (!rest.length) {
+      body += '<p class="hint" style="margin:0">' + (Store.activePlants().length ? 'Every plant you have is already in here.' : 'No plants yet. Add one below and I\'ll put it in this room.') + '</p>';
+    } else {
+      if (loose.length) body += '<span class="label">Not on the plan yet</span><div class="stack" style="gap:6px;margin-bottom:14px">' + loose.map(row).join('') + '</div>';
+      if (elsewhere.length) body += '<span class="label">In another room</span><div class="stack" style="gap:6px">' + elsewhere.map(row).join('') + '</div>';
+      body += '<p class="hint">Tap one and I\'ll stand it where the light in this room suits it best. You can drag it from there.</p>';
+    }
+    body += '<div class="row" style="gap:8px;margin-top:18px"><button class="btn btn-ghost" data-act="sheet-cancel" style="flex:1">Close</button><button class="btn" data-act="pl-quick-new" style="flex:1">New plant here</button></div>';
+    UI.openSheet('Add to ' + r.name, body, function (sheet) {
+      sheet.querySelectorAll('[data-quick-plant]').forEach(function (b) {
+        b.addEventListener('click', function () { const p = Store.getPlant(b.getAttribute('data-quick-plant')); UI.closeSheet(); if (p) placeIn(p, r); });
+      });
+      const nw = sheet.querySelector('[data-act="pl-quick-new"]');
+      if (nw) nw.addEventListener('click', function () { UI.closeSheet(); setTimeout(function () { ViewGreenhouse.addPlantSheet(r.id); }, 230); });
+    });
+  }
+
+  /* One measured room sizes the plan. Every room is drawn on the same grid,
+     so a single real width or depth fixes the metres per cell, and every
+     other room's size follows from how many cells it covers. The sheet shows
+     those estimates as the reader types, which is the check that the number
+     went in right: a bedroom reading eleven metres wide means a slip. */
+  function setScale(r, axis, v) {
+    const d = roomDims(r), cells = axis === 'w' ? d.cw : d.ch;
+    if (!isFinite(v) || v <= 0 || cells <= 0) return false;
+    Store.updatePlan({ cell: Math.round((v / cells) * 1000) / 1000, scaleFrom: r.id });
+    return true;
+  }
+
+  function openDims(prefId) {
+    const list = drawn();
+    if (!list.length) { UI.toast('Draw a room first and I\'ll size the plan from it', 'warn'); return; }
+    let cur = room(prefId) || room(plan().scaleFrom) || list[0];
+    function tenth(v) { return Math.round(v * 10) / 10; }
+    function estimates() {
+      const rest = list.filter(function (r) { return r !== cur; });
+      if (!rest.length) return '<p class="hint" style="margin:0">Only this room so far. The ones you draw next will be sized from it.</p>';
+      return rest.map(function (r) {
+        const d = roomDims(r);
+        return '<div class="row" style="justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--hair)"><span style="font-family:var(--serif);font-size:16px">' + UI.esc(r.name) + '</span><span class="section-note">' + fmtM(d.w) + ' × ' + fmtM(d.h) + '</span></div>';
+      }).join('');
+    }
+    const d0 = roomDims(cur);
+    const body =
+      '<p class="hint" style="margin:0 0 14px">Measure one room and I\'ll scale the rest of the plan from it. Every room sits on the same grid, so one real size is enough.</p>' +
+      '<label class="field" style="margin:0 0 12px"><span class="label">The room you measured</span><select class="input" id="pl-dim-room">' +
+        list.map(function (r) { return '<option value="' + UI.attr(r.id) + '"' + (r === cur ? ' selected' : '') + '>' + UI.esc(r.name) + '</option>'; }).join('') + '</select></label>' +
+      '<div class="grid-2"><label class="field" style="margin:0"><span class="label">Width</span><input class="input" id="pl-dim-w" type="number" step="0.1" min="0.5" inputmode="decimal" value="' + tenth(d0.w) + '"></label>' +
+        '<label class="field" style="margin:0"><span class="label">Depth</span><input class="input" id="pl-dim-h" type="number" step="0.1" min="0.5" inputmode="decimal" value="' + tenth(d0.h) + '"></label></div>' +
+      '<p class="hint">In metres, as written on your floorplan.</p>' +
+      '<span class="label">The rest, estimated</span><div id="pl-dim-est">' + estimates() + '</div>' +
+      '<div class="row" style="gap:8px;margin-top:18px"><button class="btn" data-act="sheet-cancel" style="flex:1">Done</button></div>';
+    UI.openSheet('How big is it?', body, function (sheet) {
+      const selEl = sheet.querySelector('#pl-dim-room'), wIn = sheet.querySelector('#pl-dim-w'), hIn = sheet.querySelector('#pl-dim-h'), est = sheet.querySelector('#pl-dim-est');
+      selEl.addEventListener('change', function () {
+        cur = room(selEl.value) || cur; const d = roomDims(cur);
+        wIn.value = tenth(d.w); hIn.value = tenth(d.h); est.innerHTML = estimates();
+      });
+      function typed(axis, self, other) {
+        if (!setScale(cur, axis, parseFloat(self.value))) return;
+        const d = roomDims(cur); other.value = tenth(axis === 'w' ? d.h : d.w);
+        est.innerHTML = estimates(); drawCanvas();
+      }
+      wIn.addEventListener('input', function () { typed('w', wIn, hIn); });
+      hIn.addEventListener('input', function () { typed('h', hIn, wIn); });
+    }, function () { redraw(); });
   }
 
   function wallsHelp() {
@@ -523,15 +683,62 @@ window.ViewPlan = (function () {
     else if (tool === 'backdrop') { n.textContent = 'Drag to move the floorplan under the grid.'; n.className = 'plan-notice'; n.hidden = false; }
     else n.hidden = true;
     root.querySelector('#pl-reshape').hidden = !(mode === 'plan' && sel && sel.type === 'room');
+    root.querySelector('#pl-quick-add').hidden = !(mode === 'plan' && sel && sel.type === 'room' && !drawing);
     const wt = root.querySelector('#pl-walls-toggle');
     wt.hidden = mode !== 'home' || !list.length;
     wt.textContent = ui.hideInner ? 'Show inside walls' : 'Hide inside walls';
     wt.classList.toggle('is-on', !!ui.hideInner);
     root.querySelector('#pl-view-reset').hidden = !viewChanged();
+    root.querySelector('#pl-tool-compass').innerHTML = compassRose(0, 0, 22, 'var(--bg-2)');
     root.querySelectorAll('[data-mode]').forEach(function (b) { b.classList.toggle('is-on', b.getAttribute('data-mode') === mode); });
   }
 
   function redraw() { if (!root || !document.body.contains(root)) return; Plan.sync(); drawCanvas(); drawPanel(); syncOverlays(); }
+
+  /* ======================================================================
+     The backdrop image
+     ====================================================================== */
+
+  /* The same shape as Photos.pick: an input made on the spot and clicked
+     from inside the tap. The first version was a <label> around a hidden
+     input, which iOS treats as a label around nothing — a display:none file
+     input does not open the picker there. No `capture`, unlike a plant
+     photo: a floorplan lives in the photo library or a PDF screenshot, not
+     in front of the camera. */
+  function pickBackdrop() {
+    const input = document.createElement('input');
+    input.type = 'file'; input.accept = 'image/*';
+    input.style.position = 'fixed'; input.style.left = '-9999px'; input.style.opacity = '0';
+    function cleanup() { if (input.parentNode) input.parentNode.removeChild(input); }
+    input.addEventListener('change', function () {
+      const file = input.files && input.files[0];
+      if (!file) { cleanup(); return; }
+      if (!/^image\//.test(file.type)) { UI.toast('That file is not an image', 'warn'); cleanup(); return; }
+      const rd = new FileReader();
+      rd.onload = function () {
+        const img = new Image();
+        img.onload = function () {
+          /* Downscaled hard: it only has to be legible under a grid, and
+             localStorage is the whole budget. If even that will not fit,
+             keep the rooms and lose the picture. */
+          const max = 900, k = Math.min(1, max / Math.max(img.width, img.height));
+          const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+          const ok = Store.updatePlan({ backdrop: { src: c.toDataURL('image/jpeg', 0.55), opacity: 0.45, scale: 1, x: 0, y: 0 }, done: false });
+          cleanup();
+          if (!ok) { Store.updatePlan({ backdrop: null }); return; }
+          mode = 'plan'; tool = 'backdrop'; ui.open[1] = true; redraw();
+          UI.toast('Line it up, then trace your rooms over it', 'leaf');
+        };
+        img.onerror = function () { cleanup(); UI.toast('I could not read that image', 'warn'); };
+        img.src = rd.result;
+      };
+      rd.onerror = function () { cleanup(); UI.toast('I could not read that image', 'warn'); };
+      rd.readAsDataURL(file);
+    });
+    document.body.appendChild(input);
+    input.click();
+  }
 
   /* ======================================================================
      Rooms: create, reshape, edit
@@ -571,8 +778,13 @@ window.ViewPlan = (function () {
           '<svg id="pl-canvas" xmlns="http://www.w3.org/2000/svg"></svg>' +
           '<div class="plan-notice" id="pl-notice" hidden></div>' +
           '<div class="plan-overlay" id="pl-reshape" hidden>Drag a square corner to reshape the room. Drag the small dot on a wall to add a corner.</div>' +
-          '<button class="plan-stage-btn" id="pl-walls-toggle" hidden></button>' +
-          '<button class="plan-stage-btn is-left" id="pl-view-reset" hidden>Reset view</button>' +
+          '<div class="plan-tools">' +
+            '<button class="plan-tool is-rose" data-open-compass="1" aria-label="Which way is north?"><svg id="pl-tool-compass" viewBox="-30 -30 60 60" aria-hidden="true"></svg></button>' +
+            '<button class="plan-tool" data-open-dims="1" aria-label="Set the room sizes">' + UI.icon('ruler') + '</button>' +
+          '</div>' +
+          '<button class="plan-stage-btn is-bottom" id="pl-walls-toggle" hidden></button>' +
+          '<button class="plan-stage-btn is-left" id="pl-view-reset" hidden>Centre</button>' +
+          '<button class="plan-stage-btn is-left is-bottom" id="pl-quick-add" hidden>' + UI.icon('plus') + 'Add a plant</button>' +
         '</div>' +
       '</div>' +
       '<div class="plan-panel" id="pl-panel"></div>' +
@@ -582,13 +794,17 @@ window.ViewPlan = (function () {
   function mount(el) {
     root = el; canvas = root.querySelector('#pl-canvas'); panel = root.querySelector('#pl-panel');
     drag = null; pinch = null; pointers.clear();
+    views.plan.k = 1; views.plan.cx = 0; views.plan.cy = 0; fitBox = null;
     drawCanvas(); drawPanel(); syncOverlays();
 
     root.addEventListener('click', function (e) {
       const m = e.target.closest('[data-mode]');
       if (m) { mode = m.getAttribute('data-mode'); if (mode === 'home') { tool = 'select'; drawing = null; } redraw(); return; }
       if (e.target.closest('#pl-walls-toggle')) { ui.hideInner = !ui.hideInner; drawCanvas(); syncOverlays(); return; }
-      if (e.target.closest('#pl-view-reset')) { const v = curView(); v.k = 1; v.cx = 0; v.cy = 0; drawCanvas(); syncOverlays(); return; }
+      if (e.target.closest('#pl-view-reset')) { centreView(); drawCanvas(); syncOverlays(); return; }
+      if (e.target.closest('.plan-tools [data-open-compass]')) { openCompass(); return; }
+      if (e.target.closest('[data-open-dims]')) { openDims(sel && sel.type === 'room' ? sel.id : null); return; }
+      if (e.target.closest('#pl-quick-add')) { if (sel && sel.type === 'room') quickAdd(room(sel.id)); return; }
     });
 
     /* ---- Canvas: wheel, pinch, pan, drag ---- */
@@ -599,7 +815,6 @@ window.ViewPlan = (function () {
 
     canvas.addEventListener('pointerdown', function (e) {
       const t = e.target, start = toPlan(e);
-      if (t.closest('[data-open-compass]')) { openCompass(); return; }
       try { canvas.setPointerCapture(e.pointerId); } catch (err) { }
       pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
       if (pointers.size === 2) {
@@ -732,13 +947,15 @@ window.ViewPlan = (function () {
     /* ---- Panel clicks ---- */
     panel.addEventListener('click', function (e) {
       const t = e.target;
-      if (t.closest('[data-toggle="step1"]')) { const open1 = ui.step1Open !== undefined ? ui.step1Open : !plan().done; ui.step1Open = !open1; drawPanel(); return; }
+      const tg = t.closest('[data-toggle]');
+      if (tg) { const n = +tg.getAttribute('data-toggle'); ui.open[n] = !stepOpen(n); drawPanel(); return; }
       if (t.closest('#pl-tool-add')) { if (tool === 'add') { tool = 'select'; drawing = null; } else { tool = 'add'; drawing = { pts: [] }; mode = 'plan'; sel = null; } redraw(); return; }
       const dr = t.closest('[data-draw-room]');
       if (dr) { tool = 'add'; drawing = { pts: [], forRoomId: dr.getAttribute('data-draw-room') }; mode = 'plan'; sel = null; redraw(); UI.toast('Trace ' + room(dr.getAttribute('data-draw-room')).name + ' on the plan', 'leaf'); return; }
       if (t.closest('#pl-draw-finish')) { if (drawing && drawing.pts.length >= 3) finishRoom(drawing.pts); return; }
       if (t.closest('#pl-draw-undo')) { if (drawing) drawing.pts.pop(); redraw(); return; }
       if (t.closest('#pl-draw-cancel')) { drawing = null; tool = 'select'; redraw(); return; }
+      if (t.closest('#pl-bd-load')) { pickBackdrop(); return; }
       if (t.closest('#pl-tool-bd')) { tool = tool === 'backdrop' ? 'select' : 'backdrop'; mode = 'plan'; redraw(); return; }
       if (t.closest('#pl-bd-remove')) { Store.updatePlan({ backdrop: null }); tool = 'select'; redraw(); UI.toast('Backdrop removed. Your rooms stay.', 'leaf'); return; }
       if (t.closest('#pl-open-compass') || t.closest('[data-open-compass]')) { openCompass(); return; }
@@ -767,51 +984,22 @@ window.ViewPlan = (function () {
     panel.addEventListener('input', function (e) {
       const t = e.target;
       if (t.id === 'pl-room-name') { const r = room(sel.id); r.name = t.value; Store.save(); drawCanvas(); return; }
-      if (t.id === 'pl-dim-w' || t.id === 'pl-dim-h') {
-        const r = room(sel.id), d = roomDims(r), v = parseFloat(t.value); if (!isFinite(v) || v <= 0) return;
-        const cells = t.id === 'pl-dim-w' ? d.cw : d.ch; if (cells <= 0) return;
-        Store.updatePlan({ cell: Math.round((v / cells) * 1000) / 1000, scaleFrom: r.id });
-        const other = panel.querySelector(t.id === 'pl-dim-w' ? '#pl-dim-h' : '#pl-dim-w');
-        if (other) other.value = Math.round((t.id === 'pl-dim-w' ? d.ch : d.cw) * plan().cell * 10) / 10;
-        drawCanvas(); return;
-      }
       if (t.id === 'pl-bd-op') { plan().backdrop.opacity = +t.value; Store.save(); drawCanvas(); return; }
       if (t.id === 'pl-bd-sc') { plan().backdrop.scale = +t.value; Store.save(); drawCanvas(); return; }
     });
 
     panel.addEventListener('change', function (e) {
       const t = e.target;
-      if (t.id === 'pl-dim-w' || t.id === 'pl-dim-h') { redraw(); return; }
       if (t.id === 'pl-done') {
         /* Ticking done drops the image: it has done its job, and it is the
            one thing here that costs real storage. */
         Store.updatePlan({ done: t.checked, backdrop: t.checked ? null : plan().backdrop });
-        ui.step1Open = !t.checked; redraw(); return;
+        ui.open[1] = !t.checked; redraw(); return;
       }
       if (t.id === 'pl-room-outdoor') {
         const r = room(sel.id); r.shape.outdoor = t.checked;
         if (t.checked) r.shape.win = r.shape.win.map(function (v) { return v === WINDOW ? WALL : v; });
         saveShape(); redraw(); return;
-      }
-      if (t.id === 'pl-bd-file' && t.files && t.files[0]) {
-        const rd = new FileReader();
-        rd.onload = function () {
-          const img = new Image();
-          img.onload = function () {
-            /* Downscaled hard: it only has to be legible under a grid, and
-               localStorage is the whole budget. If even that will not fit,
-               keep the rooms and lose the picture. */
-            const max = 900, k = Math.min(1, max / Math.max(img.width, img.height));
-            const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-            c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-            const ok = Store.updatePlan({ backdrop: { src: c.toDataURL('image/jpeg', 0.55), opacity: 0.45, scale: 1, x: 0, y: 0 }, done: false });
-            if (!ok) { Store.updatePlan({ backdrop: null }); return; }
-            mode = 'plan'; tool = 'backdrop'; ui.step1Open = true; redraw();
-            UI.toast('Line it up, then trace your rooms over it', 'leaf');
-          };
-          img.src = rd.result;
-        };
-        rd.readAsDataURL(t.files[0]);
       }
     });
   }
