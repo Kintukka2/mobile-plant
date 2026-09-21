@@ -27,6 +27,7 @@ window.App = (function () {
     today:      function () { return window.ViewToday; },
     greenhouse: function () { return window.ViewGreenhouse; },
     room:       function () { return window.ViewRoom; },
+    plan:       function () { return window.ViewPlan; },
     plant:      function () { return window.ViewPlant; },
     discover:   function () { return window.ViewDiscover; },
     species:    function () { return window.ViewSpecies; },
@@ -192,6 +193,11 @@ window.App = (function () {
     currentView = view;
     const params = { id: current.id, extra: current.extra, tail: current.tail };
 
+    /* Drawn rooms carry a derived light and aspect. Settle them before any
+       view reads a room, so the greenhouse, the schedule and the plan can
+       never disagree about the same wall. Cheap: a few polygons. */
+    if (window.Plan) Plan.sync();
+
     // Views can bail out to another route (e.g. a deleted plant).
     if (typeof view.guard === 'function' && view.guard(params) === false) return;
 
@@ -348,7 +354,7 @@ window.App = (function () {
 
   /* Detail routes highlight their parent tab. */
   function isChildOf(tabKey, routeName) {
-    if (tabKey === 'greenhouse') return routeName === 'room' || routeName === 'plant';
+    if (tabKey === 'greenhouse') return routeName === 'room' || routeName === 'plant' || routeName === 'plan';
     if (tabKey === 'discover')   return routeName === 'species';
     return false;
   }

@@ -193,6 +193,23 @@
   /* --- Segmented control ---
      A recessed track with one raised key in it. On dark ground the track is
      a hole and the key is lit; both flip on paper, so both are tokens. */
+  /* The plan's own materials. Floors carry the light reading, rung by rung;
+     walls stay neutral so the floor is the only thing saying anything. */
+  --plan-grid:      rgba(214, 237, 226, 0.06);
+  --plan-grid-2:    rgba(214, 237, 226, 0.13);
+  --plan-floor-x:   #17211C;                 /* light unknown */
+  --plan-floor-0:   #16211B;
+  --plan-floor-1:   #1E3026;
+  --plan-floor-2:   #2C4430;
+  --plan-floor-3:   #4B5A34;
+  --plan-floor-4:   #6E6B3A;
+  --plan-wall-a:    #1B2A22;
+  --plan-wall-b:    #243529;
+  --plan-wall-edge: rgba(214, 237, 226, 0.22);
+  --plan-parapet:   rgba(36, 53, 41, 0.55);
+  --plan-pane:      #F1E3A8;
+  --plan-pane-dim:  #6F8E7E;
+  --plan-pot:       #0E1B15;
   --track:    rgba(0, 0, 0, 0.22);
   --track-in: inset 0 1px 2px rgba(0, 0, 0, 0.30);
   --seg-on:   rgba(255, 255, 255, 0.14);
@@ -914,6 +931,9 @@ img { max-width: 100%; display: block; }
   border-color: rgba(63, 190, 139, 0.34);
   color: var(--mint-2);
 }
+
+/* A bare hairline for parting two blocks that are not sections. */
+.rule { border: 0; border-top: 1px solid var(--hair); margin: 18px 0; }
 
 /* ==========================================================================
    B1 · Sections
@@ -3917,6 +3937,21 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
    ========================================================================== */
 
 [data-theme="conservatory"] {
+  --plan-grid:      rgba(28, 54, 43, 0.09);
+  --plan-grid-2:    rgba(28, 54, 43, 0.18);
+  --plan-floor-x:   #E6E1D6;
+  --plan-floor-0:   #C9CFC6;
+  --plan-floor-1:   #D2D9C4;
+  --plan-floor-2:   #DDE1B9;
+  --plan-floor-3:   #EBE2A8;
+  --plan-floor-4:   #F4E1A0;
+  --plan-wall-a:    #D8D2C4;
+  --plan-wall-b:    #E7E1D3;
+  --plan-wall-edge: rgba(19, 35, 27, 0.28);
+  --plan-parapet:   rgba(216, 210, 196, 0.55);
+  --plan-pane:      #FFFBEA;
+  --plan-pane-dim:  #E4ECE6;
+  --plan-pot:       #FFFCF7;
   --bg-0: #EDE6DA;
   --bg-1: #F7F3EC;
   --bg-2: #FFFCF7;
@@ -4247,6 +4282,121 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
   .view { padding: 0; animation: none; }
 }
 
+
+/* ==========================================================================
+   C15 · The plan
+   --------------------------------------------------------------------------
+   A stage the reader pans and zooms, and a panel of steps beside or below
+   it. The stage is a fixed-height card on a phone so the panel can scroll
+   under it in the normal flow; past the sidebar breakpoint the two sit side
+   by side and the stage sticks while the panel scrolls.
+   ========================================================================== */
+
+.plan { display: grid; gap: 18px; }
+.plan-stage {
+  position: relative;
+  height: clamp(300px, 50vh, 620px);
+  border: 1px solid var(--hair);
+  border-radius: var(--r);
+  background: var(--bg-2);
+  overflow: hidden;
+  touch-action: none;
+}
+.plan-stage svg { width: 100%; height: 100%; display: block; }
+.plan-notice, .plan-overlay {
+  position: absolute; z-index: 5;
+  padding: 9px 12px;
+  border: 1px solid var(--hair-2);
+  border-radius: var(--r);
+  background: var(--bg-2);
+  color: var(--ink-2);
+  font-size: 12.5px; line-height: 1.5;
+  pointer-events: none;
+}
+.plan-notice { left: 12px; right: 12px; bottom: 12px; }
+.plan-notice.is-gold { border-color: rgba(200, 169, 107, 0.4); }
+.plan-overlay { right: 12px; bottom: 12px; max-width: 46%; color: var(--ink-3); font-size: 11.5px; }
+.plan-notice:not([hidden]) + .plan-overlay { bottom: 64px; }
+.plan-stage-btn {
+  position: absolute; top: 12px; right: 12px; z-index: 5;
+  padding: 8px 12px;
+  border: 1px solid var(--hair-2);
+  border-radius: var(--r);
+  background: var(--bg-2);
+  color: var(--ink-2);
+  font-family: var(--sans); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+  cursor: pointer;
+}
+.plan-stage-btn.is-left { right: auto; left: 12px; }
+.plan-stage-btn.is-on { background: var(--bg-4); color: var(--ink); border-color: var(--hair-3); }
+
+/* SVG type. Names in the serif at the room's centre, readings in tracked caps. */
+.plan-name   { font-family: var(--serif); font-size: 13px; fill: var(--ink-2); pointer-events: none; }
+.plan-tiny   { font-family: var(--sans); font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase; fill: var(--ink-4); pointer-events: none; }
+.plan-letter { font-family: var(--serif); fill: var(--ink); pointer-events: none; }
+.plan-badge  { font-family: var(--sans); font-size: 9px; pointer-events: none; }
+.plan-n      { font-family: var(--sans); font-size: 9px; letter-spacing: 0.1em; fill: var(--ink-3); }
+
+/* The panel: the app's sections, plus a step eyebrow and a few small parts
+   no other view has needed. */
+.plan-sec { margin-bottom: 26px; }
+.plan-step { display: inline-block; font-family: var(--sans); font-size: 9.5px; letter-spacing: 0.2em; color: var(--gold-lit); margin-right: 8px; vertical-align: 1px; }
+.plan-toggle { cursor: pointer; user-select: none; -webkit-user-select: none; }
+.plan-chev { display: inline-block; width: 8px; height: 8px; border-right: 1.5px solid var(--ink-3); border-bottom: 1.5px solid var(--ink-3); transform: rotate(-45deg); transition: transform var(--dur-2) var(--ease); margin-right: 2px; }
+.plan-chev.is-open { transform: rotate(45deg); }
+.plan-check { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); cursor: pointer; }
+.plan-check input { width: 17px; height: 17px; accent-color: var(--emerald-glow); margin: 0; flex: 0 0 auto; }
+.plan-rule { border: 0; border-top: 1px solid var(--hair); margin: 14px 0; }
+.plan-back { width: 30px; height: 30px; margin-right: 10px; border: 1px solid var(--hair-2); border-radius: var(--r); background: none; color: var(--ink-2); display: inline-grid; place-items: center; cursor: pointer; vertical-align: middle; }
+.plan-help { width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--hair-3); background: none; color: var(--ink-3); font-size: 11px; line-height: 1; display: inline-grid; place-items: center; cursor: pointer; padding: 0; letter-spacing: 0; }
+.plan-help:hover { color: var(--ink); border-color: var(--emerald-glow); }
+.plan-reading { font-family: var(--serif); font-size: 22px; font-weight: 300; line-height: 1.2; }
+.plan-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; }
+.plan-mark { flex: 0 0 auto; width: 26px; height: 6px; border-radius: 3px; margin-top: 8px; }
+.plan-dial { width: 120px; height: 120px; flex: 0 0 auto; touch-action: none; cursor: grab; }
+.plan-mini-rose { width: 40px; height: 40px; flex: 0 0 auto; cursor: pointer; overflow: visible; }
+
+.plan-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  width: 100%; padding: 9px 11px;
+  border: 1px solid var(--hair); border-radius: var(--r);
+  background: var(--bg-3); color: var(--ink);
+  text-align: left; cursor: pointer;
+}
+.plan-row-nm { display: inline-flex; align-items: center; gap: 9px; font-family: var(--serif); font-size: 15.5px; min-width: 0; }
+.plan-row-nm small { font-family: var(--sans); font-size: 10.5px; letter-spacing: 0.08em; color: var(--ink-4); }
+.plan-row.is-undrawn { border-style: dashed; background: none; }
+
+.plan-wall { padding: 9px 10px; justify-content: space-between; border-radius: var(--r); text-align: left; }
+.plan-wall small { color: var(--ink-4); letter-spacing: 0.08em; text-transform: uppercase; font-size: 9.5px; text-align: right; }
+.plan-wall.is-open { border-color: rgba(63, 190, 139, 0.5); color: var(--ink); }
+
+.plan-tray { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+.plan-tray::-webkit-scrollbar { display: none; }
+.plan-sp {
+  flex: 0 0 auto; display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 12px 6px 6px;
+  border: 1px solid var(--hair-2); border-radius: 99px; background: var(--glass);
+  cursor: grab; user-select: none; -webkit-user-select: none; touch-action: none;
+}
+.plan-sp:active { cursor: grabbing; }
+.plan-sp-mono { width: 26px; height: 26px; border-radius: 50%; background: var(--bg-3); border: 1px solid var(--hair-2); display: grid; place-items: center; font-family: var(--serif); font-size: 14px; }
+.plan-sp-nm { display: flex; flex-direction: column; font-size: 12.5px; color: var(--ink-2); white-space: nowrap; line-height: 1.2; }
+.plan-sp-nm small { font-size: 10px; letter-spacing: 0.08em; color: var(--ink-4); }
+.plan-ghost {
+  position: fixed; z-index: 200; pointer-events: none;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--plan-pot); border: 1.5px solid var(--emerald-glow);
+  display: grid; place-items: center; font-family: var(--serif); font-size: 15px; color: var(--ink);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 6px 18px -6px rgba(0, 0, 0, 0.5);
+}
+
+@media (min-width: 900px) {
+  .plan { grid-template-columns: minmax(0, 1fr) 340px; align-items: start; }
+  .plan-stage { height: calc(100vh - 230px); }
+  .plan-main { position: sticky; top: 104px; }
+}
 
 /* ==========================================================================
    D7 · Reduced motion

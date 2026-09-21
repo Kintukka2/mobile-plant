@@ -28,8 +28,24 @@ window.Store = (function () {
         experience: null,       // 'new' | 'some' | 'confident'
         createdAt: UI.toISO(new Date())
       },
-      rooms: [],                // { id, name, emoji, light, aspect, humid, notes }
+      rooms: [],                // { id, name, icon, light, aspect, humid, notes, shape }
       plants: [],               // see addPlant()
+      /* The floor plan: one per greenhouse, and there is one greenhouse.
+         Rooms drawn on it carry a `shape`; rooms added through the form do
+         not, and simply are not on the plan yet. North is a bearing in
+         degrees clockwise from the top of the plan, and it is only trusted
+         once the reader has confirmed it — `Plan` derives every drawn room's
+         light and aspect from it, so an unconfirmed north leaves those null
+         rather than guessed. `cell` is metres per grid cell, set the first
+         time someone types a room's real size. */
+      plan: {
+        north: null,
+        northConfirmed: false,
+        cell: 0.5,
+        scaleFrom: null,        // room id the scale was taken from
+        backdrop: null,         // { src, opacity, scale, x, y } while tracing
+        done: false             // "Done with the floorplan" ticked
+      },
       logs: [],                 // { id, plantId, date, kind, text, value, unit, photoId }
       weather: null,            // cached forecast
       settings: {
@@ -52,6 +68,7 @@ window.Store = (function () {
       state = Object.assign(blankState(), parsed);
       state.profile = Object.assign(blankState().profile, parsed.profile || {});
       state.settings = Object.assign(blankState().settings, parsed.settings || {});
+      state.plan = Object.assign(blankState().plan, parsed.plan || {});
       if (!Array.isArray(state.rooms)) state.rooms = [];
       if (!Array.isArray(state.plants)) state.plants = [];
       if (!Array.isArray(state.logs)) state.logs = [];
@@ -133,7 +150,10 @@ window.Store = (function () {
       light: data.light || null,
       aspect: data.aspect || null,
       humid: data.humid || null,
-      notes: data.notes || ''
+      notes: data.notes || '',
+      /* { pts: [{x, y}], win: [0|1|2 per edge], outdoor } in plan cells, or
+         null for a room that was described rather than drawn. */
+      shape: data.shape || null
     };
     get().rooms.push(room);
     save();
@@ -152,12 +172,21 @@ window.Store = (function () {
     return get().rooms.filter(function (r) { return r.id === id; })[0] || null;
   }
 
-  /* Deleting a room leaves its plants in place, just unassigned. */
+  /* Deleting a room leaves its plants in place, just unassigned — and off
+     the plan, since a position inside a room that no longer exists points
+     at nothing. */
   function deleteRoom(id) {
     const s = get();
     s.rooms = s.rooms.filter(function (r) { return r.id !== id; });
-    s.plants.forEach(function (p) { if (p.roomId === id) p.roomId = null; });
+    s.plants.forEach(function (p) { if (p.roomId === id) { p.roomId = null; p.pos = null; } });
+    if (s.plan.scaleFrom === id) s.plan.scaleFrom = null;
     save();
+  }
+
+  /* ---------- Plan ---------- */
+  function updatePlan(patch) {
+    Object.assign(get().plan, patch);
+    return save();
   }
 
   function plantsInRoom(roomId) {
@@ -171,6 +200,7 @@ window.Store = (function () {
       speciesId: data.speciesId,          // key into PLANT_DATA
       nickname: data.nickname || '',
       roomId: data.roomId || null,
+      pos: data.pos || null,               // { x, y } on the plan, in cells
       acquired: data.acquired || UI.toISO(new Date()),
       potCm: data.potCm || 15,
       potMaterial: data.potMaterial || 'plastic',
@@ -400,6 +430,7 @@ window.Store = (function () {
 
   return {
     load: load, save: save, get: get, uid: uid,
+    updatePlan: updatePlan,
     updateProfile: updateProfile, hemisphere: hemisphere,
     hemisphereIsGuess: hemisphereIsGuess,
     addRoom: addRoom, updateRoom: updateRoom, getRoom: getRoom, deleteRoom: deleteRoom,

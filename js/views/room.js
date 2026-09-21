@@ -89,14 +89,18 @@ window.ViewRoom = (function () {
     if (facts) {
       html += '<div class="section">' + facts + '</div>';
     } else {
+      /* A drawn room with no light is waiting on north, not on a form: its
+         light is read from the plan, so the way to fix it is there. */
       html += '<div class="section"><div class="nudge">' +
         '<span class="nudge-ico">' + UI.icon('compass') + '</span>' +
         '<div class="grow">' +
-          '<div class="nudge-t">Tag this room\'s light</div>' +
-          '<p class="nudge-p">Tell me which way the window faces and I\'ll work out the light level — ' +
-            'then every schedule in here gets tuned to it.</p>' +
+          '<div class="nudge-t">' + (r.shape ? 'Confirm north on your plan' : 'Tag this room\'s light') + '</div>' +
+          '<p class="nudge-p">' + (r.shape
+            ? 'This room is drawn on your plan, so I read its light from its windows — once I know which way north is.'
+            : 'Tell me which way the window faces and I\'ll work out the light level — then every schedule in here gets tuned to it.') + '</p>' +
           '<div class="row" style="gap:8px">' +
-            '<button class="btn btn-sm" data-edit="1">Set the aspect</button>' +
+            (r.shape ? '<button class="btn btn-sm" data-plan="1">Open the plan</button>'
+                     : '<button class="btn btn-sm" data-edit="1">Set the aspect</button>') +
           '</div>' +
         '</div>' +
       '</div></div>';
@@ -196,6 +200,7 @@ window.ViewRoom = (function () {
 
     root.addEventListener('click', function (e) {
       if (e.target.closest('[data-edit]')) { ViewGreenhouse.roomSheet(r); return; }
+      if (e.target.closest('[data-plan]')) { ViewPlan.focusRoom(r.id); App.go('/plan'); return; }
       if (e.target.closest('[data-add]'))  { ViewGreenhouse.addPlantSheet(r.id); return; }
 
       const sp = e.target.closest('[data-species]');

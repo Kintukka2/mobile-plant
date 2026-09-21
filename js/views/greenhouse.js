@@ -463,6 +463,12 @@ window.ViewGreenhouse = (function () {
        gone by the second room. The time-zone guess is named but deliberately
        not pre-selected: a preselected chip is a confirmation the reader did
        not give. */
+    /* A drawn room does not get asked about its light: both answers come off
+       the plan, and a select that could be changed here would be overwritten
+       by Plan.sync() on the next render — a control that silently reverts is
+       worse than none. The fields are replaced by a note and the way back. */
+    const drawnRoom = editing && !!room.shape;
+
     const hemiAsk =
       '<div id="r-hemi-ask" style="margin-top:10px">' +
         '<p class="hint" style="margin-bottom:8px">Before I can read these windows I need to know which ' +
@@ -505,28 +511,45 @@ window.ViewGreenhouse = (function () {
       /* A div, not a label. The hemisphere chips live inside this field, and
          a label wrapping them would hand every chip tap to the select as
          well. `for` keeps the caption tied to the control without it. */
-      '<div class="field"><label class="label" for="r-aspect">Which way does the window face?</label>' +
-        '<select class="select" id="r-aspect">' + aspectOpts + '</select>' +
-        '<p class="hint" id="r-aspect-note">' +
-          UI.esc(hemiConfirmed
-            ? 'Tell me this and I\'ll work out the light level. ' + settledHint()
-            : 'Tell me this and I\'ll work out the light level.') + '</p>' +
-        (hemiConfirmed ? '' : hemiAsk) +
-      '</div>' +
+      (drawnRoom
+        /* The selects stay in the DOM, hidden, so the wiring below finds them
+           and the save reads them; what the reader sees is the derivation and
+           the way to change it. */
+        ? '<div class="field"><span class="label">Light</span>' +
+            '<p class="hint" style="margin:0 0 8px">' + (room.light
+              ? 'From your plan: <b>' + UI.esc(LOOKUPS.LIGHT[room.light].label.toLowerCase()) + '</b>' +
+                (room.aspect && room.aspect !== 'NONE' ? ', through a ' + UI.esc(LOOKUPS.aspectLabel(room.aspect).toLowerCase()) : '') + '. Change its windows there and this follows.'
+              : 'This room is on your plan, so its light is read from its windows once north is confirmed there.') + '</p>' +
+            '<button type="button" class="link-btn" data-go-plan="' + UI.attr(room.id) + '">Open the plan</button>' +
+            '<select id="r-aspect" hidden>' + aspectOpts + '</select>' +
+            '<select id="r-light" hidden>' + lightOpts + '</select>' +
+            '<p id="r-light-note" hidden></p>' +
+          '</div>' +
+          '<label class="field"><span class="label">Humidity</span>' +
+            '<select class="select" id="r-humid">' + humidOpts + '</select>' +
+          '</label>'
+        : '<div class="field"><label class="label" for="r-aspect">Which way does the window face?</label>' +
+            '<select class="select" id="r-aspect">' + aspectOpts + '</select>' +
+            '<p class="hint" id="r-aspect-note">' +
+              UI.esc(hemiConfirmed
+                ? 'Tell me this and I\'ll work out the light level. ' + settledHint()
+                : 'Tell me this and I\'ll work out the light level.') + '</p>' +
+            (hemiConfirmed ? '' : hemiAsk) +
+          '</div>' +
 
-      '<div class="env-row">' +
-        '<label class="field"><span class="label">Light level</span>' +
-          '<select class="select" id="r-light">' + lightOpts + '</select>' +
-        '</label>' +
-        '<label class="field"><span class="label">Humidity</span>' +
-          '<select class="select" id="r-humid">' + humidOpts + '</select>' +
-        '</label>' +
-      '</div>' +
-      /* The light note sits under the pair rather than inside the light
-         column: it runs to three lines for some values, and a hint that tall
-         inside one half of a two-column row drags the other half's control
-         out of line with it. */
-      '<p class="hint" id="r-light-note" style="margin:8px 0 18px"></p>' +
+          '<div class="env-row">' +
+            '<label class="field"><span class="label">Light level</span>' +
+              '<select class="select" id="r-light">' + lightOpts + '</select>' +
+            '</label>' +
+            '<label class="field"><span class="label">Humidity</span>' +
+              '<select class="select" id="r-humid">' + humidOpts + '</select>' +
+            '</label>' +
+          '</div>' +
+          /* The light note sits under the pair rather than inside the light
+             column: it runs to three lines for some values, and a hint that tall
+             inside one half of a two-column row drags the other half's control
+             out of line with it. */
+          '<p class="hint" id="r-light-note" style="margin:8px 0 18px"></p>') +
 
       '<label class="field"><span class="label">Notes (optional)</span>' +
         '<textarea class="textarea" id="r-notes" maxlength="400" ' +
@@ -607,7 +630,14 @@ window.ViewGreenhouse = (function () {
         syncPresetLabel();
       }
 
-      const aspectNote = root.querySelector('#r-aspect-note');
+      const aspectNote = root.querySelector('#r-aspect-note') || document.createElement('p');
+
+      const goPlan = root.querySelector('[data-go-plan]');
+      if (goPlan) goPlan.addEventListener('click', function () {
+        UI.closeSheet();
+        ViewPlan.focusRoom(goPlan.getAttribute('data-go-plan'));
+        App.go('/plan');
+      });
 
       /* Fill the light level from the aspect — but only from a hemisphere we
          actually have, and always for 'No window', which needs none. */
@@ -658,8 +688,9 @@ window.ViewGreenhouse = (function () {
         const data = {
           name: name,
           icon: iconValue || null,
-          light: lightEl.value || null,
-          aspect: aspectEl.value || null,
+          /* A drawn room's light and aspect belong to the plan. */
+          light: drawnRoom ? room.light : (lightEl.value || null),
+          aspect: drawnRoom ? room.aspect : (aspectEl.value || null),
           humid: root.querySelector('#r-humid').value || null,
           notes: root.querySelector('#r-notes').value.trim()
         };
@@ -750,11 +781,18 @@ window.ViewGreenhouse = (function () {
          do the more useful job of inviting rather than reporting. This one
          also quietly names the organising idea of the view — rooms — which
          the body copy immediately goes on to explain. */
+      /* The plan leads, because tracing a home is what makes the light real —
+         but someone with three plants on a windowsill should not have to
+         trace their flat before logging a watering, so the quick path stays
+         a tap away, and both produce the same thing: rooms. */
       return UI.empty('leaf', 'Room to grow',
-        'Let\'s start with a room — a windowsill counts. Or jump straight in and add your first plant.',
-        '<div class="row" style="gap:8px;justify-content:center">' +
-          '<button class="btn btn-ghost" data-open="room">Add a room</button>' +
-          '<button class="btn" data-open="plant">Add a plant</button>' +
+        'Trace your home and I\'ll read the light in every room from its windows. Or start small with a single room, or a plant.',
+        '<div class="stack" style="gap:10px;align-items:center">' +
+          '<button class="btn" data-go="/plan">' + UI.icon('compass') + 'Create your greenhouse</button>' +
+          '<div class="row" style="gap:14px;justify-content:center">' +
+            '<button class="link-btn" data-open="room">or just add a room</button>' +
+            '<button class="link-btn" data-open="plant">add a plant</button>' +
+          '</div>' +
         '</div>');
     }
 
@@ -768,16 +806,40 @@ window.ViewGreenhouse = (function () {
     if (tab === 'rooms') {
       const unassigned = plants.filter(function (p) { return !p.roomId; });
 
+      const drawnCount = rooms.filter(function (r) { return r.shape; }).length;
       html += rooms.length
-        ? '<div class="grid grid-rooms">' + rooms.map(roomCard).join('') + '</div>' +
+        ? /* The plan card sits above the rooms it draws. Its note says how
+             much of the greenhouse is on it, which is the one thing a reader
+             with a half-traced home wants to know before opening it. */
+          '<button class="nudge is-link plan-card" data-go="/plan">' +
+            '<span class="nudge-ico">' + UI.icon('compass') + '</span>' +
+            '<div class="grow"><div class="nudge-t">Your plan</div>' +
+              '<p class="nudge-p mb-0">' + (drawnCount
+                ? (drawnCount === rooms.length ? 'Every room is drawn. ' : UI.plural(drawnCount, 'room') + ' of ' + rooms.length + ' drawn. ') + 'Open it to place plants where the light is.'
+                : 'Trace your home and I\'ll read each room\'s light from its windows.') + '</p></div>' +
+            UI.icon('chevron', 'muted') +
+          '</button>' +
+          /* The plan is one thing and the rooms are many things; a hairline
+             between them says so, where the card's bottom edge butting the
+             first room's top edge said they were a stack of the same. */
+          '<hr class="rule">' +
+          '<div class="grid grid-rooms">' + rooms.map(roomCard).join('') + '</div>' +
           '<button class="btn btn-soft btn-block" data-open="room" style="margin-top:12px">' +
             UI.icon('plus') + 'Add another room</button>'
         : UI.empty('home', 'No rooms yet',
-            'Rooms are how I work out light levels. Tag one with its window aspect and every plant in it gets a schedule tuned to that spot.',
-            '<button class="btn" data-open="room">Add your first room</button>');
+            'Rooms are how I work out light levels. Trace your home and I read them from the windows, or describe one room at a time.',
+            '<div class="stack" style="gap:10px;align-items:center">' +
+              '<button class="btn" data-go="/plan">' + UI.icon('compass') + 'Create your greenhouse</button>' +
+              '<button class="link-btn" data-open="room">or just add a room</button>' +
+            '</div>');
 
       if (unassigned.length) {
-        html += '<div class="section">' +
+        /* .section only spaces below itself, and the rooms block above is not
+           in one — so this heading landed flush against the Add another room
+           button, reading as its caption. The top margin is the same 42px a
+           section puts under itself, so the two blocks part like every other
+           pair on the page. */
+        html += '<div class="section" style="margin-top:42px">' +
           '<div class="section-head"><h2 class="section-title">Not in a room yet</h2>' +
           '<span class="section-note">' + UI.plural(unassigned.length, 'plant') + '</span></div>' +
           '<div class="grid grid-plants">' + unassigned.map(plantCard).join('') + '</div>' +
@@ -812,6 +874,9 @@ window.ViewGreenhouse = (function () {
         UI.keepTabsInView(document.getElementById('view'));
         return;
       }
+
+      const go = e.target.closest('[data-go]');
+      if (go) { App.go(go.getAttribute('data-go')); return; }
 
       const open = e.target.closest('[data-open]');
       if (open) {
