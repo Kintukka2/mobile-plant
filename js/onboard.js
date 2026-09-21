@@ -34,7 +34,6 @@ window.Onboard = (function () {
     const name = Store.get().profile.name || '';
     return '<h2 class="ob-q">What should I call you?</h2>' +
       '<input class="ob-input" id="ob-name" type="text" maxlength="30" autocomplete="given-name" autocapitalize="words" placeholder="Your name" value="' + UI.attr(name) + '">' +
-      '<p class="ob-hint">Optional. I\'ll use it when I say good morning.</p>' +
       '<div class="ob-actions"><button class="btn btn-lg" data-ob="next">Continue</button></div>';
   }
 
