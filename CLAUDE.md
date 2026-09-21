@@ -17,8 +17,8 @@ property that makes this project what it is.
 
 - **Classic `<script>` tags.** Not `type="module"`.
 - **Globals are the module system.** Each file assigns exactly one namespace:
-  `UI`, `Store`, `Schedule`, `Weather`, `Photos`, `PLANT_DATA`, `PROBLEM_DATA`,
-  `LOOKUPS`, `App`, and one `View*` per screen.
+  `UI`, `Store`, `Schedule`, `Plan`, `Weather`, `Photos`, `PLANT_DATA`,
+  `PROBLEM_DATA`, `LOOKUPS`, `App`, and one `View*` per screen.
 - **Load order in `index.html` is the dependency graph.** Data and utilities
   first, views next, router last.
 
@@ -90,6 +90,27 @@ A plant's `problems` array deliberately **mixes symptom ids and cause ids** —
 When adding a cause, give it an entry in `CAUSES`, list it under at least one
 symptom's `causes`, and add a `SUPPORTS` row — an unreferenced cause is
 unreachable, and one with no supporting clues can never outrank its peers.
+
+`js/plan.js` — the floor plan's geometry and light, no DOM. A room drawn on
+the plan carries `room.shape = { pts, win, outdoor }` in grid cells, where
+`win[i]` is the state of edge `i`: `0` wall, `1` window, `2` opening to the
+next room. A plant placed on the plan carries `plant.pos = { x, y }`.
+`state.plan` holds north (degrees clockwise from the top of the plan, and
+only trusted once `northConfirmed`), the metres-per-cell scale, and the
+tracing backdrop while it is needed.
+
+**A drawn room's `light` and `aspect` are derived, never typed.**
+`Plan.sync()` writes them back onto the room before every render, so
+`Schedule`, the greenhouse and the room page read them like any other
+room's and never need to know the plan exists. The room form hides those
+two fields for a drawn room and points at the plan instead. Rooms without
+a shape are never touched: their light is whatever the reader said.
+
+The plan obeys the same go-quiet rule as the room form: while north is
+unconfirmed or the hemisphere is a guess, every light function returns
+null and the plan renders unshaded. Openings borrow light from the room
+across them, one step dimmer, from that room's own windows only — light
+crosses one doorway, never a chain of them.
 
 `js/data/lookups.js` — the label tables. `LOOKUPS.TOX` carries the pill
 `variant` as well as the label, because two views render the toxicity ladder
