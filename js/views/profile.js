@@ -60,6 +60,9 @@ window.ViewProfile = (function () {
      ====================================================================== */
 
   function locationSheet() {
+    const hemi = Store.hemisphere();
+    const hemiSet = !Store.hemisphereIsGuess();
+
     const body =
       '<p class="dim small" style="margin:0 0 16px;line-height:1.6">' +
         'I use this for two things: your local forecast, so I can offer to stretch or shorten watering before ' +
@@ -79,8 +82,27 @@ window.ViewProfile = (function () {
           'placeholder="Sydney, Manchester, Lisbon…"></label>' +
 
       '<div id="loc-results" class="stack" style="gap:6px"></div>' +
-      '<p class="hint" id="loc-note">Weather comes from Open-Meteo. No account, no API key, and your ' +
-        'coordinates never leave your browser except in that one request.</p>';
+
+      /* The third answer, for a reader who does not want to hand over a town
+         at all. It buys the half of this sheet that does not need a
+         forecast: seasons and window aspects both turn on the hemisphere
+         alone. The hint says plainly what is given up, because an option
+         offered beside two better ones has to be honest about being the
+         lesser one. */
+      '<div class="row" style="gap:10px;margin:18px 0 12px"><hr class="divider" style="flex:1;margin:0">' +
+        '<span class="tiny muted">or general location</span><hr class="divider" style="flex:1;margin:0"></div>' +
+
+      '<div class="row-wrap" id="loc-hemi">' +
+        '<button type="button" class="chip' + (hemiSet && hemi === 'north' ? ' is-on' : '') + '" ' +
+          'data-loc-hemi="north">Northern hemisphere</button>' +
+        '<button type="button" class="chip' + (hemiSet && hemi === 'south' ? ' is-on' : '') + '" ' +
+          'data-loc-hemi="south">Southern hemisphere</button>' +
+      '</div>' +
+      '<p class="hint">Enough for your seasons and which way a bright window faces. No forecast, ' +
+        'so no offers to stretch or shorten watering before a spell of weather.</p>' +
+
+      '<p class="hint" id="loc-note">Weather data comes from Open-Meteo. Your location is never saved ' +
+        'by us.</p>';
 
     UI.openSheet('Your location', body, function (root) {
       const input = root.querySelector('#loc-q');
@@ -96,6 +118,16 @@ window.ViewProfile = (function () {
         App.refresh();
         App.syncWeather(true);
       }
+
+      root.querySelector('#loc-hemi').addEventListener('click', function (e) {
+        const btn = e.target.closest('[data-loc-hemi]');
+        if (!btn) return;
+        const pick = btn.getAttribute('data-loc-hemi');
+        Store.updateProfile({ hemisphere: pick });
+        UI.closeSheet();
+        UI.toast(pick === 'south' ? 'Southern hemisphere it is' : 'Northern hemisphere it is', 'leaf');
+        App.refresh();
+      });
 
       root.querySelector('#loc-me').addEventListener('click', function () {
         note.textContent = 'Asking your browser for your location…';

@@ -264,15 +264,17 @@ window.ViewToday = (function () {
         '<span class="nudge-ico">' + UI.icon('pin') + '</span>' +
         '<div class="grow" style="min-width:0">' +
           '<div class="nudge-t">Add your location</div>' +
-          '<p class="nudge-p">Then I can watch your forecast and offer to stretch or shorten ' +
-            'watering when a wet or dry spell is on the way.</p>' +
-          '<div class="row" style="gap:8px">' +
-            /* Straight to the sheet. Sending the reader to /profile put them
-               at the top of a long page with the location card several
-               screens down — a nudge that answers "where?" with "somewhere
-               over there" is barely a nudge. */
-            '<button class="btn btn-sm" data-act="set-location">Set up</button>' +
-          '</div>' +
+          '<p class="nudge-p">This will let me give you real advice, based on the weather ' +
+            'in your region.</p>' +
+          /* The same button as the one in Profile, down to the icon and the
+             words. Two different-looking controls for one action taught the
+             reader that "Set up" and "Set my location" were two errands; the
+             nudge is a shortcut to that button, so it should look like it.
+             Straight to the sheet, too — sending them to /profile put them
+             at the top of a long page with the location card several screens
+             down, which answers "where?" with "somewhere over there". */
+          '<button class="btn btn-block" data-act="set-location" style="margin-top:12px">' +
+            UI.icon('pin') + 'Set my location</button>' +
         '</div>' +
       '</div></div>';
     }
