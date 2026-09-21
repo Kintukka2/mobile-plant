@@ -4503,6 +4503,36 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
 }
 .plan-stage-btn.is-left { right: auto; left: 12px; }
 .plan-stage-btn.is-on { background: var(--bg-4); color: var(--ink); border-color: var(--hair-3); }
+
+/* Full screen without the Fullscreen API, which iOS Safari grants only to
+   video. The stage lifts out of the layout and covers the viewport; its own
+   touch-action already swallows gestures, so the page cannot scroll
+   underneath and there is no lock to remember to release. */
+/* A fixed element resolves against the nearest transformed ancestor, and
+   .view animates translateY on the way in. Zeroing the transform is not
+   enough: an element carrying a transform animation stays a containing
+   block whatever the current value is, so the animation itself has to go
+   while the stage is full. Written with :has() rather than a class, so
+   there is nothing to set and nothing to leak on the way out — the entrance
+   simply replays once as the page comes back. */
+#view:has(.plan-stage.is-full) { animation: none !important; transform: none !important; }
+.plan-stage.is-full {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 120;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  max-height: none;
+  border: 0;
+  border-radius: 0;
+}
+.plan-stage.is-full .plan-tools,
+.plan-stage.is-full .plan-stage-btn { top: calc(12px + env(safe-area-inset-top, 0px)); }
+.plan-stage.is-full .plan-stage-btn.is-bottom { top: auto; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
+.plan-stage.is-full .plan-notice { bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
+.plan-tool.is-on { color: var(--ink); border-color: var(--hair-3); background: var(--bg-4); }
 .plan-stage-btn.is-bottom { top: auto; bottom: 12px; display: inline-flex; align-items: center; gap: 6px; color: var(--ink); border-color: var(--hair-3); }
 .plan-stage-btn.is-bottom svg { width: 12px; height: 12px; }
 /* The notice spans the bottom edge; anything else down there steps up over
