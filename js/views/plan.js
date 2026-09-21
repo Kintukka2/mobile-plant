@@ -387,9 +387,13 @@ window.ViewPlan = (function () {
   function panelRoom(r) {
     const sh = r.shape, d = roomDims(r), sun = Plan.sunReach(r), pl = plan();
     const here = plantsOnPlan().filter(function (p) { return Plan.roomAt(p.pos.x, p.pos.y) === r; });
-    let h = '<div class="section plan-sec"><div class="section-head"><h2 class="section-title"><button class="plan-back" id="pl-back" aria-label="Back">' + CHEV + '</button>Room</h2><span class="section-note">' + sh.pts.length + ' walls</span></div>';
-    h += '<label class="field" style="margin:0"><span class="label">Name</span><input class="input" id="pl-room-name" value="' + UI.attr(r.name) + '"></label>';
-    h += '<label class="plan-check" style="margin-top:10px"><input type="checkbox" id="pl-room-outdoor"' + (sh.outdoor ? ' checked' : '') + '> Outdoors?</label>' +
+    /* The heading is the name. A "Room" title over a Name field said the same
+       thing twice; the field now sits where the title was, in the title's
+       own type, with a dotted rule under it as the only sign it can be
+       typed into. */
+    let h = '<div class="section plan-sec"><div class="section-head"><h2 class="section-title plan-title-edit"><button class="plan-back" id="pl-back" aria-label="Back">' + CHEV + '</button>' +
+      '<input class="plan-title-input" id="pl-room-name" value="' + UI.attr(r.name) + '" placeholder="Room name" aria-label="Room name" maxlength="30" autocomplete="off"></h2><span class="section-note">' + sh.pts.length + ' walls</span></div>';
+    h += '<label class="plan-check" style="margin-top:4px"><input type="checkbox" id="pl-room-outdoor"' + (sh.outdoor ? ' checked' : '') + '> Outdoors?</label>' +
       (sh.outdoor ? '<p class="hint" style="margin-top:6px">Every side with nothing built beyond it is open to the sky, so there is no need to mark windows here.</p>' : '');
     h += '<hr class="plan-rule">';
     h += '<div class="grid-2"><label class="field" style="margin:0"><span class="label">Width</span><input class="input" id="pl-dim-w" type="number" step="0.1" min="0.5" inputmode="decimal" value="' + (Math.round(d.w * 10) / 10) + '"></label>' +
@@ -516,6 +520,70 @@ window.ViewPlan = (function () {
     });
   }
 
+  /* The best free cell in one room for one species: the same heatmap the
+     shading uses, so a plant dropped here lands where the room would have
+     been shaded greenest, never somewhere the reader could see disagrees
+     with the colour. Ties go to the cell nearest the middle, and a cell
+     another plant already stands on is passed over so two never stack.
+     While north is unknown there is no verdict, and the middle will do. */
+  const VERDICT_ORDER = { ideal: 0, ok: 1, poor: 2, bad: 3 };
+  function bestSpotIn(r, sp) {
+    const c = Plan.centroid(r.shape.pts), b = Plan.bbox(r.shape.pts);
+    const taken = plantsOnPlan().map(function (p) { return Math.floor(p.pos.x) + ',' + Math.floor(p.pos.y); });
+    const heat = {};
+    Plan.heatCells(sp).forEach(function (h) { if (h.room === r) heat[h.x + ',' + h.y] = VERDICT_ORDER[h.v]; });
+    let best = null;
+    for (let cx = Math.floor(b.x0); cx < Math.ceil(b.x1); cx++) {
+      for (let cy = Math.floor(b.y0); cy < Math.ceil(b.y1); cy++) {
+        const x = cx + 0.5, y = cy + 0.5, key = cx + ',' + cy;
+        if (!Plan.pointIn(r.shape.pts, x, y) || taken.indexOf(key) !== -1) continue;
+        const score = heat[key] !== undefined ? heat[key] : 1, d = Math.hypot(x - c.x, y - c.y);
+        if (!best || score < best.score || (score === best.score && d < best.d)) best = { x: x, y: y, score: score, d: d };
+      }
+    }
+    return best ? { x: best.x, y: best.y } : { x: Math.round(c.x * 4) / 4, y: Math.round(c.y * 4) / 4 };
+  }
+
+  function placeIn(p, r) {
+    const spot = bestSpotIn(r, Store.species(p)), moved = p.roomId !== r.id;
+    Store.updatePlant(p.id, { roomId: r.id, pos: spot });
+    UI.toast((moved ? 'Moved to ' : 'Placed in ') + r.name, 'leaf');
+    redraw();
+  }
+
+  /* Every plant not already standing in this room, nearest first: the ones
+     with no place on the plan yet, then the ones in other rooms. Tapping one
+     drops it at its best spot here without a drag — the tray in Step 4 is a
+     long scroll away from a room the reader is looking at. */
+  function quickAdd(r) {
+    const here = plantsOnPlan().filter(function (p) { return Plan.roomAt(p.pos.x, p.pos.y) === r; });
+    const rest = Store.activePlants().filter(function (p) { return here.indexOf(p) === -1; });
+    const loose = rest.filter(function (p) { return !(p.pos && Plan.roomAt(p.pos.x, p.pos.y)); });
+    const elsewhere = rest.filter(function (p) { return loose.indexOf(p) === -1; });
+    function row(p) {
+      const r0 = p.roomId ? Store.getRoom(p.roomId) : null, sp = Store.species(p), at = bestSpotIn(r, sp);
+      const v = Plan.verdict(sp, Plan.pointRank(r, at.x, at.y));
+      return '<button class="plan-row" data-quick-plant="' + UI.attr(p.id) + '"><span class="plan-row-nm">' + UI.esc(Store.displayName(p)) +
+        (r0 && r0 !== r ? ' <small>' + UI.esc(r0.name) + '</small>' : '') + '</span>' + (v ? verdictPill(v) : '') + '</button>';
+    }
+    let body = '';
+    if (!rest.length) {
+      body += '<p class="hint" style="margin:0">' + (Store.activePlants().length ? 'Every plant you have is already in here.' : 'No plants yet. Add one below and I\'ll put it in this room.') + '</p>';
+    } else {
+      if (loose.length) body += '<span class="label">Not on the plan yet</span><div class="stack" style="gap:6px;margin-bottom:14px">' + loose.map(row).join('') + '</div>';
+      if (elsewhere.length) body += '<span class="label">In another room</span><div class="stack" style="gap:6px">' + elsewhere.map(row).join('') + '</div>';
+      body += '<p class="hint">Tap one and I\'ll stand it where the light in this room suits it best. You can drag it from there.</p>';
+    }
+    body += '<div class="row" style="gap:8px;margin-top:18px"><button class="btn btn-ghost" data-act="sheet-cancel" style="flex:1">Close</button><button class="btn" data-act="pl-quick-new" style="flex:1">New plant here</button></div>';
+    UI.openSheet('Add to ' + r.name, body, function (sheet) {
+      sheet.querySelectorAll('[data-quick-plant]').forEach(function (b) {
+        b.addEventListener('click', function () { const p = Store.getPlant(b.getAttribute('data-quick-plant')); UI.closeSheet(); if (p) placeIn(p, r); });
+      });
+      const nw = sheet.querySelector('[data-act="pl-quick-new"]');
+      if (nw) nw.addEventListener('click', function () { UI.closeSheet(); setTimeout(function () { ViewGreenhouse.addPlantSheet(r.id); }, 230); });
+    });
+  }
+
   function wallsHelp() {
     function row(mark, title, body) {
       return '<div class="row" style="align-items:flex-start;gap:12px;margin-bottom:14px;flex-wrap:nowrap"><span class="plan-mark" style="' + mark + '"></span><div style="min-width:0">' +
@@ -542,6 +610,7 @@ window.ViewPlan = (function () {
     else if (tool === 'backdrop') { n.textContent = 'Drag to move the floorplan under the grid.'; n.className = 'plan-notice'; n.hidden = false; }
     else n.hidden = true;
     root.querySelector('#pl-reshape').hidden = !(mode === 'plan' && sel && sel.type === 'room');
+    root.querySelector('#pl-quick-add').hidden = !(mode === 'plan' && sel && sel.type === 'room' && !drawing);
     const wt = root.querySelector('#pl-walls-toggle');
     wt.hidden = mode !== 'home' || !list.length;
     wt.textContent = ui.hideInner ? 'Show inside walls' : 'Hide inside walls';
@@ -637,6 +706,7 @@ window.ViewPlan = (function () {
           '<div class="plan-overlay" id="pl-reshape" hidden>Drag a square corner to reshape the room. Drag the small dot on a wall to add a corner.</div>' +
           '<button class="plan-stage-btn" id="pl-walls-toggle" hidden></button>' +
           '<button class="plan-stage-btn is-left" id="pl-view-reset" hidden>Reset view</button>' +
+          '<button class="plan-stage-btn is-left is-bottom" id="pl-quick-add" hidden>' + UI.icon('plus') + 'Add a plant</button>' +
         '</div>' +
       '</div>' +
       '<div class="plan-panel" id="pl-panel"></div>' +
@@ -653,6 +723,7 @@ window.ViewPlan = (function () {
       if (m) { mode = m.getAttribute('data-mode'); if (mode === 'home') { tool = 'select'; drawing = null; } redraw(); return; }
       if (e.target.closest('#pl-walls-toggle')) { ui.hideInner = !ui.hideInner; drawCanvas(); syncOverlays(); return; }
       if (e.target.closest('#pl-view-reset')) { const v = curView(); v.k = 1; v.cx = 0; v.cy = 0; drawCanvas(); syncOverlays(); return; }
+      if (e.target.closest('#pl-quick-add')) { if (sel && sel.type === 'room') quickAdd(room(sel.id)); return; }
     });
 
     /* ---- Canvas: wheel, pinch, pan, drag ---- */

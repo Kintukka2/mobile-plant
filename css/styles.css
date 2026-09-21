@@ -4337,6 +4337,23 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
 }
 .plan-stage-btn.is-left { right: auto; left: 12px; }
 .plan-stage-btn.is-on { background: var(--bg-4); color: var(--ink); border-color: var(--hair-3); }
+.plan-stage-btn.is-bottom { top: auto; bottom: 12px; display: inline-flex; align-items: center; gap: 6px; color: var(--ink); border-color: var(--hair-3); }
+.plan-stage-btn.is-bottom svg { width: 12px; height: 12px; }
+/* The notice spans the bottom edge; anything else down there steps up over
+   it, the same way the reshape overlay does. */
+.plan-notice:not([hidden]) ~ .plan-stage-btn.is-bottom { bottom: 64px; }
+
+/* The room's name is its heading. Same face and tracking as the title
+   around it; the dotted rule is the one cue that it takes typing. */
+.plan-title-edit { display: flex; align-items: center; min-width: 0; flex: 1; }
+.plan-title-input {
+  flex: 1; min-width: 0; width: 100%;
+  font: inherit; letter-spacing: inherit; text-transform: inherit; color: inherit;
+  background: none; border: 0; border-bottom: 1px dotted var(--hair-3); border-radius: 0;
+  padding: 2px 0 4px; outline: none;
+}
+.plan-title-input::placeholder { color: var(--ink-4); }
+.plan-title-input:focus { border-bottom-color: var(--emerald-glow); }
 
 /* SVG type. Names in the serif at the room's centre, readings in tracked caps. */
 .plan-name   { font-family: var(--serif); font-size: 13px; fill: var(--ink-2); pointer-events: none; }
