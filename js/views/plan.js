@@ -299,7 +299,7 @@ window.ViewPlan = (function () {
         '<span class="row" style="gap:8px">' + (pl.done ? UI.pill('Done', 'mint') : '') + '<span class="plan-chev' + (open1 ? ' is-open' : '') + '"></span></span></div>';
     if (open1) {
       h += '<div class="row" style="justify-content:space-between;margin-bottom:10px">' +
-        (pl.backdrop ? '' : '<label class="btn btn-ghost btn-sm" style="cursor:pointer">Load a floorplan image<input type="file" id="pl-bd-file" accept="image/*" hidden></label>') +
+        (pl.backdrop ? '' : '<button class="btn btn-ghost btn-sm" id="pl-bd-load">Load a floorplan image</button>') +
         '<label class="plan-check"><input type="checkbox" id="pl-done"' + (pl.done ? ' checked' : '') + '> Done with the floorplan</label></div>';
       if (pl.backdrop) {
         h += '<div class="grid-2"><label class="field" style="margin:0"><span class="label">Opacity</span><input class="input" id="pl-bd-op" type="range" min="0.1" max="1" step="0.05" value="' + pl.backdrop.opacity + '"></label>' +
@@ -534,6 +534,51 @@ window.ViewPlan = (function () {
   function redraw() { if (!root || !document.body.contains(root)) return; Plan.sync(); drawCanvas(); drawPanel(); syncOverlays(); }
 
   /* ======================================================================
+     The backdrop image
+     ====================================================================== */
+
+  /* The same shape as Photos.pick: an input made on the spot and clicked
+     from inside the tap. The first version was a <label> around a hidden
+     input, which iOS treats as a label around nothing — a display:none file
+     input does not open the picker there. No `capture`, unlike a plant
+     photo: a floorplan lives in the photo library or a PDF screenshot, not
+     in front of the camera. */
+  function pickBackdrop() {
+    const input = document.createElement('input');
+    input.type = 'file'; input.accept = 'image/*';
+    input.style.position = 'fixed'; input.style.left = '-9999px'; input.style.opacity = '0';
+    function cleanup() { if (input.parentNode) input.parentNode.removeChild(input); }
+    input.addEventListener('change', function () {
+      const file = input.files && input.files[0];
+      if (!file) { cleanup(); return; }
+      if (!/^image\//.test(file.type)) { UI.toast('That file is not an image', 'warn'); cleanup(); return; }
+      const rd = new FileReader();
+      rd.onload = function () {
+        const img = new Image();
+        img.onload = function () {
+          /* Downscaled hard: it only has to be legible under a grid, and
+             localStorage is the whole budget. If even that will not fit,
+             keep the rooms and lose the picture. */
+          const max = 900, k = Math.min(1, max / Math.max(img.width, img.height));
+          const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+          const ok = Store.updatePlan({ backdrop: { src: c.toDataURL('image/jpeg', 0.55), opacity: 0.45, scale: 1, x: 0, y: 0 }, done: false });
+          cleanup();
+          if (!ok) { Store.updatePlan({ backdrop: null }); return; }
+          mode = 'plan'; tool = 'backdrop'; ui.step1Open = true; redraw();
+          UI.toast('Line it up, then trace your rooms over it', 'leaf');
+        };
+        img.onerror = function () { cleanup(); UI.toast('I could not read that image', 'warn'); };
+        img.src = rd.result;
+      };
+      rd.onerror = function () { cleanup(); UI.toast('I could not read that image', 'warn'); };
+      rd.readAsDataURL(file);
+    });
+    document.body.appendChild(input);
+    input.click();
+  }
+
+  /* ======================================================================
      Rooms: create, reshape, edit
      ====================================================================== */
 
@@ -739,6 +784,7 @@ window.ViewPlan = (function () {
       if (t.closest('#pl-draw-finish')) { if (drawing && drawing.pts.length >= 3) finishRoom(drawing.pts); return; }
       if (t.closest('#pl-draw-undo')) { if (drawing) drawing.pts.pop(); redraw(); return; }
       if (t.closest('#pl-draw-cancel')) { drawing = null; tool = 'select'; redraw(); return; }
+      if (t.closest('#pl-bd-load')) { pickBackdrop(); return; }
       if (t.closest('#pl-tool-bd')) { tool = tool === 'backdrop' ? 'select' : 'backdrop'; mode = 'plan'; redraw(); return; }
       if (t.closest('#pl-bd-remove')) { Store.updatePlan({ backdrop: null }); tool = 'select'; redraw(); UI.toast('Backdrop removed. Your rooms stay.', 'leaf'); return; }
       if (t.closest('#pl-open-compass') || t.closest('[data-open-compass]')) { openCompass(); return; }
@@ -792,26 +838,6 @@ window.ViewPlan = (function () {
         const r = room(sel.id); r.shape.outdoor = t.checked;
         if (t.checked) r.shape.win = r.shape.win.map(function (v) { return v === WINDOW ? WALL : v; });
         saveShape(); redraw(); return;
-      }
-      if (t.id === 'pl-bd-file' && t.files && t.files[0]) {
-        const rd = new FileReader();
-        rd.onload = function () {
-          const img = new Image();
-          img.onload = function () {
-            /* Downscaled hard: it only has to be legible under a grid, and
-               localStorage is the whole budget. If even that will not fit,
-               keep the rooms and lose the picture. */
-            const max = 900, k = Math.min(1, max / Math.max(img.width, img.height));
-            const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-            c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-            const ok = Store.updatePlan({ backdrop: { src: c.toDataURL('image/jpeg', 0.55), opacity: 0.45, scale: 1, x: 0, y: 0 }, done: false });
-            if (!ok) { Store.updatePlan({ backdrop: null }); return; }
-            mode = 'plan'; tool = 'backdrop'; ui.step1Open = true; redraw();
-            UI.toast('Line it up, then trace your rooms over it', 'leaf');
-          };
-          img.src = rd.result;
-        };
-        rd.readAsDataURL(t.files[0]);
       }
     });
   }
