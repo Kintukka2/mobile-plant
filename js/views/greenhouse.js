@@ -830,7 +830,12 @@ window.ViewGreenhouse = (function () {
             '</div>');
 
       if (unassigned.length) {
-        html += '<div class="section">' +
+        /* .section only spaces below itself, and the rooms block above is not
+           in one — so this heading landed flush against the Add another room
+           button, reading as its caption. The top margin is the same 42px a
+           section puts under itself, so the two blocks part like every other
+           pair on the page. */
+        html += '<div class="section" style="margin-top:42px">' +
           '<div class="section-head"><h2 class="section-title">Not in a room yet</h2>' +
           '<span class="section-note">' + UI.plural(unassigned.length, 'plant') + '</span></div>' +
           '<div class="grid grid-plants">' + unassigned.map(plantCard).join('') + '</div>' +
