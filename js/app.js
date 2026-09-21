@@ -274,12 +274,25 @@ window.App = (function () {
     if (!el) return;
 
     let done = false;
-    function lift() {
-      if (done) return;
-      done = true;
+    function finish() {
       el.classList.add('is-out');
       // Remove the node outright; it is fixed and would trap clicks.
       setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 700);
+    }
+    /* On a first run the splash does not lift here. Onboard takes the
+       element over and asks its questions on the same field, and the
+       dissolve waits for the last answer; the welcome sheet follows it. */
+    function lift() {
+      if (done) return;
+      done = true;
+      if (window.Onboard && Onboard.shouldRun()) {
+        Onboard.start(el, function () {
+          finish();
+          setTimeout(function () { ViewProfile.welcomeSheet(); }, 420);
+        });
+        return;
+      }
+      finish();
     }
 
     const ready = (document.fonts && document.fonts.ready)
@@ -504,7 +517,9 @@ window.App = (function () {
     syncWeather(false);
     registerSW();
 
-    if (!Store.get().settings.seenWelcome) {
+    /* Only when the introduction is not about to run: on a first run the
+       splash hands over to Onboard, which opens this sheet itself at the end. */
+    if (!Store.get().settings.seenWelcome && !(window.Onboard && Onboard.shouldRun())) {
       setTimeout(function () { ViewProfile.welcomeSheet(); }, 380);
     }
   }

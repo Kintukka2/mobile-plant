@@ -25,7 +25,7 @@ window.Store = (function () {
         hemisphere: null,       // 'north' | 'south' — from location, or set by hand
         location: null,         // { label, lat, lon }
         pets: [],               // ['cats','dogs']
-        experience: null,       // 'new' | 'some' | 'confident'
+        experience: null,       // a key from LOOKUPS.EXPERIENCE
         createdAt: UI.toISO(new Date())
       },
       rooms: [],                // { id, name, icon, light, aspect, humid, notes, shape }
@@ -51,6 +51,7 @@ window.Store = (function () {
       settings: {
         weatherSync: true,
         seenWelcome: false,
+        onboarded: false,       // the first-run questions were answered or skipped
         adjustments: {}         // plantId -> days offset accepted from a weather nudge
       }
     };
