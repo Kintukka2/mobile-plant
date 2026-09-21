@@ -29,7 +29,12 @@ window.ViewToday = (function () {
       line = UI.plural(sum.overdueCount, 'plant') + ' ' + (sum.overdueCount === 1 ? 'is' : 'are') +
              ' ready for a drink. Nothing dramatic — a late one is forgiven far more readily than an early one.';
     } else if (sum.dueCount) {
-      line = UI.plural(sum.dueCount, 'job') + ' for today. ' + sum.seasonMeta.note;
+      /* The count is on the section heading below, where it labels the list
+         it belongs to. Opening the greeting with "2 jobs for today" made the
+         first thing Sprout says every morning a tally of work owed — which
+         is a rota, not a greeting. The season's advice is the more useful
+         thing to lead with and was already sitting behind it. */
+      line = sum.seasonMeta.note;
     } else if (sum.soonCount) {
       line = 'Nothing needs you today. ' + UI.plural(sum.soonCount, 'job') + ' coming up over the next few days.';
     } else {
@@ -60,13 +65,19 @@ window.ViewToday = (function () {
            number: the first is a call to act today and the other two are
            standing totals, so a rule between them says which is which
            faster than reading the captions does. */
-        '<div><div class="gstat-n">' + sum.dueCount + '</div>' +
+        /* Due today is the one that is not a button. It counts what is
+           already listed directly below it, so a tap would be a link to the
+           thing you can see — whereas rooms and plants both name a place
+           you would otherwise go and find in the tab bar. */
+        '<div class="gstat"><div class="gstat-n">' + sum.dueCount + '</div>' +
              '<div class="gstat-l">due today</div></div>' +
         '<div class="gstat-split" aria-hidden="true"></div>' +
-        '<div><div class="gstat-n">' + sum.roomCount + '</div>' +
-             '<div class="gstat-l">' + (sum.roomCount === 1 ? 'room' : 'rooms') + '</div></div>' +
-        '<div><div class="gstat-n">' + sum.plantCount + '</div>' +
-             '<div class="gstat-l">' + (sum.plantCount === 1 ? 'plant' : 'plants') + '</div></div>' +
+        '<button class="gstat gstat-go" data-goto="/greenhouse/rooms">' +
+          '<div class="gstat-n">' + sum.roomCount + '</div>' +
+          '<div class="gstat-l">' + (sum.roomCount === 1 ? 'room' : 'rooms') + '</div></button>' +
+        '<button class="gstat gstat-go" data-goto="/greenhouse/plants">' +
+          '<div class="gstat-n">' + sum.plantCount + '</div>' +
+          '<div class="gstat-l">' + (sum.plantCount === 1 ? 'plant' : 'plants') + '</div></button>' +
       '</div>' : '') +
     '</div>';
   }
@@ -215,9 +226,8 @@ window.ViewToday = (function () {
     const soon = Schedule.tasks(7).filter(function (t) { return t.days > 0; });
 
     html += '<div class="section">' +
-      '<div class="section-head"><h2 class="section-title">Needs you today</h2>' +
-        (due.length ? '<span class="section-note">' + UI.plural(due.length, 'job') + '</span>' : '') +
-      '</div>' +
+      '<div class="section-head"><h2 class="section-title">Needs you today' +
+        (due.length ? ' (' + due.length + ')' : '') + '</h2></div>' +
       (due.length
         ? '<div class="stack">' + due.map(taskRow).join('') + '</div>'
         : '<div class="card center all-clear">' +
@@ -257,7 +267,11 @@ window.ViewToday = (function () {
           '<p class="nudge-p">Then I can watch your forecast and offer to stretch or shorten ' +
             'watering when a wet or dry spell is on the way.</p>' +
           '<div class="row" style="gap:8px">' +
-            '<button class="btn btn-sm" data-goto="/profile">Set up</button>' +
+            /* Straight to the sheet. Sending the reader to /profile put them
+               at the top of a long page with the location card several
+               screens down — a nudge that answers "where?" with "somewhere
+               over there" is barely a nudge. */
+            '<button class="btn btn-sm" data-act="set-location">Set up</button>' +
           '</div>' +
         '</div>' +
       '</div></div>';
@@ -294,6 +308,11 @@ window.ViewToday = (function () {
 
       const open = e.target.closest('[data-open]');
       if (open) { ViewGreenhouse.addPlantSheet(null); return; }
+
+      if (e.target.closest('[data-act="set-location"]')) {
+        ViewProfile.locationSheet();
+        return;
+      }
 
       const goto = e.target.closest('[data-goto]');
       if (goto) { App.go(goto.getAttribute('data-goto')); return; }
