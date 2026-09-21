@@ -2540,20 +2540,40 @@ img { max-width: 100%; display: block; }
   color: var(--ink);
   margin-top: 22px;
 }
-.hero-species {
-  margin-top: 7px;
+/* The name and the date it arrived, on one line. Baseline-aligned rather
+   than centred, so the small text sits on the same line the 50px display
+   face is standing on instead of floating at its middle; and allowed to
+   wrap, because a long nickname at clamp(32px, 7vw, 50px) will take the
+   whole measure on its own and the date has to go somewhere. */
+.hero-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin-top: 22px;
+}
+.hero-line .hero-nick { margin-top: 0; }
+.hero-since {
+  font-family: var(--sans);
   font-size: 11px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--mint);
+  letter-spacing: 0.1em;
+  color: var(--ink-4);
+  white-space: nowrap;
 }
 .hero-sci {
-  margin-top: 2px;
+  margin-top: 5px;
   font-family: var(--serif);
   font-size: 15px;
   font-style: italic;
   font-weight: 300;
   color: var(--ink-4);
+}
+/* The common name leads the botanical one on the same line, so it takes the
+   upright of the pair — italic is what marks the binomial, and two italics
+   either side of a dash would say they were the same kind of name. */
+.hero-common {
+  font-style: normal;
+  color: var(--ink-2);
 }
 
 /* ==========================================================================

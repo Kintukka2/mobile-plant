@@ -78,16 +78,13 @@ window.ViewPlant = (function () {
     const risk = Schedule.petRisk(sp);
     const age = UI.fromISO(p.acquired);
 
+    /* Ordered by what the plant is before where it is: how hard it is to keep
+       and whether it can hurt anyone are true of this species anywhere, while
+       the room and its light are facts about this particular pot and change
+       the moment it is carried next door. The two coloured pills also sit
+       together this way rather than being separated by a grey one. */
     const pills = [];
-    if (room) pills.push('<span class="pill pill-grey">' + UI.roomMark(room, 'mono-sm') +
-                         UI.esc(room.name) + '</span>');
     if (sp) pills.push(UI.pill(LOOKUPS.DIFFICULTY[sp.difficulty].label, 'grey'));
-    if (match) {
-      const variant = match.verdict === 'ideal' ? '' : match.verdict === 'ok' ? 'sun' : 'terra';
-      const label = match.verdict === 'ideal' ? 'Perfect light' :
-                    match.verdict === 'ok' ? 'Light is passable' : 'Wrong light';
-      pills.push(UI.pill(label, variant));
-    }
     /* Same four steps as toxPill() below, and it matters that they match: the
        hero pill and the care-tab pill describe the same fact, so if the hero
        flattened 'toxic' and 'highly toxic' into one filled clay the tab would
@@ -96,6 +93,14 @@ window.ViewPlant = (function () {
     if (risk) pills.push(UI.pill(LOOKUPS.TOX[risk.worst].label,
                                  risk.worst === 'mild' ? 'sun' :
                                  risk.worst === 'toxic' ? 'terra' : 'blood'));
+    if (room) pills.push('<span class="pill pill-grey">' + UI.roomMark(room, 'mono-sm') +
+                         UI.esc(room.name) + '</span>');
+    if (match) {
+      const variant = match.verdict === 'ideal' ? '' : match.verdict === 'ok' ? 'sun' : 'terra';
+      const label = match.verdict === 'ideal' ? 'Perfect light' :
+                    match.verdict === 'ok' ? 'Light is passable' : 'Wrong light';
+      pills.push(UI.pill(label, variant));
+    }
 
     return '<div class="hero">' +
       '<div class="hero-img" data-cover="1">' +
@@ -108,12 +113,29 @@ window.ViewPlant = (function () {
          measure above it. How the two halves are arranged is the
          stylesheet's business — one column on a phone, a spread past the
          sidebar breakpoint — and cannot be expressed from here anyway. */
+      /* Four stacked lines became two. The nickname, the common name, the
+         botanical name and the date it arrived were each given a line of
+         their own, which made a five-word plant occupy a third of the
+         screen before a single fact about caring for it. Paired up, the top
+         line is who this one is and how long you have had it, and the
+         second is what it is, common name then botanical.
+
+         The pairing only holds while the two halves differ. displayName
+         falls back to the species common name when nothing has been
+         nicknamed, and "Monstera — Monstera deliciosa" under a heading
+         already reading MONSTERA is the third printing of the same word —
+         so an un-nicknamed plant drops the common name and keeps the
+         botanical alone. */
       '<div class="hero-body">' +
-        '<h2 class="hero-nick">' + UI.esc(Store.displayName(p)) + '</h2>' +
-        (p.nickname && sp ? '<div class="hero-species">' + UI.esc(sp.common) + '</div>' : '') +
-        '<div class="hero-sci">' + UI.esc(sp ? sp.botanical : 'Unknown species') + '</div>' +
-        (age ? '<div class="tiny muted" style="margin-top:5px">With you since ' + UI.esc(UI.fmtDate(age)) + '</div>' : '') +
-        '<div class="row-wrap" style="margin-top:9px">' + pills.join('') + '</div>' +
+        '<div class="hero-line">' +
+          '<h2 class="hero-nick">' + UI.esc(Store.displayName(p)) + '</h2>' +
+          (age ? '<span class="hero-since">with you since ' + UI.esc(UI.fmtDate(age)) + '</span>' : '') +
+        '</div>' +
+        '<div class="hero-sci">' +
+          (p.nickname && sp ? '<span class="hero-common">' + UI.esc(sp.common) + '</span> — ' : '') +
+          UI.esc(sp ? sp.botanical : 'Unknown species') +
+        '</div>' +
+        '<div class="row-wrap" style="margin-top:11px">' + pills.join('') + '</div>' +
       '</div>' +
     '</div>';
   }
@@ -126,7 +148,11 @@ window.ViewPlant = (function () {
       ['growth',    'ruler',  'Measure'],
       ['note',      'note',   'Note']
     ];
-    return '<div class="row-wrap" style="margin-top:12px">' + items.map(function (i) {
+    /* Five chips come to a little more than a 390px screen, so as a wrapping
+       row the fifth dropped to a line of its own — one lonely chip reading as
+       a second, lesser group rather than the tail of the first. It scrolls
+       now, the same as the Discover filters and the plant tabs. */
+    return '<div class="row-wrap chip-row" style="margin-top:12px">' + items.map(function (i) {
       return '<button class="chip" data-quick="' + i[0] + '">' +
         UI.icon(i[1]) + UI.esc(i[2]) + '</button>';
     }).join('') + '</div>';
@@ -337,19 +363,33 @@ window.ViewPlant = (function () {
   function diaryTab(p) {
     const logs = Store.logsFor(p.id);
 
-    let html = '<div class="row-wrap" style="margin-bottom:14px">' +
-      '<button class="btn btn-sm" data-quick="note">' + UI.icon('note') + 'Write an entry</button>' +
-      '<button class="btn btn-ghost btn-sm" data-quick="milestone">' + UI.icon('star') + 'Milestone</button>' +
-      '<button class="btn btn-ghost btn-sm" data-quick="problem">' + UI.icon('stethoscope') + 'Problem</button>' +
-      '<button class="btn btn-ghost btn-sm" data-quick="repot">' + UI.icon('pot') + 'Repotted</button>' +
-      '<button class="btn btn-ghost btn-sm" data-quick="prune">' + UI.icon('scissors') + 'Pruned</button>' +
-    '</div>';
+    /* Five buttons in two rows, directly under a bar already offering Water,
+       Feed, Photo, Measure and Note — and "Write an entry" was the Note chip
+       a centimetre above it, the same sheet under a second name. Ten controls
+       stacked between the photograph and the first diary line.
+
+       What is left is the four kinds the bar does not carry, as chips rather
+       than buttons: they are the same weight of action as Water or Note, and
+       drawing them as buttons claimed otherwise. Photos does this already —
+       an invitation inside its empty state and an unobtrusive control beside
+       the content once there is content. */
+    const kinds = [
+      ['milestone', 'star',        'Milestone'],
+      ['problem',   'stethoscope', 'Problem'],
+      ['repot',     'pot',         'Repotted'],
+      ['prune',     'scissors',    'Pruned']
+    ];
 
     if (!logs.length) {
-      return html + UI.empty('note', 'The diary is blank',
+      return UI.empty('note', 'The diary is blank',
         'Every watering you tick off lands here on its own. Add notes, photos and measurements too and you will ' +
-        'have a real record of how this plant has changed.');
+        'have a real record of how this plant has changed.',
+        '<button class="btn" data-quick="note">' + UI.icon('note') + 'Write the first entry</button>');
     }
+
+    let html = '<div class="row-wrap chip-row" style="margin-bottom:14px">' + kinds.map(function (k) {
+      return '<button class="chip" data-quick="' + k[0] + '">' + UI.icon(k[1]) + UI.esc(k[2]) + '</button>';
+    }).join('') + '</div>';
 
     html += '<div class="timeline">' + logs.map(function (l) {
       const kind = LOOKUPS.LOG_KINDS[l.kind] || LOOKUPS.LOG_KINDS.note;
@@ -452,15 +492,19 @@ window.ViewPlant = (function () {
     const logs = Store.growthFor(p.id);
     const unit = logs.length ? (logs[logs.length - 1].unit || 'cm') : 'cm';
 
-    let html = '<div class="row-wrap" style="margin-bottom:14px">' +
-      '<button class="btn btn-sm" data-quick="growth">' + UI.icon('ruler') + 'Add a measurement</button>' +
-    '</div>';
-
+    /* The button sat above the empty state telling the reader to add a
+       measurement, immediately over a panel telling them there were none —
+       the same sentence twice, in two registers. It belongs inside the
+       invitation, which is where Photos has always put it, and once there is
+       a curve to read the Measure chip in the bar above adds to it. */
     if (!logs.length) {
-      return html + UI.empty('ruler', 'No measurements yet',
+      return UI.empty('ruler', 'No measurements yet',
         'Measure from the soil to the highest growing point, or take the widest leaf. Be consistent rather than ' +
-        'precise — the shape of the curve is the interesting part.');
+        'precise — the shape of the curve is the interesting part.',
+        '<button class="btn" data-quick="growth">' + UI.icon('ruler') + 'Add the first measurement</button>');
     }
+
+    let html = '';
 
     const points = logs.map(function (l) {
       return { x: UI.fromISO(l.date).getTime(), y: l.value };
