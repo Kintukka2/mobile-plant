@@ -36,7 +36,10 @@ window.ViewPlan = (function () {
   let drawing = null;                 // { pts: [], forRoomId } while tracing corners
   let drag = null;
   let ghostEl = null;
-  const ui = { open: { 1: undefined, 2: undefined, 3: undefined, 4: undefined }, hideInner: false };
+  const ui = { open: { 1: undefined, 2: undefined, 3: undefined, 4: undefined }, hideInner: false, full: false };
+  /* Bound once for the life of the page rather than per mount: the view is
+     rebuilt on every refresh, and a listener added there would stack up. */
+  let escBound = false, resizeBound = false;
   const views = { plan: { k: 1, cx: 0, cy: 0 }, home: { k: 1, cx: 0, cy: 0 } };
   let baseVB = null;
   const pointers = new Map();
@@ -103,7 +106,19 @@ window.ViewPlan = (function () {
     if (v.k !== 1 || v.cx !== 0 || v.cy !== 0) return true;
     return mode === 'plan' && !sameBox(fitBox, fitOf());
   }
+  /* The box is grown to the stage's own shape before it is used, so
+     xMidYMid meet has nothing left to letterbox. Without this a portrait
+     stage fitted the box to its width and left empty bands top and bottom —
+     which made full screen taller without showing any more grid, exactly
+     the thing it was asked for. Growing rather than cropping: every cell
+     the frame asked for is still in view, with more around it. */
   function applyView(x, y, w, h) {
+    const rc = canvas.getBoundingClientRect();
+    if (rc.width > 0 && rc.height > 0) {
+      const want = rc.width / rc.height, have = w / h;
+      if (have > want) { const h2 = w / want; y -= (h2 - h) / 2; h = h2; }
+      else if (have < want) { const w2 = h * want; x -= (w2 - w) / 2; w = w2; }
+    }
     baseVB = { x: x, y: y, w: w, h: h };
     const v = curView(), w2 = w / v.k, h2 = h / v.k;
     canvas.setAttribute('viewBox', (x + (w - w2) / 2 + v.cx) + ' ' + (y + (h - h2) / 2 + v.cy) + ' ' + w2 + ' ' + h2);
@@ -705,6 +720,12 @@ window.ViewPlan = (function () {
     root.querySelector('#pl-reshape').hidden = !(mode === 'plan' && sel && sel.type === 'room');
     root.querySelector('#pl-quick-add').hidden = !(mode === 'plan' && sel && sel.type === 'room' && !drawing);
     root.querySelector('#pl-invite').hidden = !(mode === 'plan' && !drawing && !list.length && window.Tour);
+    root.querySelector('#pl-add-room').hidden = !(mode === 'plan' && !drawing && !sel && list.length);
+    const full = root.querySelector('#pl-full');
+    full.innerHTML = UI.icon(ui.full ? 'shrink' : 'expand');
+    full.setAttribute('aria-label', ui.full ? 'Leave full screen' : 'Fill the screen');
+    full.classList.toggle('is-on', !!ui.full);
+    root.querySelector('.plan-stage').classList.toggle('is-full', !!ui.full);
     const wt = root.querySelector('#pl-walls-toggle');
     wt.hidden = mode !== 'home' || !list.length;
     wt.textContent = ui.hideInner ? 'Show inside walls' : 'Hide inside walls';
@@ -714,7 +735,7 @@ window.ViewPlan = (function () {
     root.querySelectorAll('[data-mode]').forEach(function (b) { b.classList.toggle('is-on', b.getAttribute('data-mode') === mode); });
   }
 
-  function redraw() { if (!root || !document.body.contains(root)) return; Plan.sync(); drawCanvas(); drawPanel(); syncOverlays(); }
+  function redraw() { if (!root || !document.body.contains(root)) return; Plan.sync(); drawPanel(); syncOverlays(); drawCanvas(); }
 
   /* ======================================================================
      The backdrop image
@@ -814,10 +835,16 @@ window.ViewPlan = (function () {
           '<div class="plan-tools">' +
             '<button class="plan-tool is-rose" data-open-compass="1" aria-label="Which way is north?"><svg id="pl-tool-compass" viewBox="-30 -30 60 60" aria-hidden="true"></svg></button>' +
             '<button class="plan-tool" data-open-dims="1" aria-label="Set the room sizes">' + UI.icon('ruler') + '</button>' +
+            '<button class="plan-tool" id="pl-full" aria-label="Fill the screen"></button>' +
           '</div>' +
           '<button class="plan-stage-btn is-bottom" id="pl-walls-toggle" hidden></button>' +
           '<button class="plan-stage-btn is-left" id="pl-view-reset" hidden>Centre</button>' +
           '<button class="plan-stage-btn is-left is-bottom" id="pl-quick-add" hidden>' + UI.icon('plus') + 'Add a plant</button>' +
+          /* The same corner as Add a plant, and never at the same time: one
+             wants a room selected, the other wants nothing selected. An
+             empty plan keeps its invitation instead, whose quiet link
+             already offers exactly this. */
+          '<button class="plan-stage-btn is-left is-bottom" id="pl-add-room" hidden>' + UI.icon('plus') + 'Add a room</button>' +
           /* Offered, not asked. An empty grid has nothing to interrupt, so
              the invitation lives on it rather than in a dialog over it, and
              it goes the moment a first room exists. */
@@ -836,10 +863,24 @@ window.ViewPlan = (function () {
   }
 
   function mount(el) {
-    root = el; canvas = root.querySelector('#pl-canvas'); panel = root.querySelector('#pl-panel');
+    root = el;
+    if (!escBound) {
+      escBound = true;
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && ui.full) { ui.full = false; redraw(); }
+      });
+    } canvas = root.querySelector('#pl-canvas'); panel = root.querySelector('#pl-panel');
     drag = null; pinch = null; pointers.clear();
     views.plan.k = 1; views.plan.cx = 0; views.plan.cy = 0; fitBox = null;
-    drawCanvas(); drawPanel(); syncOverlays();
+    drawPanel(); syncOverlays(); drawCanvas();
+    /* Once more when the layout has settled. The stage takes its height
+       from the viewport, and the first measurement can land before that is
+       final, which leaves the drawing fitted to a box a few pixels off. */
+    setTimeout(function () { if (root && document.body.contains(root)) drawCanvas(); }, 0);
+    if (!resizeBound) {
+      resizeBound = true;
+      window.addEventListener('resize', function () { if (root && document.body.contains(root)) drawCanvas(); });
+    }
 
     root.addEventListener('click', function (e) {
       const m = e.target.closest('[data-mode]');
@@ -850,6 +891,13 @@ window.ViewPlan = (function () {
       if (e.target.closest('[data-open-dims]')) { openDims(sel && sel.type === 'room' ? sel.id : null); return; }
       if (e.target.closest('#pl-quick-add')) { if (sel && sel.type === 'room') quickAdd(room(sel.id)); return; }
       if (e.target.closest('[data-tour]')) { Tour.open(startTracing); return; }
+      if (e.target.closest('#pl-add-room')) { startTracing(); return; }
+      /* Not the Fullscreen API: iOS Safari grants it to video alone, so the
+         one device where this is most wanted is the one where it would do
+         nothing. A fixed, inset stage does the same job everywhere, and
+         because the stage lives inside the view it is torn down on
+         navigation with nothing left to clean up. */
+      if (e.target.closest('#pl-full')) { ui.full = !ui.full; syncOverlays(); drawCanvas(); return; }
       if (e.target.closest('#pl-trace')) { startTracing(); return; }
     });
 
