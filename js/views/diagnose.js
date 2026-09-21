@@ -1,14 +1,22 @@
 /* ==========================================================================
    Sprout — Diagnose
    --------------------------------------------------------------------------
-   Which plant → what do you notice → what else is true → ranked causes with
-   treatment steps.
+   Four steps, four routes: which plant → what do you notice → what else is
+   true → ranked causes with treatment steps.
 
    The clue step is the important one. "Yellow leaves" on its own is close to
    meaningless; "yellow lower leaves, wet soil, no drainage holes" is a
-   diagnosis. Each clue you confirm re-weights the causes live.
+   diagnosis. The clues are answered as a checklist and submitted, rather than
+   re-ranking the causes live underneath themselves — see step 3 below for why
+   that had to change.
 
-   Routes:  /diagnose  ·  /diagnose/:plantId  ·  /diagnose/:plantId/:symptomId
+   Routes:  /diagnose
+            /diagnose/:plantId
+            /diagnose/:plantId/:symptomId
+            /diagnose/:plantId/:symptomId/causes
+
+   :plantId is 'any' when the reader is diagnosing something they have not
+   added to their greenhouse.
    ========================================================================== */
 
 window.ViewDiagnose = (function () {
@@ -41,6 +49,13 @@ window.ViewDiagnose = (function () {
   }
 
   function back(params) { return !!params.id; }
+
+  /* Both of the last two steps are addressed by a symptom id in the URL, so
+     both can be reached with one that no longer resolves. */
+  function unknownSymptom() {
+    return UI.empty('info', 'Unknown symptom', 'Let\'s start again.',
+      '<button class="btn" data-restart="1">Start over</button>');
+  }
 
   /* ======================================================================
      Step 1 — which plant
@@ -193,18 +208,25 @@ window.ViewDiagnose = (function () {
   }
 
   /* ======================================================================
-     Step 3 — clues and results
+     Step 3 — what else is true
+     --------------------------------------------------------------------------
+     The ranked causes used to sit under this checklist on the same page, and
+     that is what made the step awkward: the longest symptom carries fifteen
+     clues, so the answer was always a screen or two below the last question,
+     and every tick re-ranked it while it was out of sight. You ticked, you
+     scrolled down to read, you scrolled back up to tick again.
+
+     So the checklist ends in a button and the causes are their own page.
+     Ticking now only redraws the ticks, and the diagnosis arrives at the top
+     of a screen that is about nothing else.
      ====================================================================== */
 
-  function stepResults(params) {
+  function stepClues(params) {
     const p = subject(params);
     const sp = p ? Store.species(p) : null;
     const symptom = PROBLEM_DATA.SYMPTOMS[params.extra];
 
-    if (!symptom) {
-      return UI.empty('info', 'Unknown symptom', 'Let\'s start again.',
-        '<button class="btn" data-restart="1">Start over</button>');
-    }
+    if (!symptom) return unknownSymptom();
 
     /* --- The clue checklist ---
        Restate what we are investigating in the same identity block the
@@ -248,6 +270,62 @@ window.ViewDiagnose = (function () {
       }).join('') + '</div>' +
     '</div>';
 
+
+    /* The step's one action, and deliberately the only button on the page —
+       "Diagnose something else" and the diary shortcut belong with the
+       answer, not with the questions. */
+    html += '<div class="section" style="margin-top:-8px">' +
+      '<button class="btn btn-lg btn-block" data-diagnose="1">' +
+        UI.icon('stethoscope') + 'Diagnose</button>' +
+      /* Only when nothing is ticked. A symptom on its own still ranks — it
+         is just a weaker ranking, and saying so once is more use than a
+         disabled button that explains nothing. Sprout is accountable for the
+         quality of the answer here, not the reader for the input. */
+      (clues.length ? '' :
+        '<p class="hint" style="padding:0 2px;margin:10px 0 0">Nothing ticked yet. I can still go on the ' +
+        'symptom alone, but a clue or two narrows it a long way.</p>') +
+    '</div>';
+
+    return html;
+  }
+
+  /* ======================================================================
+     Step 4 — most likely causes
+     ====================================================================== */
+
+  function stepCauses(params) {
+    const p = subject(params);
+    const sp = p ? Store.species(p) : null;
+    const symptom = PROBLEM_DATA.SYMPTOMS[params.extra];
+
+    if (!symptom) return unknownSymptom();
+
+    /* What the ranking was built from, restated at the top. The reader
+       answered those questions on the previous screen and cannot see them
+       from here, so without this the page is a verdict with its evidence
+       out of view — and the way back to change an answer has to be a button
+       rather than only the back arrow, because the arrow says "leave" and
+       this says "I got one of those wrong". */
+    const ticked = clues.map(function (id) {
+      const c = PROBLEM_DATA.CLUES[id];
+      return c ? c.label : null;
+    }).filter(Boolean);
+
+    let html = '<div class="card" style="margin-bottom:16px">' +
+      '<div class="sheet-ident">' +
+        '<span class="sheet-ident-mark">' + UI.icon('stethoscope') + '</span>' +
+        '<div style="min-width:0">' +
+          '<div class="sheet-ident-t">' + UI.esc(symptom.label) + '</div>' +
+          '<p class="small dim" style="margin:3px 0 0">' +
+            (ticked.length
+              ? UI.esc(ticked.join(' · '))
+              : 'No clues ticked — this is the symptom on its own.') +
+          '</p>' +
+        '</div>' +
+      '</div>' +
+      '<button class="btn btn-ghost btn-sm btn-block" data-reclue="1">Change what I noticed</button>' +
+    '</div>';
+
     /* --- Ranked causes --- */
     const proneTo = sp ? (sp.problems || []) : [];
     const ranked = PROBLEM_DATA.diagnose(params.extra, clues, proneTo).slice(0, 4);
@@ -269,7 +347,7 @@ window.ViewDiagnose = (function () {
            One word does the work here — the checklist above already says
            how many clues are in play ("2 selected"), so repeating "your
            clues" was telling the reader something they had just done. */
-        '<span class="section-note">' + (clues.length ? 'refined' : 'tick a few clues') + '</span>' +
+        '<span class="section-note">' + (clues.length ? 'refined' : 'symptom only') + '</span>' +
       '</div>';
 
     if (!ranked.length) {
@@ -348,6 +426,7 @@ window.ViewDiagnose = (function () {
     return html;
   }
 
+
   /* ======================================================================
      Assembly
      ====================================================================== */
@@ -355,8 +434,17 @@ window.ViewDiagnose = (function () {
   function render(params) {
     if (!params.id) return stepPlant();
     if (!params.extra) return stepSymptom(params);
-    return stepResults(params);
+    if (params.tail === 'causes') return stepCauses(params);
+    return stepClues(params);
   }
+
+  /* The two routes the last two steps live at, built in one place because
+     every move between them has to agree on the plant segment — 'any' when
+     the reader is diagnosing something that is not in their greenhouse. */
+  function cluesPath(params) {
+    return '/diagnose/' + (params.id || 'any') + '/' + params.extra;
+  }
+  function causesPath(params) { return cluesPath(params) + '/causes'; }
 
   function mount(root, params) {
     /* Symptom search filters the list in place. */
@@ -414,6 +502,15 @@ window.ViewDiagnose = (function () {
         App.go('/diagnose/' + (params.id || 'any') + '/' + sy.getAttribute('data-dx-symptom'));
         return;
       }
+
+      if (e.target.closest('[data-diagnose]')) { App.go(causesPath(params)); return; }
+
+      /* Explicitly back to the checklist rather than history.back(): the
+         arrow means "leave this", and history is only step 3 if that is
+         where they came from. Arriving on the causes page from a stale link
+         would otherwise send "Change what I noticed" to whatever they were
+         reading before. */
+      if (e.target.closest('[data-reclue]')) { App.go(cluesPath(params)); return; }
 
       const cl = e.target.closest('[data-clue]');
       if (cl) {

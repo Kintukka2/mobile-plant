@@ -4,6 +4,12 @@
    Hash routing, because the app has to work when opened straight off the
    filesystem. Every view is a plain object registered on `window`:
 
+   `params` is the path after the view name: `{ id, extra, tail }` for
+   `#/name/id/extra/tail`. Four segments rather than three because a
+   multi-step flow needs a step in the URL — Diagnose's ranked causes are a
+   page of their own at /diagnose/:plant/:symptom/causes, and a step that is
+   only a variable inside a view cannot be reached by the back button.
+
      {
        title(params)    -> string for the topbar
        sub(params)      -> optional smaller line under it
@@ -38,7 +44,7 @@ window.App = (function () {
     { key: 'profile',    label: 'You',        icon: 'user',        path: '/profile' }
   ];
 
-  let current = { name: 'today', id: null, extra: null };
+  let current = { name: 'today', id: null, extra: null, tail: null };
   let currentView = null;
   let firstRender = true;
 
@@ -104,7 +110,8 @@ window.App = (function () {
     return {
       name: VIEWS[name] ? name : null,
       id: parts[1] ? decodeURIComponent(parts[1]) : null,
-      extra: parts[2] ? decodeURIComponent(parts[2]) : null
+      extra: parts[2] ? decodeURIComponent(parts[2]) : null,
+      tail: parts[3] ? decodeURIComponent(parts[3]) : null
     };
   }
 
@@ -183,7 +190,7 @@ window.App = (function () {
     }
 
     currentView = view;
-    const params = { id: current.id, extra: current.extra };
+    const params = { id: current.id, extra: current.extra, tail: current.tail };
 
     // Views can bail out to another route (e.g. a deleted plant).
     if (typeof view.guard === 'function' && view.guard(params) === false) return;
