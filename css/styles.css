@@ -1999,20 +1999,21 @@ img { max-width: 100%; display: block; }
   line-height: 1.5;
 }
 
+/* Three equal cells with a hairline between each. A grid rather than a
+   wrapping flex row: as flex the two totals huddled at their natural width
+   and the row read as one count and then a pair, when the three are one
+   set of figures. Equal tracks give each the same share of the card, and
+   the rules between them mark the cells rather than divide the row. */
 .greeting-stats {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr 1px 1fr;
   align-items: center;
-  gap: 26px;
+  column-gap: 14px;
   margin-top: 24px;
   padding-top: 20px;
   border-top: 1px solid var(--hair);
 }
 
-/* Separates the one number that asks for something today from the two that
-   simply count what you have. A hairline rather than a wider gap, because
-   the row wraps on a narrow phone and a gap large enough to read as a
-   division would be indistinguishable from the wrap. */
 .gstat-split {
   align-self: stretch;
   width: 1px;
@@ -2027,9 +2028,10 @@ img { max-width: 100%; display: block; }
   padding: 0;
   border: 0;
   background: none;
-  text-align: left;
+  text-align: center;
   font: inherit;
   color: inherit;
+  min-width: 0;
 }
 .gstat-go {
   cursor: pointer;
