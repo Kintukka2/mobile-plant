@@ -332,6 +332,11 @@ window.UI = (function () {
 
   function openSheet(title, bodyHTML, onMount, onClose) {
     const backdrop = document.getElementById('sheet-backdrop');
+    if (closeTimer) {
+      clearTimeout(closeTimer); closeTimer = null;
+      const cb = closeCb; closeCb = null;
+      if (typeof cb === 'function') cb();
+    }
     document.getElementById('sheet-title').textContent = title;
     const body = document.getElementById('sheet-body');
     const foot = document.getElementById('sheet-foot');
@@ -367,17 +372,26 @@ window.UI = (function () {
      the animation is still running. */
   let closing = false;
 
+  /* The exit is a timer, and a sheet opened during it inherited the
+     teardown: "Delete photo" closed its sheet and opened the confirm in the
+     same tick, and 200ms later the old close emptied the plate under the
+     new dialog — the confirm flashed and was gone. openSheet now cancels a
+     pending teardown and settles the closing sheet's own callback first, so
+     the two never share a plate. */
+  let closeTimer = null, closeCb = null;
+
   function closeSheet() {
     const backdrop = document.getElementById('sheet-backdrop');
     if (backdrop.hidden || closing) return;
     closing = true;
     backdrop.classList.add('is-closing');
 
-    const cb = sheetOnClose;
+    closeCb = sheetOnClose;
     sheetOnClose = null;
     document.body.style.overflow = '';
 
-    setTimeout(function () {
+    closeTimer = setTimeout(function () {
+      closeTimer = null;
       backdrop.classList.remove('is-closing');
       backdrop.hidden = true;
       document.getElementById('sheet-body').innerHTML = '';
@@ -387,6 +401,7 @@ window.UI = (function () {
          content for as long as it took that sheet to add its own. */
       document.getElementById('sheet-foot').innerHTML = '';
       closing = false;
+      const cb = closeCb; closeCb = null;
       if (typeof cb === 'function') cb();
     }, 200);
   }

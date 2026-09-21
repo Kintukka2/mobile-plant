@@ -179,7 +179,10 @@ window.ViewPlant = (function () {
     else if (w.days === 0){ dueLine = 'Due today'; dueCls = 'pill-sun'; }
     else                  { dueLine = UI.relDue(w.days); dueCls = 'pill-mint'; }
 
-    let html = '<div class="card">' +
+    /* A section like every card after it, so the watering and feeding cards
+       stand apart at the same measure as the rest of the tab rather than
+       touching. */
+    let html = '<div class="section"><div class="card">' +
       '<div class="row" style="align-items:flex-start">' +
         '<div style="flex:1;min-width:0">' +
           '<div class="eyebrow">Watering</div>' +
@@ -220,7 +223,7 @@ window.ViewPlant = (function () {
         '<button class="btn btn-sm" data-quick="water">' + UI.icon('drop') + 'Water now</button>' +
         '<button class="btn btn-ghost btn-sm" data-tweak="1">Adjust schedule</button>' +
       '</div>' +
-    '</div>';
+    '</div></div>';
 
     /* --- Feeding --- */
     /* Built to the same shape as the watering card above: eyebrow, serif

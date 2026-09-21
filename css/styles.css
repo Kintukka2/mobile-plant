@@ -2560,6 +2560,12 @@ img { max-width: 100%; display: block; }
   transition: color var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease);
 }
 .hero-img:hover .hero-img-edit { color: var(--ink); border-color: var(--hair-3); }
+/* The photograph fills the plate. Left at its own size and centred, a
+   landscape shot sat in a band across the middle with the plate's wash
+   showing above and below, and the two controls in the corners hung in
+   that wash rather than on the picture. Cover crops instead; the plant is
+   the subject and the edges are the room around it. */
+.hero-img > img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block; }
 
 /* Quick update: the plate's other corner. Same glass as the photo button so
    the two read as one pair of controls on the picture, and the menu opens
