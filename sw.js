@@ -26,7 +26,7 @@
    weights, and two new files join the precache list. A returning visitor
    holding v4 would otherwise be served a shell asking for a font the old
    cache has never heard of. */
-const CACHE = 'sprout-v42-viridium';
+const CACHE = 'sprout-v43-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is
@@ -62,6 +62,7 @@ const ASSETS = [
   'js/plan.js',
   'js/tour.js',
   'js/weather.js',
+  'js/notify.js',
   'js/views/today.js',
   'js/views/greenhouse.js',
   'js/views/room.js',
@@ -101,6 +102,101 @@ self.addEventListener('activate', function (e) {
       }));
     }).then(function () { return self.clients.claim(); })
   );
+});
+
+/* ==========================================================================
+   Reminders
+   --------------------------------------------------------------------------
+   This worker knows nothing about plants, and that is the design. A worker
+   cannot read localStorage, where all of Sprout's state lives, so it could
+   never work out what is due. js/notify.js writes a digest to IndexedDB
+   instead — one finished sentence per day — and all of this has to do is
+   look up today and show it.
+
+   Whatever wakes the device is still to be decided: a push service with a
+   server that knows only which mornings to ping, or a native shell using
+   the OS scheduler. Either arrives here, and neither changes a line of it.
+   ========================================================================== */
+
+const NDB = 'sprout', NSTORE = 'kv';
+
+function idb(mode) {
+  return new Promise(function (resolve, reject) {
+    const req = indexedDB.open(NDB, 1);
+    req.onupgradeneeded = function () {
+      if (!req.result.objectStoreNames.contains(NSTORE)) req.result.createObjectStore(NSTORE);
+    };
+    req.onsuccess = function () { resolve(req.result.transaction(NSTORE, mode).objectStore(NSTORE)); };
+    req.onerror = function () { reject(req.error); };
+  });
+}
+function idbGet(key) {
+  return idb('readonly').then(function (os) {
+    return new Promise(function (resolve) {
+      const r = os.get(key);
+      r.onsuccess = function () { resolve(r.result || null); };
+      r.onerror = function () { resolve(null); };
+    });
+  }).catch(function () { return null; });
+}
+function idbPut(key, value) {
+  return idb('readwrite').then(function (os) { os.put(value, key); }).catch(function () {});
+}
+
+/* Local, not UTC: a reminder belongs to the reader's morning, and toISO in
+   js/ui.js keys the digest the same way. */
+function todayKey() {
+  const d = new Date(), p = function (n) { return String(n).padStart(2, '0'); };
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+}
+
+self.addEventListener('push', function (e) {
+  e.waitUntil(idbGet('digest.v1').then(function (d) {
+    const key = todayKey();
+    const m = d && d.days && d.days[key];
+    if (m) {
+      return self.registration.showNotification(m.title, {
+        body: m.body || undefined,
+        tag: 'sprout-care',
+        data: { waterIds: m.waterIds || [], date: key },
+        actions: (m.waterIds && m.waterIds.length) ? [{ action: 'water', title: 'Watered' }] : []
+      });
+    }
+    /* A push has to end in something visible. Swallow it and the browser
+       posts its own "this site was updated in the background", and enough
+       of those cost the permission outright — so on a quiet day this says
+       so quietly rather than letting the platform say it worse. */
+    return self.registration.showNotification('Nothing needs you today', {
+      tag: 'sprout-care',
+      body: 'I\'ll say so when something does.'
+    });
+  }));
+});
+
+self.addEventListener('notificationclick', function (e) {
+  e.notification.close();
+  const data = e.notification.data || {};
+  const ids = data.waterIds || [], date = data.date || todayKey();
+
+  /* Watered, straight from the lock screen. With a page open it is applied
+     at once; with none, it is parked and drained on the next load, because
+     only the page can reach the store. */
+  if (e.action === 'water' && ids.length) {
+    e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (cs) {
+      if (cs.length) { cs[0].postMessage({ type: 'sprout-care', ids: ids, kind: 'water', date: date }); return; }
+      return idbGet('pending.v1').then(function (list) {
+        list = list || [];
+        list.push({ ids: ids, kind: 'water', date: date });
+        return idbPut('pending.v1', list);
+      });
+    }));
+    return;
+  }
+
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (cs) {
+    for (let i = 0; i < cs.length; i++) if ('focus' in cs[i]) return cs[i].focus();
+    if (self.clients.openWindow) return self.clients.openWindow('./#/today');
+  }));
 });
 
 self.addEventListener('fetch', function (e) {

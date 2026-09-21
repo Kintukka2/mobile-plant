@@ -18,6 +18,7 @@ property that makes this project what it is.
 - **Classic `<script>` tags.** Not `type="module"`.
 - **Globals are the module system.** Each file assigns exactly one namespace:
   `UI`, `Store`, `Schedule`, `Plan`, `Weather`, `Photos`, `Onboard`, `Tour`,
+  `Notify`,
   `PLANT_DATA`, `PROBLEM_DATA`, `LOOKUPS`, `App`, and one `View*` per screen.
 - **Load order in `index.html` is the dependency graph.** Data and utilities
   first, views next, router last.
@@ -240,6 +241,16 @@ All local; no account, no server, no telemetry.
 | `sprout.state.v1` | Plants, rooms, diary entries, preferences |
 | `sprout.theme` | Selected theme |
 | `sprout.photo.*` | One resized JPEG data URL per photo |
+
+One thing is **not** in localStorage, and cannot be. A service worker has no
+access to it, so it could never work out what is due. `js/notify.js` writes a
+reminder digest to IndexedDB (`sprout` → `kv` → `digest.v1`) on every save:
+one finished sentence per day for the next month, plus the plant ids behind
+it. Whatever ends up waking the device — a push service, or a native shell
+using the OS scheduler — only has to look up today and show what it finds,
+which is why `sw.js` knows nothing about plants. A Watered tap with no page
+open is parked at `pending.v1` and drained on the next load, for the same
+reason: only the page can reach the store.
 
 localStorage is ~5MB, which is the entire budget. Photos are downscaled to a
 1000px long edge at 72% quality (`js/photos.js`) to fit inside it. Every

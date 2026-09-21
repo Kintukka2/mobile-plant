@@ -516,6 +516,7 @@ window.App = (function () {
 
     syncWeather(false);
     registerSW();
+    if (window.Notify) Notify.init();
 
     /* Only when the introduction is not about to run: on a first run the
        splash hands over to Onboard, which opens this sheet itself at the end. */
