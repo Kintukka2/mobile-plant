@@ -106,6 +106,17 @@ window.ViewPlant = (function () {
       '<div class="hero-img" data-cover="1">' +
         UI.plantTile(photo, p.id, Store.displayName(p)) +
         '<span class="hero-img-edit">' + (photo ? 'Change' : 'Add photo') + '</span>' +
+        /* The three things done to a plant most days, on the photograph's
+           other corner, folded into one control. They were a bar of five
+           chips under the plate; the bar went because Photo and Measure
+           already have a home on their own tabs, and the three that are
+           left are quicker one tap deep than five wide. */
+        '<button class="hero-img-quick" data-qu-toggle="1" aria-haspopup="menu" aria-expanded="false">' + UI.icon('plus') + 'Quick update</button>' +
+        '<div class="hero-menu" id="hero-menu" role="menu" hidden>' +
+          '<button class="hero-menu-opt" role="menuitem" data-quick="water">' + UI.icon('drop') + 'Water</button>' +
+          '<button class="hero-menu-opt" role="menuitem" data-quick="fertilise">' + UI.icon('wheat') + 'Feed</button>' +
+          '<button class="hero-menu-opt" role="menuitem" data-quick="note">' + UI.icon('note') + 'Add note</button>' +
+        '</div>' +
       '</div>' +
       /* .hero-body, not an inline `flex:1`. The inline version was written on
          the assumption that .hero was a flex row; it never was, so the
@@ -138,24 +149,6 @@ window.ViewPlant = (function () {
         '<div class="row-wrap" style="margin-top:11px">' + pills.join('') + '</div>' +
       '</div>' +
     '</div>';
-  }
-
-  function quickActions() {
-    const items = [
-      ['water',     'drop',   'Water'],
-      ['fertilise', 'wheat',  'Feed'],
-      ['photo',     'camera', 'Photo'],
-      ['growth',    'ruler',  'Measure'],
-      ['note',      'note',   'Note']
-    ];
-    /* Five chips come to a little more than a 390px screen, so as a wrapping
-       row the fifth dropped to a line of its own — one lonely chip reading as
-       a second, lesser group rather than the tail of the first. It scrolls
-       now, the same as the Discover filters and the plant tabs. */
-    return '<div class="row-wrap chip-row" style="margin-top:12px">' + items.map(function (i) {
-      return '<button class="chip" data-quick="' + i[0] + '">' +
-        UI.icon(i[1]) + UI.esc(i[2]) + '</button>';
-    }).join('') + '</div>';
   }
 
   /* ======================================================================
@@ -363,13 +356,14 @@ window.ViewPlant = (function () {
   function diaryTab(p) {
     const logs = Store.logsFor(p.id);
 
-    /* Five buttons in two rows, directly under a bar already offering Water,
+    /* Five buttons in two rows, directly under a bar that then offered Water,
        Feed, Photo, Measure and Note — and "Write an entry" was the Note chip
        a centimetre above it, the same sheet under a second name. Ten controls
        stacked between the photograph and the first diary line.
 
-       What is left is the four kinds the bar does not carry, as chips rather
-       than buttons: they are the same weight of action as Water or Note, and
+       What is left is the four kinds the quick menu on the photograph does
+       not carry, as chips rather than buttons: they are the same weight of
+       action as Water or Note, and
        drawing them as buttons claimed otherwise. Photos does this already —
        an invitation inside its empty state and an unobtrusive control beside
        the content once there is content. */
@@ -496,7 +490,7 @@ window.ViewPlant = (function () {
        measurement, immediately over a panel telling them there were none —
        the same sentence twice, in two registers. It belongs inside the
        invitation, which is where Photos has always put it, and once there is
-       a curve to read the Measure chip in the bar above adds to it. */
+       a curve to read the Measure button beside it adds to it. */
     if (!logs.length) {
       return UI.empty('ruler', 'No measurements yet',
         'Measure from the soil to the highest growing point, or take the widest leaf. Be consistent rather than ' +
@@ -528,9 +522,12 @@ window.ViewPlant = (function () {
         Math.round((last.value / sp.matureCm) * 100) + '% of the way there') : '') +
     '</div></div>';
 
+    /* The Measure chip in the bar under the photograph was the only way to
+       add a reading once the first was in; the bar has gone, so the ledger
+       carries its own, the way Photos carries Add photo. */
     html += '<div class="section">' +
       '<div class="section-head"><h2 class="section-title">All measurements</h2>' +
-        '<span class="section-note">' + logs.length + '</span></div>' +
+        '<button class="btn btn-ghost btn-sm" data-quick="growth">' + UI.icon('ruler') + 'Measure</button></div>' +
       '<div class="facts facts-ledger">' + logs.slice().reverse().map(function (l, i) {
         /* `logs` runs chronologically and this list runs newest-first, so the
            entry each row grew *from* sits one further along the reversed run:
@@ -885,7 +882,7 @@ window.ViewPlant = (function () {
     const photoCount = Store.photosFor(p.id).length;
     const logCount = Store.logsFor(p.id).length;
 
-    let html = hero(p, sp) + quickActions();
+    let html = hero(p, sp);
 
     html += '<div class="tabs">' + TABS.map(function (t) {
       let label = t[1];
@@ -931,16 +928,26 @@ window.ViewPlant = (function () {
         return;
       }
 
-      if (e.target.closest('[data-cover]')) { quickPhoto(p); return; }
+      /* The quick menu sits on the photograph, which is itself a tap target
+         for changing the picture, so its toggle and its options are read
+         before the cover is — and any tap anywhere else closes it. */
+      const menu = root.querySelector('#hero-menu'), tog = root.querySelector('[data-qu-toggle]');
+      if (e.target.closest('[data-qu-toggle]')) {
+        menu.hidden = !menu.hidden; tog.setAttribute('aria-expanded', String(!menu.hidden)); return;
+      }
+      if (menu && !menu.hidden && !e.target.closest('#hero-menu')) { menu.hidden = true; tog.setAttribute('aria-expanded', 'false'); }
 
       const q = e.target.closest('[data-quick]');
       if (q) {
+        if (menu) menu.hidden = true;
         const kind = q.getAttribute('data-quick');
         if (kind === 'water' || kind === 'fertilise') quickCare(p, kind);
         else if (kind === 'photo') quickPhoto(p);
         else entrySheet(p, kind);
         return;
       }
+
+      if (e.target.closest('[data-cover]')) { quickPhoto(p); return; }
 
       if (e.target.closest('[data-tweak]')) { tweakSheet(p); return; }
 
