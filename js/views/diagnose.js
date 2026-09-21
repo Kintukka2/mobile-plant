@@ -449,6 +449,45 @@ window.ViewDiagnose = (function () {
   }
   function causesPath(params) { return cluesPath(params) + '/causes'; }
 
+  /* Reads the clashing answers back and leaves the decision with the reader.
+     Not UI.confirmSheet, which escapes a single plain sentence — naming two
+     or four clue labels inside one runs them together exactly where they
+     need to be told apart. The buttons are its pair though, so the choice
+     looks like every other confirmation in the app. */
+  function clashSheet(clash, params) {
+    UI.openSheet('Can both be true?',
+      '<p class="dim" style="margin:0 0 14px;line-height:1.6">' +
+        (clash.length > 1 ? 'Some of those answers disagree with each other:'
+                          : 'Two of those answers disagree with each other:') +
+      '</p>' +
+      '<div class="stack" style="gap:8px;margin-bottom:16px">' +
+        clash.map(function (pair) {
+          return '<div class="card" style="padding:12px 14px">' +
+            '<div class="small">' + UI.esc(pair[0]) + '</div>' +
+            '<div class="eyebrow" style="margin:6px 0">and</div>' +
+            '<div class="small">' + UI.esc(pair[1]) + '</div>' +
+          '</div>';
+        }).join('') +
+      '</div>' +
+      /* Accountable, not accusing: the reader is looking at the plant and
+         the app is not, so the app is the one that might have this wrong. */
+      '<p class="hint" style="margin:0 0 20px">Have another look if you can. I\'ll go on either ' +
+        'way — I would just rather be right.</p>' +
+      '<div class="row" style="gap:8px">' +
+        '<button class="btn btn-ghost" data-act="sheet-cancel" style="flex:1">Check again</button>' +
+        '<button class="btn" data-act="clash-go" style="flex:1">Diagnose anyway</button>' +
+      '</div>',
+      /* Only the confirm side needs wiring: App's delegate on #sheet already
+         closes anything carrying data-act="sheet-cancel". */
+      function (body) {
+        body.querySelector('[data-act="clash-go"]').addEventListener('click', function () {
+          UI.closeSheet();
+          App.go(causesPath(params));
+        });
+      }
+    );
+  }
+
   function mount(root, params) {
     /* Symptom search filters the list in place. */
     const q = root.querySelector('#dxq');
@@ -506,7 +545,20 @@ window.ViewDiagnose = (function () {
         return;
       }
 
-      if (e.target.closest('[data-diagnose]')) { App.go(causesPath(params)); return; }
+      if (e.target.closest('[data-diagnose]')) {
+        /* Query an impossible pair before ranking anything on it. The scorer
+           would happily take "wet" and "bone dry" together, add the
+           supporting weight of both and return a confident answer built on
+           a contradiction — and confident is exactly the wrong register for
+           that. Asked here rather than blocked on the tick, because the app
+           cannot tell which of the two was the slip, and refusing the second
+           tick would be the app deciding the reader misread their own
+           plant. */
+        const clash = PROBLEM_DATA.clashes(clues);
+        if (clash.length) { clashSheet(clash, params); return; }
+        App.go(causesPath(params));
+        return;
+      }
 
       /* Explicitly back to the checklist rather than history.back(): the
          arrow means "leave this", and history is only step 3 if that is

@@ -1034,6 +1034,52 @@ window.PROBLEM_DATA = (function () {
     return null;
   }
 
+  /* ======================================================================
+     MUTUALLY EXCLUSIVE CLUES
+     --------------------------------------------------------------------------
+     Pairs that cannot both be true of the same plant at the same moment.
+     Nothing stops a reader ticking "Soil is wet or damp" and "Soil is bone
+     dry" together — a mis-tap, or working down a long list and losing track
+     — and the scorer will take both at face value, add the supporting weight
+     of each, and hand back a confident ranking built on an impossibility.
+
+     Distinct from CONTRA, which is a clue arguing against a *cause*. This is
+     a clue arguing against another *clue*, and it is checked at the point of
+     asking rather than folded into the score: the app cannot know which of
+     the two is the mistake, so it asks instead of guessing.
+
+     Kept deliberately short. Every pair here has to be a real impossibility
+     rather than an unlikely combination, because a warning that fires on
+     something merely improbable teaches the reader to dismiss it — and the
+     next one will be the one that mattered. "More than 2m from a window"
+     with "Direct sun lands on the leaves" is not on the list for exactly
+     that reason: a low winter sun reaches a long way into a room. */
+  const EXCLUSIVE = [
+    ['soil-wet', 'soil-dry'],
+    ['not-fed', 'fed-lots'],
+    /* "Only the oldest, lowest leaves" is the word that does it — it rules
+       out anything happening elsewhere on the plant. */
+    ['lower-leaves', 'all-over'],
+    ['lower-leaves', 'new-growth'],
+    ['texture-dry', 'spots-mushy'],
+    /* Water cannot run straight through a pot with nowhere to run out of. */
+    ['water-runs-through', 'no-drainage']
+  ];
+
+  /* The pairs from EXCLUSIVE that are both ticked, as label pairs ready to
+     read back. Returns [] for the ordinary case, so the caller can treat an
+     empty result as "nothing to query". */
+  function clashes(clueIds) {
+    const picked = clueIds || [];
+    return EXCLUSIVE.filter(function (pair) {
+      return picked.indexOf(pair[0]) !== -1 && picked.indexOf(pair[1]) !== -1;
+    }).map(function (pair) {
+      return pair.map(function (id) {
+        return CLUES[id] ? CLUES[id].label : id;
+      });
+    });
+  }
+
   /* Symptoms worth showing first for a given plant. */
   function symptomsForPlant(plant) {
     const prone = (plant && plant.problems) || [];
@@ -1047,5 +1093,6 @@ window.PROBLEM_DATA = (function () {
     });
   }
 
-  return { CLUES, SYMPTOMS, CAUSES, CONTRA, SUPPORTS, diagnose, describe, symptomsForPlant };
+  return { CLUES, SYMPTOMS, CAUSES, CONTRA, SUPPORTS, EXCLUSIVE,
+           diagnose, describe, symptomsForPlant, clashes };
 })();
