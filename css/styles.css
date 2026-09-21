@@ -932,6 +932,12 @@ img { max-width: 100%; display: block; }
   color: var(--mint-2);
 }
 
+/* The plan card is a <button>, and a button shrinks to its content and
+   centres it — so the card stopped short of the right edge and its copy
+   floated in the middle, unlike every other nudge. Stretch it, left-align
+   it, and give it the gap under the tabs that a div would have had. */
+.plan-card { width: 100%; text-align: left; font: inherit; color: inherit; margin-top: 14px; }
+
 /* A bare hairline for parting two blocks that are not sections. */
 .rule { border: 0; border-top: 1px solid var(--hair); margin: 18px 0; }
 

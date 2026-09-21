@@ -809,7 +809,7 @@ window.ViewGreenhouse = (function () {
       html += rooms.length
         ? /* The plan card sits above the rooms it draws. */
           '<button class="nudge is-link plan-card" data-go="/plan">' +
-            '<span class="nudge-ico">' + UI.icon('compass') + '</span>' +
+            '<span class="nudge-ico">' + UI.icon('grid') + '</span>' +
             '<div class="grow"><div class="nudge-t">Update greenhouse</div>' +
               '<p class="nudge-p mb-0">Map out your home using the planner</p></div>' +
             UI.icon('chevron', 'muted') +
