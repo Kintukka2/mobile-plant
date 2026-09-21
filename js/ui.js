@@ -459,14 +459,33 @@ window.UI = (function () {
   }
 
   /* Simple sparkline-style line chart for growth logs. */
+  /* Drawn at a fixed aspect and scaled to fit. It used to stretch to the
+     box with preserveAspectRatio="none", which turned every dot into an egg
+     and every label into a taller face than the rest of the page; the chart
+     looked wrong without anyone being able to say why. A single reading
+     draws too — one dot on its line — and no readings draw the empty frame,
+     so the tab always has the shape of what it is for. */
   function lineChart(points, unit) {
-    if (!points || points.length < 2) return '';
-    const W = 320, H = 130, PAD_L = 30, PAD_R = 8, PAD_T = 12, PAD_B = 22;
+    points = points || [];
+    const W = 320, H = 150, PAD_L = 30, PAD_R = 8, PAD_T = 12, PAD_B = 22;
+    const one = points.length === 1;
+    if (!points.length) {
+      return '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet">' +
+        '<line class="chart-grid" x1="' + PAD_L + '" y1="' + PAD_T + '" x2="' + (W - PAD_R) + '" y2="' + PAD_T + '"/>' +
+        '<line class="chart-grid" x1="' + PAD_L + '" y1="' + ((H - PAD_B + PAD_T) / 2) + '" x2="' + (W - PAD_R) + '" y2="' + ((H - PAD_B + PAD_T) / 2) + '"/>' +
+        '<line class="chart-grid" x1="' + PAD_L + '" y1="' + (H - PAD_B) + '" x2="' + (W - PAD_R) + '" y2="' + (H - PAD_B) + '"/>' +
+        '<path class="chart-ghost" d="M' + PAD_L + ' ' + (H - PAD_B - 8) + ' C 110 ' + (H - PAD_B - 20) + ', 170 ' + (PAD_T + 40) + ', ' + (W - PAD_R) + ' ' + (PAD_T + 14) + '"/>' +
+        '<text class="chart-lbl" x="' + PAD_L + '" y="' + (H - 6) + '">First reading</text>' +
+        '<text class="chart-lbl" x="' + (W - PAD_R) + '" y="' + (H - 6) + '" text-anchor="end">Today</text>' +
+        '</svg>' +
+        '<p class="tiny muted center" style="margin:4px 0 0">Measured in ' + esc(unit || 'cm') + '</p>';
+    }
     const xs = points.map(function (p) { return p.x; });
     const ys = points.map(function (p) { return p.y; });
-    const minX = Math.min.apply(null, xs), maxX = Math.max.apply(null, xs);
+    let minX = Math.min.apply(null, xs), maxX = Math.max.apply(null, xs);
     let minY = Math.min.apply(null, ys), maxY = Math.max.apply(null, ys);
     if (minY === maxY) { minY = minY - 1; maxY = maxY + 1; }
+    if (one) { minX = minX - 1; maxX = maxX + 1; }
     const spanX = (maxX - minX) || 1;
     const spanY = (maxY - minY) || 1;
 
@@ -484,24 +503,30 @@ window.UI = (function () {
       return '<circle class="chart-dot" cx="' + px(p.x).toFixed(1) + '" cy="' + py(p.y).toFixed(1) + '" r="3.5"/>';
     }).join('');
 
-    return '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none">' +
+    const yTop = one ? points[0].y : maxY, yBot = one ? null : minY;
+    return '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet">' +
       /* The gradient has to be declared in SVG-land, so it cannot read a CSS
          custom property for its stops. This is the lit emerald from the
          token ramp, hand-carried: on the dark ground the old .22 top stop
          disappeared entirely, so it opens at .34 and fades to nothing. */
-      '<defs><linearGradient id="gGrad" x1="0" y1="0" x2="0" y2="1">' +
-        '<stop offset="0%" stop-color="#3FBE8B" stop-opacity=".34"/>' +
-        '<stop offset="62%" stop-color="#3FBE8B" stop-opacity=".08"/>' +
-        '<stop offset="100%" stop-color="#3FBE8B" stop-opacity="0"/>' +
+      /* Pinned to the plot's own top and floor rather than the area's
+         bounding box. Measured against the box, the wash was strongest at
+         the highest reading and gone a third of the way down, so a curve
+         that climbed steeply showed a fill under its last leg and nothing
+         under the rest — the chart looked half-drawn. */
+      '<defs><linearGradient id="gGrad" gradientUnits="userSpaceOnUse" x1="0" y1="' + PAD_T + '" x2="0" y2="' + (H - PAD_B) + '">' +
+        '<stop offset="0%" stop-color="#3FBE8B" stop-opacity=".30"/>' +
+        '<stop offset="100%" stop-color="#3FBE8B" stop-opacity=".05"/>' +
       '</linearGradient></defs>' +
-      '<line class="chart-grid" x1="' + PAD_L + '" y1="' + py(maxY).toFixed(1) + '" x2="' + (W - PAD_R) + '" y2="' + py(maxY).toFixed(1) + '"/>' +
-      '<line class="chart-grid" x1="' + PAD_L + '" y1="' + py(minY).toFixed(1) + '" x2="' + (W - PAD_R) + '" y2="' + py(minY).toFixed(1) + '"/>' +
-      '<path class="chart-area" d="' + area + '"/>' +
-      '<path class="chart-line" d="' + d + '"/>' + dots +
-      '<text class="chart-lbl" x="2" y="' + (py(maxY) + 3).toFixed(1) + '">' + maxY + '</text>' +
-      '<text class="chart-lbl" x="2" y="' + (py(minY) + 3).toFixed(1) + '">' + minY + '</text>' +
-      '<text class="chart-lbl" x="' + PAD_L + '" y="' + (H - 6) + '">' + esc(fmtDate(new Date(minX))) + '</text>' +
-      '<text class="chart-lbl" x="' + (W - PAD_R) + '" y="' + (H - 6) + '" text-anchor="end">' + esc(fmtDate(new Date(maxX))) + '</text>' +
+      '<line class="chart-grid" x1="' + PAD_L + '" y1="' + py(yTop).toFixed(1) + '" x2="' + (W - PAD_R) + '" y2="' + py(yTop).toFixed(1) + '"/>' +
+      (yBot === null ? '' : '<line class="chart-grid" x1="' + PAD_L + '" y1="' + py(yBot).toFixed(1) + '" x2="' + (W - PAD_R) + '" y2="' + py(yBot).toFixed(1) + '"/>') +
+      (one ? '' : '<path class="chart-area" d="' + area + '"/>' + '<path class="chart-line" d="' + d + '"/>') + dots +
+      '<text class="chart-lbl" x="2" y="' + (py(yTop) + 3).toFixed(1) + '">' + yTop + '</text>' +
+      (yBot === null ? '' : '<text class="chart-lbl" x="2" y="' + (py(yBot) + 3).toFixed(1) + '">' + yBot + '</text>') +
+      (one
+        ? '<text class="chart-lbl" x="' + (W / 2) + '" y="' + (H - 6) + '" text-anchor="middle">' + esc(fmtDate(new Date(points[0].x))) + ' · one reading so far</text>'
+        : '<text class="chart-lbl" x="' + PAD_L + '" y="' + (H - 6) + '">' + esc(fmtDate(new Date(minX))) + '</text>' +
+          '<text class="chart-lbl" x="' + (W - PAD_R) + '" y="' + (H - 6) + '" text-anchor="end">' + esc(fmtDate(new Date(maxX))) + '</text>') +
       '</svg>' +
       '<p class="tiny muted center" style="margin:4px 0 0">Measured in ' + esc(unit || 'cm') + '</p>';
   }

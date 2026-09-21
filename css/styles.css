@@ -1892,6 +1892,7 @@ img { max-width: 100%; display: block; }
 }
 .tabs::-webkit-scrollbar { display: none; }
 .tab-btn { flex: 0 0 auto; }
+.tab-body { margin-top: 16px; }
 
 /* ==========================================================================
    B6 · Layout primitives
@@ -2563,11 +2564,7 @@ img { max-width: 100%; display: block; }
 /* Quick update: the plate's other corner. Same glass as the photo button so
    the two read as one pair of controls on the picture, and the menu opens
    upward from it over the photograph rather than pushing the page down. */
-.hero-img-quick {
-  position: absolute;
-  left: 12px;
-  bottom: 12px;
-  z-index: 2;
+.quick-btn {
   display: inline-flex; align-items: center; gap: 7px;
   padding: 7px 13px;
   border: 1px solid var(--hair-2);
@@ -2583,12 +2580,14 @@ img { max-width: 100%; display: block; }
   box-shadow: var(--sheen);
   cursor: pointer;
 }
-.hero-img-quick svg { width: 12px; height: 12px; }
-.hero-img-quick[aria-expanded="true"] { border-color: var(--hair-3); background: var(--bg-3); }
-.hero-menu {
+.quick-btn svg { width: 12px; height: 12px; }
+.quick-btn[aria-expanded="true"] { border-color: var(--hair-3); background: var(--bg-3); }
+.hero-img-quick { position: absolute; left: 12px; bottom: 12px; z-index: 2; }
+/* One menu, two homes: up from the photograph's corner, down from the
+   diary's button. The anchor gives the downward one something to hang from. */
+.menu-anchor { position: relative; display: inline-block; }
+.pop-menu {
   position: absolute;
-  left: 12px;
-  bottom: 54px;
   z-index: 3;
   min-width: 176px;
   padding: 6px;
@@ -2597,7 +2596,9 @@ img { max-width: 100%; display: block; }
   background: var(--bg-2);
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35), var(--sheen);
 }
-.hero-menu-opt {
+.hero-menu { left: 12px; bottom: 54px; }
+.pop-menu.is-down { left: 0; top: calc(100% + 8px); }
+.pop-opt {
   display: flex; align-items: center; gap: 11px;
   width: 100%;
   padding: 11px 12px;
@@ -2608,10 +2609,10 @@ img { max-width: 100%; display: block; }
   text-align: left;
   cursor: pointer;
 }
-.hero-menu-opt svg { width: 16px; height: 16px; color: var(--ink-3); flex: 0 0 auto; }
-.hero-menu-opt:hover, .hero-menu-opt:focus-visible { background: var(--bg-3); outline: none; }
-.hero-menu-opt + .hero-menu-opt { border-top: 1px solid var(--hair); border-top-left-radius: 0; border-top-right-radius: 0; }
-.hero-menu-opt:has(+ .hero-menu-opt) { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.pop-opt svg { width: 16px; height: 16px; color: var(--ink-3); flex: 0 0 auto; }
+.pop-opt:hover, .pop-opt:focus-visible { background: var(--bg-3); outline: none; }
+.pop-opt + .pop-opt { border-top: 1px solid var(--hair); border-top-left-radius: 0; border-top-right-radius: 0; }
+.pop-opt:has(+ .pop-opt) { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
 
 .hero-nick {
   font-family: var(--serif);
@@ -2818,6 +2819,13 @@ img { max-width: 100%; display: block; }
    obvious and be wrong: those two hues mean "you are fine" and "act now"
    throughout the app, and a species preference is neither. The eyebrow
    already says which list this is. */
+/* Loves wears the leaf, Hates the terracotta: the same two meanings the
+   pills and nudges already give those hues, so the pair reads before a
+   word of it does. */
+.card-loves { background: var(--mint-wash); border-color: rgba(63, 190, 139, 0.22); }
+.card-loves .eyebrow { color: var(--emerald-glow); }
+.card-hates { background: var(--terra-soft); border-color: rgba(208, 138, 98, 0.26); }
+.card-hates .eyebrow { color: var(--terra-ink); }
 .trait-list { margin: 10px 0 0; padding: 0; list-style: none; }
 .trait-list > li {
   position: relative;
@@ -3080,7 +3088,8 @@ img { max-width: 100%; display: block; }
    C9 · Growth chart
    ========================================================================== */
 
-.chart { width: 100%; height: 190px; display: block; overflow: visible; }
+.chart { width: 100%; height: auto; max-height: 220px; display: block; overflow: visible; }
+.chart-ghost { fill: none; stroke: var(--hair-3); stroke-width: 1.4; stroke-dasharray: 3 6; stroke-linecap: round; }
 .chart-area { fill: url(#gGrad); }
 .chart-line { fill: none; stroke: var(--emerald-glow); stroke-width: 1.6; stroke-linecap: round; }
 .chart-dot  { fill: var(--bg-1); stroke: var(--emerald-glow); stroke-width: 1.6; }

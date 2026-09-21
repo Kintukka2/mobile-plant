@@ -111,11 +111,11 @@ window.ViewPlant = (function () {
            chips under the plate; the bar went because Photo and Measure
            already have a home on their own tabs, and the three that are
            left are quicker one tap deep than five wide. */
-        '<button class="hero-img-quick" data-qu-toggle="1" aria-haspopup="menu" aria-expanded="false">' + UI.icon('plus') + 'Quick update</button>' +
-        '<div class="hero-menu" id="hero-menu" role="menu" hidden>' +
-          '<button class="hero-menu-opt" role="menuitem" data-quick="water">' + UI.icon('drop') + 'Water</button>' +
-          '<button class="hero-menu-opt" role="menuitem" data-quick="fertilise">' + UI.icon('wheat') + 'Feed</button>' +
-          '<button class="hero-menu-opt" role="menuitem" data-quick="note">' + UI.icon('note') + 'Add note</button>' +
+        '<button class="quick-btn hero-img-quick" data-menu-toggle="hero-menu" aria-haspopup="menu" aria-expanded="false">' + UI.icon('plus') + 'Quick update</button>' +
+        '<div class="pop-menu hero-menu" id="hero-menu" role="menu" hidden>' +
+          '<button class="pop-opt" role="menuitem" data-quick="water">' + UI.icon('drop') + 'Water</button>' +
+          '<button class="pop-opt" role="menuitem" data-quick="fertilise">' + UI.icon('wheat') + 'Feed</button>' +
+          '<button class="pop-opt" role="menuitem" data-quick="note">' + UI.icon('note') + 'Add note</button>' +
         '</div>' +
       '</div>' +
       /* .hero-body, not an inline `flex:1`. The inline version was written on
@@ -290,9 +290,9 @@ window.ViewPlant = (function () {
     /* --- Likes and dislikes --- */
     if ((sp.likes || []).length || (sp.dislikes || []).length) {
       html += '<div class="section"><div class="grid grid-2">' +
-        (sp.likes.length ? '<div class="card"><div class="eyebrow">Loves</div><ul class="trait-list">' +
+        (sp.likes.length ? '<div class="card card-loves"><div class="eyebrow">Loves</div><ul class="trait-list">' +
           sp.likes.map(function (l) { return '<li>' + UI.esc(l) + '</li>'; }).join('') + '</ul></div>' : '') +
-        (sp.dislikes.length ? '<div class="card"><div class="eyebrow">Hates</div><ul class="trait-list">' +
+        (sp.dislikes.length ? '<div class="card card-hates"><div class="eyebrow">Hates</div><ul class="trait-list">' +
           sp.dislikes.map(function (l) { return '<li>' + UI.esc(l) + '</li>'; }).join('') + '</ul></div>' : '') +
       '</div></div>';
     }
@@ -381,9 +381,14 @@ window.ViewPlant = (function () {
         '<button class="btn" data-quick="note">' + UI.icon('note') + 'Write the first entry</button>');
     }
 
-    let html = '<div class="row-wrap chip-row" style="margin-bottom:14px">' + kinds.map(function (k) {
-      return '<button class="chip" data-quick="' + k[0] + '">' + UI.icon(k[1]) + UI.esc(k[2]) + '</button>';
-    }).join('') + '</div>';
+    /* The four kinds behind one button, the same shape as Quick update on
+       the photograph: a row of four chips over the first diary line was a
+       second toolbar on a page that had just lost its first. */
+    let html = '<div class="menu-anchor" style="margin-bottom:16px">' +
+      '<button class="quick-btn" data-menu-toggle="diary-menu" aria-haspopup="menu" aria-expanded="false">' + UI.icon('plus') + 'Add diary entry</button>' +
+      '<div class="pop-menu is-down" id="diary-menu" role="menu" hidden>' + kinds.map(function (k) {
+        return '<button class="pop-opt" role="menuitem" data-quick="' + k[0] + '">' + UI.icon(k[1]) + UI.esc(k[2]) + '</button>';
+      }).join('') + '</div></div>';
 
     html += '<div class="timeline">' + logs.map(function (l) {
       const kind = LOOKUPS.LOG_KINDS[l.kind] || LOOKUPS.LOG_KINDS.note;
@@ -486,23 +491,23 @@ window.ViewPlant = (function () {
     const logs = Store.growthFor(p.id);
     const unit = logs.length ? (logs[logs.length - 1].unit || 'cm') : 'cm';
 
-    /* The button sat above the empty state telling the reader to add a
-       measurement, immediately over a panel telling them there were none —
-       the same sentence twice, in two registers. It belongs inside the
-       invitation, which is where Photos has always put it, and once there is
-       a curve to read the Measure button beside it adds to it. */
-    if (!logs.length) {
-      return UI.empty('ruler', 'No measurements yet',
-        'Measure from the soil to the highest growing point, or take the widest leaf. Be consistent rather than ' +
-        'precise — the shape of the curve is the interesting part.',
-        '<button class="btn" data-quick="growth">' + UI.icon('ruler') + 'Add the first measurement</button>');
-    }
-
-    let html = '';
+    /* The chart is always here, drawn or waiting. An empty state that
+       replaced it hid what the tab was for; the frame with nothing in it yet
+       says it better, and the one button that fills it sits over it. */
+    let html = '<div class="row" style="margin-bottom:14px"><button class="btn btn-sm" data-quick="growth">' + UI.icon('ruler') + (logs.length ? 'Add a measurement' : 'Add the first measurement') + '</button></div>';
 
     const points = logs.map(function (l) {
       return { x: UI.fromISO(l.date).getTime(), y: l.value };
     });
+
+    if (!logs.length) {
+      html += '<div class="card">' + UI.lineChart([], unit) +
+        '<div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--hair)">' +
+          '<div style="font-family:var(--serif);font-size:18px;margin-bottom:6px">Your growth curve draws here</div>' +
+          '<p class="hint" style="margin:0">Measure from the soil to the highest growing point, or take the widest leaf, and log it every few weeks. Be consistent rather than precise — the shape of the curve is the interesting part. It shows whether a plant is happy where it stands: one that slows in a room is telling you about the light there, and one that surges after a repot has told you the pot was the problem.</p>' +
+        '</div></div>';
+      return html;
+    }
 
     const first = logs[0], last = logs[logs.length - 1];
     const gain = last.value - first.value;
@@ -522,12 +527,9 @@ window.ViewPlant = (function () {
         Math.round((last.value / sp.matureCm) * 100) + '% of the way there') : '') +
     '</div></div>';
 
-    /* The Measure chip in the bar under the photograph was the only way to
-       add a reading once the first was in; the bar has gone, so the ledger
-       carries its own, the way Photos carries Add photo. */
     html += '<div class="section">' +
       '<div class="section-head"><h2 class="section-title">All measurements</h2>' +
-        '<button class="btn btn-ghost btn-sm" data-quick="growth">' + UI.icon('ruler') + 'Measure</button></div>' +
+        '<span class="section-note">' + logs.length + '</span></div>' +
       '<div class="facts facts-ledger">' + logs.slice().reverse().map(function (l, i) {
         /* `logs` runs chronologically and this list runs newest-first, so the
            entry each row grew *from* sits one further along the reversed run:
@@ -603,16 +605,21 @@ window.ViewPlant = (function () {
          emerald when the season is with you, champagne when it is not. */
       html += '<div class="nudge' + (growing ? '' : ' nudge-warn') + '" style="margin-bottom:14px">' +
         '<span class="nudge-ico">' + UI.icon(season.ico) + '</span>' +
-        '<div style="min-width:0">' +
+        '<div style="min-width:0;flex:1">' +
           '<div class="nudge-t">' + UI.esc(growing ? 'Good time to propagate' : 'Not the season for it') + '</div>' +
           '<p class="nudge-p">' +
             (growing
               ? 'It is ' + UI.esc(season.label.toLowerCase()) + ' — active growth means cuttings root faster and rot less.'
               : 'It is ' + UI.esc(season.label.toLowerCase()) + '. Cuttings taken now root slowly and often rot instead. Wait for spring if you can.') +
           '</p>' +
+          /* The verdict is the answer most visits want; the method is a
+             page of steps that only matters on the day. So the steps wait
+             behind one button, and the card carries it. */
+          '<div style="margin-top:12px"><button class="btn btn-sm' + (growing ? '' : ' btn-soft') + '" data-prop-show="1" aria-expanded="false" aria-controls="prop-how">' + UI.icon('sprout') + 'Show me how</button></div>' +
         '</div>' +
       '</div>';
 
+      html += '<div id="prop-how" hidden>';
       html += '<div class="stack" style="gap:14px">' + sp.prop.map(function (m, i) {
         return '<div class="card">' +
           '<div class="row" style="align-items:flex-start">' +
@@ -631,7 +638,7 @@ window.ViewPlant = (function () {
           }).join('') + '</ol>' +
           '<div class="card-foot">' +
             '<button class="btn btn-sm btn-soft" data-prop="' + i + '">' +
-              UI.icon('sprout') + 'Log that I tried this' +
+              UI.icon('sprout') + 'Log that I propagated ' + UI.esc(Store.displayName(p)) +
             '</button>' +
           '</div>' +
         '</div>';
@@ -656,6 +663,8 @@ window.ViewPlant = (function () {
         '</div>' +
       '</div>';
     }
+    /* The seed section folds with the cuttings: both are instructions. */
+    if ((sp.prop || []).length) html += '</div>';
 
     return html;
   }
@@ -892,11 +901,16 @@ window.ViewPlant = (function () {
         UI.esc(label) + '</button>';
     }).join('') + '</div>';
 
+    /* One measure of air between the tab strip and whatever it opens. The
+       panels used to butt against it, so a nudge or a chip row read as part
+       of the control rather than the page it had switched to. */
+    html += '<div class="tab-body">';
     if (tab === 'care')        html += careTab(p, sp);
     else if (tab === 'diary')  html += diaryTab(p);
     else if (tab === 'photos') html += photosTab(p);
     else if (tab === 'growth') html += growthTab(p, sp);
     else                       html += propTab(p, sp);
+    html += '</div>';
 
     return html;
   }
@@ -931,15 +945,27 @@ window.ViewPlant = (function () {
       /* The quick menu sits on the photograph, which is itself a tap target
          for changing the picture, so its toggle and its options are read
          before the cover is — and any tap anywhere else closes it. */
-      const menu = root.querySelector('#hero-menu'), tog = root.querySelector('[data-qu-toggle]');
-      if (e.target.closest('[data-qu-toggle]')) {
-        menu.hidden = !menu.hidden; tog.setAttribute('aria-expanded', String(!menu.hidden)); return;
+      const tog = e.target.closest('[data-menu-toggle]');
+      root.querySelectorAll('.pop-menu').forEach(function (m) {
+        const own = tog && tog.getAttribute('data-menu-toggle') === m.id;
+        const open = own ? m.hidden : false;
+        if (!own && !m.hidden && e.target.closest('#' + m.id)) return;
+        m.hidden = !open;
+        const t = root.querySelector('[data-menu-toggle="' + m.id + '"]'); if (t) t.setAttribute('aria-expanded', String(open));
+      });
+      if (tog) return;
+
+      const show = e.target.closest('[data-prop-show]');
+      if (show) {
+        const how = root.querySelector('#prop-how'); how.hidden = !how.hidden;
+        show.setAttribute('aria-expanded', String(!how.hidden));
+        show.innerHTML = UI.icon('sprout') + (how.hidden ? 'Show me how' : 'Hide the steps');
+        return;
       }
-      if (menu && !menu.hidden && !e.target.closest('#hero-menu')) { menu.hidden = true; tog.setAttribute('aria-expanded', 'false'); }
 
       const q = e.target.closest('[data-quick]');
       if (q) {
-        if (menu) menu.hidden = true;
+        root.querySelectorAll('.pop-menu').forEach(function (m) { m.hidden = true; });
         const kind = q.getAttribute('data-quick');
         if (kind === 'water' || kind === 'fertilise') quickCare(p, kind);
         else if (kind === 'photo') quickPhoto(p);
