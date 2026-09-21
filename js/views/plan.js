@@ -28,7 +28,7 @@ window.ViewPlan = (function () {
   let drawing = null;                 // { pts: [], forRoomId } while tracing corners
   let drag = null;
   let ghostEl = null;
-  const ui = { step1Open: undefined, hideInner: false };
+  const ui = { open: { 1: undefined, 2: undefined, 3: undefined, 4: undefined }, hideInner: false };
   const views = { plan: { k: 1, cx: 0, cy: 0 }, home: { k: 1, cx: 0, cy: 0 } };
   let baseVB = null;
   const pointers = new Map();
@@ -284,20 +284,29 @@ window.ViewPlan = (function () {
     panelHome();
   }
 
-  function step(n, title, extra) {
-    return '<div class="section-head"><h2 class="section-title"><span class="plan-step">Step ' + n + '</span>' + UI.esc(title) + '</h2>' + (extra || '') + '</div>';
+  /* Every step folds. Step 1 starts open until the floorplan is ticked
+     done; the rest start open and close only when the reader closes them.
+     Remembered for the visit, not saved — a folded step is a way of clearing
+     the page, not a setting. Step 2 will not fold while a room is being
+     drawn, because the Finish and Undo buttons live inside it. */
+  function stepOpen(n) {
+    if (n === 2 && drawing) return true;
+    if (ui.open[n] !== undefined) return ui.open[n];
+    return n === 1 ? !plan().done : true;
+  }
+
+  function step(n, title, done) {
+    return '<div class="section-head plan-toggle" data-toggle="' + n + '"><h2 class="section-title"><span class="plan-step">Step ' + n + '</span>' + UI.esc(title) + '</h2>' +
+      '<span class="row" style="gap:8px">' + (done ? UI.pill('Done', 'mint') : '') + '<span class="plan-chev' + (stepOpen(n) ? ' is-open' : '') + '"></span></span></div>';
   }
 
   function panelHome() {
     const pl = plan(), list = rooms(), undrawn = list.filter(function (r) { return !r.shape; });
     let h = '';
 
-    /* Step 1 — the floorplan image, collapsible once ticked done. */
-    const open1 = ui.step1Open !== undefined ? ui.step1Open : !pl.done;
-    h += '<div class="section plan-sec">' +
-      '<div class="section-head plan-toggle" data-toggle="step1"><h2 class="section-title"><span class="plan-step">Step 1</span>Build your floorplan</h2>' +
-        '<span class="row" style="gap:8px">' + (pl.done ? UI.pill('Done', 'mint') : '') + '<span class="plan-chev' + (open1 ? ' is-open' : '') + '"></span></span></div>';
-    if (open1) {
+    /* Step 1 — the floorplan image. */
+    h += '<div class="section plan-sec">' + step(1, 'Build your floorplan', pl.done);
+    if (stepOpen(1)) {
       h += '<div class="row" style="justify-content:space-between;margin-bottom:10px">' +
         (pl.backdrop ? '' : '<button class="btn btn-ghost btn-sm" id="pl-bd-load">Load a floorplan image</button>') +
         '<label class="plan-check"><input type="checkbox" id="pl-done"' + (pl.done ? ' checked' : '') + '> Done with the floorplan</label></div>';
@@ -314,8 +323,10 @@ window.ViewPlan = (function () {
     h += '</div>';
 
     /* Step 2 — rooms. */
-    h += '<div class="section plan-sec">' + step(2, 'Manage rooms');
-    if (drawing) {
+    h += '<div class="section plan-sec">' + step(2, 'Manage rooms', list.length > 0 && !undrawn.length);
+    if (!stepOpen(2)) {
+      /* folded */
+    } else if (drawing) {
       h += '<p class="hint" style="margin:0 0 10px">Tap each corner in turn. Tap the first corner again to close the room, or drag instead to draw a plain box.</p>' +
         '<div class="row"><button class="btn btn-sm" id="pl-draw-finish"' + (drawing.pts.length < 3 ? ' disabled' : '') + '>Finish room</button>' +
         '<button class="btn btn-ghost btn-sm" id="pl-draw-undo"' + (!drawing.pts.length ? ' disabled' : '') + '>Undo corner</button>' +
@@ -337,19 +348,21 @@ window.ViewPlan = (function () {
 
     /* Step 3 — north. */
     const known = Plan.known();
-    h += '<div class="section plan-sec">' + step(3, 'Which way is north?') +
-      '<div class="row" style="justify-content:space-between">' +
+    h += '<div class="section plan-sec">' + step(3, 'Which way is north?', known);
+    if (stepOpen(3)) h += '<div class="row" style="justify-content:space-between">' +
         '<span class="row" style="gap:10px"><svg class="plan-mini-rose" viewBox="-30 -30 60 60" data-open-compass="1" aria-hidden="true">' + compassRose(0, 0, 22, 'var(--bg-4)') + '</svg>' +
           (known ? UI.pill('North set · ' + Math.round(pl.north) + '°', 'mint') : UI.pill(pl.northConfirmed ? 'Hemisphere needed' : 'Not set yet', 'sun')) + '</span>' +
         '<button class="btn btn-sm' + (known ? ' btn-ghost' : '') + '" id="pl-open-compass">' + (known ? 'Change' : 'Set north') + '</button></div>' +
-      (known ? '' : '<p class="hint">I shade each room by its light only once north is confirmed. Tapping the compass on the plan opens the same dial.</p>') +
-    '</div>';
+      (known ? '' : '<p class="hint">I shade each room by its light only once north is confirmed. Tapping the compass on the plan opens the same dial.</p>');
+    h += '</div>';
 
     /* Step 4 — plants. */
     const plants = Store.activePlants();
     const loose = plants.filter(function (p) { return !(p.pos && Plan.roomAt(p.pos.x, p.pos.y)); });
-    h += '<div class="section plan-sec">' + step(4, 'Add plants');
-    if (!plants.length) {
+    h += '<div class="section plan-sec">' + step(4, 'Add plants', plants.length > 0 && !loose.length);
+    if (!stepOpen(4)) {
+      /* folded */
+    } else if (!plants.length) {
       h += '<p class="hint">No plants yet. Add one in the greenhouse and it will appear here to place.</p>';
     } else if (loose.length) {
       h += '<div class="plan-tray">' + loose.map(function (p) {
@@ -565,7 +578,7 @@ window.ViewPlan = (function () {
           const ok = Store.updatePlan({ backdrop: { src: c.toDataURL('image/jpeg', 0.55), opacity: 0.45, scale: 1, x: 0, y: 0 }, done: false });
           cleanup();
           if (!ok) { Store.updatePlan({ backdrop: null }); return; }
-          mode = 'plan'; tool = 'backdrop'; ui.step1Open = true; redraw();
+          mode = 'plan'; tool = 'backdrop'; ui.open[1] = true; redraw();
           UI.toast('Line it up, then trace your rooms over it', 'leaf');
         };
         img.onerror = function () { cleanup(); UI.toast('I could not read that image', 'warn'); };
@@ -777,7 +790,8 @@ window.ViewPlan = (function () {
     /* ---- Panel clicks ---- */
     panel.addEventListener('click', function (e) {
       const t = e.target;
-      if (t.closest('[data-toggle="step1"]')) { const open1 = ui.step1Open !== undefined ? ui.step1Open : !plan().done; ui.step1Open = !open1; drawPanel(); return; }
+      const tg = t.closest('[data-toggle]');
+      if (tg) { const n = +tg.getAttribute('data-toggle'); ui.open[n] = !stepOpen(n); drawPanel(); return; }
       if (t.closest('#pl-tool-add')) { if (tool === 'add') { tool = 'select'; drawing = null; } else { tool = 'add'; drawing = { pts: [] }; mode = 'plan'; sel = null; } redraw(); return; }
       const dr = t.closest('[data-draw-room]');
       if (dr) { tool = 'add'; drawing = { pts: [], forRoomId: dr.getAttribute('data-draw-room') }; mode = 'plan'; sel = null; redraw(); UI.toast('Trace ' + room(dr.getAttribute('data-draw-room')).name + ' on the plan', 'leaf'); return; }
@@ -832,7 +846,7 @@ window.ViewPlan = (function () {
         /* Ticking done drops the image: it has done its job, and it is the
            one thing here that costs real storage. */
         Store.updatePlan({ done: t.checked, backdrop: t.checked ? null : plan().backdrop });
-        ui.step1Open = !t.checked; redraw(); return;
+        ui.open[1] = !t.checked; redraw(); return;
       }
       if (t.id === 'pl-room-outdoor') {
         const r = room(sel.id); r.shape.outdoor = t.checked;
