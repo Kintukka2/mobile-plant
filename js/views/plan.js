@@ -785,7 +785,11 @@ window.ViewPlan = (function () {
     Plan.sync();
     drawing = null; tool = 'select'; sel = { type: 'room', id: r.id };
     redraw();
-    const inp = panel.querySelector('#pl-room-name'); if (inp) { inp.focus(); inp.select(); }
+    /* The room is selected but nothing takes focus. Putting the cursor in
+       the name field the moment a shape closed threw a keyboard over the
+       plan on every single room, which is the worst time to ask for a name:
+       the reader is laying out a floor and is happy with Room 1 to Room 5
+       until it looks right. The heading is a field whenever they want it. */
   }
 
   /* ======================================================================
