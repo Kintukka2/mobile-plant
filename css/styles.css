@@ -1887,6 +1887,30 @@ img { max-width: 100%; display: block; }
   background: linear-gradient(to bottom, transparent, var(--hair-2) 22%, var(--hair-2) 78%, transparent);
 }
 
+/* The three cells. Two of them are buttons and one is not, so the shared
+   class carries everything about how a cell looks and .gstat-go adds only
+   the affordance — otherwise a <button> arrives with its own font, padding,
+   background and centring and the row stops lining up. */
+.gstat {
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+.gstat-go {
+  cursor: pointer;
+  border-radius: var(--r-sm);
+  transition: opacity var(--dur-1) var(--ease);
+}
+.gstat-go:hover { opacity: 0.72; }
+.gstat-go:focus-visible { outline: 1px solid var(--emerald-glow); outline-offset: 5px; }
+/* The caption carries the hint that the cell is live — a chevron beside a
+   34px numeral would be a second mark competing with it, and underlining a
+   figure makes it look like a link in running text rather than a count. */
+.gstat-go .gstat-l { color: var(--mint); }
+
 .gstat-n {
   font-family: var(--serif);
   font-size: 34px;

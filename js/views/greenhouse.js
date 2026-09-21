@@ -723,9 +723,16 @@ window.ViewGreenhouse = (function () {
 
   function onAction(act) { if (act === 'add') addMenu(); }
 
-  function render() {
+  function render(params) {
     const rooms = Store.get().rooms;
     const plants = Store.activePlants();
+
+    /* /greenhouse/plants and /greenhouse/rooms open on that tab. Plain
+       /greenhouse keeps whichever one was last used, which is what makes the
+       tab feel like a place rather than a setting — the deep link is for
+       arriving from somewhere that already knows which half you want, like
+       the counts on Today. */
+    if (params && (params.id === 'rooms' || params.id === 'plants')) tab = params.id;
 
     if (!rooms.length && !plants.length) {
       /* "Room to grow", not "Your greenhouse is empty".
