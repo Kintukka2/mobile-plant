@@ -244,11 +244,30 @@ window.ViewDiagnose = (function () {
           '<p class="small dim" style="margin:3px 0 0">' + UI.esc(symptom.desc) + '</p>' +
         '</div>' +
       '</div>' +
+      /* The step's one action, and it sits above the questions rather than
+         after them. Fifteen clues is a long way to travel to reach a button,
+         and the reader who already knows what they are looking at should not
+         have to scroll past every question to ask for the answer. The pair
+         mirrors step 4, where the same card carries the way back.
+
+         Ticking is still the point, and the line under the heading below
+         says so — the answer is only ever as good as what it was told, which
+         is a better argument for reading the list than a button placed where
+         the list has to be crossed to reach it. */
+      '<button class="btn btn-lg btn-block" data-diagnose="1">' +
+        UI.icon('stethoscope') + 'Diagnose</button>' +
     '</div>';
 
     html += '<div class="section" style="margin-top:0">' +
       '<div class="section-head"><h2 class="section-title">What else is true?</h2>' +
-        '<span class="section-note">' + (clues.length ? clues.length + ' selected' : 'tick any that apply') + '</span>' +
+        /* "tick any that apply" is nineteen characters of tracked micro-caps,
+           and .section-head is one flex row — so the note took enough width
+           out of the title that WHAT ELSE IS TRUE? broke across two lines
+           while the annotation it made room for sat comfortably on one. Same
+           fault the causes heading was fixed for, and the same answer: the
+           note is the half that gives way. The checkboxes already say the
+           list is multiple-choice. */
+        '<span class="section-note">' + (clues.length ? clues.length + ' selected' : 'optional') + '</span>' +
       '</div>' +
       '<p class="hint" style="padding:0 2px;margin:0 0 10px">Have a proper look before you answer — finger in ' +
         'the soil, turn a leaf over, tip it out of the pot if you can. I\'ll only ever be as right as what ' +
@@ -268,22 +287,6 @@ window.ViewDiagnose = (function () {
           '<span class="dx-opt-chk">' + UI.icon('check') + '</span>' +
         '</button>';
       }).join('') + '</div>' +
-    '</div>';
-
-
-    /* The step's one action, and deliberately the only button on the page —
-       "Diagnose something else" and the diary shortcut belong with the
-       answer, not with the questions. */
-    html += '<div class="section" style="margin-top:-8px">' +
-      '<button class="btn btn-lg btn-block" data-diagnose="1">' +
-        UI.icon('stethoscope') + 'Diagnose</button>' +
-      /* Only when nothing is ticked. A symptom on its own still ranks — it
-         is just a weaker ranking, and saying so once is more use than a
-         disabled button that explains nothing. Sprout is accountable for the
-         quality of the answer here, not the reader for the input. */
-      (clues.length ? '' :
-        '<p class="hint" style="padding:0 2px;margin:10px 0 0">Nothing ticked yet. I can still go on the ' +
-        'symptom alone, but a clue or two narrows it a long way.</p>') +
     '</div>';
 
     return html;
