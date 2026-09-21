@@ -932,6 +932,9 @@ img { max-width: 100%; display: block; }
   color: var(--mint-2);
 }
 
+/* A bare hairline for parting two blocks that are not sections. */
+.rule { border: 0; border-top: 1px solid var(--hair); margin: 18px 0; }
+
 /* ==========================================================================
    B1 · Sections
    ========================================================================== */

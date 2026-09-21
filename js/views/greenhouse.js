@@ -819,6 +819,10 @@ window.ViewGreenhouse = (function () {
                 : 'Trace your home and I\'ll read each room\'s light from its windows.') + '</p></div>' +
             UI.icon('chevron', 'muted') +
           '</button>' +
+          /* The plan is one thing and the rooms are many things; a hairline
+             between them says so, where the card's bottom edge butting the
+             first room's top edge said they were a stack of the same. */
+          '<hr class="rule">' +
           '<div class="grid grid-rooms">' + rooms.map(roomCard).join('') + '</div>' +
           '<button class="btn btn-soft btn-block" data-open="room" style="margin-top:12px">' +
             UI.icon('plus') + 'Add another room</button>'
