@@ -23,6 +23,12 @@ window.Schedule = (function () {
     return LOOKUPS.season(new Date(), Store.hemisphere());
   }
 
+  function seasonPhrase() {
+    const meta = LOOKUPS.SEASON_META[currentSeason()];
+    const phase = LOOKUPS.seasonPhase(new Date(), Store.hemisphere());
+    return meta && meta.phrase ? meta.phrase[phase] : '';
+  }
+
   function isGrowingSeason() {
     const meta = LOOKUPS.SEASON_META[currentSeason()];
     return meta ? meta.growing : true;
@@ -411,7 +417,10 @@ window.Schedule = (function () {
       overdueCount: overdue.length,
       soonCount: soon.length,
       season: currentSeason(),
-      seasonMeta: LOOKUPS.SEASON_META[currentSeason()]
+      seasonMeta: LOOKUPS.SEASON_META[currentSeason()],
+      /* Where in the season, not just which one — the greeting says it out
+         loud and twelve weeks is long enough for the difference to matter. */
+      seasonPhrase: seasonPhrase()
     };
   }
 

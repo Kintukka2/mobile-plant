@@ -25,7 +25,8 @@ window.App = (function () {
     discover:   function () { return window.ViewDiscover; },
     species:    function () { return window.ViewSpecies; },
     diagnose:   function () { return window.ViewDiagnose; },
-    profile:    function () { return window.ViewProfile; }
+    profile:    function () { return window.ViewProfile; },
+    settings:   function () { return window.ViewSettings; }
   };
 
   const TABS = [

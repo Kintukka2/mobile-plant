@@ -17,6 +17,17 @@ window.ViewToday = (function () {
     return 'Good evening';
   }
 
+  /* Two beats: where the year stands, then what that means for the plants.
+     They were one sentence before — "Growth is waking up. Start feeding
+     again" — which stated a fact about plants in general and then gave an
+     instruction in a word a beginner has no way to cash in. Separating them
+     lets the first be a plain calendar statement and the second an
+     instruction in things you can buy. */
+  function seasonLine() {
+    const sum = Schedule.summary();
+    return (sum.seasonPhrase ? sum.seasonPhrase + ' ' : '') + sum.seasonMeta.note;
+  }
+
   function greeting() {
     const s = Store.get().profile;
     const sum = Schedule.summary();
@@ -32,13 +43,13 @@ window.ViewToday = (function () {
       /* The count is on the section heading below, where it labels the list
          it belongs to. Opening the greeting with "2 jobs for today" made the
          first thing Sprout says every morning a tally of work owed — which
-         is a rota, not a greeting. The season's advice is the more useful
-         thing to lead with and was already sitting behind it. */
-      line = sum.seasonMeta.note;
+         is a rota, not a greeting. */
+      line = seasonLine();
     } else if (sum.soonCount) {
-      line = 'Nothing needs you today. ' + UI.plural(sum.soonCount, 'job') + ' coming up over the next few days.';
+      line = 'Nothing needs you today. ' + UI.plural(sum.soonCount, 'job') +
+             ' coming up over the next few days. ' + seasonLine();
     } else {
-      line = 'Everything is watered, fed and content. ' + sum.seasonMeta.note;
+      line = 'Everything is watered, fed and content. ' + seasonLine();
     }
 
     return '<div class="greeting-card">' +
@@ -233,7 +244,10 @@ window.ViewToday = (function () {
         : '<div class="card center all-clear">' +
             '<span class="all-clear-mark">' + UI.icon('leaf') + '</span>' +
             '<p class="all-clear-t">All caught up</p>' +
-            '<p class="tiny muted mt-0">Nothing is thirsty today. ' + UI.esc(sub()) + '.</p>' +
+            /* No exclamation mark, by the voice rule for anything that
+               repeats — this line shows on every day nothing is due, and a
+               cheer that fires daily stops being a cheer. */
+            '<p class="tiny muted mt-0">No plants are in need — great job.</p>' +
           '</div>') +
     '</div>';
 

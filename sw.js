@@ -26,7 +26,7 @@
    weights, and two new files join the precache list. A returning visitor
    holding v4 would otherwise be served a shell asking for a font the old
    cache has never heard of. */
-const CACHE = 'sprout-v15-viridium';
+const CACHE = 'sprout-v16-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is
@@ -67,6 +67,7 @@ const ASSETS = [
   'js/views/discover.js',
   'js/views/diagnose.js',
   'js/views/profile.js',
+  'js/views/settings.js',
   'js/app.js'
 ];
 
