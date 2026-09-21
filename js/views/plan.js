@@ -357,6 +357,11 @@ window.ViewPlan = (function () {
         h += '<p class="hint">Upload an image of your floorplan. Then use <b>Add a room</b> to trace over it and create each room. Set the dimensions, add windows and you\'re ready to go. Tick the checkbox when you are done.</p>' +
           '<p class="hint" style="margin-top:8px">Or skip this step and draw rooms freehand.</p>';
       }
+      /* Kept within reach after the invitation has gone: the beat a reader
+         comes back for is usually windows or north, not the grid. */
+      if (window.Tour) {
+        h += '<p style="margin-top:12px"><button class="link-btn" data-tour="1">Watch the walkthrough again</button></p>';
+      }
     }
     h += '</div>';
 
@@ -699,6 +704,7 @@ window.ViewPlan = (function () {
     else n.hidden = true;
     root.querySelector('#pl-reshape').hidden = !(mode === 'plan' && sel && sel.type === 'room');
     root.querySelector('#pl-quick-add').hidden = !(mode === 'plan' && sel && sel.type === 'room' && !drawing);
+    root.querySelector('#pl-invite').hidden = !(mode === 'plan' && !drawing && !list.length && window.Tour);
     const wt = root.querySelector('#pl-walls-toggle');
     wt.hidden = mode !== 'home' || !list.length;
     wt.textContent = ui.hideInner ? 'Show inside walls' : 'Hide inside walls';
@@ -755,6 +761,14 @@ window.ViewPlan = (function () {
     input.click();
   }
 
+  /* Where both the invitation's quiet link and the walkthrough's last
+     button land: Step 2 open, the add tool armed, nothing drawn for them. */
+  function startTracing() {
+    ui.open[2] = true;
+    tool = 'add'; drawing = { pts: [] }; mode = 'plan'; sel = null;
+    redraw();
+  }
+
   /* ======================================================================
      Rooms: create, reshape, edit
      ====================================================================== */
@@ -800,6 +814,17 @@ window.ViewPlan = (function () {
           '<button class="plan-stage-btn is-bottom" id="pl-walls-toggle" hidden></button>' +
           '<button class="plan-stage-btn is-left" id="pl-view-reset" hidden>Centre</button>' +
           '<button class="plan-stage-btn is-left is-bottom" id="pl-quick-add" hidden>' + UI.icon('plus') + 'Add a plant</button>' +
+          /* Offered, not asked. An empty grid has nothing to interrupt, so
+             the invitation lives on it rather than in a dialog over it, and
+             it goes the moment a first room exists. */
+          '<div class="plan-invite" id="pl-invite" hidden>' +
+            '<div class="plan-invite-t">Nothing drawn yet</div>' +
+            '<p class="hint">I\'ll build a sample flat and name each part as it appears, if it helps to see one first.</p>' +
+            '<div class="stack" style="gap:9px;align-items:center">' +
+              '<button class="btn btn-sm" data-tour="1">' + UI.icon('sparkle') + 'Watch me build one</button>' +
+              '<button class="link-btn" id="pl-trace">or trace one yourself</button>' +
+            '</div>' +
+          '</div>' +
         '</div>' +
       '</div>' +
       '<div class="plan-panel" id="pl-panel"></div>' +
@@ -820,6 +845,8 @@ window.ViewPlan = (function () {
       if (e.target.closest('.plan-tools [data-open-compass]')) { openCompass(); return; }
       if (e.target.closest('[data-open-dims]')) { openDims(sel && sel.type === 'room' ? sel.id : null); return; }
       if (e.target.closest('#pl-quick-add')) { if (sel && sel.type === 'room') quickAdd(room(sel.id)); return; }
+      if (e.target.closest('[data-tour]')) { Tour.open(startTracing); return; }
+      if (e.target.closest('#pl-trace')) { startTracing(); return; }
     });
 
     /* ---- Canvas: wheel, pinch, pan, drag ---- */
