@@ -1867,16 +1867,35 @@ img { max-width: 100%; display: block; }
 .tabs::-webkit-scrollbar { display: none; }
 .tab-btn { flex: 0 0 auto; }
 
-@media (max-width: 520px) {
-  .tab-btn { padding: 8px 13px; letter-spacing: 0.13em; }
-}
-
 /* ==========================================================================
    B6 · Layout primitives
    ========================================================================== */
 
 .row      { display: flex; align-items: center; gap: 11px; }
 .row-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* A horizontally-scrolling row of filter chips, same reasoning as .tabs
+   elsewhere in this file: the browser's own scrollbar drew as a second,
+   unstyled bar sitting in the gap under the chips, reading as stray
+   whitespace before the next section rather than as a hint that the row
+   scrolls. Touch already makes that obvious as a swipe. */
+.chip-row {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  margin-bottom: 16px;
+}
+.chip-row::-webkit-scrollbar { display: none; }
+.chip-row .chip { flex: 0 0 auto; }
+
+@media (max-width: 520px) {
+  .tab-btn { padding: 8px 13px; letter-spacing: 0.13em; }
+}
+
 .stack    { display: flex; flex-direction: column; gap: 11px; }
 .grid     { display: grid; gap: 14px; }
 .grid-2   { display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); }

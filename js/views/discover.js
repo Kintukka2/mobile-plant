@@ -128,7 +128,9 @@ window.ViewDiscover = (function () {
   /* ---------- View ---------- */
 
   function title() { return 'Discover'; }
-  function sub() { return window.PLANT_DATA.length + ' plants I know properly'; }
+  function sub() {
+    return 'Search through the list of ' + window.PLANT_DATA.length + ' plants that I can help you with.';
+  }
 
   function render() {
     const list = results();
@@ -139,7 +141,7 @@ window.ViewDiscover = (function () {
         '<input class="input input-search" id="dq" type="search" autocomplete="off" ' +
           'placeholder="Search by name, family or trait" value="' + UI.attr(query) + '">' +
       '</div>' +
-      '<div class="row-wrap" style="margin-bottom:16px;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px">' +
+      '<div class="row-wrap chip-row">' +
         FILTERS.map(function (f) {
           return '<button class="chip nowrap' + (filter === f.key ? ' is-on' : '') + '" ' +
             'data-filter="' + UI.attr(f.key) + '">' + UI.esc(f.label) + '</button>';
@@ -163,8 +165,7 @@ window.ViewDiscover = (function () {
 
       if (picks.length) {
         html += '<div class="section" id="dc-recs" style="margin-top:0">' +
-          '<div class="section-head"><h2 class="section-title">Good matches for your rooms</h2>' +
-            '<span class="section-note">based on your light</span></div>' +
+          '<div class="section-head"><h2 class="section-title">Good matches for your rooms</h2></div>' +
           '<div class="stack" style="gap:8px">' + picks.slice(0, 5).map(function (x) {
             const rl = LOOKUPS.LIGHT[x.room.light];
             return '<button class="dx-opt" data-species="' + UI.attr(x.sp.id) + '" style="margin:0">' +
@@ -181,10 +182,18 @@ window.ViewDiscover = (function () {
       }
     }
 
+    const browsing = filter === 'all' && !query;
     html += '<div class="section" style="margin-top:20px">' +
       '<div class="section-head">' +
-        '<h2 class="section-title" id="dc-head">' + (filter === 'all' && !query ? 'All plants' : 'Results') + '</h2>' +
-        '<span class="section-note" id="dc-count">' + UI.plural(list.length, 'plant') + '</span>' +
+        '<h2 class="section-title" id="dc-head">' + (browsing ? 'All plants' : 'Results') + '</h2>' +
+        /* The catalogue size is already in the subtitle at the top of the
+           page, so repeating it here only matters once a search or filter
+           has actually narrowed the list — that is the number worth
+           knowing. Kept in the markup and toggled with hidden, rather than
+           added and removed, so the incremental update on every keystroke
+           can just flip a flag instead of building a node. */
+        '<span class="section-note" id="dc-count"' + (browsing ? ' hidden' : '') + '>' +
+          UI.plural(list.length, 'plant') + '</span>' +
       '</div>' +
       (list.length
         ? '<div class="grid grid-plants">' + list.map(speciesCard).join('') + '</div>'
@@ -229,11 +238,12 @@ window.ViewDiscover = (function () {
         /* Target these by id. Reaching for the first `.section-note` picked up
            the room-recommendation heading instead, so the result count never
            moved and "based on your light" was overwritten with a plant count. */
+        const browsing = filter === 'all' && !query;
         const count = root.querySelector('#dc-count');
-        if (count) count.textContent = UI.plural(list.length, 'plant');
+        if (count) { count.textContent = UI.plural(list.length, 'plant'); count.hidden = browsing; }
 
         const head = root.querySelector('#dc-head');
-        if (head) head.textContent = (filter === 'all' && !query) ? 'All plants' : 'Results';
+        if (head) head.textContent = browsing ? 'All plants' : 'Results';
 
         // The suggestions are only meaningful for an unfiltered browse.
         const recs = root.querySelector('#dc-recs');
