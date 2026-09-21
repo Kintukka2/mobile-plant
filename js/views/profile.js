@@ -42,6 +42,15 @@ window.ViewProfile = (function () {
     return Math.round(((index - 1) / (EXPERIENCE.length - 1)) * 100) + '%';
   }
 
+  /* One span per character with a staggered delay, so the reading resolves
+     left to right the way the splash wordmark does. Spaces are kept as
+     their own spans with white-space:pre, or a wrapped line would lose them. */
+  function letters(text) {
+    return String(text).split('').map(function (ch, i) {
+      return '<span style="animation-delay:' + (i * 14) + 'ms">' + UI.esc(ch) + '</span>';
+    }).join('');
+  }
+
   function expReading(key) {
     for (let i = 0; i < EXPERIENCE.length; i++) {
       if (EXPERIENCE[i].key === key) return EXPERIENCE[i].label;
@@ -250,13 +259,18 @@ window.ViewProfile = (function () {
       '<div class="section-head"><h2 class="section-title">How are you with plants?</h2></div>' +
       '<div class="card">' +
         '<div class="slider-value' + (prof.experience ? '' : ' is-unset') + '" id="p-exp-value">' +
-          UI.esc(expReading(prof.experience)) +
+          letters(expReading(prof.experience)) +
         '</div>' +
-        '<input class="slider' + (prof.experience ? '' : ' is-unset') + '" type="range" id="p-exp" ' +
-          'min="1" max="3" step="1" value="' + expIndex + '" ' +
-          'style="--fill:' + expFill(expIndex) + '" ' +
-          'aria-label="How are you with plants?" ' +
-          'aria-valuetext="' + UI.attr(expReading(prof.experience)) + '">' +
+        /* The drawn control. The input is last so :focus-visible on it can
+           reach the thumb with a sibling combinator. */
+        '<div class="slider-shell' + (prof.experience ? '' : ' is-unset') + '" id="p-exp-shell" ' +
+          'style="--fill:' + expFill(expIndex) + '">' +
+          '<div class="slider-rail"><div class="slider-fill"></div></div>' +
+          '<input class="slider" type="range" id="p-exp" min="1" max="3" step="1" ' +
+            'value="' + expIndex + '" aria-label="How are you with plants?" ' +
+            'aria-valuetext="' + UI.attr(expReading(prof.experience)) + '">' +
+          '<div class="slider-travel" aria-hidden="true"><div class="slider-thumb"></div></div>' +
+        '</div>' +
         '<div class="slider-ends"><span>Beginner</span><span>Experienced</span></div>' +
       '</div>' +
     '</div>';
@@ -331,10 +345,13 @@ window.ViewProfile = (function () {
     /* --- Your greenhouse at a glance --- */
     html += '<div class="section">' +
       '<div class="section-head"><h2 class="section-title">Your greenhouse</h2></div>' +
+      /* Three of the four go somewhere. Photos does not yet — there is no
+         page of all photos to go to, and a tile that looks like a link and
+         is not would teach the reader to stop trying the others. */
       '<div class="grid grid-2">' +
-        stat('Plants', sum.plantCount) +
-        stat('Rooms', sum.roomCount) +
-        stat('Diary entries', Store.get().logs.length) +
+        stat('Plants', sum.plantCount, '/greenhouse/plants') +
+        stat('Rooms', sum.roomCount, '/greenhouse/rooms') +
+        stat('Diary entries', Store.get().logs.length, '/diary') +
         stat('Photos', usage.photoCount) +
       '</div>' +
     '</div>';
@@ -342,11 +359,12 @@ window.ViewProfile = (function () {
     return html;
   }
 
-  function stat(label, value) {
-    return '<div class="card">' +
-      '<div class="eyebrow">' + UI.esc(label) + '</div>' +
-      '<div style="font-family:var(--serif);font-size:26px;margin-top:2px">' + value + '</div>' +
-    '</div>';
+  function stat(label, value, goto) {
+    const inner = '<div class="eyebrow">' + UI.esc(label) + '</div>' +
+      '<div style="font-family:var(--serif);font-size:26px;margin-top:2px">' + value + '</div>';
+    return goto
+      ? '<button class="card stat-go" data-goto="' + UI.attr(goto) + '">' + inner + '</button>'
+      : '<div class="card">' + inner + '</div>';
   }
 
   function mount(root) {
@@ -365,16 +383,25 @@ window.ViewProfile = (function () {
        saving it needs. */
     const exp = root.querySelector('#p-exp');
     if (exp) {
+      const shell = root.querySelector('#p-exp-shell');
       const expValue = root.querySelector('#p-exp-value');
+      let lastIndex = Number(exp.value);
       exp.addEventListener('input', function () {
-        const picked = EXPERIENCE[Number(exp.value) - 1];
+        const index = Number(exp.value);
+        const picked = EXPERIENCE[index - 1];
         if (!picked) return;
         Store.updateProfile({ experience: picked.key });
-        expValue.textContent = picked.label;
-        expValue.classList.remove('is-unset');
-        exp.classList.remove('is-unset');
-        exp.style.setProperty('--fill', expFill(Number(exp.value)));
+        shell.classList.remove('is-unset');
+        shell.style.setProperty('--fill', expFill(index));
         exp.setAttribute('aria-valuetext', picked.label);
+        /* Only re-reveal the reading when the stop actually changes. A drag
+           fires input on every pixel; re-running the entrance on each one
+           would keep the text permanently mid-blur. */
+        if (index !== lastIndex) {
+          lastIndex = index;
+          expValue.classList.remove('is-unset');
+          expValue.innerHTML = letters(picked.label);
+        }
       });
     }
 
@@ -399,6 +426,9 @@ window.ViewProfile = (function () {
         App.refresh();
         return;
       }
+
+      const goto = e.target.closest('[data-goto]');
+      if (goto) { App.go(goto.getAttribute('data-goto')); return; }
 
       const hemiBtn = e.target.closest('[data-hemi]');
       if (hemiBtn) {

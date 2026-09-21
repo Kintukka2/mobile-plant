@@ -26,7 +26,8 @@ window.App = (function () {
     species:    function () { return window.ViewSpecies; },
     diagnose:   function () { return window.ViewDiagnose; },
     profile:    function () { return window.ViewProfile; },
-    settings:   function () { return window.ViewSettings; }
+    settings:   function () { return window.ViewSettings; },
+    diary:      function () { return window.ViewDiary; }
   };
 
   const TABS = [
