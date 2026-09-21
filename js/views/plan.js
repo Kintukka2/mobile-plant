@@ -501,12 +501,18 @@ window.ViewPlan = (function () {
         function up() { dial.removeEventListener('pointermove', move); dial.removeEventListener('pointerup', up); Store.save(); }
         dial.addEventListener('pointermove', move); dial.addEventListener('pointerup', up);
       });
-      document.getElementById('sheet').addEventListener('click', function onClick(e) {
-        const hemi = e.target.closest('[data-pl-hemi]');
-        if (hemi) { Store.updateProfile({ hemisphere: hemi.getAttribute('data-pl-hemi') }); UI.closeSheet(); setTimeout(openCompass, 230); return; }
-        if (e.target.closest('[data-act="pl-north-confirm"]')) { Store.updatePlan({ northConfirmed: true }); UI.closeSheet(); UI.toast('North confirmed', 'leaf'); redraw(); return; }
-        if (e.target.closest('[data-act="pl-north-clear"]')) { Store.updatePlan({ northConfirmed: false }); UI.closeSheet(); redraw(); return; }
-      }, { once: false });
+      /* Bound to the buttons, not the sheet plate. The plate outlives every
+         sheet, so a delegate added there stacked up one copy per opening and
+         a hemisphere chip ended up reopening the dial as many times as it had
+         ever been shown. The buttons are rebuilt each time, so these go with
+         them. */
+      sheet.querySelectorAll('[data-pl-hemi]').forEach(function (b) {
+        b.addEventListener('click', function () { Store.updateProfile({ hemisphere: b.getAttribute('data-pl-hemi') }); UI.closeSheet(); setTimeout(openCompass, 230); });
+      });
+      const ok = sheet.querySelector('[data-act="pl-north-confirm"]');
+      if (ok) ok.addEventListener('click', function () { Store.updatePlan({ northConfirmed: true }); UI.closeSheet(); UI.toast('North confirmed', 'leaf'); redraw(); });
+      const clr = sheet.querySelector('[data-act="pl-north-clear"]');
+      if (clr) clr.addEventListener('click', function () { Store.updatePlan({ northConfirmed: false }); UI.closeSheet(); redraw(); });
     });
   }
 
@@ -655,9 +661,17 @@ window.ViewPlan = (function () {
       zoomAt(e.clientX, e.clientY, curView().k * (e.deltaY < 0 ? 1.12 : 1 / 1.12));
     }, { passive: false });
 
+    /* The compass opens on click, not pointerdown. Opening on the first
+       touch put the sheet's backdrop under a finger that was still on the
+       glass, and the tap's release then landed on that backdrop and closed
+       the sheet it had just opened — a flash of a dial, and nothing. */
+    canvas.addEventListener('click', function (e) {
+      if (e.target.closest('[data-open-compass]')) openCompass();
+    });
+
     canvas.addEventListener('pointerdown', function (e) {
       const t = e.target, start = toPlan(e);
-      if (t.closest('[data-open-compass]')) { openCompass(); return; }
+      if (t.closest('[data-open-compass]')) return;
       try { canvas.setPointerCapture(e.pointerId); } catch (err) { }
       pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
       if (pointers.size === 2) {
