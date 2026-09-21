@@ -238,7 +238,7 @@ window.ViewToday = (function () {
 
     html += '<div class="section">' +
       '<div class="section-head"><h2 class="section-title">Needs you today' +
-        (due.length ? ' (' + due.length + ')' : '') + '</h2></div>' +
+        ' (' + due.length + ')</h2></div>' +
       (due.length
         ? '<div class="stack">' + due.map(taskRow).join('') + '</div>'
         : '<div class="card center all-clear">' +

@@ -26,6 +26,16 @@ window.ViewPlant = (function () {
     tabFor = plantId;
   }
 
+  /* Open a plant on its diary with one entry brought into view and lit for
+     a moment. Set by the diary list, consumed once by mount(): a target that
+     stayed set would scroll the reader back to the same entry on every
+     re-render. */
+  let targetLog = null;
+  function showEntry(plantId, logId) {
+    showTab(plantId, 'diary');
+    targetLog = logId;
+  }
+
   function plant(params) { return Store.getPlant(params.id); }
 
   function guard(params) {
@@ -376,7 +386,7 @@ window.ViewPlant = (function () {
          nothing to say beyond its date, and the date line already says it —
          so bodyless entries now render as exactly that, a mark and a date,
          and they read as the quiet ticks between the entries that matter. */
-      return '<div class="tl-item">' +
+      return '<div class="tl-item" id="log-' + UI.attr(l.id) + '">' +
         '<span class="tl-dot">' + UI.icon(kind.ico) + '</span>' +
         '<div class="tl-head">' +
           '<span class="tl-date">' + UI.esc(UI.fmtDate(l.date)) + ' · ' + UI.esc(kind.label) + '</span>' +
@@ -853,6 +863,17 @@ window.ViewPlant = (function () {
   function mount(root, params) {
     const p = plant(params);
 
+    if (targetLog) {
+      const el = root.querySelector('#log-' + targetLog);
+      targetLog = null;
+      if (el) {
+        el.classList.add('is-target');
+        /* After the view's own entrance, or the scroll lands on where the
+           element was before viewIn finished translating it. */
+        setTimeout(function () { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 60);
+      }
+    }
+
     root.addEventListener('click', function (e) {
       const t = e.target.closest('[data-tab]');
       /* refresh() holds the reader's scroll position, so the strip has to be
@@ -924,6 +945,6 @@ window.ViewPlant = (function () {
   return {
     guard: guard, title: title, sub: sub, actions: actions, onAction: onAction,
     back: true, render: render, mount: mount,
-    entrySheet: entrySheet, showTab: showTab
+    entrySheet: entrySheet, showTab: showTab, showEntry: showEntry
   };
 })();

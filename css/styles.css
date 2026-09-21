@@ -1446,82 +1446,162 @@ img { max-width: 100%; display: block; }
 }
 .date-row .field .input { margin-top: auto; }
 
+/* --- Diary index rows ---
+   One line per entry: date, plant, kind. The date column is fixed so the
+   plant names line up down the page; the kind is a small chip at the end
+   because it is the least of the three things and the one that repeats
+   most — a run of "Watered" reads as texture, which is right. */
+.dlog {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr) auto 16px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 13px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--hair);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--dur-1) var(--ease);
+}
+.dlog:last-child { border-bottom: 0; }
+.dlog:hover { background: var(--glass); }
+.dlog:focus-visible { outline: 1px solid var(--emerald-glow); outline-offset: -2px; }
+.dlog.is-orphan { cursor: default; opacity: 0.6; }
+.dlog-date {
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.dlog-plant {
+  font-family: var(--serif);
+  font-size: 17px;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dlog-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--sans);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+  white-space: nowrap;
+}
+.dlog-kind svg { width: 13px; height: 13px; }
+.dlog-chev { color: var(--ink-4); }
+.dlog-chev svg { width: 16px; height: 16px; }
+@media (max-width: 379px) {
+  .dlog { grid-template-columns: 62px minmax(0, 1fr) 16px; }
+  .dlog-kind { display: none; }
+}
+
 /* --- Range: the experience scale ---
    A three-stop slider rather than three chips. Chips presented the answers
    as unrelated options; the thing being asked is a single quantity with an
    order to it, and a track you drag along says that in the shape of the
    control rather than in the labels.
 
-   Fully custom because the native thumb and track are drawn by the platform
-   and land somewhere between blue and grey in an app that is neither.
-   -webkit- and -moz- pseudo-elements cannot be combined in one selector:
-   a browser drops the whole rule the moment it meets a pseudo-element it
-   does not know, so each engine's thumb needs its own declaration block. */
-.slider {
-  -webkit-appearance: none;
-  appearance: none;
-  display: block;
-  width: 100%;
-  height: 22px;
-  margin: 0;
-  background: none;
-  cursor: pointer;
+   The control is drawn, not styled. A native range's thumb snaps between
+   steps and CSS is given no way to ease it, so the first version jumped
+   between the three stops — the one place in the app where a value changed
+   with no motion at all. Now the native input is still there, doing the
+   gesture, the keyboard and the accessibility, but it is invisible: what the
+   reader sees is a rail, a fill and a thumb positioned by --fill, and --fill
+   is a registered property, so it tweens. The thumb glides to each stop and
+   the fill sweeps with it, on the same easing curve as everything else. */
+@property --fill {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 0%;
 }
-.slider:focus { outline: none; }
-.slider:focus-visible { outline: 1px solid var(--emerald-glow); outline-offset: 4px; }
 
-/* The travelled part of the rail is filled. --fill is written by the view on
-   every input, because a range input gives CSS no handle on its own value —
-   there is no :nth or attribute that tracks it once the thumb has moved.
-   Unset takes the mint wash rather than the solid: the bar still shows where
-   the thumb is, without asserting an answer the reader has not given. */
-.slider {
+.slider-shell {
   --fill: 0%;
   --fill-ink: var(--emerald-lit);
+  --thumb: 20px;
+  position: relative;
+  height: 22px;
+  transition: --fill 380ms var(--ease);
 }
-.slider.is-unset { --fill-ink: var(--mint-wash); }
+.slider-shell.is-unset { --fill-ink: var(--mint-wash); }
 
-.slider::-webkit-slider-runnable-track {
+.slider-rail {
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
   height: 6px;
+  transform: translateY(-50%);
   border-radius: 99px;
   border: 1px solid var(--hair);
-  background: linear-gradient(to right, var(--fill-ink) 0 var(--fill), var(--track) var(--fill));
+  background: var(--track);
   box-shadow: var(--track-in);
+  overflow: hidden;
 }
-.slider::-moz-range-track {
-  height: 6px;
+.slider-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--fill);
   border-radius: 99px;
-  border: 1px solid var(--hair);
-  background: linear-gradient(to right, var(--fill-ink) 0 var(--fill), var(--track) var(--fill));
-  box-shadow: var(--track-in);
+  background: var(--fill-ink);
+  transition: background var(--dur-2) var(--ease);
 }
+/* The thumb rides a band inset by half its width at each end, and its
+   centre is a plain percentage along that band. Putting the inset on the
+   band rather than in the thumb's own left keeps the maths to one
+   percentage — calc() will not divide a length by a percentage, so the
+   obvious "(100% - thumb) * fill / 100%" silently fails to compute and the
+   thumb sits still while the fill sweeps. The band is aria-hidden; the
+   input beside it is the real control. */
+.slider-travel {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: calc(var(--thumb) / 2);
+  right: calc(var(--thumb) / 2);
+  pointer-events: none;
+}
+.slider-thumb {
+  position: absolute;
+  top: 50%;
+  left: var(--fill);
+  width: var(--thumb);
+  height: var(--thumb);
+  transform: translate(-50%, -50%);
+  border-radius: 99px;
+  border: 1px solid transparent;
+  background: linear-gradient(175deg, var(--emerald-lit), var(--emerald));
+  box-shadow: var(--sheen), 0 2px 10px -3px rgba(47, 154, 112, 0.55);
+  transition: transform var(--dur-1) var(--ease), filter var(--dur-1) var(--ease);
+}
+.slider-shell.is-unset .slider-thumb { filter: saturate(0.55) brightness(0.9); }
+.slider-shell:active .slider-thumb { transform: translate(-50%, -50%) scale(1.08); filter: brightness(1.08); }
 
-.slider::-webkit-slider-thumb {
+/* The real control, laid over the drawing. Zero opacity rather than
+   display:none so it keeps its hit area, its focus ring and its role. */
+.slider {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 99px;
-  border: 1px solid transparent;
-  background: linear-gradient(175deg, var(--emerald-lit), var(--emerald));
-  box-shadow: var(--sheen), 0 2px 10px -3px rgba(47, 154, 112, 0.55);
-  /* Half the thumb minus half the track, so it rides centred on the rail.
-     -webkit- offsets the thumb from the top of the track box; Firefox
-     centres it for us, which is why only this one needs the margin. */
-  margin-top: -8px;
-  transition: filter var(--dur-1) var(--ease), transform var(--dur-1) var(--ease);
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
 }
-.slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 99px;
-  border: 1px solid transparent;
-  background: linear-gradient(175deg, var(--emerald-lit), var(--emerald));
-  box-shadow: var(--sheen), 0 2px 10px -3px rgba(47, 154, 112, 0.55);
-  transition: filter var(--dur-1) var(--ease), transform var(--dur-1) var(--ease);
-}
-.slider:active::-webkit-slider-thumb { transform: scale(1.08); filter: brightness(1.08); }
-.slider:active::-moz-range-thumb { transform: scale(1.08); filter: brightness(1.08); }
+.slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; }
+.slider::-moz-range-thumb { width: 20px; height: 20px; border: 0; }
+.slider:focus-visible + .slider-travel .slider-thumb { outline: 1px solid var(--emerald-glow); outline-offset: 4px; }
 
 /* The two ends of the scale, named. Tabular figures are irrelevant here but
    the ends must not drift apart as the label above them changes length, so
@@ -1539,7 +1619,11 @@ img { max-width: 100%; display: block; }
 }
 
 /* The reading of the current position, in the body serif so it is a sentence
-   about the reader rather than another label on the control. */
+   about the reader rather than another label on the control. It arrives a
+   letter at a time, resolving from a blur — the splash wordmark's entrance,
+   scaled down to a control: 14ms between letters against the splash's 70,
+   and a quarter of the travel. Same shape of motion, so the two feel like
+   one hand. */
 .slider-value {
   font-family: var(--serif);
   font-size: 19px;
@@ -1548,6 +1632,15 @@ img { max-width: 100%; display: block; }
   min-height: 1.4em;
 }
 .slider-value.is-unset { color: var(--ink-3); font-style: italic; }
+.slider-value span {
+  display: inline-block;
+  white-space: pre;
+  animation: readingIn 260ms var(--ease) both;
+}
+@keyframes readingIn {
+  from { opacity: 0; transform: translateY(5px); filter: blur(4px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
 
 /* display:block is load-bearing, not tidying. Almost every .field in the app
    is a <label> wrapping its own control — which is the right markup, since it
@@ -1774,16 +1867,35 @@ img { max-width: 100%; display: block; }
 .tabs::-webkit-scrollbar { display: none; }
 .tab-btn { flex: 0 0 auto; }
 
-@media (max-width: 520px) {
-  .tab-btn { padding: 8px 13px; letter-spacing: 0.13em; }
-}
-
 /* ==========================================================================
    B6 · Layout primitives
    ========================================================================== */
 
 .row      { display: flex; align-items: center; gap: 11px; }
 .row-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* A horizontally-scrolling row of filter chips, same reasoning as .tabs
+   elsewhere in this file: the browser's own scrollbar drew as a second,
+   unstyled bar sitting in the gap under the chips, reading as stray
+   whitespace before the next section rather than as a hint that the row
+   scrolls. Touch already makes that obvious as a swipe. */
+.chip-row {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  margin-bottom: 16px;
+}
+.chip-row::-webkit-scrollbar { display: none; }
+.chip-row .chip { flex: 0 0 auto; }
+
+@media (max-width: 520px) {
+  .tab-btn { padding: 8px 13px; letter-spacing: 0.13em; }
+}
+
 .stack    { display: flex; flex-direction: column; gap: 11px; }
 .grid     { display: grid; gap: 14px; }
 .grid-2   { display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1910,6 +2022,21 @@ img { max-width: 100%; display: block; }
    34px numeral would be a second mark competing with it, and underlining a
    figure makes it look like a link in running text rather than a count. */
 .gstat-go .gstat-l { color: var(--mint); }
+
+/* A profile stat tile that is also a link. The card is the whole target and
+   the caption goes mint — the same cue the greeting counts use — so the two
+   places you see these numbers say "tap me" the same way. */
+.stat-go {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: border-color var(--dur-1) var(--ease), transform var(--dur-1) var(--ease);
+}
+.stat-go:hover { border-color: var(--hair-3); transform: translateY(-2px); }
+.stat-go:focus-visible { outline: 1px solid var(--emerald-glow); outline-offset: 3px; }
+.stat-go .eyebrow { color: var(--mint); }
 
 .gstat-n {
   font-family: var(--serif);
@@ -2629,6 +2756,15 @@ img { max-width: 100%; display: block; }
 
 .tl-item { position: relative; margin-bottom: 24px; }
 .tl-item:last-child { margin-bottom: 0; }
+/* The entry the reader came here for, when they arrived from the diary
+   list. A brief wash that fades, not a persistent mark — it answers "which
+   one?" once and then gets out of the way. */
+.tl-item.is-target .tl-card,
+.tl-item.is-target .tl-metric { animation: targetGlow 2400ms var(--ease) both; }
+@keyframes targetGlow {
+  0%, 30% { box-shadow: 0 0 0 2px rgba(63, 190, 139, 0.55); }
+  100%    { box-shadow: 0 0 0 2px rgba(63, 190, 139, 0); }
+}
 
 /* The mark was a bare 9px dot, which meant every entry in the diary looked
    identical — a watering, a photo and a repot all reduced to the same
@@ -4132,9 +4268,11 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
      three carry fill-mode both and start at a translate, a clip and a scale
      respectively, so a shortened duration would leave a reader — or a
      screenshot — looking at a blurred, half-wiped, collapsed splash. */
-  .splash-mark span, .splash-script, .splash-rule, .splash-rule i {
+  .splash-mark span, .splash-script, .splash-rule, .splash-rule i,
+  .slider-value span, .tl-item.is-target .tl-card, .tl-item.is-target .tl-metric {
     animation: none !important;
   }
+  .slider-shell { transition: none !important; }
   .grain { display: none; }
   .reveal > * { animation-delay: 0ms !important; }
   .card:hover, .task:hover, .pcard:hover, .rcard:hover,
