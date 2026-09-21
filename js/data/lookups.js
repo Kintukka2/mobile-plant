@@ -301,15 +301,63 @@ window.LOOKUPS = (function () {
     return { winter: 'summer', spring: 'autumn', summer: 'winter', autumn: 'spring' }[north];
   }
 
+  /* Each season is exactly three months, so where you are inside it is just
+     the index of the month within that run. Worth having, because "spring"
+     covers twelve weeks and the advice at either end of it is not the same
+     — and "it's the middle of spring" tells a reader where they stand in a
+     way that "spring" alone does not. */
+  function seasonPhase(date, hemisphere) {
+    const key = season(date, hemisphere);
+    const north = ['winter','winter','spring','spring','spring','summer',
+                   'summer','summer','autumn','autumn','autumn','winter'];
+    const m = date.getMonth();
+    /* Northern months for this season, in order; the southern reader's
+       months are the same slots, six apart, so counting the run works for
+       either hemisphere as long as we count in the table's own terms. */
+    const run = [];
+    for (let i = 0; i < 12; i++) {
+      const k = hemisphere === 'south'
+        ? { winter: 'summer', spring: 'autumn', summer: 'winter', autumn: 'spring' }[north[i]]
+        : north[i];
+      if (k === key) run.push(i);
+    }
+    /* Winter wraps the year end, so its run comes back as [0, 1, 11] and
+       the reader in December is at the start of it rather than the end.
+       Rotating the wrapped run puts the months back in lived order. */
+    if (run.length === 3 && run[2] - run[0] > 2) run.unshift(run.pop());
+    const at = run.indexOf(m);
+    return at === 0 ? 'start' : at === 1 ? 'middle' : 'end';
+  }
+
+  /* The greeting reads as three beats: where you stand, then what it means.
+     `phrase` is the first — a plain statement of the calendar — and `note`
+     is the second, the consequence stated as an instruction.
+
+     Neither says "feed". It is the word the houseplant world uses and it
+     means nothing to someone who has not met it: a beginner reading "start
+     feeding again" has no idea what to buy or what to do with it. "Plant
+     food" names the thing on the shelf. */
   const SEASON_META = {
     spring: { label: 'Spring', ico: 'flower', growing: true,
-              note: 'Growth is waking up. Start feeding again and expect thirstier plants.' },
+              phrase: { start: 'Spring is just starting.',
+                        middle: 'It\'s the middle of spring.',
+                        end: 'Spring is nearly over.' },
+              note: 'Expect thirstier plants, and it\'s time to start mixing plant food into the water again.' },
     summer: { label: 'Summer', ico: 'sun', growing: true,
-              note: 'Peak growing season. Water more often and keep feeding.' },
+              phrase: { start: 'Summer has just begun.',
+                        middle: 'It\'s the middle of summer.',
+                        end: 'Summer is nearly over.' },
+              note: 'Expect the thirstiest plants of the year, and keep the plant food coming.' },
     autumn: { label: 'Autumn', ico: 'fall', growing: false,
-              note: 'Growth is slowing. Ease off the fertiliser and stretch out watering.' },
+              phrase: { start: 'Autumn is just starting.',
+                        middle: 'It\'s the middle of autumn.',
+                        end: 'Autumn is nearly over.' },
+              note: 'Expect the soil to stay damp for longer, so water less often and stop the plant food.' },
     winter: { label: 'Winter', ico: 'snow', growing: false,
-              note: 'Most plants are resting. Water sparingly and stop feeding — wet, cold soil is the main killer this time of year.' }
+              phrase: { start: 'Winter is just starting.',
+                        middle: 'It\'s the middle of winter.',
+                        end: 'Winter is nearly over.' },
+              note: 'Expect very little growth — water sparingly and skip the plant food, because cold wet soil kills more houseplants than anything else.' }
   };
 
   /* ---------- Pot materials affect drying speed ---------- */
@@ -332,6 +380,6 @@ window.LOOKUPS = (function () {
     LIGHT, ASPECTS, ASPECT_NAMES, aspectProfile, aspectLabel,
     hemisphereFromTimeZone: hemisphereFromTimeZone,
     ROOM_PRESETS, ROOM_ICONS, HUMIDITY, DIFFICULTY, TOX, TASKS, LOG_KINDS,
-    season, SEASON_META, POT_MATERIALS, DRAINAGE
+    season, seasonPhase, SEASON_META, POT_MATERIALS, DRAINAGE
   };
 })();

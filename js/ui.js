@@ -63,7 +63,12 @@ window.UI = (function () {
     note:      '<path d="M5 4h11l3.5 3.5V20H5Z"/><path d="M8 10h8M8 14h6"/>',
     trash:     '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
     edit:      '<path d="M4 20h4L20 8l-4-4L4 16Z"/>',
+    /* A circle with eight radial spokes — which is exactly how `sun` is
+       built, and at 18px the two are the same picture. Keep that in mind
+       before reaching for it beside a theme toggle; `sliders` below is the
+       settings mark for anywhere the two could meet. */
     gear:      '<circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.2 5.2l2.1 2.1M16.7 16.7l2.1 2.1M18.8 5.2l-2.1 2.1M7.3 16.7l-2.1 2.1"/>',
+    sliders:   '<path d="M4 7h9M17 7h3"/><circle cx="15" cy="7" r="2"/><path d="M4 12h3M11 12h9"/><circle cx="9" cy="12" r="2"/><path d="M4 17h9M17 17h3"/><circle cx="15" cy="17" r="2"/>',
     sun:       '<circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/>',
     pin:       '<path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/>',
     sprout:    '<path d="M12 20.5V9.5"/><path d="M12 14C8.5 14 6.5 11.75 6.5 8.5c3.5 0 5.5 2.25 5.5 5.5Z"/><path d="M12 11c3.5 0 5.5-2.25 5.5-5.5-3.5 0-5.5 2.25-5.5 5.5Z"/>',

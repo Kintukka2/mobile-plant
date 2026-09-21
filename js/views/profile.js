@@ -50,6 +50,21 @@ window.ViewProfile = (function () {
   }
 
   function title() { return 'You'; }
+
+  /* Same slot as the + on Today, so the one control in the top-right corner
+     of a tab is always the thing that tab defers to.
+
+     Sliders rather than the gear: UI's gear is a circle with eight radial
+     spokes, which is the same construction as its sun — and the sun is the
+     daylight-theme button sitting in the sidebar on the very same screen.
+     Two identical marks doing different jobs is worse than a less
+     conventional glyph. */
+  function actions() {
+    return '<button class="icon-btn" data-act="settings" aria-label="Settings">' +
+      UI.icon('sliders') + '</button>';
+  }
+
+  function onAction(act) { if (act === 'settings') App.go('/settings'); }
   function sub() {
     const p = Store.get().profile;
     return p.location ? p.location.label : 'Profile & settings';
@@ -60,6 +75,9 @@ window.ViewProfile = (function () {
      ====================================================================== */
 
   function locationSheet() {
+    const hemi = Store.hemisphere();
+    const hemiSet = !Store.hemisphereIsGuess();
+
     const body =
       '<p class="dim small" style="margin:0 0 16px;line-height:1.6">' +
         'I use this for two things: your local forecast, so I can offer to stretch or shorten watering before ' +
@@ -79,8 +97,27 @@ window.ViewProfile = (function () {
           'placeholder="Sydney, Manchester, Lisbon…"></label>' +
 
       '<div id="loc-results" class="stack" style="gap:6px"></div>' +
-      '<p class="hint" id="loc-note">Weather comes from Open-Meteo. No account, no API key, and your ' +
-        'coordinates never leave your browser except in that one request.</p>';
+
+      /* The third answer, for a reader who does not want to hand over a town
+         at all. It buys the half of this sheet that does not need a
+         forecast: seasons and window aspects both turn on the hemisphere
+         alone. The hint says plainly what is given up, because an option
+         offered beside two better ones has to be honest about being the
+         lesser one. */
+      '<div class="row" style="gap:10px;margin:18px 0 12px"><hr class="divider" style="flex:1;margin:0">' +
+        '<span class="tiny muted">or general location</span><hr class="divider" style="flex:1;margin:0"></div>' +
+
+      '<div class="row-wrap" id="loc-hemi">' +
+        '<button type="button" class="chip' + (hemiSet && hemi === 'north' ? ' is-on' : '') + '" ' +
+          'data-loc-hemi="north">Northern hemisphere</button>' +
+        '<button type="button" class="chip' + (hemiSet && hemi === 'south' ? ' is-on' : '') + '" ' +
+          'data-loc-hemi="south">Southern hemisphere</button>' +
+      '</div>' +
+      '<p class="hint">Enough for your seasons and which way a bright window faces. No forecast, ' +
+        'so no offers to stretch or shorten watering before a spell of weather.</p>' +
+
+      '<p class="hint" id="loc-note">Weather data comes from Open-Meteo. Your location is never saved ' +
+        'by us.</p>';
 
     UI.openSheet('Your location', body, function (root) {
       const input = root.querySelector('#loc-q');
@@ -96,6 +133,16 @@ window.ViewProfile = (function () {
         App.refresh();
         App.syncWeather(true);
       }
+
+      root.querySelector('#loc-hemi').addEventListener('click', function (e) {
+        const btn = e.target.closest('[data-loc-hemi]');
+        if (!btn) return;
+        const pick = btn.getAttribute('data-loc-hemi');
+        Store.updateProfile({ hemisphere: pick });
+        UI.closeSheet();
+        UI.toast(pick === 'south' ? 'Southern hemisphere it is' : 'Northern hemisphere it is', 'leaf');
+        App.refresh();
+      });
 
       root.querySelector('#loc-me').addEventListener('click', function () {
         note.textContent = 'Asking your browser for your location…';
@@ -137,64 +184,6 @@ window.ViewProfile = (function () {
   }
 
   /* ======================================================================
-     Backup & restore
-     ====================================================================== */
-
-  function exportData() {
-    try {
-      const json = Store.exportAll();
-      const blob = new Blob([json], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'sprout-backup-' + UI.toISO(new Date()) + '.json';
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(function () {
-        URL.revokeObjectURL(a.href);
-        if (a.parentNode) a.parentNode.removeChild(a);
-      }, 1200);
-      UI.toast('Backup downloaded', 'leaf');
-    } catch (e) {
-      console.error(e);
-      UI.toast('Could not create the backup', 'warn');
-    }
-  }
-
-  function importData() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'application/json,.json';
-    input.style.display = 'none';
-
-    input.addEventListener('change', function () {
-      const file = input.files && input.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function () {
-        UI.confirmSheet('Restore this backup?',
-          'Everything I\'m holding now will be replaced by the contents of ' + file.name + '.',
-          'Restore', function () {
-            try {
-              Store.importAll(reader.result);
-              UI.toast('Backup restored', 'leaf');
-              App.go('/today');
-              App.refresh();
-            } catch (e) {
-              console.error(e);
-              UI.toast(e.message || 'That file could not be read', 'warn');
-            }
-          });
-      };
-      reader.onerror = function () { UI.toast('Could not read that file', 'warn'); };
-      reader.readAsText(file);
-      if (input.parentNode) input.parentNode.removeChild(input);
-    });
-
-    document.body.appendChild(input);
-    input.click();
-  }
-
-  /* ======================================================================
      The view
      ====================================================================== */
 
@@ -202,8 +191,11 @@ window.ViewProfile = (function () {
     const prof = Store.get().profile;
     const settings = Store.get().settings;
     const sum = Schedule.summary();
-    const usage = Store.storageUsage();
     const hemi = Store.hemisphere();
+    /* Storage moved to Settings, but the photo count is still one of the
+       four tiles below — it is a fact about the greenhouse, not about the
+       browser's quota. */
+    const usage = Store.storageUsage();
 
     let html = '';
 
@@ -347,54 +339,6 @@ window.ViewProfile = (function () {
       '</div>' +
     '</div>';
 
-    /* --- Storage --- */
-    html += '<div class="section">' +
-      '<div class="section-head"><h2 class="section-title">Storage</h2>' +
-        '<span class="section-note">' + usage.totalMB + 'MB used</span></div>' +
-      '<div class="card">' +
-        '<div style="height:8px;border-radius:99px;background:var(--paper-deep);overflow:hidden">' +
-          '<div style="height:100%;width:' + usage.pctUsed + '%;border-radius:99px;background:' +
-            (usage.pctUsed > 85 ? 'var(--terra)' : 'var(--leaf)') + '"></div>' +
-        '</div>' +
-        '<p class="hint">' + usage.photoMB + 'MB of that is ' + UI.plural(usage.photoCount, 'photo') + '. ' +
-          'Browsers give me around 5MB in total, so I shrink photos to about 1000px before saving them — ' +
-          'roughly 100KB each.' +
-          (usage.pctUsed > 85 ? ' <strong>You are running low. Delete a few older photos.</strong>' : '') +
-        '</p>' +
-      '</div>' +
-    '</div>';
-
-    /* --- Backup --- */
-    html += '<div class="section">' +
-      '<div class="section-head"><h2 class="section-title">Backup</h2></div>' +
-      '<div class="card">' +
-        '<p class="small dim" style="margin:0 0 12px;line-height:1.6">Everything lives in this browser only — ' +
-          'I upload nothing, anywhere. That also means clearing your browser data would wipe it, so take a ' +
-          'backup now and then.</p>' +
-        '<div class="row" style="gap:8px">' +
-          '<button class="btn btn-soft" data-export="1" style="flex:1">Download backup</button>' +
-          '<button class="btn btn-ghost" data-import="1" style="flex:1">Restore</button>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
-
-    /* --- About / reset --- */
-    html += '<div class="section">' +
-      '<div class="card">' +
-        '<div class="eyebrow">About</div>' +
-        '<p class="small dim" style="margin:8px 0 0;line-height:1.65">' +
-          'I carry care data for ' + window.PLANT_DATA.length + ' species and a diagnostic model built from ' +
-          Object.keys(PROBLEM_DATA.SYMPTOMS).length + ' symptoms and ' +
-          Object.keys(PROBLEM_DATA.CAUSES).length + ' causes. Watering intervals start from the species ' +
-          'baseline, then shift for season, room light, pot size, pot material, drainage and your local ' +
-          'forecast. I show you every adjustment on the plant\'s Care tab, so you can disagree with me.' +
-        '</p>' +
-      '</div>' +
-      '<button class="btn btn-blood btn-block" data-reset="1" style="margin-top:12px">' +
-        UI.icon('trash') + 'Delete everything</button>' +
-      '<p class="hint center">Wipes all plants, rooms, diary entries and photos from this browser.</p>' +
-    '</div>';
-
     return html;
   }
 
@@ -481,20 +425,6 @@ window.ViewProfile = (function () {
         return;
       }
 
-      if (e.target.closest('[data-export]')) { exportData(); return; }
-      if (e.target.closest('[data-import]')) { importData(); return; }
-
-      if (e.target.closest('[data-reset]')) {
-        UI.confirmSheet('Delete everything?',
-          'Every plant, room, diary entry and photo goes, permanently, from this browser. ' +
-          'If you haven\'t taken a backup, I can\'t get any of it back.',
-          'Delete everything', function () {
-            Store.resetAll();
-            UI.toast('Everything deleted');
-            App.go('/today');
-            App.refresh();
-          }, true);
-      }
     });
   }
 
@@ -563,7 +493,8 @@ window.ViewProfile = (function () {
   }
 
   return {
-    title: title, sub: sub, render: render, mount: mount,
+    title: title, sub: sub, actions: actions, onAction: onAction,
+    render: render, mount: mount,
     welcomeSheet: welcomeSheet, locationSheet: locationSheet
   };
 })();
