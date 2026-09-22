@@ -242,7 +242,10 @@ or replacing one means bumping `CACHE`, exactly like any other cached asset.
 
 ## Storage
 
-All local; no account, no server, no telemetry.
+No account, no server of ours, no telemetry. Everything about the reader's
+plants stays on the device; a set location is the one thing that leaves, and
+it is rounded to roughly a kilometre first. Claims about this are load-bearing
+— see the note at the end of this section.
 
 | Key | Contents |
 | --- | --- |
@@ -277,3 +280,13 @@ throws on access rather than returning null.
 
 The only outbound requests are the Open-Meteo forecast (no API key) and the
 initial Google Fonts load.
+
+**Do not write that the location stays on the device.** It did not, and the
+claim shipped for a while before anyone checked it against `js/weather.js`,
+which puts the coordinates in the query string of both the geocoding and the
+forecast call. `locateMe()` now rounds them to two places before they are
+stored or sent, so the honest sentence is that an approximate location goes
+to Open-Meteo and nothing else does. Both stores are told the same thing, in
+`native/store-privacy.md`; a privacy claim that drifts from the code is worse
+than no claim, and on Play an under-declared form is a removal rather than a
+warning.

@@ -163,7 +163,9 @@ Google Fonts.
 
 ## Storage
 
-Everything is local. There is no account, no server and no telemetry.
+There is no account, no server of ours and no telemetry. Plants, rooms, diary
+entries, photos and the schedule live on the device and are never uploaded
+anywhere.
 
 | Key | Contents |
 | --- | --- |
@@ -171,8 +173,17 @@ Everything is local. There is no account, no server and no telemetry.
 | `sprout.theme` | Selected theme |
 | `sprout.photo.*` | One resized JPEG data URL per photo |
 
-The only outbound requests the app ever makes are the Open-Meteo forecast and
-the initial Google Fonts load.
+**One piece of it does leave, and it is worth saying plainly rather than
+rounding up to "everything is local".** If a location is set, its
+coordinates go to Open-Meteo — once to look up the name of the nearest town,
+and again for each forecast. They are rounded to two decimal places, about a
+kilometre, before either request, so what travels is a neighbourhood rather
+than an address. Nothing else goes with them: no identifier, no account, and
+none of the plants.
+
+Those requests and the initial Google Fonts load are the only traffic the app
+ever makes. `native/store-privacy.md` turns the same facts into the answers
+both app stores' privacy forms ask for.
 
 ---
 

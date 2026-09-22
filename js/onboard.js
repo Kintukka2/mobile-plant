@@ -70,7 +70,7 @@ window.Onboard = (function () {
 
   function stepLoc() {
     return '<h2 class="ob-q">Can I use your location?</h2>' +
-      '<p class="ob-hint" style="margin-top:0">For a local forecast, so I can offer to stretch or shorten watering before a wet or dry spell. I\'ll pass the coordinates to Open-Meteo and keep them nowhere but this phone.</p>' +
+      '<p class="ob-hint" style="margin-top:0">For a local forecast, so I can offer to stretch or shorten watering before a wet or dry spell. I round it to about a kilometre and send that to Open-Meteo, nowhere else.</p>' +
       '<div class="ob-actions">' +
         '<button class="btn btn-lg" data-ob="locate">' + UI.icon('pin') + 'Use my location</button>' +
         '<button class="btn btn-ghost" data-ob="finish">Not now</button>' +
