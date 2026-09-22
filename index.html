@@ -40,7 +40,7 @@
      This cannot wait for app.js at the bottom of the document: by then the
      stylesheet has already painted the dark palette, and a user on the
      daylight theme would watch the whole app flash black and then turn
-     ivory on every single load. Eleven lines inline is the price of not
+     ivory on every single load. A few inline lines are the price of not
      having that. localStorage is read defensively because private-mode
      Safari throws on access rather than returning null. -->
 <script>
@@ -48,18 +48,21 @@
   var t = null;
   try { t = localStorage.getItem('sprout.theme'); } catch (e) { /* private mode throws */ }
 
-  /* No stored choice means this is a first visit, and the honest default is
-     the one the device already asked for. Opening a near-black app on a
-     phone that is in light mode — at a sunny window, which is where a plant
-     app is most often opened — was the app overriding a preference it had
-     never been given a reason to override.
+  /* A first visit opens Viridium, whatever the device asks for.
 
-     Only consulted when nothing is stored: once the toggle has been used,
-     that choice is the user's and outranks the system for good. */
-  if (t !== 'conservatory' && t !== 'viridium') {
-    t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches)
-      ? 'conservatory' : 'viridium';
-  }
+     This used to read prefers-color-scheme, on the reasoning that a phone in
+     light mode had stated a preference and the app had no business overriding
+     it. That was right in isolation and wrong in context. Sprout is dark-first
+     everywhere a first-time reader meets it — the splash, the mark, the store
+     screenshots, and sproutevergreen.com, which is where most of them arrive
+     from. Following the system meant tapping a green button on a near-black
+     page and landing in an ivory app, and the handoff read as two different
+     products rather than one.
+
+     The asymmetry decides it. A light-mode reader is one tap from Conservatory
+     and the choice sticks for good. A reader who never sees Viridium has no
+     idea there is anything to tap. */
+  if (t !== 'conservatory' && t !== 'viridium') t = 'viridium';
 
   document.documentElement.setAttribute('data-theme', t);
   var m = document.querySelector('meta[name="theme-color"]');
