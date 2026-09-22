@@ -98,11 +98,20 @@ Android dependency set.
 
 ### Without a command line
 
-`prepare-android.bat` on Windows and `prepare-ios.command` on a Mac do the
-install, the copy and the sync from a double-click, then tell you which
-folder to open. They exist because the install is not optional — see above —
+`prepare-android.bat` on Windows and `prepare-ios.command` on a Mac pull,
+install, copy and sync from a double-click, then tell you which folder to
+open. They exist because the install is not optional — see above —
 and needing a shell to satisfy a build step is a poor reason to be unable to
-build. Each checks for Node first and says where to get it rather than
+build.
+
+The pull is in there for a specific failure. `www` and the copy inside each
+platform project are generated and git-ignored, so pulling without copying,
+or copying without pulling, both end in a rebuild that behaves exactly as
+though the change had not worked — the most misleading outcome available.
+Doing all four in one double-click removes the chance to do three of them.
+A failed pull stops the script rather than falling through to a build of the
+old code; git missing from PATH only warns, since the copy and sync are
+still worth having. Each checks for Node first and says where to get it rather than
 failing with a `'node' is not recognized`, and each holds its window open on
 an error so the message can be read.
 
