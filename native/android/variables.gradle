@@ -1,7 +1,17 @@
 ext {
     minSdkVersion = 23
-    compileSdkVersion = 35
-    targetSdkVersion = 35
+    /* Play refuses a new app below 36: "must target at least API level 36".
+       The Capacitor 7 template pins 35 and the first closed-testing upload
+       was rejected at Preview and confirm, after the bundle had built and
+       uploaded — the error is raised by Play, not by Gradle, so nothing
+       local catches it.
+
+       36 is Android 16, where edge-to-edge is enforced and the opt-out
+       flag is ignored. The app already draws its own safe areas through
+       env(safe-area-inset-*) on .topbar and .tabbar, so this should be a
+       no-op — but it is the thing to look at first if the layout moves. */
+    compileSdkVersion = 36
+    targetSdkVersion = 36
     androidxActivityVersion = '1.9.2'
     androidxAppCompatVersion = '1.7.0'
     androidxCoordinatorLayoutVersion = '1.2.0'

@@ -121,6 +121,25 @@ was lost. If the plan ever needs re-shooting, it has to come off a phone.
   the page in this repository at `site/privacy.html`. It has to be live before
   the listing can be submitted.
 
+## Before the bundle will upload
+
+Two things Play rejects at **Preview and confirm**, after the bundle has
+already built and uploaded. Neither is caught by Gradle, Android Studio or
+anything local, so they cost a full rebuild each time.
+
+- **Target API level.** Play refuses a new app below the current floor —
+  36 as of the first submission, and it rises roughly every August. The
+  Capacitor template pins whatever was current when it was generated, so
+  check `native/android/variables.gradle` before building rather than after.
+- **Version code.** Play keeps a version code once a bundle carrying it has
+  been uploaded, even to a draft release that is then discarded. Bump
+  `versionCode` in `native/android/app/build.gradle` for every upload
+  attempt, not every successful one.
+
+A third is only a warning and can be ignored: "no deobfuscation file
+associated with this App Bundle". It applies to obfuscated builds and
+`minifyEnabled` is false, so there is nothing to deobfuscate.
+
 ## Content rating questionnaire
 
 Play uses IARC. Answer **no** to all of: violence, sexuality, profanity,
