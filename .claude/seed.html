@@ -1,0 +1,70 @@
+<!doctype html><meta charset="utf-8">
+<title>Seeding…</title>
+<body style="background:#0A1410;color:#9FD3BE;font:13px monospace;padding:20px">
+<pre id="out">seeding…</pre>
+<script>
+/* Writes a believable greenhouse into localStorage, then hands over to the
+   app. Used only to produce store screenshots: the app itself is untouched,
+   and this file is not in sw.js ASSETS or anywhere the app can reach.
+
+   To regenerate native/store-assets/screenshots after a UI change:
+
+     node .claude/serve.js &
+     chrome --headless --no-sandbox --disable-gpu --hide-scrollbars \
+       --window-size=540,1047 --force-device-scale-factor=2 \
+       --virtual-time-budget=7000 --screenshot=out.png \
+       "http://127.0.0.1:8787/.claude/seed.html?to=%2F%23%2Fgreenhouse"
+
+   then crop the top 1080x1920 and flatten the alpha channel, which Play
+   rejects. The odd numbers are not arbitrary. Headless loses 87px of height
+   to a window frame that is not there, so 1047 is what yields a 960 viewport;
+   and it refuses any window narrower than about 500, so a 432px phone cannot
+   be had by asking for one. 540 is the narrowest honest width available. */
+(function () {
+  var out = document.getElementById('out');
+  var iso = function (d) { return d.toISOString().slice(0, 10); };
+  var ago = function (n) { var d = new Date(); d.setDate(d.getDate() - n); return iso(d); };
+
+  var state = {
+    v: 1,
+    profile: { name: 'Daniel', pets: ['cats'], experience: 3, hemisphere: 'south',
+               location: { label: 'Sydney, Australia', lat: -33.87, lon: 151.21 } },
+    settings: { remind: true, remindHour: 8, weatherSync: true, seenWelcome: true, onboarded: true },
+    rooms: [
+      { id: 'room_a', name: 'Living Room', icon: 'sofa',  light: 'bright',   aspect: 'north', humidity: 'normal', notes: '' },
+      { id: 'room_b', name: 'Kitchen',     icon: 'kettle', light: 'medium',  aspect: 'east',  humidity: 'humid',  notes: '' },
+      { id: 'room_c', name: 'Study',       icon: 'desk',  light: 'low',      aspect: 'south', humidity: 'dry',    notes: '' }
+    ],
+    plants: [
+      { id: 'p1', speciesId: 'monstera-deliciosa',     nickname: 'Monny',   roomId: 'room_a', potCm: 24, potMaterial: 'terracotta', drainage: 'good', lastWatered: ago(9),  lastFertilised: ago(40), acquired: ago(420) },
+      { id: 'p2', speciesId: 'calathea-orbifolia',     nickname: '',        roomId: 'room_b', potCm: 16, potMaterial: 'plastic',    drainage: 'good', lastWatered: ago(6),  lastFertilised: ago(30), acquired: ago(150) },
+      { id: 'p3', speciesId: 'dracaena-trifasciata',   nickname: 'Spike',   roomId: 'room_c', potCm: 18, potMaterial: 'ceramic',    drainage: 'poor', lastWatered: ago(11), lastFertilised: ago(80), acquired: ago(700) },
+      { id: 'p4', speciesId: 'epipremnum-aureum',      nickname: '',        roomId: 'room_a', potCm: 14, potMaterial: 'plastic',    drainage: 'good', lastWatered: ago(8),  lastFertilised: ago(55), acquired: ago(200) },
+      { id: 'p5', speciesId: 'ficus-lyrata',           nickname: 'Big Fig', roomId: 'room_a', potCm: 30, potMaterial: 'terracotta', drainage: 'good', lastWatered: ago(4),  lastFertilised: ago(20), acquired: ago(310) },
+      { id: 'p6', speciesId: 'spathiphyllum-wallisii', nickname: '',        roomId: 'room_b', potCm: 20, potMaterial: 'plastic',    drainage: 'good', lastWatered: ago(7),  lastFertilised: ago(60), acquired: ago(95) }
+    ],
+    logs: [
+      { id: 'l1', plantId: 'p1', kind: 'milestone', date: ago(30), note: 'Put out a new leaf, the biggest one yet.' },
+      { id: 'l2', plantId: 'p1', kind: 'measure',   date: ago(120), heightCm: 62 },
+      { id: 'l3', plantId: 'p1', kind: 'measure',   date: ago(80),  heightCm: 71 },
+      { id: 'l4', plantId: 'p1', kind: 'measure',   date: ago(40),  heightCm: 83 },
+      { id: 'l5', plantId: 'p1', kind: 'measure',   date: ago(5),   heightCm: 94 },
+      { id: 'l6', plantId: 'p5', kind: 'repotted',  date: ago(60), note: 'Up to a 30cm terracotta.' },
+      { id: 'l7', plantId: 'p3', kind: 'pruned',    date: ago(15), note: '' }
+    ],
+    plan: null,
+    diary: []
+  };
+
+  try {
+    localStorage.setItem('sprout.state.v1', JSON.stringify(state));
+    localStorage.setItem('sprout.theme', 'viridium');
+    out.textContent = 'seeded ' + state.plants.length + ' plants, ' + state.rooms.length + ' rooms';
+  } catch (e) {
+    out.textContent = 'FAILED: ' + e.message;
+    return;
+  }
+  var to = decodeURIComponent((location.search.match(/[?&]to=([^&]*)/) || [, '/'])[1]);
+  setTimeout(function () { location.href = to; }, 60);
+})();
+</script>

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en" data-theme="viridium">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sprout — privacy</title>
+<meta name="description" content="What Sprout stores, what it sends, and what it never touches.">
+<!--
+  Required by both stores before a listing can be submitted, and linked from
+  the Play listing as the privacy policy URL.
+
+  It borrows the app's own stylesheet rather than restating it, for the same
+  reason brand.html does: a page that copies the tokens starts lying the
+  first time the app moves. Like brand.html it is deliberately absent from
+  sw.js ASSETS — served alongside the app, not shipped inside it.
+
+  Every claim below is checkable against the code, and native/store-privacy.md
+  maps the same facts onto both stores' forms. If one changes, all three do.
+-->
+<link rel="stylesheet" href="css/styles.css">
+<style>
+  body { background: var(--bg-1); color: var(--ink); }
+  .wrap { max-width: 44rem; margin: 0 auto; padding: 8vh 24px 14vh; }
+  h1 { font-family: var(--display); font-weight: 200; font-size: clamp(38px, 9vw, 62px);
+       letter-spacing: 0.06em; text-transform: uppercase; margin: 0 0 6px; }
+  .sub { font-family: var(--sans); font-size: 12px; letter-spacing: 0.16em;
+         text-transform: uppercase; color: var(--ink-3); margin: 0 0 8px; }
+  h2 { font-family: var(--display); font-weight: 500; font-size: 22px; letter-spacing: 0.04em;
+       text-transform: uppercase; margin: 46px 0 12px; }
+  p, li { font-family: var(--serif); font-size: 17px; line-height: 1.62; color: var(--ink-2); }
+  li { margin-bottom: 8px; }
+  strong { color: var(--ink); font-weight: 500; }
+  hr { border: 0; border-top: 1px solid var(--hair); margin: 40px 0; }
+  a { color: var(--leaf); }
+  .note { font-family: var(--sans); font-size: 13px; color: var(--ink-3); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="sub">Sprout · evergreen</p>
+  <h1>Privacy</h1>
+  <p class="note">Last updated 22 September 2026</p>
+
+  <hr>
+
+  <p>Sprout has no account, no server of its own, no analytics and no
+  advertising. There is nothing to sign up for and no profile of you
+  anywhere. This page says exactly what that means, including the one thing
+  that does leave your phone.</p>
+
+  <h2>What stays on your device</h2>
+
+  <p>All of it, apart from the exception in the next section. Your plants and
+  the species you chose for them, their nicknames, pots, rooms and positions
+  on your floor plan; every photo you take; every diary entry, measurement
+  and milestone; your name, your pets, how you described your experience;
+  your watering history and your reminder schedule.</p>
+
+  <p>These live in your browser's local storage, or in the app's own storage
+  on your phone. They are never uploaded, never backed up to us, and never
+  seen by anyone but you. We could not retrieve them if you asked.</p>
+
+  <h2>The one thing that leaves</h2>
+
+  <p>If you set a location, Sprout needs a weather forecast for it, and
+  forecasts come from <a href="https://open-meteo.com">Open-Meteo</a>.</p>
+
+  <ul>
+    <li><strong>The coordinates are rounded first</strong>, to two decimal
+    places — roughly a kilometre. Sprout never holds or sends a precise
+    position, only a neighbourhood.</li>
+    <li>Those rounded coordinates are sent to Open-Meteo twice: once to find
+    the name of the nearest town, and again for each forecast.</li>
+    <li>Nothing accompanies them. No identifier, no account, no device
+    details beyond what any web request carries.</li>
+    <li>Sprout stores the result on your phone. It is not sent anywhere
+    else, and there is nowhere else for it to go.</li>
+  </ul>
+
+  <p>Setting a location is optional. The app works without one; you lose the
+  forecast suggestions and nothing else.</p>
+
+  <h2>Reminders</h2>
+
+  <p>Morning reminders are scheduled by your phone's own operating system,
+  not by a server. There is no push service and no subscription, so no third
+  party learns when your plants need watering — or that you use Sprout at
+  all. Sprout works out what is due on the device and hands the list to the
+  OS to deliver.</p>
+
+  <h2>Permissions, and why</h2>
+
+  <ul>
+    <li><strong>Location</strong> — only when you tap to use it, only for the
+    forecast, and approximate is enough. Sprout never asks for background
+    location.</li>
+    <li><strong>Notifications</strong> — only if you turn reminders on.</li>
+    <li><strong>Camera and photos</strong> — only when you add a photo to a
+    plant. Photos stay on the device.</li>
+  </ul>
+
+  <h2>Children</h2>
+
+  <p>Sprout is not directed at children and collects nothing that could
+  identify anyone, of any age.</p>
+
+  <h2>Deleting your data</h2>
+
+  <p>Uninstalling the app removes everything, because everything is on the
+  device. In the browser, clearing site data does the same. You can clear a
+  saved location on its own from Profile at any time. There is no server
+  copy to request the deletion of.</p>
+
+  <h2>Changes</h2>
+
+  <p>If what Sprout does with your data ever changes, this page changes with
+  it and the date at the top moves. It is written from the code rather than
+  around it, so it cannot quietly drift out of date.</p>
+
+  <h2>Contact</h2>
+
+  <p><a href="mailto:privacy@sproutevergreen.com">privacy@sproutevergreen.com</a></p>
+
+</div>
+</body>
+</html>

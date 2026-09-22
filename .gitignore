@@ -40,3 +40,8 @@ Desktop.ini
 .DS_Store
 *.swp
 *~
+
+# The release signing key and its passwords. Never committed.
+native/android/keystore.properties
+*.jks
+*.keystore
