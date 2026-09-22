@@ -59,6 +59,15 @@ template, and those cover the parts that genuinely are generated — build
 output, `Pods`, `DerivedData`, the copied web assets and the generated
 `capacitor.config.json`. So there is no `cap add` step any more.
 
+**A committed platform project is still not a standalone one**, and cannot
+be. `capacitor.settings.gradle` points every Gradle subproject at
+`../node_modules/@capacitor/*`, and `capacitor.build.gradle` applies a file
+out of `capacitor-cordova-android-plugins`, which `cap sync` generates and
+which is ignored. Open `android/` in Android Studio before an install and a
+sync have run and Gradle fails while configuring, naming a missing path
+rather than the reason. Committing these directories keeps the hand-made
+parts — icons, signing, `Info.plist` — it does not remove the install.
+
 ## Working on it
 
 ```bash
@@ -71,6 +80,16 @@ npm run android    # copy, sync, open Android Studio
 `npm run sync` on its own does the copy and the Capacitor sync without
 opening anything. On a Mac the first `sync` also runs `pod install`, which
 is the step that was skipped when these projects were scaffolded on Linux.
+
+### Without a command line
+
+`prepare-android.bat` on Windows and `prepare-ios.command` on a Mac do the
+install, the copy and the sync from a double-click, then tell you which
+folder to open. They exist because the install is not optional — see above —
+and needing a shell to satisfy a build step is a poor reason to be unable to
+build. Each checks for Node first and says where to get it rather than
+failing with a `'node' is not recognized`, and each holds its window open on
+an error so the message can be read.
 
 ## How reminders actually work here
 
