@@ -10,7 +10,6 @@ site/
   site.css       shared by both, so they cannot drift apart
   fonts/         a copy of css/fonts/, see below
   _headers       security headers and cache policy
-  _redirects     /privacy → /privacy.html
 ```
 
 ## Why the fonts are duplicated
@@ -31,6 +30,23 @@ if they stop being.
 ```bash
 diff -r css/fonts site/fonts && echo "fonts in sync"
 ```
+
+## Why there is no _redirects file
+
+There was one, for a day, and it broke the policy page in production.
+
+Cloudflare Pages already serves `privacy.html` at `/privacy`, and redirects
+`/privacy.html` to `/privacy` to keep one canonical URL. That behaviour is on
+by default and cannot be turned off. A `_redirects` line reading
+`/privacy  /privacy.html  301` therefore sent `/privacy` to `/privacy.html`,
+which the host sent straight back to `/privacy`:
+**ERR_TOO_MANY_REDIRECTS**, on the one page both app stores require.
+
+So the links here are written extensionless — `href="privacy"` — and the URL
+given to Play is `https://sproutevergreen.com/privacy`. Nothing redirects at
+all. `.claude/serve.js` resolves an extensionless path the same way, so a
+local check exercises the same URL a visitor gets; it did not before, which
+is how the loop got as far as production.
 
 ## Deployment
 

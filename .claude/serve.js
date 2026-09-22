@@ -92,23 +92,33 @@ const server = http.createServer(function (req, res) {
     return;
   }
 
-  fs.stat(full, function (err, stat) {
-    if (err || !stat.isFile()) {
-      send(res, 404, 'text/plain; charset=utf-8', 'Not found: ' + pathname, headOnly);
-      console.log('404 ' + pathname);
-      return;
-    }
-    fs.readFile(full, function (readErr, buf) {
-      if (readErr) {
-        send(res, 500, 'text/plain; charset=utf-8', 'Read error', headOnly);
-        console.log('500 ' + pathname);
+  // Cloudflare Pages serves privacy.html at /privacy and offers no way to turn
+  // that off, so the local server resolves an extensionless path the same way.
+  // Without this, every local check of a link is a check of a different URL
+  // than the one a visitor gets — which is how the /privacy redirect loop got
+  // as far as production.
+  function serve(file, label) {
+    fs.stat(file, function (err, stat) {
+      if (err || !stat.isFile()) {
+        if (!path.extname(file)) { serve(file + '.html', label); return; }
+        send(res, 404, 'text/plain; charset=utf-8', 'Not found: ' + label, headOnly);
+        console.log('404 ' + label);
         return;
       }
-      const type = TYPES[path.extname(full).toLowerCase()] || 'application/octet-stream';
-      send(res, 200, type, buf, headOnly);
-      console.log('200 ' + pathname);
+      fs.readFile(file, function (readErr, buf) {
+        if (readErr) {
+          send(res, 500, 'text/plain; charset=utf-8', 'Read error', headOnly);
+          console.log('500 ' + label);
+          return;
+        }
+        const type = TYPES[path.extname(file).toLowerCase()] || 'application/octet-stream';
+        send(res, 200, type, buf, headOnly);
+        console.log('200 ' + label);
+      });
     });
-  });
+  }
+
+  serve(full, pathname);
 });
 
 server.listen(PORT, HOST, function () {

@@ -46,7 +46,7 @@ Two consequences worth knowing before editing anything in there:
   Replace a typeface in one and replace it in the other in the same commit;
   `diff -r css/fonts site/fonts` is the check.
 - **The privacy policy lives at `site/privacy.html`**, not at the root any
-  more, and Play has been given `sproutevergreen.com/privacy.html`. It, this
+  more, and Play has been given `sproutevergreen.com/privacy`. It, this
   file, `README.md` and `native/store-privacy.md` all state the same facts
   about what leaves the device. Change one and change all four.
 

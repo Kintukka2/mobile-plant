@@ -106,7 +106,7 @@ was lost. If the plan ever needs re-shooting, it has to come off a phone.
   `privacy@sproutevergreen.com` forwarded wherever you like. It is published
   on the listing, so it should not be a personal or work address.
 - **Website** — `https://sproutevergreen.com`
-- **Privacy policy** — `https://sproutevergreen.com/privacy.html`, which is
+- **Privacy policy** — `https://sproutevergreen.com/privacy`, which is
   the page in this repository at `site/privacy.html`. It has to be live before
   the listing can be submitted.
 
