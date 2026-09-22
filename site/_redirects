@@ -1,0 +1,5 @@
+# /privacy is the tidier URL and the one worth handing out; Play was given
+# privacy.html, so both have to resolve for good. Cloudflare Pages also
+# strips .html on its own, but stating it here means the site does not
+# depend on a host's default staying the way it is today.
+/privacy  /privacy.html  301

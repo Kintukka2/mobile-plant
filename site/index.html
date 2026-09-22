@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sprout Evergreen</title>
+<meta name="description" content="A houseplant care tracker that works out the schedule from real species data, the pot it is in, how bright the room is and the weather where you live.">
+<meta name="theme-color" content="#0A1410">
+<link rel="canonical" href="https://sproutevergreen.com/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sprout Evergreen">
+<meta property="og:description" content="Most plant apps ask how often you want reminding. This one works it out.">
+<meta property="og:url" content="https://sproutevergreen.com/">
+<meta name="twitter:card" content="summary_large_image">
+<!--
+  The landing page for sproutevergreen.com. The web app itself lives at
+  sproutevergreen.app, served from this repositorys root by a second
+  Cloudflare Pages project; see site/README.md.
+
+  Its styles are in site.css rather than inline so privacy.html can share
+  them. The screenshots are placeholders holding the exact box the real ones
+  will take, so dropping images in cannot move the layout.
+-->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A1410'/%3E%3Cg fill='none' stroke='%233FBE8B' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M50 84V40'/%3E%3Cpath d='M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z'/%3E%3Cpath d='M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="lockup">
+      <div class="wm-row">
+        <span class="m"><svg viewBox="24 20 52 68" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/></svg></span>
+        <div class="word">Sprout</div>
+      </div>
+      <div class="script">evergreen</div>
+    </div>
+    <h1>Most plant apps ask how often you want reminding. <em>This one works it out.</em></h1>
+    <p class="lead">Care schedules built from real species data, the pot it is actually in,
+    how bright the room actually is, and the weather where you actually live.</p>
+    <div class="cta">
+      <a class="btn btn-1" href="https://sproutevergreen.app">Open the web app</a>
+      <a class="btn btn-2" href="#how">See how it works</a>
+      <span class="soon">Android · coming to Google Play</span>
+    </div>
+  </div>
+</header>
+
+<section class="band" id="how">
+  <div class="wrap split">
+    <div>
+      <p class="eyebrow">Draw your home</p>
+      <h2>It knows which of your rooms is bright, because you showed it.</h2>
+      <p>Trace your floor plan once. Mark where the windows are, point north, and Sprout works out
+      how much light each room gets and which way it faces — then places every room on the same
+      five-rung scale it matches species against.</p>
+      <p>Light crosses one doorway and no further, one step dimmer. A plant two rooms from a window
+      is not in a bright room, and Sprout will not pretend it is.</p>
+      <ul class="ladder">
+        <li><i style="background:#E0C47A"></i>Direct sun</li>
+        <li><i style="background:#9FD3BE"></i>Bright indirect</li>
+        <li><i style="background:#4E7C68"></i>Medium</li>
+        <li><i style="background:#2C4A3C"></i>Low</li>
+        <li><i style="background:#16211C;border:1px solid var(--hair)"></i>No window</li>
+      </ul>
+    </div>
+    <figure class="shot">
+      <div class="ph" style="aspect-ratio:1080 / 1240" role="img" aria-label="Placeholder: Isometric view, rooms shaded by light"><span class="ph-l">Floor plan</span><span class="ph-n">Isometric view, rooms shaded by light</span></div>
+      <figcaption>Your plan, shaded by light</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section>
+  <div class="wrap split flip">
+    <figure class="shot">
+      <div class="ph" style="aspect-ratio:1080 / 1340" role="img" aria-label="Placeholder: Greeting card and the week's watering list"><span class="ph-l">Today</span><span class="ph-n">Greeting card and the week's watering list</span></div>
+      <figcaption>One reminder a day, at most</figcaption>
+    </figure>
+    <div>
+      <p class="eyebrow">Every morning</p>
+      <h2>A list that is short because it is right.</h2>
+      <p>A Monstera in a 24cm terracotta pot by a north window is not on the same cycle as one in
+      plastic in a dim corner. Sprout adjusts for pot size and material, drainage, room light,
+      window aspect and season — so the list you get is the list that is actually due.</p>
+      <p>Set a location and it reads the forecast too. Before a hot dry spell it offers to bring
+      watering forward; before a wet week it offers to hold off. <strong>You approve every
+      change.</strong></p>
+      <blockquote class="quote" style="margin-top:30px">
+        <p>Two of your plants are thirsty</p>
+        <cite>What a reminder actually says</cite>
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <p class="eyebrow">When something looks wrong</p>
+    <h2 style="max-width:20ch">A clinic, not a search box.</h2>
+    <div class="grid" style="margin-top:52px">
+      <div>
+        <span class="fig">26</span>
+        <h3>Symptoms</h3>
+        <p>Yellow leaves, brown tips, sudden drop, fungus gnats. Start from what you can see.</p>
+      </div>
+      <div>
+        <span class="fig">42</span>
+        <h3>Clues</h3>
+        <p>Answer what else is true and the ranking shifts. A supporting clue lifts a cause; a
+        contradicting one pushes it down.</p>
+      </div>
+      <div>
+        <span class="fig">40</span>
+        <h3>Causes</h3>
+        <p>Weighted by what your particular species is prone to — a fern with crispy edges is a
+        different problem from a cactus with crispy edges.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap split">
+    <div>
+      <p class="eyebrow">Worth keeping</p>
+      <h2>A record of the plant, not just a reminder to water it.</h2>
+      <p>Every plant gets a diary and a growth chart. Photos, measurements, milestones, repottings,
+      problems. Watch a cutting become a plant.</p>
+      <p>Toxicity is rated separately for cats, dogs and humans, because the same plant is not
+      equally risky to each. Tell Sprout what lives with you and it flags what matters.</p>
+    </div>
+    <figure class="shot">
+      <div class="ph" style="aspect-ratio:1080 / 1180" role="img" aria-label="Placeholder: Care card with the next watering"><span class="ph-l">Plant</span><span class="ph-n">Care card with the next watering</span></div>
+      <figcaption>48 species, with real care data</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <p class="eyebrow">The part most apps skip</p>
+    <h2 style="max-width:24ch">No account. No ads. Nothing to sign up for.</h2>
+    <p class="lead" style="margin-top:22px">Your plants, photos, diary and schedule live on your
+    phone and are never uploaded. There is no server, no analytics and no profile of you anywhere.</p>
+    <p>One thing leaves, and it is worth saying plainly rather than rounding up to "everything is
+    local": if you set a location, its coordinates go to the weather service to fetch your
+    forecast. They are rounded to about a kilometre first, so what travels is a neighbourhood
+    rather than an address. Nothing accompanies them and nothing else is ever sent.</p>
+    <p style="margin-bottom:0"><a class="btn btn-2" style="margin-top:14px" href="privacy.html">Read the privacy policy</a></p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <a href="https://sproutevergreen.app">sproutevergreen.app</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="mailto:privacy@sproutevergreen.com">Contact</a>
+    <small>Sprout · evergreen</small>
+  </div>
+</footer>
+
+</body>
+</html>

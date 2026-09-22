@@ -78,7 +78,11 @@ const server = http.createServer(function (req, res) {
     return;
   }
 
-  if (pathname === '/' || pathname === '') pathname = '/index.html';
+  // Resolve a directory to its index.html the way a static host does, not
+  // just at the root. site/ is served as its own document root in production
+  // (it is a separate Cloudflare Pages project), so a local check of it has to
+  // answer on /site/ or it is not checking the same thing.
+  if (pathname === '' || pathname.endsWith('/')) pathname += 'index.html';
 
   const full = path.resolve(ROOT, '.' + pathname);
 

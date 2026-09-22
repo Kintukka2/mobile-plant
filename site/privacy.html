@@ -1,42 +1,30 @@
 <!doctype html>
-<html lang="en" data-theme="viridium">
+<html lang="en-GB">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sprout — privacy</title>
 <meta name="description" content="What Sprout stores, what it sends, and what it never touches.">
+<meta name="theme-color" content="#0A1410">
+<link rel="canonical" href="https://sproutevergreen.com/privacy.html">
 <!--
-  Required by both stores before a listing can be submitted, and linked from
-  the Play listing as the privacy policy URL.
+  Required by both stores before a listing can be submitted, and given to
+  Play as the privacy policy URL: https://sproutevergreen.com/privacy.html
 
-  It borrows the app's own stylesheet rather than restating it, for the same
-  reason brand.html does: a page that copies the tokens starts lying the
-  first time the app moves. Like brand.html it is deliberately absent from
-  sw.js ASSETS — served alongside the app, not shipped inside it.
+  It used to sit at the repository root and borrow css/styles.css. It lives
+  here now because the policy belongs to the site that publishes it, not to
+  the app bundle, and a Pages project can only serve what is inside its own
+  root. It shares site.css with the landing page for the same reason it used
+  to share the apps: a page that restates the tokens starts lying the first
+  time the design moves.
 
   Every claim below is checkable against the code, and native/store-privacy.md
-  maps the same facts onto both stores' forms. If one changes, all three do.
+  maps the same facts onto both stores forms. If one changes, all three do.
 -->
-<link rel="stylesheet" href="css/styles.css">
-<style>
-  body { background: var(--bg-1); color: var(--ink); }
-  .wrap { max-width: 44rem; margin: 0 auto; padding: 8vh 24px 14vh; }
-  h1 { font-family: var(--display); font-weight: 200; font-size: clamp(38px, 9vw, 62px);
-       letter-spacing: 0.06em; text-transform: uppercase; margin: 0 0 6px; }
-  .sub { font-family: var(--sans); font-size: 12px; letter-spacing: 0.16em;
-         text-transform: uppercase; color: var(--ink-3); margin: 0 0 8px; }
-  h2 { font-family: var(--display); font-weight: 500; font-size: 22px; letter-spacing: 0.04em;
-       text-transform: uppercase; margin: 46px 0 12px; }
-  p, li { font-family: var(--serif); font-size: 17px; line-height: 1.62; color: var(--ink-2); }
-  li { margin-bottom: 8px; }
-  strong { color: var(--ink); font-weight: 500; }
-  hr { border: 0; border-top: 1px solid var(--hair); margin: 40px 0; }
-  a { color: var(--leaf); }
-  .note { font-family: var(--sans); font-size: 13px; color: var(--ink-3); }
-</style>
+<link rel="stylesheet" href="site.css">
 </head>
 <body>
-<div class="wrap">
+<div class="doc">
 
   <p class="sub">Sprout · evergreen</p>
   <h1>Privacy</h1>
@@ -121,6 +109,10 @@
   <h2>Contact</h2>
 
   <p><a href="mailto:privacy@sproutevergreen.com">privacy@sproutevergreen.com</a></p>
+
+  <hr>
+
+  <p class="note"><a href="./">Back to sproutevergreen.com</a></p>
 
 </div>
 </body>

@@ -1,0 +1,4 @@
+# The app project publishes the whole repository, so the marketing site is
+# reachable at sproutevergreen.app/site/ as well as at its own domain. One
+# page on two URLs is a page that gets indexed twice and updated once.
+/site/*  https://sproutevergreen.com/:splat  301

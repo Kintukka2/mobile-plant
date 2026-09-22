@@ -31,6 +31,29 @@ above it imports anything, and deleting the directory would leave the web
 app exactly as it is. It exists so reminders can be scheduled by the
 operating system instead of by a server. See `native/README.md`.
 
+## The two things in here that are not the app
+
+`native/` is the store wrapper, described above. `site/` is the other one:
+the marketing site at **sproutevergreen.com**, deployed as its own Cloudflare
+Pages project with `site` as the root directory, while the app deploys from
+the repository root to **sproutevergreen.app**. Both have no build command.
+
+Two consequences worth knowing before editing anything in there:
+
+- **`site/` cannot reach `../`.** A Pages project publishes only what is
+  inside its root, which is why `site/fonts/` is a byte copy of `css/fonts/`
+  and `site/site.css` is a second stylesheet rather than a link to the apps.
+  Replace a typeface in one and replace it in the other in the same commit;
+  `diff -r css/fonts site/fonts` is the check.
+- **The privacy policy lives at `site/privacy.html`**, not at the root any
+  more, and Play has been given `sproutevergreen.com/privacy.html`. It, this
+  file, `README.md` and `native/store-privacy.md` all state the same facts
+  about what leaves the device. Change one and change all four.
+
+`_headers` and `_redirects` at the root belong to the app deploy. The one
+that matters is the no-cache rule on `sw.js`: bumping `CACHE` does nothing
+if the CDN is still handing out the old `sw.js` that names the old cache.
+
 ## Running it
 
 The app must be served over `http://` — service workers, the manifest and the
