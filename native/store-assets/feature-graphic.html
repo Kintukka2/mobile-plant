@@ -4,26 +4,54 @@
 <meta charset="utf-8">
 <title>Sprout — Play feature graphic</title>
 <!--
-  The source of play-feature-graphic-1024x500.png. Open it and screenshot the
-  page at exactly 1024x500 to regenerate:
+  The source of play-feature-graphic-1024x500.png. Regenerate with:
 
-    chromium --headless --window-size=1024,500 --force-device-scale-factor=1 \
-      --screenshot=play-feature-graphic-1024x500.png feature-graphic.html
+    node .claude/serve.js &
+    chromium --headless --no-sandbox --disable-gpu --hide-scrollbars \
+      --window-size=1024,500 --force-device-scale-factor=1 \
+      --screenshot=play-feature-graphic-1024x500.png \
+      http://127.0.0.1:8787/native/store-assets/feature-graphic.html
 
-  It is a page rather than a drawing because the lockup is type, and the two
-  faces are the app's own: Hatton is loaded straight out of css/fonts, and
-  Sacramento from the same Google Fonts the app uses. Redrawing the wordmark
-  by hand in an image editor is how a wordmark drifts from the product.
+  Over http rather than file://, because the faces are loaded by relative
+  path and a file:// origin blocks them silently — the graphic renders in
+  Times and nothing says so.
+
+  It is a page rather than a drawing because the lockup is type, and both
+  faces are the app's own. Redrawing the wordmark by hand in an image editor
+  is how a wordmark drifts from the product.
+
+  The geometry is the one on sproutevergreen.com, derived from a single
+  --wm and reproduced here rather than reinvented, so the graphic Play
+  shows and the page the CTA leads to are the same lockup. The first pass
+  differed in three ways and each was wrong:
+
+    - the mark was centred on the whole two-line block, so it floated
+      between the lines instead of sitting beside SPROUT;
+    - its viewBox was 22 4 56 100, which is not the mark's extent. The
+      paths span y 24..84 but the 5-unit stroke is centred on them, so the
+      ink reaches 21.5..86.5 — 24 20 52 68 is the box that holds it and
+      nothing else;
+    - a text-indent cancelled the trailing tracking gap. That correction is
+      for a *centred* wordmark; left-aligned there is nothing to cancel and
+      it pushed SPROUT out of line with the script beneath.
 -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sacramento&display=swap">
 <style>
+  /* Self-hosted, like everything else. This used to pull Sacramento from
+     Google Fonts, which meant the graphic could not be regenerated offline
+     and would fall back to a system cursive without erroring. */
   @font-face {
     font-family: 'PP Hatton';
     src: url('../../css/fonts/hatton-ultralight.woff2') format('woff2');
     font-weight: 200;
+    font-display: block;
   }
+  @font-face {
+    font-family: 'Sacramento';
+    src: url('../../css/fonts/sacramento-400.woff2') format('woff2');
+    font-weight: 400;
+    font-display: block;
+  }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { width: 1024px; height: 500px; overflow: hidden; }
   body {
@@ -32,54 +60,57 @@
     align-items: center;
     justify-content: center;
   }
-  /* Play crops this graphic on some surfaces, so the lockup stays centred
-     and well inside the edges rather than filling the canvas. */
-  .lock { display: flex; align-items: center; gap: 10px; }
-  .mark { width: 118px; height: 210px; flex: none; }
-  .mark svg { width: 100%; height: 100%; display: block; }
-  .words { display: flex; flex-direction: column; align-items: flex-start; }
-  /* text-indent replaces the gap the tracking leaves after the last letter,
-     so the word is optically centred on its own box. Same correction the
-     splash makes. */
-  .wordmark {
-    font-family: 'PP Hatton', serif;
+
+  /* Play crops this on some surfaces, so the lockup stays centred and well
+     inside the edges rather than filling the canvas. One variable drives
+     every measurement, so the mark cannot drift from the wordmark. */
+  .lockup {
+    --wm: 120px;
+    --mk: calc(var(--wm) * 0.96);
+    /* 52/68, the cropped viewBox's own aspect. Declared once so the mark's
+       width and the script's indent cannot disagree. */
+    --mkw: calc(var(--mk) * 0.7647);
+    --gap: calc(var(--wm) * 0.26);
+  }
+  /* The mark shares a row with the wordmark alone, which is what puts it
+     beside SPROUT rather than between the two lines. */
+  .wm-row { display: flex; align-items: center; gap: var(--gap); }
+  .m { width: var(--mkw); height: var(--mk); color: #3FBE8B; flex: none; }
+  .m svg { width: 100%; height: 100%; display: block; }
+  .word {
+    font-family: 'PP Hatton', Didot, 'Times New Roman', serif;
     font-weight: 200;
-    font-size: 104px;
-    letter-spacing: 0.22em;
-    text-indent: 0.22em;
+    font-size: var(--wm);
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: #F3F6F1;
     line-height: 1;
+    color: #F3F6F1;
   }
   .script {
     font-family: 'Sacramento', cursive;
-    font-size: 58px;
+    font-size: calc(var(--wm) * 0.56);
     color: #9FD3BE;
-    margin-top: 10px;
-    padding-left: 6px;
-    /* Descenders sit below the line box in this face. */
-    padding-bottom: 0.12em;
     line-height: 1;
+    margin-top: calc(var(--wm) * 0.12);
+    /* Hangs under SPROUT, not under the mark. */
+    padding-left: calc(var(--mkw) + var(--gap));
   }
 </style>
 </head>
 <body>
-  <div class="lock">
-    <!-- The viewBox is cropped to the mark's own extent (x 28..72, y 24..84)
-         rather than the full 100 square, so the gap to the wordmark is the
-         gap set above and not a box full of empty space. -->
-    <div class="mark">
-      <svg viewBox="22 4 56 100" fill="none" stroke="#3FBE8B" stroke-width="5"
-           stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Sprout">
-        <path d="M50 84V40"/>
-        <path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/>
-        <path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/>
-      </svg>
+  <div class="lockup">
+    <div class="wm-row">
+      <span class="m">
+        <svg viewBox="24 20 52 68" fill="none" stroke="currentColor" stroke-width="5"
+             stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Sprout">
+          <path d="M50 84V40"/>
+          <path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/>
+          <path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/>
+        </svg>
+      </span>
+      <div class="word">Sprout</div>
     </div>
-    <div class="words">
-      <div class="wordmark">Sprout</div>
-      <div class="script">evergreen</div>
-    </div>
+    <div class="script">evergreen</div>
   </div>
 </body>
 </html>
