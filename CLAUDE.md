@@ -55,9 +55,10 @@ node .claude/serve.js &
 ```
 
 `--dump-dom` instead of `--screenshot` when you need to assert on structure.
-The app is mobile-first; 430x932 is a sensible phone viewport. Google Fonts
-may not be reachable from a container, in which case type falls back — that is
-the network, not a regression.
+The app is mobile-first; 430x932 is a sensible phone viewport. Type no longer
+depends on the network at all — every face is served from `css/fonts/` — so a
+screenshot in a fallback face is now a real regression rather than the
+container.
 
 The data files are plain enough to load and check directly in Node:
 
@@ -278,8 +279,8 @@ localStorage is ~5MB, which is the entire budget. Photos are downscaled to a
 `localStorage` access is wrapped in `try/catch` because private-mode Safari
 throws on access rather than returning null.
 
-The only outbound requests are the Open-Meteo forecast (no API key) and the
-initial Google Fonts load.
+The Open-Meteo forecast (no API key) is the only outbound request the app
+makes. The typefaces used to be a second one and are not any more.
 
 **Do not write that the location stays on the device.** It did not, and the
 claim shipped for a while before anyone checked it against `js/weather.js`,
