@@ -105,6 +105,60 @@ window.Weather = (function () {
     });
   }
 
+  /* ---------- Naming a set of coordinates ----------
+     Open-Meteo's geocoder is forward-only. It has no reverse lookup, and the
+     roadmap has carried one without a date for years. The call that used to
+     live in locateMe passed an empty name= alongside a latitude and
+     longitude, which the search endpoint answers with nothing — so every
+     device location has quietly fallen back to printing its own numbers
+     since the day it was written. It only became visible once the Android
+     manifest let the button work at all.
+
+     The name is therefore inferred and then checked, rather than looked up.
+     A device's IANA zone ends in a city — Australia/Sydney — and that city
+     is a question the forward geocoder does answer. If what comes back sits
+     near the coordinates actually in hand, it is the right name for them.
+     If it does not, the reader is somewhere their phone's clock does not
+     know about, and a confident wrong city is worse than honest numbers.
+
+     No new host either way: the geocoder is one the app already talks to,
+     and the zone costs nothing to read. */
+
+  const NEAR_KM = 150;
+
+  function coordLabel(lat, lon) {
+    return Math.abs(lat).toFixed(2) + '\u00B0' + (lat < 0 ? 'S' : 'N') + ', ' +
+           Math.abs(lon).toFixed(2) + '\u00B0' + (lon < 0 ? 'W' : 'E');
+  }
+
+  /* Equirectangular, which is ample here: the question is only whether two
+     points are the same city, never how far apart they are. */
+  function apartKm(aLat, aLon, bLat, bLon) {
+    const mid = (aLat + bLat) / 2 * Math.PI / 180;
+    const dx = (bLon - aLon) * Math.cos(mid) * 111.32;
+    const dy = (bLat - aLat) * 111.32;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  function nameFor(lat, lon, cb) {
+    let tz = null;
+    try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) { /* no Intl */ }
+
+    /* A zone with no region — UTC, GMT — names no city. Argentina's dozen
+       zones are three segments deep, so take the last rather than the second. */
+    const city = tz && tz.indexOf('/') !== -1 ? tz.split('/').pop().replace(/_/g, ' ') : '';
+    if (!city) { cb(coordLabel(lat, lon)); return; }
+
+    searchPlace(city, function (err, list) {
+      /* Several places share a name — Sydney is in Nova Scotia too — so the
+         distance is what picks between them, not the order they arrive in. */
+      const hit = (list || []).filter(function (r) {
+        return apartKm(lat, lon, r.lat, r.lon) < NEAR_KM;
+      })[0];
+      cb(hit ? (hit.name + (hit.country ? ', ' + hit.country : '')) : coordLabel(lat, lon));
+    });
+  }
+
   /* ---------- Browser geolocation ---------- */
   function round2(n) { return Math.round(n * 100) / 100; }
 
@@ -123,16 +177,8 @@ window.Weather = (function () {
            an approximate location, which is both the lighter thing to
            declare to the stores and the smaller thing to lose. */
         const lat = round2(pos.coords.latitude), lon = round2(pos.coords.longitude);
-        // Reverse-geocode for a friendly label; fall back to coordinates.
-        const url = GEO_URL + '?name=&latitude=' + lat + '&longitude=' + lon + '&count=1&format=json';
-        fetchJSON(url, function (err, data) {
-          const r = (data && data.results && data.results[0]) || null;
-          cb(null, {
-            label: r ? (r.name + (r.country ? ', ' + r.country : ''))
-                     : (lat.toFixed(2) + ', ' + lon.toFixed(2)),
-            lat: lat,
-            lon: lon
-          });
+        nameFor(lat, lon, function (label) {
+          cb(null, { label: label, lat: lat, lon: lon });
         });
       },
       function (err) {
