@@ -1,9 +1,10 @@
 {
-  "appId": "com.example.sprout",
+  "appId": "com.sproutevergreen.app",
   "appName": "Sprout",
   "webDir": "www",
   "plugins": {
     "LocalNotifications": {
+      "smallIcon": "ic_stat_sprout",
       "iconColor": "#3FBE8B"
     }
   }

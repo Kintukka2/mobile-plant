@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+      Android 12 replaced the launch image with a system splash screen and
+      ignores @drawable/splash entirely. Without this the platform falls back
+      to its own default — a white window with the app icon on it — so every
+      cold start on a modern phone opened with a white flash before the deep
+      field painted. The three values below are the whole of the fix: the
+      field, the mark, and the length of time the icon is held.
+    -->
+    <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
+        <item name="android:windowSplashScreenBackground">@color/ic_launcher_background</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
+        <item name="android:windowSplashScreenAnimationDuration">200</item>
+        <item name="postSplashScreenTheme">@style/AppTheme.NoActionBar</item>
+    </style>
+
+</resources>
