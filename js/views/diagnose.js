@@ -112,7 +112,11 @@ window.ViewDiagnose = (function () {
         'species.', '<button class="btn btn-ghost" data-open="plant">Add a plant</button>');
     }
 
-    html += '<div class="section">' +
+    /* Held further off the list than the 8px between plants, because it is not
+       another plant. At the list's own gap it read as a fourth card and the
+       eye ran straight past it; the escape hatch has to look like a different
+       kind of answer or it is not one. */
+    html += '<div class="section" style="margin-top:20px">' +
       '<button class="dx-opt" data-dx-plant="any" style="margin:0;width:100%">' +
         '<span class="dx-opt-ico">' + UI.icon('search') + '</span>' +
         '<span style="min-width:0">' +
