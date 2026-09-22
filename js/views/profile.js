@@ -338,7 +338,7 @@ window.ViewProfile = (function () {
           ? '<div class="row" style="gap:11px">' +
               '<span class="fact-ico">' + UI.icon(line ? line.ico : 'pin') + '</span>' +
               '<div style="flex:1;min-width:0">' +
-                '<div style="font-weight:650">' + UI.esc(prof.location.label) + '</div>' +
+                '<div style="font-weight:600">' + UI.esc(prof.location.label) + '</div>' +
                 '<div class="tiny muted">' +
                   (line ? line.temp + '°C, ' + UI.esc(line.label.toLowerCase()) + ' · ' : '') +
                   UI.esc(hemi === 'south' ? 'Southern' : 'Northern') + ' hemisphere · ' +
@@ -365,7 +365,7 @@ window.ViewProfile = (function () {
                  instead of jumping when a location is saved. */
               '<span class="fact-ico">' + UI.icon('pin') + '</span>' +
               '<div style="flex:1;min-width:0">' +
-                '<div style="font-weight:650">No location set</div>' +
+                '<div style="font-weight:600">No location set</div>' +
                 '<p class="tiny muted" style="margin:2px 0 0">I work fine without it — you just lose the ' +
                   'forecast suggestions.</p>' +
               '</div>' +

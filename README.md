@@ -35,9 +35,9 @@ python3 -m http.server 8787
 npx serve .
 ```
 
-The display face is served from the app's own directory. First load pulls the
-other three from Google Fonts; after that the service worker serves
-everything, including those, from cache and the app works fully offline.
+All four faces are served from the app's own directory and precached with the
+shell, so the app looks like itself on a first load and works fully offline
+from the start. Nothing is fetched from a second origin.
 
 ---
 
@@ -153,11 +153,15 @@ at 28px and above, 500 below.** Every rule that names `--display` names a
 weight with it, because with two faces installed a request for anything else
 is resolved by guesswork.
 
-The display face is **self-hosted**, subset to Latin, Latin-1 and Latin
-Extended-A, and precached with the app shell. 38KB for the pair. That is
-what makes the app look like itself on a first offline load rather than
-after the font cache has filled. The other three faces still come from
-Google Fonts.
+**All four are self-hosted**, subset to Latin and Latin Extended, and the
+first-paint set is precached with the shell. That is what makes the app look
+like itself on a first offline load rather than after a font cache has
+filled.
+
+Cormorant and Jost are variable fonts clipped to the weights the app draws —
+as static files they were 254KB, and as variable ones 124KB for a wider
+range. Only the roman faces and Sacramento are precached; the italic and the
+Latin Extended subsets are fetched on first use and cached from then on.
 
 ---
 
@@ -181,8 +185,8 @@ kilometre, before either request, so what travels is a neighbourhood rather
 than an address. Nothing else goes with them: no identifier, no account, and
 none of the plants.
 
-Those requests and the initial Google Fonts load are the only traffic the app
-ever makes. `native/store-privacy.md` turns the same facts into the answers
+Those two requests are the only traffic the app ever makes. Nothing else
+leaves the device and nothing is fetched from a second origin. `native/store-privacy.md` turns the same facts into the answers
 both app stores' privacy forms ask for.
 
 ---

@@ -30,12 +30,11 @@ diary entries, growth measurements, the reader's name, their pets, their
 experience level, the reminder schedule and the notification digest. Photos
 are in `localStorage`; the digest is in IndexedDB. Neither has anywhere to go.
 
-**One more third-party connection, which carries no app data.** Three of the
-four typefaces load from Google Fonts, so Google sees the request — an IP
-address and a user agent, the same as any web page using them. No Sprout data
-is in it. Worth knowing when answering questions about third parties, and
-worth removing eventually by self-hosting the other three faces the way
-PP Hatton already is.
+**There is no second origin any more.** The three typefaces that used to
+load from Google Fonts — which handed Google an IP address and a user agent
+on every cold start, for nothing — are self-hosted alongside PP Hatton as of
+the store build. Open-Meteo is now the only host the app contacts at all,
+which is what makes the tables below short.
 
 ## Apple — App Store Connect → App Privacy
 

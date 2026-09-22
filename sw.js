@@ -26,7 +26,7 @@
    weights, and two new files join the precache list. A returning visitor
    holding v4 would otherwise be served a shell asking for a font the old
    cache has never heard of. */
-const CACHE = 'sprout-v46-viridium';
+const CACHE = 'sprout-v47-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is
@@ -34,11 +34,11 @@ const CACHE = 'sprout-v46-viridium';
    Google serves these from a second origin with immutable, hash-named URLs,
    so a cached entry can never go stale — the only way it changes is if the
    URL changes, at which point it is a different entry. */
-/* Still three faces from Google — Cormorant, Jost and Sacramento. The
-   display face left this cache when it became ours: it is in ASSETS above,
-   versioned with the shell, and no longer at the mercy of a second origin. */
-const FONT_CACHE = 'sprout-fonts-v1';
-const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
+/* There is no font cache any more, and no second origin to need one. All
+   four faces are ours, in ASSETS below, versioned with the shell. The old
+   'sprout-fonts-v1' cache is deliberately no longer spared on activate, so
+   a returning visitor's copies of the Google files are evicted rather than
+   left behind for good. */
 
 /* Everything index.html pulls in, plus the two entry points. Keep in step
    with the <script> list in index.html. */
@@ -47,11 +47,21 @@ const ASSETS = [
   'index.html',
   'manifest.webmanifest',
   'css/styles.css',
-  /* The display face. Self-hosted, so unlike the Google faces it can be
-     precached by name at install — which is what makes a first offline load
-     look like the app rather than like its fallback stack. */
+  /* Type, precached by name so a first offline load looks like the app
+     rather than like its fallback stack. That was already true of the
+     display face and is now true of all of them.
+
+     This is the first-paint set only, not every file in css/fonts. The
+     Cormorant italic and every latin-ext subset are shipped but left out
+     here: nothing on the splash or the first screen needs them, and the
+     same-origin handler below caches each one the first time it is used.
+     Precaching the lot would put another 140KB in front of a reader who
+     may only be trying the web version. */
   'css/fonts/hatton-ultralight.woff2',
   'css/fonts/hatton-medium.woff2',
+  'css/fonts/cormorant-var.woff2',
+  'css/fonts/jost-var.woff2',
+  'css/fonts/sacramento-400.woff2',
   'js/data/lookups.js',
   'js/data/plants.js',
   'js/data/problems.js',
@@ -97,7 +107,7 @@ self.addEventListener('activate', function (e) {
   e.waitUntil(
     caches.keys().then(function (names) {
       return Promise.all(names.map(function (n) {
-        if (n === CACHE || n === FONT_CACHE) return null;
+        if (n === CACHE) return null;
         return caches.delete(n);
       }));
     }).then(function () { return self.clients.claim(); })
@@ -205,43 +215,6 @@ self.addEventListener('fetch', function (e) {
   if (req.method !== 'GET') return;
 
   const url = new URL(req.url);
-
-  /* ---- Typefaces: cache-first, on first use ----
-     This branch has to come before the same-origin guard, which is why the
-     app previously worked offline while looking nothing like itself: the
-     shell was cached, the four typefaces were not, so a second-day offline
-     visit fell back to system serif and the whole Viridium direction — which
-     is carried almost entirely by the type — collapsed.
-
-     They cannot be precached at install. Google returns a different woff2
-     manifest depending on what the requesting browser supports, so the real
-     file URLs are not knowable until the CSS has been parsed. First online
-     load fills the cache; every load after that is instant and offline-safe.
-
-     Cached even when `res.ok` is false. A cross-origin stylesheet or font is
-     fetched no-cors, which yields an opaque response with status 0 — and the
-     shell's `res.ok` test, sensible for our own files, would silently reject
-     every one of these. Opaque responses replay from cache perfectly well;
-     we just cannot read them, which we never need to. */
-  if (FONT_HOSTS.indexOf(url.hostname) !== -1) {
-    e.respondWith(
-      caches.open(FONT_CACHE).then(function (cache) {
-        return cache.match(req).then(function (hit) {
-          if (hit) return hit;
-          return fetch(req).then(function (res) {
-            if (res) cache.put(req, res.clone());
-            return res;
-          }).catch(function () {
-            /* Offline on a first visit. Resolving undefined lets the browser
-               fall back to its own network error for this one subresource,
-               which degrades to system type rather than a failed page. */
-            return undefined;
-          });
-        });
-      })
-    );
-    return;
-  }
 
   // Everything else: same-origin only.
   if (url.origin !== self.location.origin) return;
