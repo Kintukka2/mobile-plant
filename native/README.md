@@ -81,6 +81,21 @@ npm run android    # copy, sync, open Android Studio
 opening anything. On a Mac the first `sync` also runs `pod install`, which
 is the step that was skipped when these projects were scaffolded on Linux.
 
+### Two prompts Android Studio will ask on a first open
+
+Both are expected and neither indicates a problem.
+
+**"Please Select Gradle JVM to Import Project."** Capacitor pins Gradle
+8.11.1, which runs on Java 8 to 23, and a machine with a newer JDK as its
+default trips this. Take **Use JVM 21** — Android Studio bundles 21 and
+`capacitor.build.gradle` already compiles against it, so it is the matching
+answer rather than a workaround. The choice is stored in the IDE, not the
+repository, so everyone opening this project fresh sees it once.
+
+**"Sync is taking a significant amount of time to download dependencies."**
+A notice, not a warning. The first sync fetches Gradle itself and the whole
+Android dependency set.
+
 ### Without a command line
 
 `prepare-android.bat` on Windows and `prepare-ios.command` on a Mac do the
