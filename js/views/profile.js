@@ -298,18 +298,21 @@ window.ViewProfile = (function () {
                 'Nothing due, nothing from me.</span></span>' +
           '</label>' +
           (on
+            /* The hour and its Set button share a row. Set starts inert and
+               only wakes once the hour differs from what is saved, so there
+               is never a live button that would do nothing, and never a
+               changed hour sitting unsaved with no way to tell. */
             ? '<hr class="divider">' +
-              '<label class="field" style="margin:0"><span class="label">What time</span>' +
-                '<select class="input select" id="p-remind-hour">' +
+              '<span class="label">What time</span>' +
+              '<div class="row" style="gap:8px;align-items:center;margin-top:6px">' +
+                '<select class="input select" id="p-remind-hour" style="flex:1;min-width:0">' +
                   [6, 7, 8, 9, 10, 11, 12, 17, 18, 19].map(function (h) {
                     const lbl = h === 12 ? 'Midday' : (h > 12 ? (h - 12) + ' pm' : h + ' am');
                     return '<option value="' + h + '"' + (h === hour ? ' selected' : '') + '>' + lbl + '</option>';
                   }).join('') +
-                '</select></label>' +
-              '<div class="row" style="gap:8px;margin-top:12px">' +
-                '<button class="btn btn-sm btn-soft" data-remind-test="1">' + UI.icon('bell') + 'Send me one now</button>' +
-              '</div>' +
-              '<p class="hint">' + UI.esc(remindPreview()) + '</p>'
+                '</select>' +
+                '<button class="btn btn-sm" id="p-remind-set" disabled>Set</button>' +
+              '</div>'
             : nState === 'denied'
               ? '<p class="hint">Notifications are switched off for Sprout in your phone\'s settings. ' +
                 'That one is out of my hands — it lives alongside every other app\'s.</p>'
@@ -485,8 +488,19 @@ window.ViewProfile = (function () {
     }
 
     const rhour = root.querySelector('#p-remind-hour');
-    if (rhour) {
+    const rset = root.querySelector('#p-remind-set');
+    if (rhour && rset) {
+      /* Saving on change used to re-render the whole view mid-gesture, which
+         on a native select meant the sheet closing under the finger. The
+         button defers that to a deliberate tap. */
+      /* Read off the select rather than the store: the render has already
+         marked the saved hour selected, so this cannot drift from what is
+         on screen, and it needs no default of its own. */
+      const saved = rhour.value;
       rhour.addEventListener('change', function () {
+        rset.disabled = rhour.value === saved;
+      });
+      rset.addEventListener('click', function () {
         Store.updateSettings({ remindHour: Number(rhour.value) });
         UI.toast('I\'ll check in then', 'leaf');
         App.refresh();
