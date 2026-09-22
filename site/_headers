@@ -1,0 +1,19 @@
+# Cloudflare Pages reads this at the root of the published directory.
+#
+# The fonts are content-addressed only by name, so they are immutable in
+# practice: a replaced face gets a new file in css/fonts/ and here together.
+# Everything else is a page that must be allowed to change the moment it is
+# republished, which is what no-cache buys — the browser still revalidates
+# cheaply, it just never serves a stale policy or a stale price.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: geolocation=(), camera=(), microphone=(), interest-cohort=()
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate

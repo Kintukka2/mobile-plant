@@ -1,0 +1,30 @@
+# Cloudflare Pages reads this at the root of the published directory. This one
+# belongs to the app project (sproutevergreen.app); site/_headers is the
+# marketing site's and the two are configured separately.
+#
+# The header that matters here is the one on sw.js. A service worker that the
+# CDN is allowed to hold is a version of the app that can never be replaced:
+# the new sw.js is what tells the browser the cache name changed, so a stale
+# copy of it pins every returning visitor to the old CACHE for as long as the
+# edge keeps it. Bumping CACHE in sw.js does nothing if sw.js itself is stale.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  # geolocation and camera are self, not (): the app asks for both, and a
+  # policy that denies them makes the location button and the diary camera
+  # fail with no dialog and no error anyone would connect to this file.
+  Permissions-Policy: geolocation=(self), camera=(self), microphone=(), interest-cohort=()
+
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/manifest.webmanifest
+  Cache-Control: public, max-age=0, must-revalidate
+
+/css/fonts/*
+  Cache-Control: public, max-age=31536000, immutable

@@ -210,11 +210,33 @@ js/
   weather.js             Open-Meteo client and forecast-derived nudges
   views/*.js             one per screen; species shares discover.js
   app.js                 router, theme, nav, init
+site/                    sproutevergreen.com; its own deploy root, see site/README.md
+_headers, _redirects     Cloudflare Pages config for the app deploy
 .claude/serve.js         dependency-free static server
 CLAUDE.md                architecture notes and invariants for contributors
 .gitignore               local-only Claude settings, OS cruft
 .gitattributes           normalises line endings to LF in commits
 ```
+
+---
+
+## Deployment
+
+Two Cloudflare Pages projects, both with no build command, both redeploying on
+every push to `main`:
+
+| Project | Root directory | Domain |
+| --- | --- | --- |
+| `sprout-app` | `/` | [sproutevergreen.app](https://sproutevergreen.app) — the app itself |
+| `sprout-site` | `site` | [sproutevergreen.com](https://sproutevergreen.com) — landing page and privacy policy |
+
+The app is served from the repository root because that is where it runs from
+everywhere else too — the local server, a `file://` sanity check and the
+Capacitor wrapper all treat this directory as the document root, and a deploy
+that rearranged it would be the only place the paths were different.
+
+`site/README.md` has the click-by-click setup and the reason the typefaces
+appear twice in the repository.
 
 ---
 
