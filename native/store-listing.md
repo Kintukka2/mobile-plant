@@ -78,16 +78,24 @@ Works offline.
 
 ## Screenshots
 
-Five, in `store-assets/screenshots`, in the order they should be uploaded:
-Today, Greenhouse, a plant, Discover, Diagnose. Real screens with seeded
-data, not mockups — what is in them is what the app draws.
+Six, in `store-assets/screenshots`, numbered in the order they should be
+uploaded: Today, Greenhouse, the plan, a plant, Discover, Diagnose. Real
+screens, not mockups — what is in them is what the app draws.
 
-All are 1080x1920, 24-bit PNG with **no alpha channel**, which Play rejects.
-Play wants a minimum of two and allows eight, with every side between 320
-and 3840 and the long side no more than twice the short.
+24-bit PNG with **no alpha channel**, which Play rejects. Play wants a
+minimum of two and allows eight, every side between 320 and 3840, and the
+long side no more than twice the short.
 
-Regenerate them after a UI change with `.claude/seed.html`; the command and
+Five are 1080x1920 and generated from `.claude/seed.html`; the command and
 the reasons behind its odd numbers are in the comment at the top of it.
+
+`3-plan.png` is the exception, and is the one worth keeping. It is a real
+device screenshot of the isometric home view, which cannot be generated
+here: the view is behind a HOME toggle and `mode` starts at `'plan'`, so
+headless — which cannot click — only ever reaches the flat grid. It came in
+at 1080x2229, a ratio of 2.064, which Play rejects; 69px off the top brings
+it to exactly 2:1, and nothing is drawn in the first 116 rows, so nothing
+was lost. If the plan ever needs re-shooting, it has to come off a phone.
 
 ## Category and tags
 

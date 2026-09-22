@@ -232,7 +232,12 @@ window.ViewToday = (function () {
       '</div>' + weatherStrip();
     }
 
-    let html = greeting() + weatherStrip() + nudges();
+    /* The forecast used to sit directly under the greeting, above the one
+       list this screen exists for. It is context for the tasks, not a
+       headline of its own, so it now follows them — what needs doing today
+       is the first thing past the greeting, and the weather explains it
+       afterwards. */
+    let html = greeting() + nudges();
 
     const due = Schedule.tasks(0);
     const soon = Schedule.tasks(7).filter(function (t) { return t.days > 0; });
@@ -251,6 +256,8 @@ window.ViewToday = (function () {
             '<p class="tiny muted mt-0">No plants are in need — great job.</p>' +
           '</div>') +
     '</div>';
+
+    html += weatherStrip();
 
     if (soon.length) {
       html += '<div class="section">' +
