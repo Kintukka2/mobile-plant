@@ -15,15 +15,17 @@ Brand first, then the words a stranger types. There are already several
 plant apps called some variant of Sprout, so the second word is doing real
 work; "Plant Care" is what makes the listing findable at all.
 
-## Short description — 78 / 80
+## Short description — 80 / 80
 
 ```
-Plant care schedules built from real species data, your pots and your weather.
+Plant care schedules built from real species data, your pots, weather, and home.
 ```
 
 Play shows this under the title in search results and it is weighted for
-ranking, so it carries the three nouns the app is actually about rather than
-an adjective.
+ranking, so it carries the nouns the app is actually about rather than an
+adjective. "and home" is the floor plan, which is the one thing no other
+plant app does, and it earns the last five characters — this is exactly at
+the 80 limit, so anything added has to displace something.
 
 ## Full description — 2,211 / 4,000
 
@@ -101,7 +103,13 @@ was lost. If the plan ever needs re-shooting, it has to come off a phone.
 
 - **Category** — Lifestyle. House & Home is the alternative; Lifestyle is
   where the established plant apps sit, so it is where people browse.
-- **Tags** — gardening, plants, home, reminders, hobbies.
+- **Tags** — **House & home** and **Lifestyle**, and nothing else. Play's tag
+  list is a fixed taxonomy with no entry for gardening or plants, so the five
+  obvious ones cannot be typed in. Two true tags beat five vague ones:
+  Weather in particular looks tempting and is wrong, because someone browsing
+  it wants a forecast app and bounces. Tags feed category browsing and
+  recommendations, not text search — the title and descriptions carry the
+  search words, so nothing is lost here.
 - **Contact email** — `kintukka.developer@gmail.com`. It is published on the
   listing and on the privacy page, which is why it is an address made for
   this rather than a personal or work one. If it ever starts collecting
@@ -125,10 +133,12 @@ Expected outcome: **Everyone / PEGI 3 / rated for all ages.**
 
 ## Target audience and content
 
-- **Target age** — 18 and over, or 13+. Not children. The app is not designed
-  for or appealing to children, so keep every under-13 box unticked; ticking
-  one pulls the listing into the Families programme and a much heavier
-  policy review for no benefit.
+- **Target age** — tick **13-15, 16-17 and 18 and over**. Keep every under-13
+  box unticked: ticking one pulls the listing into the Designed for Families
+  programme and a much heavier policy review for no benefit. Do not tick 18+
+  alone either — Play warns on that page that an adults-only audience lets it
+  apply availability restrictions, and there is nothing in a plant tracker
+  that needs them.
 - **Ads** — **No**, the app contains no ads. This is asked separately from
   Data safety and is checked against the binary.
 - **App access** — all functionality is available without an account. Say so;
