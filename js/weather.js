@@ -106,6 +106,8 @@ window.Weather = (function () {
   }
 
   /* ---------- Browser geolocation ---------- */
+  function round2(n) { return Math.round(n * 100) / 100; }
+
   function locateMe(cb) {
     if (!navigator.geolocation) {
       cb(new Error('This browser does not support location lookup.'));
@@ -113,7 +115,14 @@ window.Weather = (function () {
     }
     navigator.geolocation.getCurrentPosition(
       function (pos) {
-        const lat = pos.coords.latitude, lon = pos.coords.longitude;
+        /* Rounded to two places — about 1.1km — before it is stored or sent
+           anywhere. A fortnight's forecast for a houseplant on a windowsill
+           does not change over a kilometre, the nearest-city lookup still
+           returns the same town, and the hemisphere still reads off the
+           sign. What it buys is that the app only ever holds and transmits
+           an approximate location, which is both the lighter thing to
+           declare to the stores and the smaller thing to lose. */
+        const lat = round2(pos.coords.latitude), lon = round2(pos.coords.longitude);
         // Reverse-geocode for a friendly label; fall back to coordinates.
         const url = GEO_URL + '?name=&latitude=' + lat + '&longitude=' + lon + '&count=1&format=json';
         fetchJSON(url, function (err, data) {

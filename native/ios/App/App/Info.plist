@@ -33,7 +33,7 @@
 	     exactly as a native call would. When-in-use only — nothing here
 	     wants a location while the app is closed. -->
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>For a local forecast, so I can offer to stretch or shorten watering before a wet or dry spell. I'll pass the coordinates to Open-Meteo and keep them nowhere but this phone.</string>
+	<string>For a local forecast, so I can offer to stretch or shorten watering before a wet or dry spell. I round it to about a kilometre and send that to Open-Meteo, nowhere else.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

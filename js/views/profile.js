@@ -116,8 +116,8 @@ window.ViewProfile = (function () {
       '<p class="hint">Enough for your seasons and which way a bright window faces. No forecast, ' +
         'so no offers to stretch or shorten watering before a spell of weather.</p>' +
 
-      '<p class="hint" id="loc-note">Weather data comes from Open-Meteo. Your location is never saved ' +
-        'by us.</p>';
+      '<p class="hint" id="loc-note">I round it to about a kilometre, then send that to Open-Meteo for ' +
+        'the forecast. Nowhere else, and there\'s no account behind any of it.</p>';
 
     UI.openSheet('Your location', body, function (root) {
       const input = root.querySelector('#loc-q');
