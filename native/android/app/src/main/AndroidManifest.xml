@@ -38,4 +38,26 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!--
+      Location, for the Open-Meteo forecast and nothing else. The app calls
+      navigator.geolocation and Capacitor's BridgeWebChromeClient already
+      intercepts the WebView's prompt and asks the OS for both of these at
+      runtime — but Android denies an undeclared permission instantly and
+      without a dialog, so without these two lines the reader taps "Use my
+      location" and is told it was refused by something they were never
+      shown. That is exactly what happened on the first device build.
+
+      Coarse is all a forecast needs. Fine is declared alongside it because
+      Capacitor requests the pair, and because on Android 11 and below its
+      approximate-only fallback does not apply — declaring coarse alone
+      would quietly break location for every device under 12. Android 12
+      and up show the Precise/Approximate choice, and Approximate is a
+      perfectly good answer here.
+
+      Foreground only. Nothing in the app wants a location while it is
+      closed, so ACCESS_BACKGROUND_LOCATION is deliberately absent.
+    -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 </manifest>

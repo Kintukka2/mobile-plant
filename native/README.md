@@ -180,8 +180,19 @@ set in the app's own faces — see the comment at the top of
 
 ## Things worth knowing
 
-- **Apple's privacy label is "no data collected".** That is true, and it is
-  worth keeping true.
+- **The privacy labels are not "no data collected".** They very nearly were
+  declared that way here, and it would have been wrong. There is no account,
+  no server of ours and no telemetry — but when the reader sets a location,
+  `js/weather.js` puts the coordinates in the query string of two Open-Meteo
+  requests: one to reverse-geocode the city name, one for the forecast. That
+  is location data leaving the device for a third party, which both stores
+  want declared.
+
+  So: **Apple** — Location, linked to no identity, used for App
+  Functionality. **Play Data Safety** — approximate location, collected and
+  shared, App Functionality, not required. Everything else genuinely is
+  local, and photos, diary entries, rooms and plants never leave the phone
+  at all. Under-declaring the form is a policy removal, not a warning.
 - **The service worker may not register in the shell.** It does not matter.
   Caching is what it is for, and in a native app every file is already on
   the device. `registerSW()` in `../js/app.js` already gives up quietly when
