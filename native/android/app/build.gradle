@@ -1,5 +1,23 @@
 apply plugin: 'com.android.application'
 
+/* Release signing, read from a file that is never committed.
+   --------------------------------------------------------------------------
+   Play rejects an unsigned bundle and an upload signed with the debug key,
+   so this block is the difference between having a build and having one that
+   can be uploaded. The key itself lives outside the repository: losing it or
+   leaking it are both unrecoverable in their own way, and a keystore in git
+   history cannot be taken back out of everyone's clones.
+
+   Create native/android/keystore.properties from keystore.properties.example
+   and it is picked up automatically. Leave it absent and the release build
+   still runs, unsigned — useful for checking the build works before there is
+   a key, and the reason this is a conditional rather than a hard failure. */
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('keystore.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace "com.sproutevergreen.app"
     compileSdk rootProject.ext.compileSdkVersion
@@ -16,8 +34,21 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            if (keystorePropertiesFile.exists()) {
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+            }
+        }
+    }
     buildTypes {
         release {
+            if (keystorePropertiesFile.exists()) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

@@ -3320,7 +3320,13 @@ img { max-width: 100%; display: block; }
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   column-gap: 18px;
-  margin-top: 14px;
+  /* Bottom margin matches .section so the card keeps the page's rhythm
+     instead of butting straight into the next heading, which is what it did
+     when it only had a top margin. Adjacent margins collapse, so following a
+     .section this is one 42px gap rather than two stacked. No divider: the
+     card already carries a border, and a rule under a bordered box is a
+     second line doing the first one's job. */
+  margin: 14px 0 42px;
   padding: 22px;
   border: 1px solid var(--hair);
   border-radius: var(--r-lg);
