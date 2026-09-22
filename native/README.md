@@ -92,25 +92,57 @@ Two platform limits shaped the code, both handled in `notify.js`:
 | iOS keeps 60 pending notifications | The month-long horizon is capped below that |
 | Android 13 asks at runtime | The Profile toggle asks, never the app on its own |
 
+The small icon is `ic_stat_sprout`, named in `capacitor.config.json` beside
+the `iconColor`. Both are needed: without the icon Android draws a grey
+square, and without the colour it tints the notification with the system
+accent rather than ours.
+
 Timing is deliberately inexact. A reminder wants to arrive in the morning,
 not at 8:00:00, and exact alarms cost an extra Android permission that this
 does not need.
 
+## Icons
+
+`make-icons.js` draws every launcher, notification, splash and store image
+from one definition of the mark. Run it with `npm run icons`.
+
+The mark already existed in five places — the favicon, the touch icon, the
+manifest, the sidebar and `UI.icon('mark')` — and hand-drawing a sixth and
+seventh set for the stores is exactly how those five would drift apart. The
+script is the same idea as `brand.html` reading its swatches out of the live
+cascade: one source, everything else derived.
+
+Three platform rules are encoded in it, each of which fails in a way that is
+expensive to discover late:
+
+| Asset | Rule |
+| --- | --- |
+| iOS app icon and splash | **No alpha channel.** App Store Connect rejects a transparent app icon at upload, after the archive |
+| Android notification | **Must be white on transparent.** Android keeps only the alpha and throws the colour away |
+| Android adaptive foreground | The 108dp canvas is cropped to its middle 72dp, so the glyph is sized against that window, not the file |
+
+The adaptive icon's background is a colour resource rather than an image and
+Capacitor ships it white, so the script writes that file too — otherwise a
+foreground drawn for the deep field sits on a white disc.
+
+The notification icon is the one place the mark is redrawn rather than
+scaled. At 24dp it is half the launcher's size, and the brand rule already
+says the stroke thickens below 32px; 8.5 against the usual 5 is that rule
+applied, chosen with all four candidate weights side by side at true size.
+
+`store-assets/` holds the two images Play needs in the console rather than in
+the build. The feature graphic is a page, not a drawing, so the wordmark is
+set in the app's own faces — see the comment at the top of
+`feature-graphic.html` for the one command that regenerates it.
+
 ## Still to do before a first submission
 
-- **The icons are Capacitor's placeholders.** Everything in
-  `ios/App/App/Assets.xcassets` and `android/app/src/main/res/mipmap-*` is
-  still the stock Capacitor logo. Sprout's mark is the three paths in
-  `../index.html`, drawn at 5% stroke on `#0A1410`.
-- **Android needs a separate notification icon**, which is not the app
-  icon: a white-on-transparent silhouette at
-  `android/app/src/main/res/drawable/ic_stat_sprout.png`, then named in
-  `capacitor.config.json` under `plugins.LocalNotifications.smallIcon`.
-  Without one, Android draws a grey square. `iconColor` is already set to
-  the brand green.
 - **Signing.** An upload key for Play and a distribution certificate for
   Apple. Neither belongs in the repository; Play App Signing holds the
   release key for you.
+- **Store listing copy and screenshots.** Play wants at least two phone
+  screenshots; both stores want a description. The app's own splash and
+  Today screen are the obvious first two.
 
 ## Things worth knowing
 
