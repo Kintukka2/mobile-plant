@@ -102,9 +102,12 @@ was lost. If the plan ever needs re-shooting, it has to come off a phone.
 - **Category** — Lifestyle. House & Home is the alternative; Lifestyle is
   where the established plant apps sit, so it is where people browse.
 - **Tags** — gardening, plants, home, reminders, hobbies.
-- **Contact email** — needs a real address. Use one on the domain, such as
-  `privacy@sproutevergreen.com` forwarded wherever you like. It is published
-  on the listing, so it should not be a personal or work address.
+- **Contact email** — `kintukka.developer@gmail.com`. It is published on the
+  listing and on the privacy page, which is why it is an address made for
+  this rather than a personal or work one. If it ever starts collecting
+  scraped spam, point a `hello@sproutevergreen.com` alias at it with
+  Cloudflare Email Routing and change the three places it appears — both
+  pages in `site/` and this line.
 - **Website** — `https://sproutevergreen.com`
 - **Privacy policy** — `https://sproutevergreen.com/privacy`, which is
   the page in this repository at `site/privacy.html`. It has to be live before
