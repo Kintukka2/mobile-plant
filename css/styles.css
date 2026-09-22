@@ -286,7 +286,7 @@
   --dur-3: 620ms;
 
   /* --- Metrics --- */
-  --nav-h:  70px;
+  --nav-h:  78px;   /* 70 of row plus the 8 above it; the inset is added on top in .tabbar */
   --side-w: 260px;
   --pad:    22px;
   --maxw:   1080px;
@@ -809,7 +809,7 @@ img { max-width: 100%; display: block; }
 .main {
   max-width: var(--maxw);
   margin: 0 auto;
-  padding: 0 var(--pad) calc(var(--nav-h) + 40px);
+  padding: 0 var(--pad) calc(var(--nav-h) + 40px + env(safe-area-inset-bottom, 0px));
 }
 
 /* --- Topbar --- */
@@ -838,7 +838,14 @@ img { max-width: 100%; display: block; }
   display: flex;
   align-items: flex-end;
   gap: 14px;
-  padding: 26px var(--pad) 16px;
+  /* The top inset is not optional here. The viewport is viewport-fit=cover
+     and the shell draws edge to edge, so without it the title sits directly
+     under the system clock — which is exactly what it did on the first
+     device build: "TODAY" with the time printed through the O. 26px clears
+     nothing on a phone whose status bar is nearer 48. The blurred gradient
+     still runs up behind the bar, so the field reaches the top of the screen
+     and only the text is moved down. */
+  padding: calc(26px + env(safe-area-inset-top, 0px)) var(--pad) 16px;
   margin-inline: calc(var(--pad) * -1);
   background: linear-gradient(to bottom, var(--bg-1) 58%, rgba(10, 20, 16, 0));
   backdrop-filter: blur(14px);
@@ -1043,11 +1050,16 @@ img { max-width: 100%; display: block; }
   position: fixed;
   left: 0; right: 0; bottom: 0;
   z-index: 70;
-  height: var(--nav-h);
+  /* The inset is added to the height, not taken out of it. It was inside a
+     fixed 70px with border-box sizing, so on a phone with a gesture bar the
+     icons lost that space and ended up pressed against the bottom edge. The
+     8px of top padding is the other half of the same complaint: the row had
+     nothing between it and the hairline above. */
+  height: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
   display: grid;
   grid-auto-flow: column;
   align-items: stretch;
-  padding: 0 4px calc(env(safe-area-inset-bottom, 0px));
+  padding: 8px 4px calc(env(safe-area-inset-bottom, 0px));
   background: rgba(8, 16, 12, 0.72);
   backdrop-filter: blur(22px) saturate(140%);
   -webkit-backdrop-filter: blur(22px) saturate(140%);
