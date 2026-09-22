@@ -22,6 +22,18 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<!-- Shown verbatim in the system permission dialog, so it is written in
+	     the app's own voice rather than as a policy notice. Same sentence the
+	     onboarding step uses, because the reader meets this dialog one tap
+	     after reading that screen.
+
+	     Not optional: iOS refuses the request outright without a usage
+	     string, and App Store review rejects a binary that calls for a
+	     location without one. WKWebView's navigator.geolocation needs it
+	     exactly as a native call would. When-in-use only — nothing here
+	     wants a location while the app is closed. -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>For a local forecast, so I can offer to stretch or shorten watering before a wet or dry spell. I'll pass the coordinates to Open-Meteo and keep them nowhere but this phone.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

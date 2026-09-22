@@ -81,6 +81,21 @@ npm run android    # copy, sync, open Android Studio
 opening anything. On a Mac the first `sync` also runs `pod install`, which
 is the step that was skipped when these projects were scaffolded on Linux.
 
+### Two prompts Android Studio will ask on a first open
+
+Both are expected and neither indicates a problem.
+
+**"Please Select Gradle JVM to Import Project."** Capacitor pins Gradle
+8.11.1, which runs on Java 8 to 23, and a machine with a newer JDK as its
+default trips this. Take **Use JVM 21** — Android Studio bundles 21 and
+`capacitor.build.gradle` already compiles against it, so it is the matching
+answer rather than a workaround. The choice is stored in the IDE, not the
+repository, so everyone opening this project fresh sees it once.
+
+**"Sync is taking a significant amount of time to download dependencies."**
+A notice, not a warning. The first sync fetches Gradle itself and the whole
+Android dependency set.
+
 ### Without a command line
 
 `prepare-android.bat` on Windows and `prepare-ios.command` on a Mac do the
@@ -165,8 +180,19 @@ set in the app's own faces — see the comment at the top of
 
 ## Things worth knowing
 
-- **Apple's privacy label is "no data collected".** That is true, and it is
-  worth keeping true.
+- **The privacy labels are not "no data collected".** They very nearly were
+  declared that way here, and it would have been wrong. There is no account,
+  no server of ours and no telemetry — but when the reader sets a location,
+  `js/weather.js` puts the coordinates in the query string of two Open-Meteo
+  requests: one to reverse-geocode the city name, one for the forecast. That
+  is location data leaving the device for a third party, which both stores
+  want declared.
+
+  So: **Apple** — Location, linked to no identity, used for App
+  Functionality. **Play Data Safety** — approximate location, collected and
+  shared, App Functionality, not required. Everything else genuinely is
+  local, and photos, diary entries, rooms and plants never leave the phone
+  at all. Under-declaring the form is a policy removal, not a warning.
 - **The service worker may not register in the shell.** It does not matter.
   Caching is what it is for, and in a native app every file is already on
   the device. `registerSW()` in `../js/app.js` already gives up quietly when
