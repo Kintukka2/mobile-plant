@@ -25,7 +25,11 @@ android {
         applicationId "com.sproutevergreen.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
+        /* 2 rather than 1 because version code 1 was uploaded to a closed
+           testing draft that Play rejected for targeting API 35. Play keeps
+           a used version code even when the draft is discarded, so reusing
+           it is a second rejection after a second full rebuild. */
+        versionCode 2
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
