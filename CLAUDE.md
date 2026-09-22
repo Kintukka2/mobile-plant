@@ -23,6 +23,14 @@ property that makes this project what it is.
 - **Load order in `index.html` is the dependency graph.** Data and utilities
   first, views next, router last.
 
+`native/` is the one exception, and it is not an exception to the rule
+above. It is the store wrapper: a separate Capacitor project that copies the
+shipped files into its own `www` and bundles them. It has a `package.json`
+of its own and the app has none. Nothing in the app reads from it, no file
+above it imports anything, and deleting the directory would leave the web
+app exactly as it is. It exists so reminders can be scheduled by the
+operating system instead of by a server. See `native/README.md`.
+
 ## Running it
 
 The app must be served over `http://` — service workers, the manifest and the
@@ -242,15 +250,25 @@ All local; no account, no server, no telemetry.
 | `sprout.theme` | Selected theme |
 | `sprout.photo.*` | One resized JPEG data URL per photo |
 
-One thing is **not** in localStorage, and cannot be. A service worker has no
-access to it, so it could never work out what is due. `js/notify.js` writes a
+One thing is **not** in localStorage, and cannot be. `js/notify.js` writes a
 reminder digest to IndexedDB (`sprout` → `kv` → `digest.v1`) on every save:
 one finished sentence per day for the next month, plus the plant ids behind
-it. Whatever ends up waking the device — a push service, or a native shell
-using the OS scheduler — only has to look up today and show what it finds,
-which is why `sw.js` knows nothing about plants. A Watered tap with no page
-open is parked at `pending.v1` and drained on the next load, for the same
-reason: only the page can reach the store.
+it.
+
+**Reminders are scheduled by the operating system, never by a server.** On
+the native shell `Notify` hands that digest to the local-notifications
+plugin, which fires them whether the app is running or not. There is no push
+service, no subscription and no account, so the promise at the top of this
+section survives whole. A browser cannot schedule anything for later, so the
+web version says so in Profile and offers only to show one on request —
+never a switch it has no way of honouring.
+
+The digest is written on both runtimes and the `push` handler in `sw.js`
+still reads it, which is what a web-push route would need if one is ever
+wanted. That is why `sw.js` knows nothing about plants: it looks up today
+and shows the sentence it finds. A Watered tap with no page open is parked
+at `pending.v1` and drained on the next load, because only the page can
+reach the store.
 
 localStorage is ~5MB, which is the entire budget. Photos are downscaled to a
 1000px long edge at 72% quality (`js/photos.js`) to fit inside it. Every

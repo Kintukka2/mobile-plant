@@ -267,21 +267,31 @@ window.ViewProfile = (function () {
     '</div>';
 
     /* --- Reminders ---
-       The permission prompt is never asked for on its own account: the
-       toggle asks, and only after the reader has reached for it. A cold
+       Two shapes, because two runtimes can promise different things. The
+       shell schedules with the operating system and can keep a morning
+       appointment; a browser cannot wake a phone at all. Offering the same
+       switch in both would be the app promising something it has no way of
+       delivering, which is the one thing the voice rules will not have.
+
+       The permission prompt is never raised on its own account either. The
+       toggle raises it, and only once the reader has reached for it: a cold
        prompt on a first visit is the quickest way to be refused for good,
        and a refusal cannot be taken back from inside the page. */
     if (window.Notify) {
       const nState = Notify.state();
-      const on = !!settings.remind && nState === 'granted';
+      const native = Notify.isNative();
+      const on = native && !!settings.remind && nState === 'granted';
       const hour = typeof settings.remindHour === 'number' ? settings.remindHour : 8;
       html += '<div class="section">' +
         '<div class="section-head"><h2 class="section-title">Reminders</h2>' +
           '<span class="section-note">one a day, at most</span></div>' +
-        '<div class="card">' +
+        '<div class="card">';
+
+      if (native) {
+        html +=
           '<label class="row" style="gap:10px;cursor:pointer">' +
             '<input type="checkbox" id="p-remind"' + (on ? ' checked' : '') +
-              (nState === 'unsupported' || nState === 'denied' ? ' disabled' : '') + ' ' +
+              (nState === 'denied' ? ' disabled' : '') + ' ' +
               'style="width:18px;height:18px;accent-color:var(--leaf)">' +
             '<span style="flex:1;min-width:0"><span style="font-weight:600;font-size:14px">Remind me in the mornings</span>' +
               '<span class="tiny muted" style="display:block">Only on the days something is actually due. ' +
@@ -301,14 +311,22 @@ window.ViewProfile = (function () {
               '</div>' +
               '<p class="hint">' + UI.esc(remindPreview()) + '</p>'
             : nState === 'denied'
-              ? '<p class="hint">Your browser is blocking notifications for Sprout. That switch lives in the ' +
-                'browser\'s own settings for this site, not in here.</p>'
-              : nState === 'unsupported'
-                ? '<p class="hint">This browser cannot show notifications. On an iPhone, add Sprout to the ' +
-                  'Home Screen first and they start working.</p>'
-                : '') +
-        '</div>' +
-      '</div>';
+              ? '<p class="hint">Notifications are switched off for Sprout in your phone\'s settings. ' +
+                'That one is out of my hands — it lives alongside every other app\'s.</p>'
+              : '');
+      } else {
+        html +=
+          '<p class="hint" style="margin-top:0">Scheduled reminders come with the app. In a browser I can\'t ' +
+            'wake your phone, so here I only ever show one when you ask for it.</p>' +
+          '<p class="hint">' + UI.esc(remindPreview()) + '</p>' +
+          (Notify.state() === 'unsupported'
+            ? ''
+            : '<div class="row" style="gap:8px;margin-top:12px">' +
+                '<button class="btn btn-sm btn-soft" data-remind-test="1">' + UI.icon('bell') + 'Show me one</button>' +
+              '</div>');
+      }
+
+      html += '</div></div>';
     }
 
     /* --- Location & weather --- */
@@ -489,8 +507,16 @@ window.ViewProfile = (function () {
       if (e.target.closest('[data-remind-test]')) {
         const msg = Notify.todayMessage();
         if (!msg) { UI.toast('Nothing is due today, so there is nothing to send', 'leaf'); return; }
-        Notify.show(msg).then(function (ok) {
-          if (!ok) UI.toast('I could not show that one', 'warn');
+        /* On the shell a toggle has already been through this. In a browser
+           there is no toggle, so the button itself is the moment to ask. */
+        Notify.ask().then(function (result) {
+          if (result !== 'granted') {
+            UI.toast(result === 'denied' ? 'Notifications are switched off for Sprout' : 'That needs permission first', 'warn');
+            return;
+          }
+          Notify.show(msg).then(function (ok) {
+            if (!ok) UI.toast('I could not show that one', 'warn');
+          });
         });
         return;
       }

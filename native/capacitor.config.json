@@ -1,0 +1,10 @@
+{
+  "appId": "com.example.sprout",
+  "appName": "Sprout",
+  "webDir": "www",
+  "plugins": {
+    "LocalNotifications": {
+      "iconColor": "#3FBE8B"
+    }
+  }
+}

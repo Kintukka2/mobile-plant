@@ -18,6 +18,15 @@
 # from it, so it must never reach a commit.
 node_modules/
 
+# The store wrapper's generated output. native/www is a copy of the app made
+# by native/copy-web.js on every build, and the two platform directories are
+# scaffolded by Capacitor. All three are reproducible from what is committed,
+# and www in particular would be a second copy of the whole app in the repo.
+native/www/
+native/ios/
+native/android/
+native/.capacitor/
+
 # OS and editor cruft
 Thumbs.db
 ehthumbs.db

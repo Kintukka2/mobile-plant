@@ -2,11 +2,11 @@
    Sprout — reminders
    --------------------------------------------------------------------------
    The web cannot schedule a notification on the device for later. The one
-   API that could was abandoned, so every reliable route to a morning
-   reminder needs something outside the page: a push service with a server
-   behind it, or a native shell using the OS scheduler.
-
-   Both need the same thing from this app, and that is all this file is.
+   API that could was abandoned, so a morning reminder needs something
+   outside the page. Sprout takes the native route: the shell in native/
+   hands the schedule to the operating system, and no server exists at all.
+   The browser version is the try-before-you-install one and says so rather
+   than offering a reminder it can never deliver.
    A service worker cannot read localStorage — only IndexedDB — so it can
    never compute what is due. Instead the app writes a **digest** to
    IndexedDB on every save: one finished sentence per day for the next
@@ -195,7 +195,12 @@ window.Notify = (function () {
     queued = true;
     setTimeout(function () {
       queued = false;
-      try { put(DIGEST_KEY, build()).catch(function () {}); } catch (e) { /* private mode */ }
+      let d;
+      try { d = build(); } catch (e) { return; }
+      /* Written on both runtimes. The shell does not read it, but one code
+         path is worth more than the few bytes it costs there. */
+      try { put(DIGEST_KEY, d).catch(function () {}); } catch (e) { /* private mode */ }
+      if (isNative()) scheduleNative(d);
     }, 400);
   }
 
@@ -210,10 +215,12 @@ window.Notify = (function () {
      ====================================================================== */
 
   function supported() {
+    if (isNative()) return true;
     return typeof Notification !== 'undefined' && 'serviceWorker' in navigator &&
            (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1');
   }
   function state() {
+    if (isNative()) return nativeState;
     if (!supported()) return 'unsupported';
     return Notification.permission;          // 'default' | 'granted' | 'denied'
   }
@@ -221,6 +228,13 @@ window.Notify = (function () {
   /* Only ever called from a tap on the toggle. A permission prompt on first
      open is the fastest way to be denied for good. */
   function ask() {
+    const N = notifier();
+    if (N) {
+      return N.requestPermissions().then(function (r) {
+        nativeState = (r && r.display) === 'granted' ? 'granted' : 'denied';
+        return nativeState;
+      }).catch(function () { return 'denied'; });
+    }
     if (!supported()) return Promise.resolve('unsupported');
     if (Notification.permission !== 'default') return Promise.resolve(Notification.permission);
     return Notification.requestPermission();
@@ -228,6 +242,18 @@ window.Notify = (function () {
 
   function show(msg) {
     if (!msg) return Promise.resolve(false);
+    const N = notifier();
+    if (N) {
+      /* A second out, so the reader watches it arrive rather than finding
+         it already sitting there. Id 1 is outside the date range above, so
+         a test never displaces a real morning. */
+      return N.schedule({ notifications: [{
+        id: 1, title: msg.title, body: msg.body || '',
+        schedule: { at: new Date(Date.now() + 1000) },
+        actionTypeId: (msg.waterIds && msg.waterIds.length) ? ACTION_TYPE : '',
+        extra: { waterIds: msg.waterIds || [], date: iso(UI.today()) }
+      }] }).then(function () { return true; }).catch(function () { return false; });
+    }
     if (!supported() || Notification.permission !== 'granted') return Promise.resolve(false);
     return navigator.serviceWorker.ready.then(function (reg) {
       return reg.showNotification(msg.title, {
@@ -237,6 +263,123 @@ window.Notify = (function () {
         actions: (msg.waterIds && msg.waterIds.length) ? [{ action: 'water', title: 'Watered' }] : []
       }).then(function () { return true; });
     }).catch(function () { return false; });
+  }
+
+  /* ======================================================================
+     The native shell
+     ----------------------------------------------------------------------
+     Everything above is shared. This hands the same digest to the OS as a
+     list of notifications it will fire whether the app is running or not,
+     which is what makes a server unnecessary.
+     ====================================================================== */
+
+  const ACTION_TYPE = 'SPROUT_CARE';
+  /* iOS keeps at most 64 pending local notifications and silently drops the
+     rest, so the month-long horizon is capped below that with room spare. */
+  const MAX_PENDING = 60;
+
+  function plugins() {
+    const C = window.Capacitor;
+    if (!C || typeof C.isNativePlatform !== 'function' || !C.isNativePlatform()) return null;
+    return C.Plugins || null;
+  }
+  function notifier() {
+    const p = plugins();
+    return (p && p.LocalNotifications) || null;
+  }
+  function isNative() { return !!notifier(); }
+
+  /* Permission is async on the shell but the Profile card renders in one
+     pass, so the last known answer is kept here and refreshed behind it. */
+  let nativeState = 'default';
+
+  function refreshNative() {
+    const N = notifier();
+    if (!N || !N.checkPermissions) return Promise.resolve(nativeState);
+    return N.checkPermissions().then(function (r) {
+      const next = (r && r.display) === 'granted' ? 'granted'
+                 : (r && r.display) === 'denied' ? 'denied' : 'default';
+      const changed = next !== nativeState;
+      nativeState = next;
+      if (changed && window.App) App.refresh();
+      return next;
+    }).catch(function () { return nativeState; });
+  }
+
+  /* The date is the id. Rescheduling the same morning then replaces its
+     notification instead of stacking a second one behind it, and 20260924
+     sits well inside the 32-bit id both platforms expect. */
+  function idFor(key) { return Number(key.replace(/-/g, '')); }
+  function isOurs(id) { return id >= 20000101 && id <= 20991231; }
+
+  function scheduleNative(d) {
+    const N = notifier();
+    if (!N) return Promise.resolve(false);
+    return Promise.resolve(N.getPending ? N.getPending() : { notifications: [] })
+      .then(function (r) {
+        const mine = ((r && r.notifications) || []).filter(function (n) { return isOurs(n.id); });
+        if (!mine.length) return null;
+        return N.cancel({ notifications: mine.map(function (n) { return { id: n.id }; }) });
+      })
+      .then(function () {
+        if (!d.on || nativeState !== 'granted') return false;
+        const now = Date.now(), list = [];
+        Object.keys(d.days).sort().forEach(function (k) {
+          if (list.length >= MAX_PENDING) return;
+          const at = UI.fromISO(k);
+          if (!at) return;
+          at.setHours(d.hour, 0, 0, 0);
+          /* Today counts only if its hour is still ahead. Scheduling a time
+             that has passed fires the moment the app is opened, which is
+             the reader being told about their morning in the evening. */
+          if (at.getTime() <= now) return;
+          const m = d.days[k];
+          list.push({
+            id: idFor(k),
+            title: m.title,
+            body: m.body || '',
+            /* Inexact on purpose. A reminder wants to arrive in the
+               morning, not at 8:00:00, and exact alarms cost a permission
+               on Android that this does not need. */
+            schedule: { at: at, allowWhileIdle: false },
+            actionTypeId: (m.waterIds && m.waterIds.length) ? ACTION_TYPE : '',
+            extra: { waterIds: m.waterIds || [], date: k }
+          });
+        });
+        if (!list.length) return false;
+        return N.schedule({ notifications: list }).then(function () { return true; });
+      })
+      .catch(function () { return false; });
+  }
+
+  function initNative() {
+    const N = notifier(), p = plugins();
+    if (!N) return;
+    if (N.registerActionTypes) {
+      N.registerActionTypes({ types: [{ id: ACTION_TYPE, actions: [{ id: 'water', title: 'Watered' }] }] })
+        .catch(function () {});
+    }
+    if (N.addListener) {
+      N.addListener('localNotificationActionPerformed', function (e) {
+        const extra = (e && e.notification && e.notification.extra) || {};
+        if (e && e.actionId === 'water' && (extra.waterIds || []).length) {
+          const n = apply([{ ids: extra.waterIds, kind: 'water', date: extra.date }]);
+          if (n) {
+            UI.toast(n === 1 ? 'Logged one watering' : 'Logged ' + num(n) + ' waterings', 'leaf');
+            if (window.App) App.refresh();
+          }
+          return;
+        }
+        if (window.App) App.go('/today');
+      });
+    }
+    /* Coming back after a week away, the projection has moved on and the
+       schedule with it. Rebuilding on resume is cheap and keeps the two
+       from drifting apart. */
+    if (p && p.App && p.App.addListener) {
+      p.App.addListener('appStateChange', function (st2) { if (st2 && st2.isActive) sync(); });
+    }
+    refreshNative().then(function () { sync(); });
   }
 
   /* ======================================================================
@@ -282,6 +425,7 @@ window.Notify = (function () {
   }
 
   function init() {
+    if (isNative()) initNative();
     listen();
     drain().then(function (n) {
       if (n && window.App) {
@@ -294,6 +438,7 @@ window.Notify = (function () {
 
   return {
     init: init, sync: sync, digest: digest, todayMessage: todayMessage,
-    compose: compose, supported: supported, state: state, ask: ask, show: show
+    compose: compose, supported: supported, state: state, ask: ask, show: show,
+    isNative: isNative
   };
 })();
