@@ -161,6 +161,7 @@ expensive to discover late:
 | Asset | Rule |
 | --- | --- |
 | iOS app icon and splash | **No alpha channel.** App Store Connect rejects a transparent app icon at upload, after the archive |
+| iOS purpose strings | A missing camera or photo-library string **terminates the process** when the picker opens. Info.plist carries all three; adding a fourth file input means checking whether it needs a fourth string |
 | Android notification | **Must be white on transparent.** Android keeps only the alpha and throws the colour away |
 | Android adaptive foreground | The 108dp canvas is cropped to its middle 72dp, so the glyph is sized against that window, not the file |
 

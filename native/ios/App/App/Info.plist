@@ -34,6 +34,28 @@
 	     wants a location while the app is closed. -->
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>For a local forecast, so I can offer to stretch or shorten watering before a wet or dry spell. I round it to about a kilometre and send that to Open-Meteo, nowhere else.</string>
+	<!-- Both of these are load-bearing in a way the location string is not.
+	     A missing location string denies the request; a missing camera or
+	     photo-library string TERMINATES the process the moment the picker is
+	     presented. iOS treats it as a developer error, not a user decision,
+	     so the diary would crash the app on every iPhone rather than
+	     degrading.
+
+	     Three file inputs reach them. js/photos.js sets capture=environment
+	     and wants the camera, falling back to the library. js/views/plan.js
+	     picks a floorplan to trace and deliberately does not set capture — a
+	     floorplan lives in the library, not in front of the lens.
+	     js/views/settings.js takes a JSON backup and needs neither.
+
+	     Written in the first person like the location string, because the
+	     reader meets these as a sentence in a system dialog rather than as a
+	     policy notice. Both claims are checkable: js/photos.js resizes to a
+	     1000px long edge and writes the result to localStorage, and nothing
+	     in the app ever uploads it. -->
+	<key>NSCameraUsageDescription</key>
+	<string>To photograph a plant for its diary. I resize it and keep it on this device — it is never uploaded anywhere.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>To pick a photo for a plant’s diary, or a floorplan to trace your home over. Whatever you choose stays on this device.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
