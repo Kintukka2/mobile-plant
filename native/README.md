@@ -98,6 +98,10 @@ Android dependency set.
 
 ### Without a command line
 
+**Without a Mac, see `ios-setup.md`.** Xcode does not run on Windows and
+nothing emulates it; that file records the two ways round it and which
+one to reach for.
+
 `prepare-android.bat` on Windows and `prepare-ios.command` on a Mac pull,
 install, copy and sync from a double-click, then tell you which folder to
 open. They exist because the install is not optional — see above —
