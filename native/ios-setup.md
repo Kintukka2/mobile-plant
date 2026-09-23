@@ -37,12 +37,39 @@ and git-ignored.
 It lives beside the `.xcodeproj` rather than at the repository root, because
 that is where Xcode Cloud looks.
 
+`native/ios/App/App.xcodeproj/xcshareddata/xcschemes/App.xcscheme` is the
+other half, and it is easy to miss because a Mac supplies it silently.
+**Xcode Cloud can only build a shared scheme.** Capacitor's generated project
+has none: the `App` scheme Xcode writes on first open lives in `xcuserdata/`,
+which the template git-ignores, so a clean checkout offers Xcode Cloud
+nothing to select and the workflow cannot be saved. On a Mac this is one tick
+in Manage Schemes. Here it is written out by hand, and its
+`BlueprintIdentifier` is the `App` target's UUID out of `project.pbxproj` — if
+that project is ever regenerated from scratch, the UUID changes and the
+scheme has to follow it.
+
+`ITSAppUsesNonExemptEncryption` is set to `false` in `Info.plist`. The app's
+only cryptography is HTTPS to Open-Meteo, which is exempt. Leaving the key
+out does not mean "no" — it means every upload parks in Processing until the
+export-compliance question is answered by hand in App Store Connect.
+
+### The one thing that still needs a value from you
+
+`DEVELOPMENT_TEAM` is not set in `project.pbxproj`. Signing is already
+`Automatic`, and Xcode Cloud issues the certificate and profile itself, but
+`xcodebuild archive` refuses to run without a team id — *Signing for "App"
+requires a development team.* The id is the ten-character string at
+developer.apple.com → Account → Membership details. It is not a secret; it
+appears in every provisioning profile and is safe to commit.
+
 ### Setting it up
 
 1. **App Store Connect → your app → Xcode Cloud** (the tab beside
    Distribution and TestFlight).
 2. Grant access to `Kintukka2/mobile-plant` when prompted.
 3. **Product**: the `App` scheme. **Workspace**: `native/ios/App/App.xcworkspace`.
+   If the scheme does not appear in that menu, the shared scheme above is
+   missing or its UUID no longer matches the target.
 4. **Start condition**: a branch change on `main`.
 5. **Action**: Archive, destination **iOS**.
 6. **Post-action**: TestFlight (Internal Testing).
@@ -89,8 +116,8 @@ App Store Connect gates a build behind metadata, the same way Play does.
 | App Privacy | `native/store-privacy.md` § Apple |
 | Privacy policy URL | `https://sproutevergreen.com/privacy` |
 | Support URL | `https://sproutevergreen.com` |
-| Category | Lifestyle, primary; leave secondary empty |
-| Age rating | Everyone, for the reasons in `store-listing.md` § Content rating |
+| Category | Lifestyle, primary; Reference, secondary |
+| Age rating | 4+ — every question in Apple's questionnaire answers None or No |
 | Pricing | Free |
 
 Two Apple-specific traps:
