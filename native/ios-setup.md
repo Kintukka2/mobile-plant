@@ -170,6 +170,28 @@ Settings → Secrets and variables → Actions → New repository secret.
 | `APPSTORE_API_ISSUER_ID` | the Issuer ID, a UUID |
 | `APPSTORE_API_PRIVATE_KEY` | the whole `.p8` file, `BEGIN`/`END` lines included |
 
+### The Release configuration signs for distribution
+
+Capacitor's generated project sets `CODE_SIGN_IDENTITY = "iPhone Developer"`
+at the **project level, in both configurations** — Release included. With
+automatic signing that string decides which kind of profile Xcode asks for,
+so an archive went looking for a development profile and failed with:
+
+```
+No profiles for 'com.sproutevergreen.app' were found: Xcode couldn't find
+any iOS App Development provisioning profiles matching 'com.sproutevergreen.app'
+```
+
+Misleading, because nothing is missing at Apple's end. `-allowProvisioningUpdates`
+would happily create the profile it needs; it cannot create a *development*
+profile when the only certificate in the keychain is an Apple Distribution
+one, and a distribution certificate is the only kind that can ship to the
+store.
+
+The Release configuration now says `Apple Distribution`. Debug is left alone
+so opening the project on a Mac and running on a device still behaves
+normally.
+
 ### Build numbers
 
 `CURRENT_PROJECT_VERSION` is overridden with the workflow run number rather
@@ -223,6 +245,8 @@ the whole of it. No step has run on a macOS runner.
 weight unless Route A ever becomes reachable. Its logic follows the same
 sequence as `prepare-ios.command`, which is known to work on a real Mac.
 
-Expect the first build to fail. That is the normal cost of a CI setup nobody
-could dry-run, not a sign the approach is wrong. The likely places, in order:
-`npx cap sync ios`, the keychain import, and the first signing step.
+The first run got as far as `xcodebuild archive` — `npm ci`, CocoaPods,
+`cap sync` and the keychain import all worked on a real runner, so those
+are no longer guesses. It failed on the signing identity, which is the fix
+recorded above. Everything downstream of the archive — the export, the
+`.ipa`, `altool --validate-app` and the upload — has still never run.
