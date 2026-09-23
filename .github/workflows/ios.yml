@@ -7,10 +7,12 @@
 #  no button, so the recommended route in native/ios-setup.md is unreachable
 #  without a Mac. This is the fallback, and it is the one in use.
 #
-#  Manual trigger only, deliberately. This repository is private, so macOS
-#  minutes are billed at ten times the normal rate against the account's
-#  included allowance — a build on every push would exhaust a month in an
-#  afternoon. Run it when there is something to ship.
+#  Manual trigger only, deliberately. The repository is public, so macOS
+#  minutes are free and unmetered — cost is no longer the reason. The reason
+#  is that a successful run uploads to App Store Connect, and every upload
+#  burns a build number permanently (Apple rejects one it has seen before,
+#  even from a deleted build) and pushes a new build at TestFlight testers.
+#  Running on every push to main would do both for a typo in a comment.
 # =============================================================================
 name: iOS build and upload
 

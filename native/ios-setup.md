@@ -102,13 +102,21 @@ every first failure is in `ci_post_clone.sh`, not in the app.
 `.github/workflows/ios.yml`. It builds on a macOS runner, signs, and uploads
 to App Store Connect.
 
-**Manual trigger only.** This repository is private, so macOS minutes are
-billed at **ten times** the normal rate against the account's included
-allowance. An earlier draft of this file claimed the runners were free
-because public repositories get them at no cost — true, and irrelevant here.
-Building on every push would spend a month's allowance in an afternoon, so
-the workflow runs from the Actions tab when there is something to ship, with
-a checkbox to build without uploading.
+**The repository was made public for this.** While it was private, GitHub
+Free's 2,000 included minutes were billed at **ten times** the rate for
+macOS — about 200 real macOS minutes, or a dozen or so builds a month, with
+Actions refusing to start jobs at the cap rather than billing over. That is
+survivable for shipping and hopeless for bringing up a pipeline that has
+never run, where ten to twenty failed attempts is ordinary and a failure
+costs exactly what a success does. Public repositories get standard runners,
+macOS included, free and unmetered. Nothing was exposed by the switch: no
+key, certificate or password has ever been committed on any branch, and
+repository secrets are never handed to workflows triggered from a fork.
+
+**Manual trigger only**, with a checkbox to build without uploading. Cost is
+no longer the reason — a successful run uploads to App Store Connect, and
+every upload permanently consumes a build number and pushes a new build at
+TestFlight testers. Neither should happen because of a typo in a comment.
 
 ### Two artefacts, not four
 
