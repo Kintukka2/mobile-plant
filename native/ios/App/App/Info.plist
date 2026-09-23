@@ -56,6 +56,14 @@
 	<string>To photograph a plant for its diary. I resize it and keep it on this device — it is never uploaded anywhere.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>To pick a photo for a plant’s diary, or a floorplan to trace your home over. Whatever you choose stays on this device.</string>
+	<!-- Answers the export-compliance question once, here, instead of once
+	     per upload in App Store Connect. The only cryptography the app uses is
+	     HTTPS, for the Open-Meteo forecast — exempt under the standard
+	     exemption, so the honest answer is false. Omitting the key does not
+	     mean "no": it means every single build stops in Processing and waits
+	     for the question to be answered by hand. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
