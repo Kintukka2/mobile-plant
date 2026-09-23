@@ -170,27 +170,52 @@ Settings → Secrets and variables → Actions → New repository secret.
 | `APPSTORE_API_ISSUER_ID` | the Issuer ID, a UUID |
 | `APPSTORE_API_PRIVATE_KEY` | the whole `.p8` file, `BEGIN`/`END` lines included |
 
-### The Release configuration signs for distribution
+### Signing is entirely automatic, and nothing may override it
 
 Capacitor's generated project sets `CODE_SIGN_IDENTITY = "iPhone Developer"`
-at the **project level, in both configurations** — Release included. With
-automatic signing that string decides which kind of profile Xcode asks for,
-so an archive went looking for a development profile and failed with:
+at the **project level, in both configurations**, while the target sets
+`CODE_SIGN_STYLE = Automatic`. Those two cannot coexist, and the first two
+runs on a real macOS runner found both halves of that in turn.
+
+Run 1, with the template as generated:
 
 ```
 No profiles for 'com.sproutevergreen.app' were found: Xcode couldn't find
 any iOS App Development provisioning profiles matching 'com.sproutevergreen.app'
 ```
 
-Misleading, because nothing is missing at Apple's end. `-allowProvisioningUpdates`
-would happily create the profile it needs; it cannot create a *development*
-profile when the only certificate in the keychain is an Apple Distribution
-one, and a distribution certificate is the only kind that can ship to the
-store.
+Under automatic signing the identity string decides which *kind* of profile
+Xcode asks for, and `"iPhone Developer"` asks for a development one.
+`-allowProvisioningUpdates` will create what it needs, but only an Apple
+Distribution certificate is imported here, and distribution is the only kind
+that can reach the store.
 
-The Release configuration now says `Apple Distribution`. Debug is left alone
-so opening the project on a Mac and running on a device still behaves
-normally.
+Run 2, after changing Release to `"Apple Distribution"`:
+
+```
+App has conflicting provisioning settings. App is automatically signed for
+development, but a conflicting code signing identity Apple Distribution has
+been manually specified.
+```
+
+Which is the real rule: with `CODE_SIGN_STYLE = Automatic`, **any**
+hand-written `CODE_SIGN_IDENTITY` is a conflict, whatever its value. Xcode
+chooses the identity and there is no supported way to lean on that choice
+from the build settings.
+
+So both lines are gone. The target keeps `CODE_SIGN_STYLE = Automatic` and
+`DEVELOPMENT_TEAM`, and nothing else touches signing.
+
+**If that still fails asking for a development profile**, the answer is not
+another build setting. Automatic signing archives with a development
+identity and `-exportArchive` re-signs for distribution afterwards, so the
+runner needs a development certificate as well — either created on the fly
+by `-allowProvisioningUpdates`, which is documented to create certificates
+and not only profiles, or imported like the distribution one. Failing that,
+switch the Release configuration to manual signing with an App Store
+provisioning profile downloaded from the portal and carried as a sixth
+secret. That is the deterministic option, and the cost of it is a profile
+that expires every year.
 
 ### Build numbers
 
@@ -245,8 +270,11 @@ the whole of it. No step has run on a macOS runner.
 weight unless Route A ever becomes reachable. Its logic follows the same
 sequence as `prepare-ios.command`, which is known to work on a real Mac.
 
-The first run got as far as `xcodebuild archive` — `npm ci`, CocoaPods,
+Two runs have reached `xcodebuild archive`. `npm ci`, CocoaPods,
 `cap sync` and the keychain import all worked on a real runner, so those
-are no longer guesses. It failed on the signing identity, which is the fix
-recorded above. Everything downstream of the archive — the export, the
-`.ipa`, `altool --validate-app` and the upload — has still never run.
+are no longer guesses, and the runner image carries Xcode 26.6 with the
+iOS 26.5 SDK. Both runs failed on signing, for the two reasons recorded
+above.
+
+Everything downstream of the archive — the export, the `.ipa`,
+`altool --validate-app` and the upload — has still never run once.
