@@ -53,14 +53,16 @@ only cryptography is HTTPS to Open-Meteo, which is exempt. Leaving the key
 out does not mean "no" — it means every upload parks in Processing until the
 export-compliance question is answered by hand in App Store Connect.
 
-### The one thing that still needs a value from you
-
-`DEVELOPMENT_TEAM` is not set in `project.pbxproj`. Signing is already
-`Automatic`, and Xcode Cloud issues the certificate and profile itself, but
-`xcodebuild archive` refuses to run without a team id — *Signing for "App"
-requires a development team.* The id is the ten-character string at
-developer.apple.com → Account → Membership details. It is not a secret; it
-appears in every provisioning profile and is safe to commit.
+`DEVELOPMENT_TEAM = 67UQU5992R` is set on both build configurations of the
+`App` target. Signing stays `Automatic` and Xcode Cloud still issues the
+certificate and profile itself, but `xcodebuild archive` refuses to run with
+no team id at all — *Signing for "App" requires a development team.* The id
+is not a secret: it is stamped into every provisioning profile the account
+ever issues, which is why it lives in the project file rather than in a
+build variable. It is the ten-character string on App Store Connect →
+Users and Access → your user → Team ID, or at developer.apple.com →
+Membership details. Do not confuse it with the Developer ID on the same
+page, which is a UUID and is not what the build setting wants.
 
 ### Setting it up
 
