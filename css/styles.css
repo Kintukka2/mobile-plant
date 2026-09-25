@@ -4474,7 +4474,12 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
 
   /* Content column keeps its measure, offset inside the remaining space. */
   .topbar-titles { min-width: 0; }
-  .topbar { padding: 30px 0 18px; }
+  /* var(--pad), not 0. The shorthand replaces the base rule's horizontal
+     padding, but not its margin-inline: calc(var(--pad) * -1) — so a zero
+     here left the bar bleeding out to the gutter with nothing pushing its
+     text back in, and every title above 900px printed 34px left of the
+     content beneath it, flush against the sidebar. */
+  .topbar { padding: 30px var(--pad) 18px; }
   .view { padding-top: 30px; }
 
   .grid-plants { grid-template-columns: repeat(auto-fill, minmax(218px, 1fr)); }
