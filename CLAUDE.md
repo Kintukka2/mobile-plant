@@ -45,6 +45,21 @@ Two consequences worth knowing before editing anything in there:
   and `site/site.css` is a second stylesheet rather than a link to the apps.
   Replace a typeface in one and replace it in the other in the same commit;
   `diff -r css/fonts site/fonts` is the check.
+- **The species list is a second copy of `PLANT_DATA`.** For the same reason,
+  the 48 rows in `site/index.html` cannot be read from `js/data/plants.js` at
+  runtime — they are generated into the page. Add or rename a species and the
+  site keeps quoting the old list with no error anywhere, so there is a check:
+
+  ```bash
+  node .claude/check-species.js
+  ```
+
+  It compares the names, the count, and the two figures the copy quotes ("48
+  species", "23 safe for cats and dogs"). Run it after touching `plants.js`.
+  To regenerate the rows, emit one `<li class="sp-row">` per record in
+  `PLANT_DATA` order with `common` and `botanical`, plus a `Pet safe` tag when
+  `tox.cats` and `tox.dogs` are both `safe`.
+
 - **The privacy policy lives at `site/privacy.html`**, not at the root any
   more, and Play has been given `sproutevergreen.com/privacy`. It, this
   file, `README.md` and `native/store-privacy.md` all state the same facts

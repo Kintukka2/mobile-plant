@@ -271,3 +271,68 @@ a:focus-visible,.btn:focus-visible{ outline:2px solid var(--glow); outline-offse
 .doc hr{ border:0; border-top:1px solid var(--hair); margin:40px 0; }
 .doc a{ color:var(--leaf); }
 .doc a:hover{ color:var(--glow); }
+
+/* ---- The species list ----------------------------------------------------
+   A scrollable block with a progressive blur at its lower edge, rebuilt in
+   plain CSS. The component this was taken from is React and Tailwind; the
+   site has neither and no build step, and the effect needs neither. The rows
+   are static HTML generated from js/data/plants.js, so the block also works
+   with JavaScript disabled — the site still ships zero script tags. -------- */
+.sp-block{ position:relative; margin-top:34px; border:1px solid var(--hair);
+           border-radius:14px; background:color-mix(in srgb, var(--ink) 2%, transparent);
+           overflow:hidden; }
+
+.sp-list{ list-style:none; margin:0; padding:8px; max-height:420px; overflow-y:auto;
+          overscroll-behavior:contain; scrollbar-width:thin;
+          scrollbar-color:var(--hair) transparent;
+          /* The bottom padding clears the fade, so the last row can be read
+             rather than sitting permanently under the blur. */
+          padding-bottom:96px; }
+.sp-list::-webkit-scrollbar{ width:10px; }
+.sp-list::-webkit-scrollbar-thumb{ background:var(--hair); border-radius:99px;
+                                   border:3px solid transparent; background-clip:content-box; }
+
+.sp-row{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+         padding:14px 18px; border-radius:10px;
+         border:1px solid transparent; }
+/* Zebra by position rather than a border on every row: 48 hairlines stacked
+   reads as a table, which this is not. */
+.sp-row:nth-child(odd){ background:color-mix(in srgb, var(--ink) 3%, transparent); }
+
+.sp-name{ font-family:var(--serif); font-size:19px; color:var(--ink); line-height:1.2; }
+.sp-bot{ font-family:var(--serif); font-size:14.5px; font-style:italic; color:var(--ink-3);
+         line-height:1.2; }
+.sp-tag{ margin-left:auto; font-family:var(--sans); font-size:10.5px; letter-spacing:.12em;
+         text-transform:uppercase; color:var(--mint); white-space:nowrap;
+         padding:4px 9px; border:1px solid color-mix(in srgb, var(--mint) 34%, transparent);
+         border-radius:99px; }
+
+/* The fade. Each layer blurs harder than the one above and is masked to a
+   lower slice of the same box, so the blur builds rather than appearing. The
+   gradient underneath carries it the rest of the way to the ground colour. */
+.sp-fade{ position:absolute; left:0; right:0; bottom:0; height:120px;
+          pointer-events:none; }
+.sp-fade > div{ position:absolute; inset:0; }
+.sp-fade > div:nth-child(1){ backdrop-filter:blur(1px); -webkit-backdrop-filter:blur(1px);
+  mask-image:linear-gradient(to bottom,transparent 0%,#000 25%,#000 100%);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 25%,#000 100%); }
+.sp-fade > div:nth-child(2){ backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px);
+  mask-image:linear-gradient(to bottom,transparent 25%,#000 50%,#000 100%);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 25%,#000 50%,#000 100%); }
+.sp-fade > div:nth-child(3){ backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  mask-image:linear-gradient(to bottom,transparent 50%,#000 75%,#000 100%);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 50%,#000 75%,#000 100%); }
+/* No backdrop-filter on the last one: it is the opaque landing, and it is also
+   what the effect degrades to where backdrop-filter is unsupported. */
+.sp-fade > div:nth-child(4){
+  background:linear-gradient(to bottom,transparent 0%,
+             color-mix(in srgb, var(--field) 55%, transparent) 55%, var(--field) 100%); }
+
+.sp-foot{ font-family:var(--sans); font-size:12px; letter-spacing:.11em;
+          text-transform:uppercase; color:var(--ink-3); margin-top:16px; }
+
+@media (max-width:520px){
+  .sp-list{ max-height:360px; }
+  .sp-row{ padding:12px 14px; }
+  .sp-tag{ margin-left:0; }
+}
