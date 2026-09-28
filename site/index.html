@@ -26,7 +26,7 @@
 </head>
 <body>
 
-<header class="hero">
+<header class="hero" data-ui-snap-panel>
   <div class="wrap">
     <div class="lockup">
       <div class="wm-row">
@@ -46,7 +46,7 @@
   </div>
 </header>
 
-<section class="band" id="how">
+<section data-ui-snap-panel class="band" id="how">
   <div class="wrap split">
     <div>
       <p class="eyebrow">Draw your home</p>
@@ -72,7 +72,7 @@
   </div>
 </section>
 
-<section>
+<section data-ui-snap-panel>
   <div class="wrap split flip">
     <figure class="shot">
       <img src="img/today.webp" width="1080" height="1340" loading="lazy" decoding="async"
@@ -96,7 +96,7 @@
   </div>
 </section>
 
-<section class="band">
+<section data-ui-snap-panel class="band">
   <div class="wrap">
     <p class="eyebrow">When something looks wrong</p>
     <h2 style="max-width:20ch">A clinic, not a search box.</h2>
@@ -122,7 +122,7 @@
   </div>
 </section>
 
-<section>
+<section data-ui-snap-panel>
   <div class="wrap split">
     <div>
       <p class="eyebrow">Worth keeping</p>
@@ -142,7 +142,7 @@
 
 <!-- The species list. Generated from js/data/plants.js — see the note in
      CLAUDE.md about site/ being unable to reach ../, and the drift check. -->
-<section id="species">
+<section data-ui-snap-panel id="species">
   <div class="wrap">
     <p class="eyebrow">The species list</p>
     <h2 style="max-width:16ch">Is yours on it?</h2>
@@ -398,7 +398,7 @@
   </div>
 </section>
 
-<section class="band">
+<section data-ui-snap-panel class="band">
   <div class="wrap">
     <p class="eyebrow">The part most apps skip</p>
     <h2 style="max-width:24ch">No account. No ads. Nothing to sign up for.</h2>
@@ -473,6 +473,197 @@
     if (e.key === 'Escape' && q.value) { q.value = ''; apply(); }
   });
   apply();
+})();
+</script>
+
+<!-- =========================================================================
+     Snap scrolling. One wheel, swipe or arrow key moves exactly one panel.
+     Adapted from a Shopify snippet: the Liquid wrapper is gone and the style
+     block moved into site.css, but the behaviour is the supplied logic.
+
+     It declines to take over whenever a panel does not nearly fill the screen,
+     and defers to inner scrollers — which is what lets the species list scroll
+     inside its own panel before the page moves on.
+     ====================================================================== -->
+<script>
+(function () {
+  var SELECTOR = "[data-ui-snap-panel]";
+  var DURATION = 1000;
+  var SWIPE_MIN = 40;
+
+  function init() {
+    if (window.uiSnap) return;
+    var panels = Array.prototype.slice.call(document.querySelectorAll(SELECTOR));
+    if (!panels.length) return;
+
+    // Below this the panels are not full-screen (see the max-height media
+    // query), so hijacking the scroll would fight the layout.
+    var shortScreen = window.matchMedia("(max-height: 479px)");
+
+    var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    var animating = false;
+    var animEnd = 0;
+    var current = -1;
+
+    function tops() {
+      return panels.map(function (p) { return p.getBoundingClientRect().top + window.scrollY; });
+    }
+    function ease(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2; }
+
+    function scrollToY(y) {
+      var start = window.scrollY, dist = y - start;
+      if (Math.abs(dist) < 1) return;
+      var dur = reduceMotion.matches ? 1 : DURATION;
+      var html = document.documentElement;
+      var prev = html.style.scrollBehavior;
+      html.style.scrollBehavior = "auto";
+      animating = true;
+      var t0 = performance.now();
+      function step(now) {
+        var t = Math.min(1, (now - t0) / dur);
+        window.scrollTo(0, start + dist * ease(t));
+        if (t < 1) requestAnimationFrame(step);
+        else { animating = false; animEnd = performance.now(); html.style.scrollBehavior = prev; }
+      }
+      requestAnimationFrame(step);
+    }
+
+    function nearest(t, y) {
+      var i = 0;
+      for (var k = 1; k < t.length; k++) if (Math.abs(t[k]-y) < Math.abs(t[i]-y)) i = k;
+      return i;
+    }
+
+    function target(dir) {
+      if (shortScreen.matches) return null;
+      var t = tops(), y = window.scrollY, vh = window.innerHeight;
+      var i = nearest(t, y), off = y - t[i];
+      if (Math.abs(off) > vh * 0.5) {
+        for (var k = 0; k < t.length; k++) {
+          if (dir > 0 && t[k] > y && t[k]-y < vh*0.5) return t[k];
+          if (dir < 0 && t[k] < y && y-t[k] < panels[k].offsetHeight - vh*0.5 && y-t[k] > 2) return t[k];
+        }
+        return null;
+      }
+      var j = dir > 0 ? (t[i] > y+2 ? i : i+1) : (t[i] < y-2 ? i : i-1);
+      if (j < 0 || j >= t.length) return null;
+      var edge = dir > 0 ? t[i] + panels[i].offsetHeight : t[i];
+      var next = dir > 0 ? t[j] : t[j] + panels[j].offsetHeight;
+      if (j !== i && Math.abs(edge - next) > vh * 0.25) return null;
+      return t[j];
+    }
+
+    function locked() {
+      var h = getComputedStyle(document.documentElement).overflowY;
+      var b = getComputedStyle(document.body).overflowY;
+      return h === "hidden" || b === "hidden" ||
+             document.documentElement.classList.contains("ui-snap-paused");
+    }
+
+    // A long list inside a panel scrolls to its own end before the page moves.
+    function innerScroller(el, dir) {
+      while (el && el !== document.body && el.nodeType === 1) {
+        var s = getComputedStyle(el);
+        if (/(auto|scroll)/.test(s.overflowY) && el.scrollHeight > el.clientHeight + 1) {
+          if (dir > 0 && el.scrollTop + el.clientHeight < el.scrollHeight - 1) return true;
+          if (dir < 0 && el.scrollTop > 0) return true;
+        }
+        el = el.parentElement;
+      }
+      return false;
+    }
+
+    var lastWheel = 0, lastMag = 0;
+    window.addEventListener("wheel", function (e) {
+      if (e.ctrlKey || locked()) return;
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+      var dir = e.deltaY > 0 ? 1 : e.deltaY < 0 ? -1 : 0;
+      if (!dir || innerScroller(e.target, dir)) return;
+      var now = performance.now(), mag = Math.abs(e.deltaY);
+      var fresh = now - lastWheel > 220 || mag > lastMag * 1.5 + 4;
+      lastWheel = now; lastMag = mag;
+      if (animating) { e.preventDefault(); return; }
+      var y = target(dir);
+      if (y === null) return;
+      e.preventDefault();
+      if (!fresh && now - animEnd < 1200) return;
+      scrollToY(y);
+    }, { passive: false });
+
+    var touchY = null, touchTarget = null;
+    window.addEventListener("touchstart", function (e) {
+      touchY = e.touches.length === 1 ? e.touches[0].clientY : null;
+      touchTarget = e.target;
+    }, { passive: true });
+    window.addEventListener("touchmove", function (e) {
+      if (touchY === null || locked()) return;
+      var dy = touchY - e.touches[0].clientY;
+      if (Math.abs(dy) < 2) return;
+      var dir = dy > 0 ? 1 : -1;
+      if (innerScroller(touchTarget, dir)) { touchY = null; return; }
+      if (animating || target(dir) !== null) e.preventDefault();
+    }, { passive: false });
+    window.addEventListener("touchend", function (e) {
+      if (touchY === null) return;
+      var dy = touchY - e.changedTouches[0].clientY;
+      touchY = null;
+      if (Math.abs(dy) < SWIPE_MIN || animating || locked()) return;
+      var y = target(dy > 0 ? 1 : -1);
+      if (y !== null) scrollToY(y);
+    });
+
+    window.addEventListener("keydown", function (e) {
+      if (e.defaultPrevented || e.altKey || e.metaKey || e.ctrlKey || locked()) return;
+      var el = e.target;
+      if (el.closest && el.closest("input, textarea, select, [contenteditable]")) return;
+      var dir = 0;
+      if (e.key === "ArrowDown" || e.key === "PageDown") dir = 1;
+      else if (e.key === "ArrowUp" || e.key === "PageUp") dir = -1;
+      else if (e.key === " " && !(el.closest && el.closest("button, a, summary"))) dir = e.shiftKey ? -1 : 1;
+      if (!dir) return;
+      if (animating) { e.preventDefault(); return; }
+      var y = target(dir);
+      if (y === null) return;
+      e.preventDefault();
+      scrollToY(y);
+    });
+
+    var ticking = false;
+    function sync() {
+      ticking = false;
+      var t = tops(), y = window.scrollY, vh = window.innerHeight, active = -1;
+      for (var k = 0; k < t.length; k++) if (Math.abs(t[k]-y) < vh*0.5) active = k;
+      panels.forEach(function (p, k) { p.classList.toggle("is-active", k === active); });
+      if (active !== current) {
+        current = active;
+        window.dispatchEvent(new CustomEvent("ui-snap:change", {
+          detail: { index: active, panel: active >= 0 ? panels[active] : null, total: panels.length }
+        }));
+      }
+    }
+    function requestSync() { if (!ticking) { ticking = true; requestAnimationFrame(sync); } }
+
+    window.addEventListener("scroll", requestSync, { passive: true });
+    window.addEventListener("resize", function () {
+      requestSync();
+      if (animating || shortScreen.matches) return;
+      var t = tops(), y = window.scrollY, i = nearest(t, y);
+      if (Math.abs(t[i]-y) < window.innerHeight * 0.5) window.scrollTo(0, t[i]);
+    });
+
+    window.uiSnap = {
+      next: function () { var y = target(1);  if (y !== null && !animating) scrollToY(y); },
+      prev: function () { var y = target(-1); if (y !== null && !animating) scrollToY(y); },
+      goTo: function (i) { var t = tops(); if (t[i] !== undefined && !animating) scrollToY(t[i]); },
+      panels: panels
+    };
+
+    document.documentElement.classList.add("ui-snap-ready");
+    sync();
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
 })();
 </script>
 
