@@ -150,224 +150,240 @@
     carries its own warm and cool season watering intervals, feeding cycle, ideal light, and a
     toxicity rating scored separately for cats, dogs and humans.</p>
 
+    <!-- Hidden until the script runs, so a reader without JavaScript gets the
+         full list and no dead input to type into. -->
+    <div class="sp-search" id="sp-search" hidden>
+      <input type="search" id="sp-q" class="sp-input" placeholder="Search 48 species"
+             autocomplete="off" spellcheck="false" aria-controls="sp-list"
+             aria-label="Search the species list by common name, botanical name or nickname">
+      <span class="sp-icon" aria-hidden="true">
+        <svg viewBox="0 0 512 512" fill="none" stroke="currentColor" stroke-width="32">
+          <circle cx="221" cy="221" r="157" stroke-miterlimit="10"/>
+          <path d="M338 338 448 448" stroke-linecap="round" stroke-miterlimit="10"/>
+        </svg>
+      </span>
+    </div>
+
     <div class="sp-block">
-      <ul class="sp-list">
-        <li class="sp-row">
+      <ul class="sp-list" id="sp-list">
+        <li class="sp-row" data-find="monstera monstera deliciosa swiss cheese plant fruit salad plant">
           <span class="sp-name">Monstera</span>
           <span class="sp-bot">Monstera deliciosa</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="golden pothos epipremnum aureum devil's ivy money plant">
           <span class="sp-name">Golden Pothos</span>
           <span class="sp-bot">Epipremnum aureum</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="snake plant dracaena trifasciata mother-in-law's tongue sansevieria">
           <span class="sp-name">Snake Plant</span>
           <span class="sp-bot">Dracaena trifasciata</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="zz plant zamioculcas zamiifolia zanzibar gem eternity plant">
           <span class="sp-name">ZZ Plant</span>
           <span class="sp-bot">Zamioculcas zamiifolia</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="heartleaf philodendron philodendron hederaceum sweetheart plant">
           <span class="sp-name">Heartleaf Philodendron</span>
           <span class="sp-bot">Philodendron hederaceum</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="spider plant chlorophytum comosum ribbon plant spider ivy">
           <span class="sp-name">Spider Plant</span>
           <span class="sp-bot">Chlorophytum comosum</span>
           <span class="sp-tag">Pet safe</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="cast iron plant aspidistra elatior bar room plant">
           <span class="sp-name">Cast Iron Plant</span>
           <span class="sp-bot">Aspidistra elatior</span>
           <span class="sp-tag">Pet safe</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="chinese evergreen aglaonema commutatum aglaonema">
           <span class="sp-name">Chinese Evergreen</span>
           <span class="sp-bot">Aglaonema commutatum</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="chinese money plant pilea peperomioides pancake plant ufo plant">
           <span class="sp-name">Chinese Money Plant</span>
           <span class="sp-bot">Pilea peperomioides</span>
           <span class="sp-tag">Pet safe</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="baby rubber plant peperomia obtusifolia peperomia">
           <span class="sp-name">Baby Rubber Plant</span>
           <span class="sp-bot">Peperomia obtusifolia</span>
           <span class="sp-tag">Pet safe</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="fiddle leaf fig ficus lyrata fiddleleaf banjo fig">
           <span class="sp-name">Fiddle Leaf Fig</span>
           <span class="sp-bot">Ficus lyrata</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="rubber plant ficus elastica rubber fig rubber tree">
           <span class="sp-name">Rubber Plant</span>
           <span class="sp-bot">Ficus elastica</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="bird of paradise strelitzia nicolai giant white bird of paradise wild banana">
           <span class="sp-name">Bird of Paradise</span>
           <span class="sp-bot">Strelitzia nicolai</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="swiss cheese vine monstera adansonii monkey mask adansonii">
           <span class="sp-name">Swiss Cheese Vine</span>
           <span class="sp-bot">Monstera adansonii</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="african mask plant alocasia × amazonica alocasia polly elephant ear">
           <span class="sp-name">African Mask Plant</span>
           <span class="sp-bot">Alocasia × amazonica</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="umbrella plant schefflera arboricola dwarf umbrella tree schefflera">
           <span class="sp-name">Umbrella Plant</span>
           <span class="sp-bot">Schefflera arboricola</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="dragon tree dracaena marginata madagascar dragon tree">
           <span class="sp-name">Dragon Tree</span>
           <span class="sp-bot">Dracaena marginata</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="croton codiaeum variegatum joseph's coat variegated croton">
           <span class="sp-name">Croton</span>
           <span class="sp-bot">Codiaeum variegatum</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="boston fern nephrolepis exaltata sword fern">
           <span class="sp-name">Boston Fern</span>
           <span class="sp-bot">Nephrolepis exaltata</span>
           <span class="sp-tag">Pet safe</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="bird's nest fern asplenium nidus crow's nest fern">
           <span class="sp-name">Bird's Nest Fern</span>
           <span class="sp-bot">Asplenium nidus</span>
           <span class="sp-tag">Pet safe</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="maidenhair fern adiantum raddianum delta maidenhair">
           <span class="sp-name">Maidenhair Fern</span>
           <span class="sp-bot">Adiantum raddianum</span>
           <span class="sp-tag">Pet safe</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="calathea orbifolia goeppertia orbifolia prayer plant goeppertia">
           <span class="sp-name">Calathea Orbifolia</span>
           <span class="sp-bot">Goeppertia orbifolia</span>
           <span class="sp-tag">Pet safe</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="prayer plant maranta leuconeura herringbone plant rabbit's foot">
           <span class="sp-name">Prayer Plant</span>
           <span class="sp-bot">Maranta leuconeura</span>
           <span class="sp-tag">Pet safe</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="nerve plant fittonia albivenis mosaic plant fittonia">
           <span class="sp-name">Nerve Plant</span>
           <span class="sp-bot">Fittonia albivenis</span>
           <span class="sp-tag">Pet safe</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="parlour palm chamaedorea elegans neanthe bella palm">
           <span class="sp-name">Parlour Palm</span>
           <span class="sp-bot">Chamaedorea elegans</span>
           <span class="sp-tag">Pet safe</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="kentia palm howea forsteriana thatch palm paradise palm">
           <span class="sp-name">Kentia Palm</span>
           <span class="sp-bot">Howea forsteriana</span>
           <span class="sp-tag">Pet safe</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="peace lily spathiphyllum wallisii spath white sails">
           <span class="sp-name">Peace Lily</span>
           <span class="sp-bot">Spathiphyllum wallisii</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="flamingo flower anthurium andraeanum anthurium painter's palette">
           <span class="sp-name">Flamingo Flower</span>
           <span class="sp-bot">Anthurium andraeanum</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="aloe vera aloe vera medicinal aloe burn plant">
           <span class="sp-name">Aloe Vera</span>
           <span class="sp-bot">Aloe vera</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="jade plant crassula ovata money tree lucky plant">
           <span class="sp-name">Jade Plant</span>
           <span class="sp-bot">Crassula ovata</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="echeveria echeveria elegans mexican snowball hen and chicks">
           <span class="sp-name">Echeveria</span>
           <span class="sp-bot">Echeveria elegans</span>
           <span class="sp-tag">Pet safe</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="zebra haworthia haworthiopsis attenuata zebra plant haworthia">
           <span class="sp-name">Zebra Haworthia</span>
           <span class="sp-bot">Haworthiopsis attenuata</span>
           <span class="sp-tag">Pet safe</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="string of pearls curio rowleyanus string of beads senecio rowleyanus">
           <span class="sp-name">String of Pearls</span>
           <span class="sp-bot">Curio rowleyanus</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="christmas cactus schlumbergera truncata holiday cactus zygocactus">
           <span class="sp-name">Christmas Cactus</span>
           <span class="sp-bot">Schlumbergera truncata</span>
           <span class="sp-tag">Pet safe</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="ponytail palm beaucarnea recurvata elephant's foot nolina">
           <span class="sp-name">Ponytail Palm</span>
           <span class="sp-bot">Beaucarnea recurvata</span>
           <span class="sp-tag">Pet safe</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="flaming katy kalanchoe blossfeldiana kalanchoe widow's thrill">
           <span class="sp-name">Flaming Katy</span>
           <span class="sp-bot">Kalanchoe blossfeldiana</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="string of hearts ceropegia woodii rosary vine chain of hearts">
           <span class="sp-name">String of Hearts</span>
           <span class="sp-bot">Ceropegia woodii</span>
           <span class="sp-tag">Pet safe</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="wax plant hoya carnosa hoya porcelain flower">
           <span class="sp-name">Wax Plant</span>
           <span class="sp-bot">Hoya carnosa</span>
           <span class="sp-tag">Pet safe</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="inch plant tradescantia zebrina wandering dude silver inch plant">
           <span class="sp-name">Inch Plant</span>
           <span class="sp-bot">Tradescantia zebrina</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="arrowhead plant syngonium podophyllum goosefoot syngonium">
           <span class="sp-name">Arrowhead Plant</span>
           <span class="sp-bot">Syngonium podophyllum</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="english ivy hedera helix common ivy">
           <span class="sp-name">English Ivy</span>
           <span class="sp-bot">Hedera helix</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="moth orchid phalaenopsis hybrids phalaenopsis phal">
           <span class="sp-name">Moth Orchid</span>
           <span class="sp-bot">Phalaenopsis hybrids</span>
           <span class="sp-tag">Pet safe</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="african violet streptocarpus ionanthus saintpaulia streptocarpus ionanthus">
           <span class="sp-name">African Violet</span>
           <span class="sp-bot">Streptocarpus ionanthus</span>
           <span class="sp-tag">Pet safe</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="polka dot begonia begonia maculata spotted begonia angel wing begonia">
           <span class="sp-name">Polka Dot Begonia</span>
           <span class="sp-bot">Begonia maculata</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="basil ocimum basilicum sweet basil">
           <span class="sp-name">Basil</span>
           <span class="sp-bot">Ocimum basilicum</span>
           <span class="sp-tag">Pet safe</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="mint mentha spicata spearmint garden mint">
           <span class="sp-name">Mint</span>
           <span class="sp-bot">Mentha spicata</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="rosemary salvia rosmarinus salvia rosmarinus">
           <span class="sp-name">Rosemary</span>
           <span class="sp-bot">Salvia rosmarinus</span>
           <span class="sp-tag">Pet safe</span>
         </li>
-        <li class="sp-row">
+        <li class="sp-row" data-find="air plant tillandsia ionantha tillandsia sky plant">
           <span class="sp-name">Air Plant</span>
           <span class="sp-bot">Tillandsia ionantha</span>
           <span class="sp-tag">Pet safe</span>
         </li>
       </ul>
+      <p class="sp-none" id="sp-none" hidden>Nothing by that name. Sprout covers 48
+      species — if yours is missing, the diagnosis tool still works without it.</p>
       <!-- Four stacked layers rather than one. A single blurred bar switches on
            at a hard edge; masking each layer to a progressively lower slice of
            the same box makes the blur ramp instead, which is the whole effect.
@@ -378,7 +394,7 @@
       </div>
     </div>
 
-    <p class="sp-foot">Scroll the list · 48 species · 23 safe for cats and dogs</p>
+    <p class="sp-foot" id="sp-count" role="status">Scroll the list · 48 species · 23 safe for cats and dogs</p>
   </div>
 </section>
 
@@ -404,6 +420,61 @@
     <small>Sprout · evergreen</small>
   </div>
 </footer>
+
+<!-- =========================================================================
+     The only script on this site, and it stays that way: no framework, no
+     build step, no dependency. It filters a list that is already in the page.
+
+     Everything it needs is in the markup — each row carries a data-find of
+     its common name, botanical name and nicknames, lowercased when the page
+     was generated. So a keystroke is a substring test against a string that
+     already exists, not a rebuild.
+     ====================================================================== -->
+<script>
+(function () {
+  var box   = document.getElementById('sp-search');
+  var q     = document.getElementById('sp-q');
+  var list  = document.getElementById('sp-list');
+  var none  = document.getElementById('sp-none');
+  var count = document.getElementById('sp-count');
+  if (!box || !q || !list || !none || !count) return;
+
+  var rows = [].slice.call(list.querySelectorAll('.sp-row'));
+  var resting = count.textContent;
+
+  // Hidden in the markup, revealed here. A reader with JavaScript off gets
+  // all 48 rows and no input that silently does nothing.
+  box.hidden = false;
+
+  function apply() {
+    var term = q.value.trim().toLowerCase();
+    var shown = 0;
+
+    rows.forEach(function (row) {
+      var hit = !term || row.dataset.find.indexOf(term) !== -1;
+      row.hidden = !hit;
+      // Zebra by position breaks the moment rows drop out, so the stripe is
+      // recounted over what survived rather than left to nth-child.
+      row.classList.toggle('sp-alt', hit && shown % 2 === 0);
+      if (hit) shown++;
+    });
+
+    none.hidden = shown !== 0;
+    count.textContent = !term ? resting
+      : shown === 0 ? 'No matches'
+      : shown === 1 ? '1 match'
+      : shown + ' matches';
+  }
+
+  q.addEventListener('input', apply);
+  // Escape clears rather than only blurring, which is what the native search
+  // control leads a reader to expect.
+  q.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && q.value) { q.value = ''; apply(); }
+  });
+  apply();
+})();
+</script>
 
 </body>
 </html>

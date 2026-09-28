@@ -336,3 +336,53 @@ a:focus-visible,.btn:focus-visible{ outline:2px solid var(--glow); outline-offse
   .sp-row{ padding:12px 14px; }
   .sp-tag{ margin-left:0; }
 }
+
+/* ---- Search over the species list ---------------------------------------
+   The component this came from is neumorphic — an embossed pill on a mid
+   grey, lit from the top left. That reads as a different product next to a
+   page built from hairlines on a near-black ground, so what is kept is the
+   behaviour (grow on focus, icon inside the field) and not the lighting.
+
+   :placeholder-shown rather than the original's required + :not(:invalid).
+   That trick keeps the field expanded while it holds text by making an empty
+   field permanently invalid, which a screen reader may announce as an error
+   on a field that has nothing wrong with it. -------------------------------- */
+.sp-search{ position:relative; margin-top:28px; --sp-btn:44px; }
+
+.sp-input{ height:var(--sp-btn); width:min(280px,100%); padding:0 16px 0 var(--sp-btn);
+           font-family:var(--sans); font-size:14px; letter-spacing:.02em;
+           color:var(--ink); background:var(--well);
+           border:1px solid var(--hair); border-radius:99px;
+           outline:none; transition:width .28s ease, border-color .28s ease,
+                                    box-shadow .28s ease, background .28s ease; }
+.sp-input::placeholder{ color:var(--ink-3); }
+.sp-input::-webkit-search-cancel-button{ -webkit-appearance:none; appearance:none; }
+
+/* Wide enough at rest to read as a search field. The original opens from a
+   40px circle, which is charming on its own and a riddle directly beneath a
+   heading asking "Is yours on it?" — the one affordance that answers the
+   question should not be the one that hides. */
+.sp-input:focus,
+.sp-input:not(:placeholder-shown){
+  width:min(420px,100%);
+  border-color:color-mix(in srgb, var(--glow) 42%, transparent);
+  background:color-mix(in srgb, var(--field) 70%, var(--well));
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.45),
+             0 0 0 3px color-mix(in srgb, var(--glow) 12%, transparent); }
+
+.sp-icon{ position:absolute; left:0; top:0; width:var(--sp-btn); height:var(--sp-btn);
+          padding:13px; color:var(--ink-3); pointer-events:none;
+          transition:color .28s ease; }
+.sp-icon svg{ width:100%; height:100%; display:block; }
+.sp-input:focus ~ .sp-icon,
+.sp-input:not(:placeholder-shown) ~ .sp-icon{ color:var(--glow); }
+
+/* Filtering hides rows, so the zebra has to be recomputed from what is left
+   or the stripes go ragged as matches drop out. */
+.sp-row[hidden]{ display:none; }
+.sp-list:has(.sp-row[hidden]) .sp-row:nth-child(odd){ background:none; }
+.sp-list:has(.sp-row[hidden]) .sp-row.sp-alt{
+  background:color-mix(in srgb, var(--ink) 3%, transparent); }
+
+.sp-none{ font-family:var(--serif); font-size:17px; color:var(--ink-2);
+          padding:26px 18px 90px; margin:0; max-width:46ch; }
