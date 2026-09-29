@@ -29,6 +29,30 @@
 </head>
 <body>
 
+<!-- The bar the hero's mark flies into. It is present from the first paint
+     but shows nothing except that mark until the reader leaves the hero,
+     because on the hero the mark is not the bar's — it is the lockup's, and
+     the two are the same element. index 0 of the panels is the hero, so
+     every panel after it reserves the bar's height rather than being
+     covered by it; at 360x780 the diagnosis panel had ten spare pixels, so
+     there was never a version of this that could just float on top.
+
+     display:none until the script adds .sb-live, so without JS the hero
+     keeps its own mark and no bar appears half-built. -->
+<div class="sitebar" id="sitebar">
+  <div class="wrap sitebar-in">
+    <span class="sitebar-mark" id="sb-mark" aria-hidden="true"><svg viewBox="24 20 52 68" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/></svg></span>
+    <div class="sitebar-cta" id="sb-cta">
+      <button type="button" class="btn btn-2 btn-sm" id="sb-top">
+        <span class="sb-long">Back to the top</span><span class="sb-short">Top</span>
+      </button>
+      <a class="btn btn-1 btn-sm" href="https://sproutevergreen.app">
+        <span class="sb-long">Open the web app</span><span class="sb-short">Open app</span>
+      </a>
+    </div>
+  </div>
+</div>
+
 <header class="hero" data-ui-snap-panel>
   <div class="wrap">
     <div class="lockup">
@@ -700,6 +724,93 @@
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
+})();
+</script>
+
+<!-- The bar's mark, and where it travels from.
+
+     One element does both jobs. It lives in the bar, so its resting place is
+     wherever the bar puts it; on the hero it is transformed onto the
+     lockup's slot at the lockup's size, and the scroll interpolates between
+     the two. The hero's own mark is hidden but still laid out, so SPROUT
+     does not slide left into the space it would leave.
+
+     Measured rather than assumed, and measured again after the fonts land:
+     the lockup's vertical position depends on the height of everything the
+     panel centres, and Cormorant arriving changes that by a few pixels. -->
+<script>
+(function () {
+  var bar = document.getElementById("sitebar");
+  var mark = document.getElementById("sb-mark");
+  var hero = document.querySelector(".hero");
+  var heroMark = hero && hero.querySelector(".lockup .m");
+  var toTop = document.getElementById("sb-top");
+  if (!bar || !mark || !hero || !heroMark) return;
+
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var from = null, to = null, span = 1, ticking = false;
+
+  function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+
+  function measure() {
+    // Park the mark first: `to` has to be where it rests, not where the
+    // last frame left it.
+    mark.style.transform = "none";
+    var h = heroMark.getBoundingClientRect();
+    var b = mark.getBoundingClientRect();
+    if (!b.width || !h.width) { from = to = null; return; }
+    from = { x: h.left + window.scrollX, y: h.top + window.scrollY, w: h.width };
+    to = { x: b.left, y: b.top, w: b.width };
+    // The travel is spent over the hero panel, so it is complete exactly as
+    // the second panel arrives — which is also when the bar is first needed.
+    span = Math.max(1, hero.offsetHeight);
+    apply();
+  }
+
+  function apply() {
+    var p = clamp01(window.scrollY / span);
+    if (from && to && !reduce.matches) {
+      // from.y as it sits on an unscrolled hero, not as it scrolls away.
+      // Tracking the live position looks right at both ends and wrong in
+      // between: the lockup leaves the top of the screen faster than the
+      // interpolation pulls the mark back, so it flew off the top and
+      // returned. It should detach and settle, not bounce.
+      var hx = from.x, hy = from.y;
+      var s0 = from.w / to.w;
+      var x = hx + (to.x - hx) * p;
+      var y = hy + (to.y - hy) * p;
+      var s = s0 + (1 - s0) * p;
+      mark.style.transform = "translate(" + (x - to.x).toFixed(2) + "px," +
+        (y - to.y).toFixed(2) + "px) scale(" + s.toFixed(4) + ")";
+    }
+    // The plate and the controls arrive after the mark rather than with it:
+    // a bar fading up around a logo still in flight reads as two things
+    // happening, and it is meant to read as one arriving.
+    bar.style.setProperty("--sb-p", clamp01((p - 0.3) / 0.5).toFixed(3));
+    bar.style.setProperty("--sb-c", clamp01((p - 0.55) / 0.35).toFixed(3));
+    bar.classList.toggle("is-on", p > 0.6);
+  }
+
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () { ticking = false; apply(); });
+  }
+
+  if (toTop) {
+    toTop.addEventListener("click", function () {
+      // uiSnap animates with the same easing every other move on this page
+      // uses; the fallback is for the short-screen mode where it stands down.
+      if (window.uiSnap && window.uiSnap.goTo) window.uiSnap.goTo(0);
+      else window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+
+  document.documentElement.classList.add("sb-live");
+  measure();
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", measure);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
 })();
 </script>
 
