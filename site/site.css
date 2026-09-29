@@ -201,6 +201,48 @@ h1 em{ font-style:normal; color:var(--glow); }
 .soon{ font-family:var(--sans); font-size:12px; letter-spacing:.13em; text-transform:uppercase;
        color:var(--ink-3); }
 
+/* ---- Scroll cue ----
+   A bead of light running down a hairline, which on a plant app is water
+   down a stem rather than a chevron bouncing. Centred at the foot of the
+   hero because that is where the eye lands last; the hero's own copy stays
+   left-aligned and this reads as chrome rather than as another line of it. */
+.hero-scroll{
+  position:absolute; left:0; right:0; bottom:30px; margin-inline:auto;
+  width:max-content; background:none; border:0; padding:6px 14px;
+  cursor:pointer; color:var(--ink-3);
+  display:flex; flex-direction:column; align-items:center;
+  transition:color .2s ease;
+}
+.hero-scroll:hover{ color:var(--ink-2); }
+.hero-scroll-t{ font-family:var(--sans); font-size:11px; letter-spacing:.24em;
+                text-transform:uppercase; }
+/* The travel distance is read from the height rather than repeated, so the
+   short-screen rule below only has to change one number. */
+.hero-scroll-rule{ --rule-h:34px;
+                   display:block; width:1px; height:var(--rule-h); margin-top:12px;
+                   background:var(--hair); position:relative; overflow:hidden; }
+.hero-scroll-rule::after{
+  content:""; position:absolute; left:0; top:0; width:1px; height:13px;
+  background:linear-gradient(var(--glow), transparent);
+  animation:hero-trickle 2.6s cubic-bezier(.4,0,.2,1) infinite;
+}
+@keyframes hero-trickle{
+  0%   { transform:translateY(-15px); opacity:0; }
+  22%  { opacity:1; }
+  100% { transform:translateY(var(--rule-h)); opacity:0; }
+}
+/* On a 360x780 the cue came within 13px of the call to action. Smaller, and
+   sitting lower, puts thirty-odd back between them. */
+@media (max-height:800px){
+  .hero-scroll{ bottom:22px; padding-block:4px; }
+  .hero-scroll-rule{ --rule-h:24px; margin-top:9px; }
+}
+@media (prefers-reduced-motion: reduce){
+  /* The line stays, the bead stops. The cue is the line's presence at the
+     foot of a full-screen panel; the movement is only the invitation. */
+  .hero-scroll-rule::after{ animation:none; opacity:.55; }
+}
+
 /* ---- The bar, and the mark that flies into it ----
    One mark, not two. The element in the bar is the same one the hero shows:
    on the hero it is transformed onto the lockup's slot at the lockup's size,
@@ -590,6 +632,10 @@ footer{ padding-block:26px; }
                         display:block; padding-block:48px; }
   /* After the shorthand above, which would otherwise reset it to 48. */
   [data-ui-snap-panel] + [data-ui-snap-panel]{ padding-top:calc(48px + var(--sb-h)); }
+  /* No panel is a screen here, so there is no screenful to scroll past and
+     nothing for the cue to mean — and pinned to the foot of a hero that is
+     now only as tall as its content, it landed on the call to action. */
+  .hero-scroll{ display:none; }
   /* Every compression above exists to fit a panel into one screen. Once the
      page scrolls the ordinary way there is no screen to fit, and 24svh of a
      667px phone is a 160px screenshot nobody can read. */
