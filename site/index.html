@@ -71,6 +71,16 @@
       <span class="soon">Coming to Google Play and the App Store</span>
     </div>
   </div>
+
+  <!-- The prompt to keep going. Absolutely positioned, so it does not join
+       the hero's flex row, and a real button rather than decoration: the
+       thing it is asking for is one tap away, so it may as well do it. It
+       fades out over the first quarter of the scroll — a prompt that is
+       still there once you have taken it is no longer a prompt. -->
+  <button type="button" class="hero-scroll" id="hero-scroll">
+    <span class="hero-scroll-t">Scroll</span>
+    <span class="hero-scroll-rule" aria-hidden="true"></span>
+  </button>
 </header>
 
 <section data-ui-snap-panel class="band" id="how">
@@ -745,6 +755,7 @@
   var hero = document.querySelector(".hero");
   var heroMark = hero && hero.querySelector(".lockup .m");
   var toTop = document.getElementById("sb-top");
+  var cue = document.getElementById("hero-scroll");
   if (!bar || !mark || !hero || !heroMark) return;
 
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -789,12 +800,26 @@
     bar.style.setProperty("--sb-p", clamp01((p - 0.3) / 0.5).toFixed(3));
     bar.style.setProperty("--sb-c", clamp01((p - 0.55) / 0.35).toFixed(3));
     bar.classList.toggle("is-on", p > 0.6);
+    // Gone within the first quarter, and out of the tab order with it: an
+    // invitation you have already accepted is just something in the way.
+    if (cue) {
+      var c = 1 - clamp01(p / 0.25);
+      cue.style.opacity = c.toFixed(3);
+      cue.hidden = c === 0;
+    }
   }
 
   function onScroll() {
     if (ticking) return;
     ticking = true;
     requestAnimationFrame(function () { ticking = false; apply(); });
+  }
+
+  if (cue) {
+    cue.addEventListener("click", function () {
+      if (window.uiSnap && window.uiSnap.next) window.uiSnap.next();
+      else window.scrollTo({ top: hero.offsetHeight, behavior: "smooth" });
+    });
   }
 
   if (toTop) {
