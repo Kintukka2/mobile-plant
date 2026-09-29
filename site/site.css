@@ -434,8 +434,13 @@ a:focus-visible,.btn:focus-visible{ outline:2px solid var(--glow); outline-offse
 /* And so does the walkthrough — but by max-width, not max-height. With
    width:100% and aspect-ratio set, a max-height clamps the box and not the
    width, so the video would letterbox inside its own frame. Deriving the
-   width from the height it is allowed keeps the two in step. */
-[data-ui-snap-panel] .film video{ max-width:calc(56svh * 16 / 9); }
+   width from the height it is allowed keeps the two in step.
+
+   On the figure rather than the video, because the video carries an inline
+   max-width as its guard against a stylesheet that never arrives, and an
+   inline declaration beats this one. Capping the box the video fills lets
+   both hold at once. */
+[data-ui-snap-panel] .film{ max-width:calc(56svh * 16 / 9); }
 
 /* The type scale gives back roughly 90px per panel at laptop size. */
 [data-ui-snap-panel] h1{ font-size:clamp(34px,5.2vw,58px); }
@@ -505,6 +510,6 @@ footer{ padding-block:26px; }
      page scrolls the ordinary way there is no screen to fit, and 24svh of a
      667px phone is a 160px screenshot nobody can read. */
   [data-ui-snap-panel] .shot img{ max-height:none; }
-  [data-ui-snap-panel] .film video{ max-width:none; }
+  [data-ui-snap-panel] .film{ max-width:none; }
   [data-ui-snap-panel] .sp-list{ max-height:420px; }
 }

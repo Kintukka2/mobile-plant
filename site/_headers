@@ -23,5 +23,16 @@
 /video/*
   Cache-Control: public, max-age=604800
 
+# The stylesheet needs the same policy as the pages, and learning that cost a
+# broken landing page. /*.html was no-cache and site.css was not, so a
+# returning reader could hold a stylesheet from before a change while getting
+# the markup from after it — new elements, none of their rules. The walkthrough
+# video shipped that way and rendered at its full 1920px inside a 390px phone,
+# because with no CSS to size it the browser fell back to the width attribute.
+# New markup with old rules is the failure this prevents; the ?v= on the link
+# is what reaches the people already holding a stale copy.
+/*.css
+  Cache-Control: public, max-age=0, must-revalidate
+
 /*.html
   Cache-Control: public, max-age=0, must-revalidate

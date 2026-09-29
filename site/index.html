@@ -18,11 +18,14 @@
   Cloudflare Pages project; see site/README.md.
 
   Its styles are in site.css rather than inline so privacy.html can share
-  them. The screenshots are placeholders holding the exact box the real ones
-  will take, so dropping images in cannot move the layout.
+  them, and the ?v= on that link is a one-off: it is what reached the readers
+  already holding a stylesheet from before the walkthrough section, who got
+  its markup with none of its rules. _headers now gives CSS the same no-cache
+  policy as the pages, so the next change needs no bump — leave the number
+  alone unless a cached stylesheet breaks a page again.
 -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A1410'/%3E%3Cg fill='none' stroke='%233FBE8B' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M50 84V40'/%3E%3Cpath d='M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z'/%3E%3Cpath d='M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z'/%3E%3C/g%3E%3C/svg%3E">
-<link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="site.css?v=2">
 </head>
 <body>
 
@@ -85,8 +88,14 @@
     <p class="lead">The grid, the rooms, one real measurement, the windows, north, and where a
     plant should stand — the same eleven steps the app offers you on an empty plan.</p>
     <figure class="film">
-      <video controls playsinline preload="metadata"
-             width="1920" height="1080"
+      <!-- max-width inline, and no width/height attributes. Both are about
+           the same few minutes this shipped wrong: a reader holding a
+           stylesheet from before this section got the markup without any of
+           its rules, and the video drew at its own 1920px inside a 390px
+           phone. The attributes made that worse and reserve nothing the CSS
+           aspect-ratio does not; the one inline declaration is the only
+           sizing that cannot arrive later than the element it sizes. -->
+      <video controls playsinline preload="metadata" style="max-width:100%"
              poster="video/planner-walkthrough-poster.jpg"
              aria-label="The Sprout planner walkthrough: a sample flat built in eleven steps, from the half-metre grid through tracing rooms, measuring one of them, marking windows and openings, setting north, to shading the floor by how well each square suits a particular plant.">
         <source src="video/planner-walkthrough.webm" type="video/webm">
