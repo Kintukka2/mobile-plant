@@ -72,6 +72,33 @@
   </div>
 </section>
 
+<!-- The walkthrough gets a panel to itself rather than the 460px figure
+     column the screenshots sit in. The step copy inside the frame is about
+     30px at 1920, which is 16px rendered at the wrap's full width and under
+     8px in that column — a demo nobody can read is a decoration. It is the
+     app's own onboarding animation recorded, not a made-for-marketing one,
+     which is the thing worth saying about it. -->
+<section data-ui-snap-panel id="walkthrough">
+  <div class="wrap">
+    <p class="eyebrow">See it built</p>
+    <h2 style="max-width:24ch">A flat drawn, and read for light, in under a minute.</h2>
+    <p class="lead">The grid, the rooms, one real measurement, the windows, north, and where a
+    plant should stand — the same eleven steps the app offers you on an empty plan.</p>
+    <figure class="film">
+      <video controls playsinline preload="metadata"
+             width="1920" height="1080"
+             poster="video/planner-walkthrough-poster.jpg"
+             aria-label="The Sprout planner walkthrough: a sample flat built in eleven steps, from the half-metre grid through tracing rooms, measuring one of them, marking windows and openings, setting north, to shading the floor by how well each square suits a particular plant.">
+        <source src="video/planner-walkthrough.webm" type="video/webm">
+        <source src="video/planner-walkthrough.mp4" type="video/mp4">
+        <p>Your browser cannot play this video.
+          <a href="video/planner-walkthrough.mp4">Download it instead</a>.</p>
+      </video>
+      <figcaption>Eleven steps, 59 seconds &middot; best full screen</figcaption>
+    </figure>
+  </div>
+</section>
+
 <section data-ui-snap-panel>
   <div class="wrap split flip">
     <figure class="shot">

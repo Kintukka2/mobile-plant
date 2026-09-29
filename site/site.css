@@ -206,8 +206,23 @@ h1 em{ font-style:normal; color:var(--glow); }
    stretched to its full pixel height at whatever width the column is. */
 .shot img{ width:100%; max-width:100%; height:auto; display:block;
            border:1px solid var(--hair); border-radius:12px; }
-.shot figcaption{ font-family:var(--sans); font-size:11.5px; letter-spacing:.12em;
-                  text-transform:uppercase; color:var(--ink-3); margin-top:14px; }
+.shot figcaption, .film figcaption{
+  font-family:var(--sans); font-size:11.5px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--ink-3); margin-top:14px; }
+
+/* ---- The walkthrough ----
+   16:9 against the screenshots' portrait, so it takes the whole wrap rather
+   than a column.
+
+   No margin-inline:auto, deliberately. Once the height cap below narrows the
+   frame under the wrap, centring would put the video's left edge 95px inside
+   the headline's on a laptop — and two left edges that nearly agree read as a
+   mistake, where one obviously different edge would not. */
+.film{ margin:0; }
+.film video{
+  display:block; width:100%; height:auto; aspect-ratio:16 / 9;
+  background:var(--well); border:1px solid var(--hair); border-radius:14px;
+}
 h2{ font-size:clamp(27px,4.2vw,40px); line-height:1.16; margin-bottom:18px; }
 
 /* ---- The light ladder. Five rungs is the app's real scale, not a
@@ -414,7 +429,13 @@ a:focus-visible,.btn:focus-visible{ outline:2px solid var(--glow); outline-offse
 
 /* Screenshots scale to the screen instead of to the column. */
 .shot img{ max-height:54svh; width:auto; max-width:100%; margin-inline:auto; }
-.shot figcaption{ margin-top:10px; }
+.shot figcaption, .film figcaption{ margin-top:10px; }
+
+/* And so does the walkthrough — but by max-width, not max-height. With
+   width:100% and aspect-ratio set, a max-height clamps the box and not the
+   width, so the video would letterbox inside its own frame. Deriving the
+   width from the height it is allowed keeps the two in step. */
+[data-ui-snap-panel] .film video{ max-width:calc(56svh * 16 / 9); }
 
 /* The type scale gives back roughly 90px per panel at laptop size. */
 [data-ui-snap-panel] h1{ font-size:clamp(34px,5.2vw,58px); }
@@ -484,5 +505,6 @@ footer{ padding-block:26px; }
      page scrolls the ordinary way there is no screen to fit, and 24svh of a
      667px phone is a 160px screenshot nobody can read. */
   [data-ui-snap-panel] .shot img{ max-height:none; }
+  [data-ui-snap-panel] .film video{ max-width:none; }
   [data-ui-snap-panel] .sp-list{ max-height:420px; }
 }
