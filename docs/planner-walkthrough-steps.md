@@ -5,8 +5,13 @@ builds a sample flat and names each part as it appears, in the order a
 reader would meet it.
 
 The words below are read out of `js/tour.js` rather than retyped, so this
-cannot drift from what the app says. The recording beside it is
-`planner-walkthrough.mp4`.
+cannot drift from what the app says.
+
+Two recordings exist. `planner-walkthrough.mp4` beside this file is the
+overlay captured as it runs in the app, portrait and silent. The produced
+one — 16:9, 1080p, with the plan and the step copy side by side — is the one
+on the marketing site, at `site/video/planner-walkthrough.mp4` and `.webm`,
+and it is the better thing to show anyone.
 
 It runs on its own canvas and touches nothing in the store: the sample flat
 lives in that file and goes away with the overlay. Watching costs a reader
