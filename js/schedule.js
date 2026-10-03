@@ -419,13 +419,18 @@ window.Schedule = (function () {
   function summary() {
     const all = Store.activePlants();
     const due = tasks(0);
-    const overdue = due.filter(function (t) { return t.days < 0; });
+    /* Plants, not jobs, and only waterings. The greeting says "N plants are
+       ready for a drink", and it used to be handed every overdue task: a
+       plant late for both water and feed counted twice and a plant late only
+       for feed counted once, so six plants could read as seven thirsty. */
+    const thirsty = {};
+    due.forEach(function (t) { if (t.type === 'water' && t.days < 0) thirsty[t.plantId] = true; });
     const soon = tasks(3).filter(function (t) { return t.days > 0; });
     return {
       plantCount: all.length,
       roomCount: Store.get().rooms.length,
       dueCount: due.length,
-      overdueCount: overdue.length,
+      thirstyCount: Object.keys(thirsty).length,
       soonCount: soon.length,
       season: currentSeason(),
       seasonMeta: LOOKUPS.SEASON_META[currentSeason()],
