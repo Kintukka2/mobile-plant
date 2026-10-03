@@ -1,0 +1,18 @@
+{
+  "duration": 23.2,
+  "eyebrow": "Houseplant care",
+  "hook": ["Most plant apps", "ask how often you", "want reminding.", "This one works it out."],
+  "hookAccent": 3,
+  "hookEnd": 3.4,
+  "slide": 0.6,
+  "segs": [
+    { "id": "schedule", "eyebrow": "The schedule", "in": 3.4, "out": 8.6,
+      "cap": [4.0, 8.4, "From the species, the pot, the room and the season."] },
+    { "id": "diagnose", "eyebrow": "Diagnosis", "in": 8.6, "out": 14.0,
+      "cap": [9.15, 13.8, "Yellow leaves? It ranks the likely cause, for that species."] },
+    { "id": "planner", "eyebrow": "The planner", "in": 14.0, "out": 19.4,
+      "cap": [14.55, 19.2, "Trace your home once. It shows where each plant should stand."] }
+  ],
+  "outro": "Houseplant care, worked out.",
+  "poster": 2.9
+}
