@@ -1,0 +1,145 @@
+{
+ "planner": {
+  "eyebrow": "The planner",
+  "duration": 20.5,
+  "hook": [
+   "Your plant isn't dying.",
+   "It's in the wrong room."
+  ],
+  "hookAccent": 1,
+  "hookEnd": 3.0,
+  "phone": [
+   3.0,
+   17.2
+  ],
+  "drop": 16.6,
+  "captions": [
+   [
+    3.8,
+    7.9,
+    "Trace your home once."
+   ],
+   [
+    8.1,
+    11.4,
+    "Mark the windows. Point north."
+   ],
+   [
+    11.7,
+    16.4,
+    "Then it shows where each plant should stand."
+   ]
+  ],
+  "outro": "It reads the light in every room.",
+  "poster": 2.5
+ },
+ "schedule": {
+  "eyebrow": "The schedule",
+  "duration": 20.5,
+  "hook": [
+   "Most plant apps",
+   "ask how often you",
+   "want reminding."
+  ],
+  "hookAccent": -1,
+  "hookEnd": 3.4,
+  "phone": [
+   3.4,
+   17.2
+  ],
+  "drop": 16.6,
+  "captions": [
+   [
+    3.8,
+    6.0,
+    "This one works it out.",
+    1
+   ],
+   [
+    6.4,
+    10.2,
+    "From the species, the pot, the room and the season."
+   ],
+   [
+    10.5,
+    16.4,
+    "And it tells you why."
+   ]
+  ],
+  "outro": "No reminder interval to set.",
+  "poster": 2.9
+ },
+ "diagnose": {
+  "eyebrow": "Diagnosis",
+  "duration": 20.5,
+  "hook": [
+   "Yellow leaves can mean",
+   "ten different things."
+  ],
+  "hookAccent": 1,
+  "hookEnd": 3.0,
+  "phone": [
+   3.0,
+   17.2
+  ],
+  "drop": 16.6,
+  "captions": [
+   [
+    3.6,
+    7.9,
+    "Pick the plant. Pick what you see."
+   ],
+   [
+    8.1,
+    10.6,
+    "Say what else is true."
+   ],
+   [
+    11.0,
+    16.4,
+    "It ranks the cause, for that species."
+   ]
+  ],
+  "outro": "A clinic, not a search box.",
+  "poster": 2.5
+ },
+ "pets": {
+  "eyebrow": "Pets",
+  "duration": 20.5,
+  "hook": [
+   "Is that plant safe",
+   "for the cat?"
+  ],
+  "hookAccent": 1,
+  "hookEnd": 3.0,
+  "phone": [
+   3.0,
+   17.2
+  ],
+  "drop": 16.6,
+  "captions": [
+   [
+    3.6,
+    7.5,
+    "23 of 48 are safe for cats and dogs."
+   ],
+   [
+    7.8,
+    10.3,
+    "Look any plant up."
+   ],
+   [
+    10.6,
+    12.8,
+    "It knows who lives with you."
+   ],
+   [
+    13.0,
+    16.4,
+    "Rated separately for cats, dogs and humans."
+   ]
+  ],
+  "outro": "Know before you bring it home.",
+  "poster": 2.5
+ }
+}
