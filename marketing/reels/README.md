@@ -43,6 +43,6 @@ The stage (`build/stage.html`) draws every frame as a pure function of time.
 It takes its type from `css/fonts/`, so a typeface change in the app reaches
 the reels too.
 
-The capture pins the clock to 3 October 2026, the seed and the time zone to
-`Australia/Sydney`. Without those, the season, the greeting and the due
+The capture fixes the date at 3 October 2026 and the time zone at
+`Australia/Sydney`. Without that, the season, the greeting and the due
 dates change with the day you run it.
