@@ -36,8 +36,8 @@ window.ViewToday = (function () {
     let line;
     if (!sum.plantCount) {
       line = 'Add your first plant and I\'ll work out when it needs water, how much, and when to feed it.';
-    } else if (sum.overdueCount) {
-      line = UI.plural(sum.overdueCount, 'plant') + ' ' + (sum.overdueCount === 1 ? 'is' : 'are') +
+    } else if (sum.thirstyCount) {
+      line = UI.plural(sum.thirstyCount, 'plant') + ' ' + (sum.thirstyCount === 1 ? 'is' : 'are') +
              ' ready for a drink. Nothing dramatic — a late one is forgiven far more readily than an early one.';
     } else if (sum.dueCount) {
       /* The count is on the section heading below, where it labels the list
