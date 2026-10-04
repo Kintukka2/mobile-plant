@@ -19,7 +19,7 @@
 window.ViewSettings = (function () {
 
   function title() { return 'Settings'; }
-  function sub() { return 'Storage, backup and the reset switch'; }
+  function sub() { return 'Appearance, storage, backup and the reset switch'; }
 
   /* ======================================================================
      Backup & restore
@@ -88,6 +88,21 @@ window.ViewSettings = (function () {
 
     let html = '';
 
+    /* --- Appearance ---
+       The theme switch used to live only in the sidebar, which is hidden
+       below 900px, so on a phone — where nearly everyone uses Sprout — the
+       one way to change it was the T key. This is the same control, wired
+       to the same App.toggleTheme. */
+    html += '<div class="section">' +
+      '<div class="section-head"><h2 class="section-title">Appearance</h2></div>' +
+      '<div class="card theme-card">' +
+        '<p class="small dim" style="margin:0;line-height:1.6">Viridium for the evening, Conservatory for ' +
+          'daylight. I\'ll keep whichever you choose.</p>' +
+        '<button class="theme-toggle" data-theme-toggle="1" aria-label="Switch theme">' +
+          App.themeToggleInner() + '</button>' +
+      '</div>' +
+    '</div>';
+
     /* --- Storage --- */
     html += '<div class="section">' +
       '<div class="section-head"><h2 class="section-title">Storage</h2>' +
@@ -141,6 +156,7 @@ window.ViewSettings = (function () {
 
   function mount(root) {
     root.addEventListener('click', function (e) {
+      if (e.target.closest('[data-theme-toggle]')) { App.toggleTheme(e); return; }
       if (e.target.closest('[data-export]')) { exportData(); return; }
       if (e.target.closest('[data-import]')) { importData(); return; }
 

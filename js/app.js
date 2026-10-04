@@ -82,17 +82,67 @@ window.App = (function () {
     if (announce) UI.toast(name === 'conservatory' ? 'Conservatory — daylight' : 'Viridium — nightfall');
   }
 
-  function toggleTheme() { setTheme(THEMES[themeName()].next, true); }
+  /* The new palette spreads out in a circle from the button that asked for
+     it, the way light comes up when a door opens, rather than the whole
+     screen snapping over in one frame. The View Transition API does the
+     work: it snapshots the old page, the switch happens underneath, and the
+     new page is revealed through a growing clip-path.
+
+     The keyboard shortcut has no button, so it opens from the middle of the
+     screen. Where the API is missing (Safari before 18) or the reader has
+     asked for less motion, it is the instant switch it always was — the
+     animation is a courtesy, never the thing that makes the switch work. */
+  function toggleTheme(e) {
+    const next = THEMES[themeName()].next;
+    const doc = document.documentElement;
+    const still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!document.startViewTransition || still) { setTheme(next, true); return; }
+
+    const btn = e && e.target && e.target.closest ? e.target.closest('.theme-toggle') : null;
+    const box = btn ? btn.getBoundingClientRect() : null;
+    const x = box ? box.left + box.width / 2 : window.innerWidth / 2;
+    const y = box ? box.top + box.height / 2 : window.innerHeight / 2;
+    // Far enough to reach the furthest corner, so the circle ends off-screen.
+    const r = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+
+    /* Transitions are held off while the snapshot is taken. Most surfaces
+       ease their background over 150–300ms, so without this the revealed
+       page would still be fading from the old colours inside the circle. */
+    doc.classList.add('theme-switching');
+    const vt = document.startViewTransition(function () {
+      setTheme(next, true);
+      document.querySelectorAll('.theme-toggle').forEach(function (b) { b.classList.add('is-turning'); });
+    });
+    vt.ready.then(function () {
+      doc.animate(
+        { clipPath: ['circle(0px at ' + x + 'px ' + y + 'px)', 'circle(' + r + 'px at ' + x + 'px ' + y + 'px)'] },
+        { duration: 560, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', pseudoElement: '::view-transition-new(root)' }
+      );
+    }).catch(function () { /* skipped transitions still switch, via the callback */ });
+    vt.finished.finally(function () {
+      doc.classList.remove('theme-switching');
+      document.querySelectorAll('.theme-toggle.is-turning').forEach(function (b) { b.classList.remove('is-turning'); });
+    });
+  }
 
   /* The button advertises the theme you would move *to*, not the one you are
      in — a control labelled with the current state reads as a status line
-     and people stop pressing it. */
-  function renderThemeToggle() {
-    const btn = document.getElementById('theme-toggle');
-    if (!btn) return;
+     and people stop pressing it.
+
+     Every .theme-toggle on the page, not one by id: the sidebar has one at
+     desktop widths and Settings has one at every width, and a switch made
+     from either has to relabel both. */
+  function themeToggleInner() {
     const t = THEMES[themeName()];
-    btn.innerHTML = UI.icon(t.icon) + '<span>' + UI.esc(t.label) + '</span>';
-    btn.setAttribute('aria-label', 'Switch to the ' + t.label.toLowerCase() + ' theme');
+    return UI.icon(t.icon) + '<span>' + UI.esc(t.label) + '</span>';
+  }
+
+  function renderThemeToggle() {
+    const t = THEMES[themeName()];
+    document.querySelectorAll('.theme-toggle').forEach(function (btn) {
+      btn.innerHTML = themeToggleInner();
+      btn.setAttribute('aria-label', 'Switch to the ' + t.label.toLowerCase() + ' theme');
+    });
   }
 
   /* ---------- Routing ---------- */
@@ -529,7 +579,8 @@ window.App = (function () {
     init: init, go: go, back: back, render: render, refresh: refresh,
     route: route, renderNav: renderNav, syncWeather: syncWeather,
     renderWeatherChip: renderWeatherChip,
-    theme: themeName, setTheme: setTheme, toggleTheme: toggleTheme
+    theme: themeName, setTheme: setTheme, toggleTheme: toggleTheme,
+    themeToggleInner: themeToggleInner
   };
 })();
 
