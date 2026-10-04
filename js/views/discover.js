@@ -43,14 +43,16 @@ window.ViewDiscover = (function () {
     const owned = Store.activePlants().filter(function (p) { return p.speciesId === sp.id; }).length;
     const risk = Schedule.petRisk(sp);
 
-    /* The species initial rather than a pictogram, exactly as on the plant
-       tiles and the room plates. Forty-eight species meant forty-eight
-       arbitrary emoji — a cheese wedge for a Swiss cheese plant, a flamingo
-       for a flamingo flower — which is a pun, not a catalogue. A grid of
-       initials set in the display face reads as a collection. */
+    /* The species' own photograph. It was the initial for a long while,
+       and before that an emoji per species — a cheese wedge for a Swiss
+       cheese plant, a flamingo for a flamingo flower — which was a pun, not
+       a catalogue. The initial read as a collection but could not tell a
+       reader which plant on the shop shelf they were looking at, which is
+       the one thing a catalogue is for. The lettered tile is still what
+       plantTile draws if a photograph is ever missing. */
     return '<button class="pcard" data-species="' + UI.attr(sp.id) + '">' +
       '<div class="pcard-img">' +
-        UI.plantTile(null, sp.id, sp.common) +
+        UI.plantTile(Store.speciesPhoto(sp.id), sp.id, sp.common) +
         /* .pcard-drop, for the same reason the Greenhouse card's water badge
            uses it: .drop is an 8px bead and will not hold a tick and a word,
            and anything in flow here paints behind the absolutely-positioned
@@ -305,7 +307,7 @@ window.ViewSpecies = (function () {
 
     let html = '<div class="hero">' +
       '<div class="hero-img" style="cursor:default">' +
-        UI.plantTile(null, s.id, s.common) + '</div>' +
+        UI.plantTile(Store.speciesPhoto(s.id), s.id, s.common) + '</div>' +
       '<div style="flex:1;min-width:0">' +
         '<h2 class="hero-nick">' + UI.esc(s.common) + '</h2>' +
         '<div class="hero-sci">' + UI.esc(s.botanical) + '</div>' +

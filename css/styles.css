@@ -38,6 +38,12 @@
   --glass:    rgba(255, 255, 255, 0.045);
   --glass-2:  rgba(255, 255, 255, 0.075);
   --glass-3:  rgba(255, 255, 255, 0.11);
+  /* Glass for a chip that sits on a photograph rather than on the page.
+     --glass-3 is white at 11%, which only works over the dark emerald: over
+     a species photograph shot on a white backdrop it came out white on
+     white, and the "Owned" badge vanished. This is the page colour, mostly
+     opaque, so the chip reads the same over any picture. */
+  --glass-photo: rgba(14, 27, 21, 0.78);
 
   /* --- Hairlines. Mint-tinted so they never look grey. --- */
   --hair:   rgba(214, 237, 226, 0.10);
@@ -2523,7 +2529,7 @@ img { max-width: 100%; display: block; }
   padding: 5px 10px;
   border: 1px solid var(--hair-2);
   border-radius: 99px;
-  background: var(--glass-3);
+  background: var(--glass-photo);
   backdrop-filter: blur(14px) saturate(130%);
   -webkit-backdrop-filter: blur(14px) saturate(130%);
   font-family: var(--sans);
@@ -2694,6 +2700,19 @@ img { max-width: 100%; display: block; }
 }
 .rcard-dot img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
+/* A photograph fills its plate exactly as the lettered .tmark does. Without
+   this a card or a task row showed the image at its own size inside a
+   centring grid: right by accident on a 4:5 card, a strip of the top of the
+   plant in a 46px square row. */
+.pcard-img > img,
+.task-thumb > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .rcard-more {
   flex: 0 0 auto;
   align-self: center;
@@ -2750,7 +2769,7 @@ img { max-width: 100%; display: block; }
   padding: 7px 13px;
   border: 1px solid var(--hair-2);
   border-radius: var(--r);
-  background: var(--glass-3);
+  background: var(--glass-photo);
   backdrop-filter: blur(16px) saturate(130%);
   -webkit-backdrop-filter: blur(16px) saturate(130%);
   font-family: var(--sans);
@@ -2790,7 +2809,7 @@ img { max-width: 100%; display: block; }
 }
 .quick-btn svg { width: 12px; height: 12px; }
 .quick-btn[aria-expanded="true"] { border-color: var(--hair-3); background: var(--bg-3); }
-.hero-img-quick { position: absolute; left: 12px; bottom: 12px; z-index: 2; }
+.hero-img-quick { position: absolute; left: 12px; bottom: 12px; z-index: 2; background: var(--glass-photo); }
 /* One menu, two homes: up from the photograph's corner, down from the
    diary's button. The anchor gives the downward one something to hang from. */
 .menu-anchor { position: relative; display: inline-block; }
@@ -4245,6 +4264,7 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
   --glass:   rgba(255, 252, 247, 0.70);
   --glass-2: rgba(255, 252, 247, 0.86);
   --glass-3: rgba(250, 245, 236, 0.94);
+  --glass-photo: rgba(250, 245, 236, 0.94);
 
   --hair:   rgba(28, 54, 43, 0.13);
   --hair-2: rgba(28, 54, 43, 0.22);

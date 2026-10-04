@@ -72,7 +72,7 @@ window.ViewDiagnose = (function () {
     if (plants.length) {
       html += '<div class="stack" style="gap:8px">' + plants.map(function (p) {
         const sp = Store.species(p);
-        const photo = Store.coverPhoto(p);
+        const photo = Store.tilePhoto(p);
         const name = Store.displayName(p);
         /* When a plant has never been given a nickname, displayName falls
            back to the species common name — so a second line carrying the

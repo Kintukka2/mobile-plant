@@ -589,7 +589,9 @@ window.UI = (function () {
      The caller supplies the container (which owns the size and the radius);
      this fills it. The container needs `position: relative` — see .tmark. */
   function plantTile(photoSrc, seed, label) {
-    if (photoSrc) return '<img src="' + attr(photoSrc) + '" alt="">';
+    /* Lazy, because Discover puts all forty-eight species photographs on one
+       page and most of them are below the fold. */
+    if (photoSrc) return '<img src="' + attr(photoSrc) + '" alt="" loading="lazy" decoding="async">';
 
     /* The letter, not a leaf. A row of six identical hairline leaves in six
        near-identical dark tints reads as six empty placeholders; a row of

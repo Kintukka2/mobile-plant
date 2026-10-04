@@ -862,9 +862,16 @@ body { padding-bottom: 80px; }
   <p class="g-rule"><b>Below 720px the hero is capped at
   <code>max-width: 78%</code> and centred.</b> At 430px wide, a full-bleed 4:5
   plate is 482px tall &mdash; the entire fold, before the plant's name has
-  appeared. On a species page, where there is never a photograph, that is 482px
-  of empty tint. Narrowing keeps the crop and gives the plate back its
-  proportion to the page.</p>
+  appeared. Narrowing keeps the crop and gives the plate back its proportion
+  to the page.</p>
+
+  <p class="g-rule"><b>Every species has a photograph, and it is cut to the
+  same 4:5.</b> They live in <code>img/species/</code>, one per species id, at
+  720&times;900 &mdash; the same crop as the hero and the card, so a species
+  photograph and an owner's photograph sit in the same frame without either
+  looking borrowed. All are from Pexels, so none carries a credit line; the
+  sources are listed in <code>docs/species-photo-sources.csv</code>. A plant shows
+  the species photograph until its owner adds their own.</p>
 
   <p class="g-rule"><b>Landscape phones get 16:9.</b> Under
   <code>max-height: 520px</code> the hero and the splash wordmark both shrink,

@@ -58,7 +58,7 @@ window.ViewGreenhouse = (function () {
   }
 
   function plantThumb(plant) {
-    return UI.plantTile(Store.coverPhoto(plant), plant.id, Store.displayName(plant));
+    return UI.plantTile(Store.tilePhoto(plant), plant.id, Store.displayName(plant));
   }
 
   /* `context` is 'room' when the card is rendered inside a single room, and
@@ -111,7 +111,7 @@ window.ViewGreenhouse = (function () {
 
     const dots = plants.slice(0, 6).map(function (p) {
       return '<span class="rcard-dot" title="' + UI.attr(Store.displayName(p)) + '">' +
-        UI.plantTile(Store.coverPhoto(p), p.id, Store.displayName(p)) + '</span>';
+        UI.plantTile(Store.tilePhoto(p), p.id, Store.displayName(p)) + '</span>';
     }).join('');
 
     return '<button class="rcard" data-room="' + UI.attr(room.id) + '">' +
