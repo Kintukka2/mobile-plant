@@ -367,6 +367,25 @@ window.Store = (function () {
     return photos.length ? getPhoto(photos[0].photoId) : null;
   }
 
+  /* The species' own photograph, shipped with the app in img/species/ and
+     named by species id. Every species in PLANT_DATA has one, which
+     .claude/check-species.js holds to, so this is a path rather than a
+     lookup. A plant with no species (or one whose species has since been
+     removed) gets null, and with it the lettered tile. */
+  function speciesPhoto(speciesId) {
+    if (!speciesId) return null;
+    const known = window.PLANT_DATA.some(function (s) { return s.id === speciesId; });
+    return known ? 'img/species/' + speciesId + '.webp' : null;
+  }
+
+  /* What a plant's tile shows: the owner's own photograph when there is one,
+     else the species photograph. Kept apart from coverPhoto() because the
+     plant page still has to know which of the two it is showing — "Change"
+     belongs on the owner's photo, "Add photo" on the stock one. */
+  function tilePhoto(plant) {
+    return coverPhoto(plant) || (plant ? speciesPhoto(plant.speciesId) : null);
+  }
+
   /* ---------- Weather cache ---------- */
   function setWeather(w) { get().weather = w; save(); }
   function getWeather()  { return get().weather; }
@@ -447,6 +466,7 @@ window.Store = (function () {
     addLog: addLog, updateLog: updateLog, deleteLog: deleteLog,
     logsFor: logsFor, photosFor: photosFor, growthFor: growthFor,
     savePhoto: savePhoto, getPhoto: getPhoto, deletePhoto: deletePhoto, coverPhoto: coverPhoto,
+    speciesPhoto: speciesPhoto, tilePhoto: tilePhoto,
     setWeather: setWeather, getWeather: getWeather,
     updateSettings: updateSettings, storageUsage: storageUsage,
     exportAll: exportAll, importAll: importAll, resetAll: resetAll

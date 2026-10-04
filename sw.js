@@ -26,7 +26,7 @@
    weights, and two new files join the precache list. A returning visitor
    holding v4 would otherwise be served a shell asking for a font the old
    cache has never heard of. */
-const CACHE = 'sprout-v54-viridium';
+const CACHE = 'sprout-v55-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is
@@ -56,7 +56,11 @@ const ASSETS = [
      here: nothing on the splash or the first screen needs them, and the
      same-origin handler below caches each one the first time it is used.
      Precaching the lot would put another 140KB in front of a reader who
-     may only be trying the web version. */
+     may only be trying the web version.
+
+     The species photographs in img/species are left out for the same
+     reason, at ten times the size: 2MB for forty-eight of them, most of
+     which a reader never opens. Each is cached the first time it is shown. */
   'css/fonts/hatton-ultralight.woff2',
   'css/fonts/hatton-medium.woff2',
   'css/fonts/cormorant-var.woff2',

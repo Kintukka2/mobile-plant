@@ -24,10 +24,10 @@ const ROOT = path.resolve(__dirname, '..');
 const PORT = Number(process.env.PORT) || 8787;
 const HOST = process.env.HOST || '127.0.0.1';
 
-/* The repo currently ships no images — the
-   icons are inline SVG data URIs — but the image types stay listed so that
-   adding one is not also a debugging session about why it downloads instead
-   of rendering. */
+/* The icons are inline SVG data URIs, so for a long time the image types
+   here were listed only so that adding one would not be a debugging session
+   about why it downloads instead of rendering. The species photographs in
+   img/species are WebP, and that is the session this list now saves. */
 const TYPES = {
   '.html':        'text/html; charset=utf-8',
   '.css':         'text/css; charset=utf-8',
@@ -38,6 +38,7 @@ const TYPES = {
   '.png':         'image/png',
   '.jpg':         'image/jpeg',
   '.jpeg':        'image/jpeg',
+  '.webp':        'image/webp',
   '.ico':         'image/x-icon',
   '.woff2':       'font/woff2'
 };

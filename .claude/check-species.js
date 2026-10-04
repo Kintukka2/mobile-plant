@@ -8,6 +8,9 @@
  *  Add a 49th species and the site keeps saying 48 with no error anywhere.
  *
  *  This compares the names, the count, and the two figures the copy quotes.
+ *  It also checks that every species has its photograph in img/species/,
+ *  because Store.speciesPhoto() builds the path from the id without looking
+ *  and a missing file shows as a broken image rather than an error.
  *
  *    node .claude/check-species.js
  *
@@ -33,4 +36,6 @@ if(miss.length||extra.length||got.length!==want.length||!counted||!safeOk){
   if(!safeOk)  console.error(`  the copy no longer says ${safe} safe for cats and dogs`);
   process.exit(1);
 }
+const noPhoto=c.window.PLANT_DATA.filter(p=>!fs.existsSync(`img/species/${p.id}.webp`)).map(p=>p.id);
+if(noPhoto.length){console.error('species with no photograph in img/species/:', noPhoto.join(', '));process.exit(1);}
 console.log(`site species list matches PLANT_DATA — ${want.length} species, ${safe} pet safe`);

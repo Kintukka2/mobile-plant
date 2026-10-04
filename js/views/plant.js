@@ -104,7 +104,7 @@ window.ViewPlant = (function () {
 
     return '<div class="hero">' +
       '<div class="hero-img" data-cover="1">' +
-        UI.plantTile(photo, p.id, Store.displayName(p)) +
+        UI.plantTile(photo || Store.speciesPhoto(p.speciesId), p.id, Store.displayName(p)) +
         '<span class="hero-img-edit">' + (photo ? 'Change' : 'Add photo') + '</span>' +
         /* The three things done to a plant most days, on the photograph's
            other corner, folded into one control. They were a bar of five

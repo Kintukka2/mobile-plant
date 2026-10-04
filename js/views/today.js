@@ -173,7 +173,7 @@ window.ViewToday = (function () {
         'data-task="' + UI.attr(t.plantId + ':' + t.type) + '">' +
       '<button class="task-check" data-done="' + UI.attr(t.plantId + ':' + t.type) + '" ' +
         'aria-label="Mark ' + UI.attr(kind.label.toLowerCase()) + ' done">' + UI.icon('check') + '</button>' +
-      '<span class="task-thumb">' + UI.plantTile(Store.coverPhoto(plant), plant.id, Store.displayName(plant)) + '</span>' +
+      '<span class="task-thumb">' + UI.plantTile(Store.tilePhoto(plant), plant.id, Store.displayName(plant)) + '</span>' +
       '<div class="task-body" data-plant="' + UI.attr(plant.id) + '">' +
         '<div class="task-title">' + UI.esc(kind.label + ' ' + Store.displayName(plant)) + '</div>' +
         '<div class="task-meta">' + UI.icon(kind.ico) +
@@ -268,7 +268,7 @@ window.ViewToday = (function () {
           if (!plant) return '';
           const kind = LOOKUPS.TASKS[t.type];
           return '<div class="task is-link" data-plant="' + UI.attr(plant.id) + '">' +
-            '<span class="task-thumb">' + UI.plantTile(Store.coverPhoto(plant), plant.id, Store.displayName(plant)) + '</span>' +
+            '<span class="task-thumb">' + UI.plantTile(Store.tilePhoto(plant), plant.id, Store.displayName(plant)) + '</span>' +
             '<div class="task-body">' +
               '<div class="task-title">' + UI.esc(Store.displayName(plant)) + '</div>' +
               '<div class="task-meta">' + UI.icon(kind.ico) +

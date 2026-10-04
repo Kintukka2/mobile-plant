@@ -3,7 +3,7 @@
    --------------------------------------------------------------------------
    The app above this directory has no build step and is not getting one.
    This is the wrapper's build step, not the app's: it copies the files the
-   service worker precaches into a folder Capacitor understands, and nothing
+   web app ships into a folder Capacitor understands, and nothing
    it produces is ever read by the web version.
 
    Node built-ins only, to keep the wrapper installable with one npm command
@@ -23,8 +23,10 @@ const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const OUT = path.join(__dirname, 'www');
 
-/* Whole directories, copied as they are. */
-const DIRS = ['css', 'js'];
+/* Whole directories, copied as they are. img/ holds the species
+   photographs, which the web version only caches as they are viewed but the
+   shell has to carry from the start. */
+const DIRS = ['css', 'js', 'img'];
 
 /* Single files at the top level. brand.html is deliberately absent: it is a
    document for whoever works on Sprout, not part of the app, exactly as it
