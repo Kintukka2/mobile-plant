@@ -141,6 +141,39 @@ app read the file, and neither plugin needs a permission.
 | `@capacitor/local-notifications` | Reminders, below |
 | `@capacitor/filesystem` | Writing the backup file to the cache |
 | `@capacitor/share` | Handing that file to the share sheet |
+| `@capacitor/status-bar` | Android only: the status bar's colour and icons, below |
+
+## The status bar and the window behind the app
+
+Android 1.0 showed a flat grey status bar above the dark app, and in
+landscape a white band down the cutout side (PrimeTestLab 7959, S-01 and
+M-04). Both were the DayNight theme's defaults, because `AppTheme.NoActionBar`
+in `android/app/src/main/res/values/styles.xml` never set them. It now sets
+the window background and the status bar to the deep field, `#0A1410`, with
+light icons, so the first frame is right before any script runs.
+
+After that, `setTheme()` in `../js/app.js` repaints the bar through the
+StatusBar plugin whenever the theme changes, so Conservatory gets an ivory
+bar with dark icons. The cutout band can't follow: no plugin reaches the
+window background, so under Conservatory it stays dark.
+
+Three settings here are easy to undo by accident:
+
+- **`overlaysWebView: false`** in `capacitor.config.json`. The plugin's
+  default is `true`, which slides the WebView up under the status bar.
+  The Android build has never drawn there, so leaving the default would put
+  the page header under the clock.
+- **`backgroundColor` and `style: "DARK"`** in the same block. The plugin
+  applies these at launch, before any script runs. Without them it paints
+  black and picks its icons from the system theme, which gives dark icons on
+  a dark bar for anyone using light mode. `DARK` names the background, so it
+  means light icons.
+- **`ios.includePlugins`** leaves the plugin out of the iOS build, because
+  `overlaysWebView` is read on both platforms and iOS deliberately draws
+  under the status bar (see the safe-area note in `../css/styles.css`). The
+  catch is that it is an allowlist: a new plugin has to be added there or
+  iOS silently goes without it. `npx cap sync` prints the plugins it found
+  for each platform, so compare the two lists after adding one.
 
 ## How reminders actually work here
 

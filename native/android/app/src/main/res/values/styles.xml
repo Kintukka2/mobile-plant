@@ -9,10 +9,29 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!--
+      The window behind the WebView, and the status bar above it.
+
+      Neither was set, so both fell to the DayNight defaults. In landscape
+      Android 13 keeps the app out of the camera cutout, and the band it
+      leaves shows the window background: plain white under a light system
+      theme, beside the dark app (PrimeTestLab 7959, M-04). The status bar
+      was the same theme's flat grey (S-01).
+
+      Both are the deep field now, with light icons, so the first frame is
+      right before any script has run. After that the StatusBar plugin
+      repaints the bar to match whichever theme the reader chose; the
+      cutout band cannot follow, and under Conservatory it stays dark. A
+      dark band beside a light app is a far smaller wrong than a white one
+      beside a dark app.
+    -->
     <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:background">@null</item>
+        <item name="android:windowBackground">@color/sprout_field</item>
+        <item name="android:statusBarColor">@color/sprout_field</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
 

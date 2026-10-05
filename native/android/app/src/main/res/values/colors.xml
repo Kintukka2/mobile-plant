@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      The deep field, the Viridium background: the same value as
+      theme-color in index.html and ic_launcher_background. Named for what
+      it is rather than borrowed from the launcher icon, because the window
+      and the status bar are not the icon and should not change if it does.
+    -->
+    <color name="sprout_field">#0A1410</color>
+</resources>

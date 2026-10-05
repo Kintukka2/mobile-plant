@@ -59,9 +59,27 @@ window.App = (function () {
      the runtime half that handles switching. */
 
   const THEMES = {
-    viridium:     { next: 'conservatory', label: 'Daylight',  icon: 'sun',  color: '#0A1410' },
-    conservatory: { next: 'viridium',     label: 'Nightfall', icon: 'moon', color: '#F7F3EC' }
+    viridium:     { next: 'conservatory', label: 'Daylight',  icon: 'sun',  color: '#0A1410', bar: 'DARK' },
+    conservatory: { next: 'viridium',     label: 'Nightfall', icon: 'moon', color: '#F7F3EC', bar: 'LIGHT' }
   };
+
+  /* theme-color reaches the browser's chrome but not the store builds',
+     where the status bar is the operating system's and stayed a flat grey
+     above the dark app (PrimeTestLab 7959, S-01). The StatusBar plugin
+     paints it instead. `bar` names the plugin's style, which describes the
+     background: DARK means light icons. The iOS build carries no plugin
+     (native/README.md says why), so there this finds nothing and returns.
+     The two calls are caught apart so a failed colour never costs the
+     icons their contrast. */
+  function paintStatusBar(name) {
+    const C = window.Capacitor;
+    if (!C || typeof C.isNativePlatform !== 'function' || !C.isNativePlatform()) return;
+    const S = C.Plugins && C.Plugins.StatusBar;
+    if (!S) return;
+    const t = THEMES[name];
+    Promise.resolve().then(function () { return S.setStyle({ style: t.bar }); }).catch(function () {});
+    Promise.resolve().then(function () { return S.setBackgroundColor({ color: t.color }); }).catch(function () {});
+  }
 
   function themeName() {
     const t = document.documentElement.getAttribute('data-theme');
@@ -75,6 +93,7 @@ window.App = (function () {
 
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', THEMES[name].color);
+    paintStatusBar(name);
 
     try { localStorage.setItem('sprout.theme', name); } catch (e) { /* non-fatal */ }
 
@@ -560,6 +579,9 @@ window.App = (function () {
     Store.load();
     wire();
     renderThemeToggle();
+    /* index.html applies a stored Conservatory before first paint, but the
+       native bar starts from capacitor.config.json's dark values. */
+    paintStatusBar(themeName());
 
     if (!location.hash) location.hash = '#/today';
     render();

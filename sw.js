@@ -32,8 +32,10 @@
    holding v58 would keep the button that saves nothing in the shell.
 
    v60: double adds and long names. The stylesheet and three views changed,
-   and a stale greenhouse.js would go on planting the same plant twice. */
-const CACHE = 'sprout-v60-viridium';
+   and a stale greenhouse.js would go on planting the same plant twice.
+
+   v61: the status bar. app.js now repaints the native bar with the theme. */
+const CACHE = 'sprout-v61-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is

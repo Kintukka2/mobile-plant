@@ -2,10 +2,23 @@
   "appId": "com.sproutevergreen.app",
   "appName": "Sprout",
   "webDir": "www",
+  "ios": {
+    "includePlugins": [
+      "@capacitor/app",
+      "@capacitor/filesystem",
+      "@capacitor/local-notifications",
+      "@capacitor/share"
+    ]
+  },
   "plugins": {
     "LocalNotifications": {
       "smallIcon": "ic_stat_sprout",
       "iconColor": "#3FBE8B"
+    },
+    "StatusBar": {
+      "overlaysWebView": false,
+      "backgroundColor": "#0A1410",
+      "style": "DARK"
     }
   }
 }
