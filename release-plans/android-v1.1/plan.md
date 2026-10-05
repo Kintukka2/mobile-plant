@@ -215,12 +215,12 @@ fed and content" (`js/views/today.js:52`).
 
 ## Release housekeeping
 
-- [ ] Bump `CACHE` in `sw.js` (currently `sprout-v58-viridium`): CSS and JS
-      both change.
-- [ ] `native/`: install `@capacitor/filesystem`, `@capacitor/share` and
+- [x] Bump `CACHE` in `sw.js`: each fix bumped it, from `sprout-v58-viridium`
+      to `sprout-v63-viridium`.
+- [x] `native/`: install `@capacitor/filesystem`, `@capacitor/share` and
       `@capacitor/status-bar`, then `npm run sync`.
-- [ ] `native/android/app/build.gradle`: `versionCode 3`, `versionName "1.1"`.
-- [ ] `native/README.md`: list the three new plugins and what each is for.
+- [x] `native/android/app/build.gradle`: `versionCode 3`, `versionName "1.1"`.
+- [x] `native/README.md`: list the three new plugins and what each is for.
 - [ ] Privacy: no change needed. A backup only leaves the phone when the
       reader picks a destination in the share sheet. Nothing is sent
       automatically and nothing reaches a server of ours. Re-read
