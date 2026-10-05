@@ -81,6 +81,15 @@
     <span class="hero-scroll-t">Scroll</span>
     <span class="hero-scroll-rule" aria-hidden="true"></span>
   </button>
+
+  <!-- Sprout, leaning in from the corner. The art is cropped off its left
+       and bottom edges, so this is the one place it can sit unframed: set
+       into the bottom-left, the crop becomes the page's own edge. Hidden
+       until the script below has found room for it, so a reader without
+       script never gets it at a size that covers the call to action.
+       Decorative, because the headline already says what the page is. -->
+  <img class="hero-sprout" id="hero-sprout" src="img/sprout-corner.webp"
+       width="557" height="720" alt="" aria-hidden="true" decoding="async" hidden>
 </header>
 
 <section data-ui-snap-panel class="band" id="how">
@@ -836,6 +845,58 @@
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", measure);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+})();
+</script>
+
+<!-- How big Sprout can be in the corner, measured rather than set at
+     breakpoints. The corner is empty on a wide screen, where the copy starts
+     400px in, and crowded on a phone, where the copy runs edge to edge and
+     the only free space is under the buttons. A fixed size covered the call
+     to action at 1280px and on every phone measured. So it takes the larger
+     of the two rooms it could have — the gutter beside the copy, or the
+     band below the buttons — keeps clear of the scroll cue, and then takes
+     four fifths of that, so it reads as leaning into the corner rather than
+     filling it. Below 80px it is a sliver, and on a short screen the hero
+     is no longer a screenful to sit in, so it stays hidden. -->
+<script>
+(function () {
+  var hero = document.querySelector(".hero");
+  var img = document.getElementById("hero-sprout");
+  var lead = hero && hero.querySelector(".lead");
+  var cta = hero && hero.querySelector(".cta");
+  var cue = document.getElementById("hero-scroll");
+  if (!hero || !img || !lead || !cta) return;
+
+  var ASPECT = 557 / 720, CAP = 360, SCALE = 0.8, MIN = 80, GAP = 16, ticking = false;
+
+  function size() {
+    ticking = false;
+    var hr = hero.getBoundingClientRect();
+    var fromGutter = (lead.getBoundingClientRect().left - hr.left - 24) / ASPECT;
+    var fromBelow = hr.bottom - cta.getBoundingClientRect().bottom - GAP;
+    var h = Math.min(CAP, hr.height * 0.42, Math.max(fromGutter, fromBelow));
+    // The cue is centred at the foot of the hero, so a figure wide enough
+    // to reach it would sit on it. Its box is still laid out while it fades,
+    // so this holds however far down the reader has scrolled.
+    var c = cue && cue.getBoundingClientRect();
+    if (c && c.width) h = Math.min(h, (c.left - hr.left - 12) / ASPECT);
+    h *= SCALE;
+    if (h < MIN) { img.hidden = true; return; }
+    img.style.setProperty("--sprout-h", Math.floor(h) + "px");
+    img.hidden = false;
+  }
+
+  function onResize() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(size);
+  }
+
+  size();
+  window.addEventListener("resize", onResize);
+  // The copy settles a few pixels lower once Cormorant arrives, and the
+  // band under the buttons is what a phone is sized from.
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(size);
 })();
 </script>
 

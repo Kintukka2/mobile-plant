@@ -209,8 +209,8 @@ is why the southern list carries both spellings.
 
 `brand.html` is the design system written down: the mark and its stroke rule,
 the wordmark, both palettes with every token and what each hue is allowed to
-mean, the type scale, photo ratios, the voice, and a record of the twelve
-decisions that produced them with the reasoning for each.
+mean, the type scale, photo ratios, the voice, the character, and a record of
+the thirteen decisions that produced them with the reasoning for each.
 
 It is **not part of the app**. It is deliberately absent from `sw.js`
 `ASSETS` and from `manifest.webmanifest` — it is a document for whoever is
@@ -266,6 +266,40 @@ warmth that lands in week one can wear out by week three:
 Apostrophes inside single-quoted JS strings need escaping (\'). That is a
 syntax constraint, never a reason to write "I will" where "I'll" belongs —
 the stiffness is visible to the reader and the escape is not.
+
+## The character
+
+Sprout has a face: a jade leaf spirit, in five poses, at `img/sprout/<pose>.webp`
+(`base`, `new-growth`, `watering`, `concerned`, `resting`). The 1254² originals
+and the designer's notes are in `marketing/character/` for the site and ads.
+Brand guide section 09 and Decision 13 are the full rule. The short version:
+
+- **The face follows the voice zoning.** It appears only on conversation
+  surfaces, never beside species care data, a diagnosis result, a treatment
+  step or a toxicity note.
+- **Four placements, named, not spread.** Welcome sheet (`base`), "No plants
+  yet" on Today and Greenhouse (`new-growth`), "All caught up" (`resting`), and
+  Diagnose with no plants (`concerned`). `watering` is marketing only for now.
+  Every other empty state keeps its hairline ring. A face on all of them is
+  furniture.
+- **Framed, or anchored to a corner.** The art carries its own ground and is
+  cropped off two edges. In the app it renders through `UI.sprout(pose)` or
+  `UI.empty('sprout:<pose>', …)` as a `.sprout-plate`, never as a bare `<img>`;
+  both go through an allow-list. The one unframed placement is the site hero's
+  bottom-left, where the two cropped edges meet the page's edges.
+- **The site's copy is a separate cut-out.** `site/img/sprout-corner.webp` is
+  `marketing/character/sprout-base.png` with its ground removed and trimmed,
+  because `site/` cannot reach `../img`. Its height comes from a script in
+  `site/index.html` that measures the free room beside or below the copy;
+  a fixed size covered the call to action at 1280px and on every phone.
+- **It never replaces the mark.** Favicon, touch icon, store icon and sidebar
+  stay the three-path sprig.
+
+The plates are in `sw.js` ASSETS, unlike the species photographs: 28KB for all
+five, and they are on exactly the screens likely to be opened offline. A new
+pose means a WebP at 360×360, an entry in `SPROUT_POSES` in `js/ui.js`, an
+ASSETS line, and a `CACHE` bump. Make every new pose from `sprout-base.png`, or
+the character drifts.
 
 ## Type
 

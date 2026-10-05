@@ -26,7 +26,9 @@
    weights, and two new files join the precache list. A returning visitor
    holding v4 would otherwise be served a shell asking for a font the old
    cache has never heard of. */
-const CACHE = 'sprout-v56-viridium';
+/* v57: the character. Five small plates join the precache list, and the
+   empty states and the all-clear panel now ask for them by name. */
+const CACHE = 'sprout-v57-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is
@@ -66,6 +68,15 @@ const ASSETS = [
   'css/fonts/cormorant-var.woff2',
   'css/fonts/jost-var.woff2',
   'css/fonts/sacramento-400.woff2',
+  /* The character's plates are precached, unlike the species photographs,
+     because they are the opposite trade: five files, 28KB together, and the
+     screens that show them (a first run, an empty greenhouse, a day with
+     nothing due) are exactly the ones most likely to be opened offline. */
+  'img/sprout/base.webp',
+  'img/sprout/new-growth.webp',
+  'img/sprout/watering.webp',
+  'img/sprout/concerned.webp',
+  'img/sprout/resting.webp',
   'js/data/lookups.js',
   'js/data/plants.js',
   'js/data/problems.js',
