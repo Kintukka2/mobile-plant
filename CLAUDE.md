@@ -65,6 +65,12 @@ Two consequences worth knowing before editing anything in there:
   file, `README.md` and `native/store-privacy.md` all state the same facts
   about what leaves the device. Change one and change all four.
 
+**Sprout has a speaking voice**, pinned in `marketing/voice/`: the model's hash,
+the voice vector itself, speed and processing. Any voiceover uses
+`marketing/voice/say.py` rather than picking a voice afresh, so every video
+sounds like the same Sprout. Like the rest of `marketing/`, nothing in the app
+reads it.
+
 `_headers` and `_redirects` at the root belong to the app deploy. The one
 that matters is the no-cache rule on `sw.js`: bumping `CACHE` does nothing
 if the CDN is still handing out the old `sw.js` that names the old cache.
