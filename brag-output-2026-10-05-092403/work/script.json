@@ -1,0 +1,94 @@
+{
+ "voice": "af_heart",
+ "speed": 1.06,
+ "outro": [
+  {
+   "text": "Find me at sproutevergreen.com",
+   "say": "Find me at sprout evergreen dot com."
+  },
+  {
+   "text": "Coming to Google Play and the App Store.",
+   "say": "Coming to Google Play, and the App Store!"
+  }
+ ],
+ "reels": {
+  "schedule": {
+   "eyebrow": "The schedule",
+   "hook": {
+    "text": [
+     "Most plant apps",
+     "ask how often you",
+     "want reminding."
+    ],
+    "say": "Most plant apps ask how often you want reminding."
+   },
+   "lines": [
+    {
+     "text": "I'm Sprout, and I work it out.",
+     "say": "I'm Sprout, and I work it out!"
+    },
+    {
+     "text": "From the species, the pot, the room and the season.",
+     "say": "From the species, the pot, the room, and the season."
+    },
+    {
+     "text": "And I always show you why.",
+     "say": "And I always show you why.",
+     "accent": true
+    }
+   ]
+  },
+  "diagnose": {
+   "eyebrow": "Diagnosis",
+   "hook": {
+    "text": [
+     "Yellow leaves can mean",
+     "ten different things."
+    ],
+    "say": "Yellow leaves can mean ten different things.",
+    "accent": 1
+   },
+   "lines": [
+    {
+     "text": "Tell me the plant, and what you're seeing.",
+     "say": "Tell me the plant, and what you're seeing."
+    },
+    {
+     "text": "Then what else is true.",
+     "say": "Then, what else is true."
+    },
+    {
+     "text": "And I rank the likely cause, for that species.",
+     "say": "And I rank the likely cause, for that species.",
+     "accent": true
+    }
+   ]
+  },
+  "planner": {
+   "eyebrow": "The planner",
+   "hook": {
+    "text": [
+     "Your plant isn't dying.",
+     "It's just in the wrong room."
+    ],
+    "say": "Your plant isn't dying. It's just in the wrong room!",
+    "accent": 1
+   },
+   "lines": [
+    {
+     "text": "Trace your home once, and mark the windows.",
+     "say": "Trace your home once, and mark the windows."
+    },
+    {
+     "text": "Point me north.",
+     "say": "Point me north..."
+    },
+    {
+     "text": "And I'll show you exactly where each plant should stand.",
+     "say": "And I'll show you exactly where each plant should stand.",
+     "accent": true
+    }
+   ]
+  }
+ }
+}

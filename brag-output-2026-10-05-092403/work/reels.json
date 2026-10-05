@@ -1,0 +1,219 @@
+{
+ "schedule": {
+  "eyebrow": "The schedule",
+  "duration": 20.0,
+  "hook": [
+   "Most plant apps",
+   "ask how often you",
+   "want reminding."
+  ],
+  "hookAccent": -1,
+  "hookAt": 0.35,
+  "hookDur": 2.656,
+  "hookEnd": 3.4,
+  "phone": [
+   3.4,
+   13.8
+  ],
+  "drop": 13.8,
+  "captions": [
+   [
+    3.7,
+    6.0,
+    "I'm Sprout, and I work it out.",
+    0
+   ],
+   [
+    6.3,
+    9.9,
+    "From the species, the pot, the room and the season.",
+    0
+   ],
+   [
+    10.3,
+    13.5,
+    "And I always show you why.",
+    1
+   ]
+  ],
+  "outro": [
+   "Find me at sproutevergreen.com",
+   "Coming to Google Play and the App Store."
+  ],
+  "outroAt": [
+   14.4,
+   16.8
+  ],
+  "poster": 11.6,
+  "vo": [
+   [
+    0.35,
+    "schedule-hook"
+   ],
+   [
+    3.7,
+    "schedule-0"
+   ],
+   [
+    6.3,
+    "schedule-1"
+   ],
+   [
+    10.3,
+    "schedule-2"
+   ],
+   [
+    14.4,
+    "outro-0"
+   ],
+   [
+    16.8,
+    "outro-1"
+   ]
+  ]
+ },
+ "diagnose": {
+  "eyebrow": "Diagnosis",
+  "duration": 20.1,
+  "hook": [
+   "Yellow leaves can mean",
+   "ten different things."
+  ],
+  "hookAccent": 1,
+  "hookAt": 0.35,
+  "hookDur": 2.086,
+  "hookEnd": 3.0,
+  "phone": [
+   3.0,
+   13.9
+  ],
+  "drop": 13.9,
+  "captions": [
+   [
+    3.4,
+    6.6,
+    "Tell me the plant, and what you're seeing.",
+    0
+   ],
+   [
+    6.9,
+    9.5,
+    "Then what else is true.",
+    0
+   ],
+   [
+    9.9,
+    13.6,
+    "And I rank the likely cause, for that species.",
+    1
+   ]
+  ],
+  "outro": [
+   "Find me at sproutevergreen.com",
+   "Coming to Google Play and the App Store."
+  ],
+  "outroAt": [
+   14.5,
+   16.9
+  ],
+  "poster": 12.9,
+  "vo": [
+   [
+    0.35,
+    "diagnose-hook"
+   ],
+   [
+    3.4,
+    "diagnose-0"
+   ],
+   [
+    6.9,
+    "diagnose-1"
+   ],
+   [
+    9.9,
+    "diagnose-2"
+   ],
+   [
+    14.5,
+    "outro-0"
+   ],
+   [
+    16.9,
+    "outro-1"
+   ]
+  ]
+ },
+ "planner": {
+  "eyebrow": "The planner",
+  "duration": 20.4,
+  "hook": [
+   "Your plant isn't dying.",
+   "It's just in the wrong room."
+  ],
+  "hookAccent": 1,
+  "hookAt": 0.35,
+  "hookDur": 2.738,
+  "hookEnd": 3.5,
+  "phone": [
+   3.5,
+   14.2
+  ],
+  "drop": 14.2,
+  "captions": [
+   [
+    3.9,
+    7.4,
+    "Trace your home once, and mark the windows.",
+    0
+   ],
+   [
+    7.7,
+    9.5,
+    "Point me north.",
+    0
+   ],
+   [
+    9.9,
+    14.0,
+    "And I'll show you exactly where each plant should stand.",
+    1
+   ]
+  ],
+  "outro": [
+   "Find me at sproutevergreen.com",
+   "Coming to Google Play and the App Store."
+  ],
+  "outroAt": [
+   14.8,
+   17.2
+  ],
+  "poster": 13.2,
+  "vo": [
+   [
+    0.35,
+    "planner-hook"
+   ],
+   [
+    3.9,
+    "planner-0"
+   ],
+   [
+    7.7,
+    "planner-1"
+   ],
+   [
+    9.9,
+    "planner-2"
+   ],
+   [
+    14.8,
+    "outro-0"
+   ],
+   [
+    17.2,
+    "outro-1"
+   ]
+  ]
+ }
+}

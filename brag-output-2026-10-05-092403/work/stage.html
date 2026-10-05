@@ -1,0 +1,182 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Sprout voiced reel stage</title>
+<style>
+@font-face{font-family:'PP Hatton';src:url('/css/fonts/hatton-ultralight.woff2') format('woff2');font-weight:200;font-display:block}
+@font-face{font-family:'PP Hatton';src:url('/css/fonts/hatton-medium.woff2') format('woff2');font-weight:500;font-display:block}
+@font-face{font-family:'Jost';src:url('/css/fonts/jost-var.woff2') format('woff2');font-weight:300 500;font-display:block}
+@font-face{font-family:'Sacramento';src:url('/css/fonts/sacramento-400.woff2') format('woff2');font-weight:400;font-display:block}
+:root{ --bg:#050A08; --ink:#F3F6F1; --ink2:rgba(228,240,232,.72); --ink3:rgba(206,226,214,.52);
+       --glow:#3FBE8B; --mint:#9FD3BE; --gold:#C8A96B; --hair:rgba(214,237,226,.12); }
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--bg)}
+#v{position:relative;width:1080px;height:1920px;overflow:hidden;background:var(--bg)}
+.bloom,.grid,.vig{position:absolute;inset:0}
+.grid{background-image:linear-gradient(to right,rgba(214,237,226,.045) 1px,transparent 1px),linear-gradient(to bottom,rgba(214,237,226,.045) 1px,transparent 1px);
+      background-size:60px 60px;-webkit-mask-image:radial-gradient(900px 1100px at 70% 30%,#000 0%,rgba(0,0,0,.45) 55%,transparent 85%)}
+.vig{background:radial-gradient(1400px 1700px at 50% 45%,transparent 55%,rgba(0,0,0,.55) 100%)}
+
+.eyebrow{position:absolute;left:0;right:0;text-align:center;font-family:'Jost';font-weight:500;font-size:22px;letter-spacing:.3em;text-transform:uppercase;color:var(--glow)}
+.hook{position:absolute;left:80px;right:80px;top:0;text-align:center}
+.hook .l{display:block;white-space:nowrap;font-family:'PP Hatton';font-weight:200;font-size:94px;line-height:1.1;color:var(--ink);letter-spacing:.004em}
+.hook .l.a{color:var(--glow)}
+
+.cap{position:absolute;left:70px;right:70px;bottom:calc(1920px - 512px);text-align:center;font-family:'PP Hatton';font-weight:200;font-size:64px;line-height:1.14;color:var(--ink);text-wrap:balance}
+.cap.a{color:var(--glow)}
+
+#phone{position:absolute;left:240px;width:600px;height:1298px;border-radius:48px;overflow:hidden;background:#0A1410;
+       box-shadow:0 0 0 1.5px rgba(214,237,226,.16),0 50px 140px rgba(0,0,0,.65),0 0 120px rgba(63,190,139,.10)}
+#phone img{position:absolute;left:0;top:0;width:600px;height:1298px;display:block}
+#shade{position:absolute;inset:0;background:#000;pointer-events:none}
+.rip{position:absolute;border-radius:50%;pointer-events:none}
+#ring{position:absolute;border-radius:16px;pointer-events:none;border:2.5px solid var(--glow);
+      box-shadow:0 0 0 3000px rgba(3,8,6,.5),0 0 30px rgba(63,190,139,.55),inset 0 0 18px rgba(63,190,139,.18)}
+
+.outro{position:absolute;left:0;right:0;text-align:center}
+.pay{font-family:'PP Hatton';font-weight:200;font-size:86px;line-height:1.1;color:var(--ink);padding:0 90px;text-wrap:balance}
+.lock{display:flex;flex-direction:column;align-items:center}
+.wm{display:flex;align-items:center;gap:26px}
+.wm svg{width:78px;height:102px;color:var(--glow);display:block}
+.word{font-family:'PP Hatton';font-weight:200;font-size:96px;letter-spacing:.2em;text-transform:uppercase;line-height:1;color:var(--ink);margin-right:-.2em}
+.script{font-family:'Sacramento';font-size:56px;color:var(--mint);line-height:1;margin-top:12px;margin-left:104px}
+.url{font-family:'Jost';font-weight:500;font-size:40px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
+.soon{font-size:64px;line-height:1.14}
+.small{font-family:'Jost';font-weight:400;font-size:24px;letter-spacing:.06em;color:var(--ink3);margin-top:16px}
+</style>
+<div id="v">
+  <div class="bloom" id="bloom"></div><div class="grid" id="grid"></div><div class="vig"></div>
+  <div class="eyebrow" id="eb"></div>
+  <div class="hook" id="hook"></div>
+  <div id="caps"></div>
+  <div id="phone"><img id="imgA"><img id="imgB"><div id="shade"></div><div id="rips"></div><div id="ring"></div></div>
+  <div class="outro" id="lock"><div class="lock">
+    <div class="wm"><svg viewBox="24 20 52 68" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/></svg><span class="word">Sprout</span></div>
+    <div class="script">evergreen</div></div></div>
+  <div class="outro" id="url"><div class="url" id="urlT"></div></div>
+  <div class="outro" id="soon"><div class="pay soon" id="soonT"></div></div>
+</div>
+<script>
+const FPS = 30, PW = 600, PS = 600 / 390, PX = 240, PTOP = 560;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const k = (t, a, d) => clamp((t - a) / d, 0, 1);
+const oCub = x => 1 - Math.pow(1 - x, 3), iCub = x => x * x * x;
+const io = x => x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2;
+const $ = id => document.getElementById(id);
+let C, E, ID;
+
+async function setup(id) {
+  ID = id;
+  C = (await (await fetch('reels.json')).json())[id];
+  window.C = C;
+  E = await (await fetch('events-' + id + '.json')).json();
+  $('eb').textContent = 'Sprout · ' + C.eyebrow;
+  $('hook').innerHTML = C.hook.map((l, i) => '<span class="l' + (i === C.hookAccent ? ' a' : '') + '">' + l + '</span>').join('');
+  $('caps').innerHTML = C.captions.map(c => '<div class="cap' + (c[3] ? ' a' : '') + '">' + c[2] + '</div>').join('');
+  // each hook line lands as it is spoken: its start, by word count, through the hook's voice line
+  const words = C.hook.map(l => l.split(/\s+/).length), tot = words.reduce((a, b) => a + b, 0);
+  C.hookTimes = words.map((_, i) => C.hookAt + words.slice(0, i).reduce((a, b) => a + b, 0) / tot * C.hookDur - .12);
+  $('urlT').textContent = C.outro[0].replace(/^Find me at /, '');
+  $('soonT').innerHTML = C.outro[1].replace(' and ', '<br>and ');
+  $('rips').innerHTML = E.taps.filter(x => !x.key).map(() => '<div class="rip"></div><div class="rip"></div>').join('');
+  await document.fonts.ready;
+  // One size for every line of the hook, the largest at which none of them wraps.
+  for (let fs = 94; fs >= 60; fs -= 2) {
+    [...$('hook').children].forEach(l => l.style.fontSize = fs + 'px');
+    if ([...$('hook').children].every(l => l.scrollWidth <= 920)) break;
+  }
+  // vertical placement measured once fonts are real
+  const hk = $('hook'); hk.style.top = (900 - hk.offsetHeight / 2) + 'px';
+}
+
+function src(f) {
+  f = clamp(f, Math.round(E.from * FPS), Math.round(E.to * FPS));
+  return 'phone-' + ID + '/' + String(f).padStart(4, '0') + '.jpg';
+}
+function load(img, s) {
+  if (img.getAttribute('src') === s) return Promise.resolve();
+  img.setAttribute('src', s); return img.decode().catch(() => {});
+}
+
+async function render(t) {
+  const f = Math.round(t * FPS);
+  // field: the light drifts, so even a hold is not a still
+  $('bloom').style.background =
+    `radial-gradient(900px 760px at ${780 + 50*Math.sin(t*.22)}px ${360 + 40*Math.cos(t*.18)}px, rgba(200,169,107,.15), transparent 66%),` +
+    `radial-gradient(1200px 1000px at ${700 + 40*Math.cos(t*.16)}px ${470 + 30*Math.sin(t*.2)}px, rgba(63,190,139,.16), transparent 70%),` +
+    `radial-gradient(1700px 1500px at 540px 760px, rgba(31,107,76,.18), transparent 72%), #050A08`;
+  $('grid').style.backgroundPosition = `0 ${(t * 8) % 60}px`;
+
+  // hook: lines in one by one, out together before the phone comes up
+  const he = C.hookEnd, hout = k(t, he - .38, .34);
+  [...$('hook').children].forEach((l, i) => {
+    const a = oCub(k(t, C.hookTimes[i], .45));
+    l.style.opacity = a * (1 - hout); l.style.transform = `translateY(${(1 - a) * 26 - hout * 22}px)`;
+  });
+  // eyebrow: with the hook first, then above the captions
+  const ebIn = oCub(k(t, .1, .5)), ebOut = k(t, C.drop - .1, .4);
+  const ebHook = t < he;
+  $('eb').style.top = (ebHook ? 900 - $('hook').offsetHeight / 2 - 70 : 290) + 'px';
+  $('eb').style.opacity = ebHook ? ebIn * (1 - hout) : oCub(k(t, he + .45, .5)) * (1 - ebOut);
+
+  // phone
+  const ph = $('phone'), [p0, p1] = C.phone;
+  const rise = oCub(k(t, p0, .7)), drop = iCub(k(t, C.drop, .6));
+  ph.style.top = (PTOP + (1 - rise) * 1400 + drop * 1400) + 'px';
+  ph.style.opacity = t < p0 ? 0 : 1 - drop * .6;
+  ph.style.display = (t < p0 || t > C.drop + .62) ? 'none' : 'block';
+  if (ph.style.display !== 'none') {
+    // a push: the next screen slides over the last one, which steps back and dims
+    const push = E.pushes.filter(p => t >= p.t && t < p.t + .36).pop();
+    const A = $('imgA'), B = $('imgB'), sh = $('shade');
+    if (push) {
+      const q = oCub(k(t, push.t, .34));
+      await Promise.all([load(A, src(push.f - 1)), load(B, src(f))]);
+      A.style.transform = `translateX(${-q * 30}%)`; B.style.transform = `translateX(${(1 - q) * 100}%)`;
+      B.style.display = 'block'; B.style.boxShadow = '-30px 0 60px rgba(0,0,0,.45)';
+      sh.style.opacity = q * .5; sh.style.zIndex = 1; B.style.zIndex = 2;
+    } else {
+      await load(A, src(f)); A.style.transform = 'none'; B.style.display = 'none'; sh.style.opacity = 0;
+    }
+    // taps: a finger lands, then a ring of water spreads from it
+    const rips = $('rips').children;
+    E.taps.filter(x => !x.key).forEach((tp, i) => {
+      const dot = rips[i * 2], ring = rips[i * 2 + 1];
+      const X = tp.x * PS, Y = tp.y * PS;
+      const d = k(t, tp.t - .26, .14) * (1 - k(t, tp.t + .06, .18));
+      dot.style.cssText = `left:${X - 30}px;top:${Y - 30}px;width:60px;height:60px;background:rgba(243,246,241,.20);border:2px solid rgba(243,246,241,.45);opacity:${d};transform:scale(${.85 + .15 * d});z-index:5`;
+      const r = k(t, tp.t - .04, .55), rs = 30 + oCub(r) * 70;
+      ring.style.cssText = `left:${X - rs}px;top:${Y - rs}px;width:${rs*2}px;height:${rs*2}px;border:2px solid rgba(159,211,190,${.6*(1-r)});opacity:${r > 0 && r < 1 ? 1 : 0};z-index:5`;
+    });
+    // focus ring with the rest of the screen dimmed around it
+    const rg = $('ring'); let shown = false;
+    for (const id in E.rings) {
+      const fr = E.rings[id], keys = Object.keys(fr).map(Number);
+      const lo = Math.min(...keys), hi = Math.max(...keys);
+      if (f < lo || f > hi) continue;
+      const r = fr[clamp(f, lo, hi)] || fr[keys.reduce((a, b) => Math.abs(b - f) < Math.abs(a - f) ? b : a)];
+      const a = oCub(k(f, lo, 14)) * (1 - k(f, hi - 10, 10));
+      const pad = 14;
+      rg.style.left = (r[0] * PS - pad) + 'px'; rg.style.top = (r[1] * PS - pad) + 'px';
+      rg.style.width = (r[2] * PS + pad * 2) + 'px'; rg.style.height = (r[3] * PS + pad * 2) + 'px';
+      rg.style.opacity = a; rg.style.zIndex = 6; shown = true;
+    }
+    if (!shown) rg.style.opacity = 0;
+  }
+
+  // captions: one at a time above the phone
+  [...$('caps').children].forEach((el, i) => {
+    const [a, b] = C.captions[i];
+    const inn = oCub(k(t, a, .42)), out = k(t, b - .3, .3);
+    el.style.opacity = inn * (1 - out); el.style.transform = `translateY(${(1 - inn) * 20}px)`;
+  });
+
+  // outro: the lockup as the phone goes, then the site and the sign-off as each is said
+  const o0 = C.drop + .3;
+  const la = oCub(k(t, o0, .6)), ua = oCub(k(t, C.outroAt[0] - .1, .5)), sa = oCub(k(t, C.outroAt[1] - .1, .5));
+  $('lock').style.top = '600px'; $('lock').style.opacity = la; $('lock').style.transform = `translateY(${(1 - la) * 24}px)`;
+  $('url').style.top = '930px'; $('url').style.opacity = ua; $('url').style.transform = `translateY(${(1 - ua) * 16}px)`;
+  $('soon').style.top = '1060px'; $('soon').style.opacity = sa; $('soon').style.transform = `translateY(${(1 - sa) * 20}px)`;
+  return true;
+}
+window.setup = setup; window.render = render;
+</script>
