@@ -1,0 +1,10 @@
+phone-*/
+frames-*/
+stills/
+vo/
+peek*
+sheet*
+events-*.json
+music-*.wav
+mix-*.wav
+render.log

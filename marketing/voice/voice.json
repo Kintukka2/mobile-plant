@@ -1,0 +1,14 @@
+{
+  "name": "Sprout",
+  "engine": "kokoro-onnx 0.6.1",
+  "voice": "af_heart",
+  "voiceFile": "sprout-voice.npy",
+  "speed": 1.06,
+  "lang": "en-us",
+  "model": {
+    "file": "kokoro-v1.0.onnx",
+    "url": "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx",
+    "sha256": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5"
+  },
+  "chain": "highpass=f=85,equalizer=f=250:t=q:w=1:g=-1.5,equalizer=f=3800:t=q:w=1.2:g=2,acompressor=threshold=-20dB:ratio=3:attack=6:release=90:makeup=2,aecho=0.8:0.5:28:0.12"
+}
