@@ -596,6 +596,7 @@ window.ViewProfile = (function () {
   function welcomeSheet() {
     const name = (Store.get().profile.name || '').trim();
     const body =
+      UI.sprout('base', 'is-small welcome-sprout') +
       '<p class="dim" style="margin:0 0 18px;line-height:1.65">' +
         'Hi' + (name ? ' ' + UI.esc(name) : '') + ', I\'m Sprout, and this is a home for your houseplants. Tell me what you have and which room ' +
         'they are in, and we can work out a routine around what each one actually needs — the species\' own ' +

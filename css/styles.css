@@ -3502,17 +3502,9 @@ img { max-width: 100%; display: block; }
    ========================================================================== */
 
 .all-clear { padding: 34px 26px; }
-.all-clear-mark {
-  display: inline-grid;
-  place-items: center;
-  width: 54px;
-  height: 54px;
-  margin-bottom: 14px;
-  border: 1px solid rgba(63, 190, 139, 0.26);
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 30%, var(--mint-wash), transparent 70%);
-}
-.all-clear-mark svg { width: 22px; height: 22px; stroke-width: 1.1; color: var(--mint); }
+/* Resting, because the ring this replaced was a reward with nothing to
+   look at; the face that has nothing left to worry about says it better. */
+.all-clear .sprout-plate { margin: 0 auto 16px; }
 .all-clear-t {
   margin: 0;
   font-family: var(--serif);
@@ -4078,6 +4070,30 @@ img { max-width: 100%; display: block; }
   color: var(--mint);
 }
 .empty-mark svg { width: 24px; height: 24px; stroke-width: 1.1; }
+
+/* The character's plate, the one exception to the rule above. The ring
+   refuses illustration that is someone else's; this is Sprout's own face,
+   drawn in the house greens, and it renders the same on every platform —
+   which is the whole of what the emoji got wrong. It is always framed,
+   because the art carries its own forest ground and is cropped off two
+   edges: unframed, the crop would read as a mistake. --r-xl is the sheet's
+   corner, so the plate reads as a small window rather than a sticker. In
+   Conservatory it stays dark on purpose, the way a plant tile keeps its own
+   ground on ivory paper. */
+.sprout-plate {
+  display: block;
+  flex: 0 0 auto;
+  width: 132px;
+  height: 132px;
+  overflow: hidden;
+  border-radius: var(--r-xl);
+  background: #062418;
+  box-shadow: 0 0 0 1px var(--hair-2), var(--shadow-sm);
+}
+.sprout-plate img { display: block; width: 100%; height: 100%; }
+.empty-sprout .sprout-plate { margin-bottom: 24px; }
+.sprout-plate.is-small { width: 96px; height: 96px; border-radius: 11px; }
+.welcome-sprout { margin: 2px 0 18px; }
 
 .empty h3 {
   font-family: var(--display);

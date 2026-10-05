@@ -225,7 +225,7 @@ window.ViewToday = (function () {
        one. One screen, one action. */
     if (!plants.length) {
       return greeting() + '<div class="section">' +
-        UI.empty('leaf', 'No plants yet',
+        UI.empty('sprout:new-growth', 'No plants yet',
           'I\'ve got care data for ' + window.PLANT_DATA.length + ' common houseplants — watering ' +
             'intervals, light, feeding, toxicity and how to propagate them.',
           '<button class="btn btn-lg" data-open="plant">' + UI.icon('plus') + 'Add your first plant</button>') +
@@ -248,7 +248,7 @@ window.ViewToday = (function () {
       (due.length
         ? '<div class="stack">' + due.map(taskRow).join('') + '</div>'
         : '<div class="card center all-clear">' +
-            '<span class="all-clear-mark">' + UI.icon('leaf') + '</span>' +
+            UI.sprout('resting', 'is-small') +
             '<p class="all-clear-t">All caught up</p>' +
             /* No exclamation mark, by the voice rule for anything that
                repeats — this line shows on every day nothing is due, and a

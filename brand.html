@@ -305,6 +305,13 @@ body { padding-bottom: 80px; }
 .g-rec-a { font-family: var(--serif); font-size: 16px; line-height: 1.58; color: var(--ink); margin-top: 5px; }
 .g-rec-a b { color: var(--mint-2); font-weight: 600; }
 
+/* --- The character's poses. The plates themselves are the app's own
+   .sprout-plate rule, so this only lays them out. --- */
+.g-poses { display: grid; gap: 18px 14px; grid-template-columns: repeat(auto-fit, minmax(112px, 1fr)); }
+.g-pose { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.g-pose .sprout-plate { width: 112px; height: 112px; }
+.g-pose-cap { font-family: var(--mono); font-size: 11px; line-height: 1.5; color: var(--ink-3); text-align: center; }
+
 /* --- Foot --- */
 .g-foot {
   margin-top: 70px;
@@ -371,8 +378,9 @@ body { padding-bottom: 80px; }
 
   <p class="g-lede">This page began as a workbench: twelve open questions with
   the options laid side by side, built so the choices could be made by looking
-  rather than by description. All twelve are now settled and in the app. What
-  follows is the record of what they settled on.</p>
+  rather than by description. All twelve are now settled and in the app, and a
+  thirteenth, the character, has joined them since. What follows is the record
+  of what they settled on.</p>
 
   <p class="g-lede">It is set in Sprout's own stylesheet rather than a copy of
   it, so every swatch, pill and button below is the shipped rule rendering
@@ -983,13 +991,89 @@ body { padding-bottom: 80px; }
 
 
 <!-- ======================================================================
-     09 · The decision record
+     09 · The character
+     ====================================================================== -->
+<section class="g-sec" id="character">
+  <div class="g-sec-head"><span class="g-no">09</span><h2 class="g-h2">The character</h2></div>
+
+  <p class="g-p">The voice above already speaks as &ldquo;I&rdquo;, and the
+  welcome sheet already says &ldquo;Hi, I'm Sprout&rdquo;. The character is what
+  that speaker looks like: a jade leaf spirit with a pale mint heart for a face,
+  a curling leaf crown and two broad leaf arms. It is the first illustration the
+  app has admitted, after a long run of keeping them out, so where it may
+  appear is as much a part of it as how it looks.</p>
+
+  <div class="g-plate">
+    <div class="g-plate-lab">Five poses, one per moment</div>
+    <div class="g-poses">
+      <div class="g-pose"><span class="sprout-plate"><img src="img/sprout/base.webp" alt="Sprout, smiling with eyes closed"></span><div class="g-pose-cap">base<br>welcome</div></div>
+      <div class="g-pose"><span class="sprout-plate"><img src="img/sprout/new-growth.webp" alt="Sprout, waving and holding a seedling"></span><div class="g-pose-cap">new-growth<br>no plants yet</div></div>
+      <div class="g-pose"><span class="sprout-plate"><img src="img/sprout/resting.webp" alt="Sprout, asleep under a crescent moon"></span><div class="g-pose-cap">resting<br>all caught up</div></div>
+      <div class="g-pose"><span class="sprout-plate"><img src="img/sprout/concerned.webp" alt="Sprout, looking worried at a drooping seedling"></span><div class="g-pose-cap">concerned<br>diagnose, no plants</div></div>
+      <div class="g-pose"><span class="sprout-plate"><img src="img/sprout/watering.webp" alt="Sprout, watering a seedling"></span><div class="g-pose-cap">watering<br>marketing only</div></div>
+    </div>
+  </div>
+
+  <p class="g-rule"><b>The character is always framed.</b> The art carries its
+  own forest ground and the figure runs off the left and bottom edges, so
+  unframed the crop reads as a mistake. In the app it sits on a plate with the
+  sheet's corner, <code>--r-xl</code>, and a hairline. In Conservatory the plate
+  stays dark on purpose, the way a plant tile keeps its own ground on ivory
+  paper.</p>
+
+  <p class="g-rule"><b>The persona is zoned, and the face goes with it.</b> It
+  appears only where the voice is talking to the reader, and never where the
+  page is telling them a fact. A worried cartoon beside a toxicity note is the
+  same mistake as a cheerful voice explaining which crystals burn a cat's
+  mouth.</p>
+
+  <div class="g-tw">
+    <table class="g-t">
+      <thead><tr><th>Where</th><th>Character</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Welcome sheet</td><td>base</td><td>The one place it introduces itself by name</td></tr>
+        <tr><td>No plants yet (Today, Greenhouse)</td><td>new-growth</td><td>A first impression, and an invitation to start</td></tr>
+        <tr><td>All caught up</td><td>resting</td><td>A reward, so it gets a face rather than a ring</td></tr>
+        <tr><td>Diagnose with no plants</td><td>concerned</td><td>The way into a health check, before any answer is given</td></tr>
+        <tr><td>Care data, diagnosis results, treatment, toxicity</td><td>Never</td><td>Reference zone: plain and authoritative, no persona</td></tr>
+        <tr><td>Every other empty state</td><td>Never</td><td>Utility states keep the hairline ring. A face on all of them is furniture</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="g-rule"><b>The mark stays the identity; the character is the
+  companion.</b> The favicon, the touch icon, the store icon and the sidebar
+  lockup are the three-path sprig and nothing else. Decision 04 took four
+  drawings down to one, and a second drawing in any of those placements would
+  undo it.</p>
+
+  <div class="g-note"><b>Where it lives.</b> <code>img/sprout/&lt;pose&gt;.webp</code>,
+  360&times;360, about 6KB each and precached in <code>sw.js</code>, because the
+  screens that show them are the ones most likely to be opened offline. The
+  1254&times;1254 originals for marketing are in <code>marketing/character/</code>.
+  Views call <code>UI.sprout(pose)</code>, or pass <code>'sprout:&lt;pose&gt;'</code>
+  as the icon to <code>UI.empty</code>. Both go through an allow-list, so a
+  misspelt pose draws nothing. The in-app plates carry an empty
+  <code>alt</code>, because the line beside each one already says what the face
+  is feeling.</div>
+
+  <div class="g-note"><b>New poses start from <code>sprout-base.png</code>.</b>
+  The art is generated, and every pose made from anything other than the base
+  drifts a little further from it. That origin also means copyright protects it
+  thinly, if at all: what protects the character is using it consistently as
+  the brand's own, which is one more reason to keep its placements few and
+  fixed.</div>
+</section>
+
+
+<!-- ======================================================================
+     10 · The decision record
      ====================================================================== -->
 <section class="g-sec" id="record">
-  <div class="g-sec-head"><span class="g-no">09</span><h2 class="g-h2">The decision record</h2></div>
+  <div class="g-sec-head"><span class="g-no">10</span><h2 class="g-h2">The decision record</h2></div>
 
-  <p class="g-p">The twelve questions this page was built to answer, and what
-  each one settled on. Kept because the reasoning is the part that stops a
+  <p class="g-p">The twelve questions this page was built to answer, the one
+  that came after, and what each one settled on. Kept because the reasoning is the part that stops a
   decision being re-litigated from scratch in six months.</p>
 
   <div class="g-rec">
@@ -1117,6 +1201,18 @@ body { padding-bottom: 80px; }
         <div class="g-rec-a">Light trimmed, Firm stopped explaining,
         <b>Persona committed to &ldquo;I&rdquo;</b> &mdash; and won, zoned, so
         the reference surfaces stay plain.</div>
+      </div>
+    </div>
+
+    <div class="g-rec-row">
+      <div class="g-rec-no">13</div>
+      <div>
+        <div class="g-rec-q">The character &middot; illustration</div>
+        <div class="g-rec-a">The app had kept every illustration out, emoji
+        included, because each one brought someone else's colour and weight.
+        A character drawn in the house greens is not someone else's.
+        <b>Admitted, framed, at four named moments in the conversation zone
+        only</b>, and never in place of the mark.</div>
       </div>
     </div>
   </div>

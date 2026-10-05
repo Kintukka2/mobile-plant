@@ -107,7 +107,7 @@ window.ViewDiagnose = (function () {
         '</button>';
       }).join('') + '</div>';
     } else {
-      html += UI.empty('leaf', 'No plants added yet',
+      html += UI.empty('sprout:concerned', 'No plants added yet',
         'We can still work through it — I just won\'t be able to weight the causes towards a particular ' +
         'species.', '<button class="btn btn-ghost" data-open="plant">Add a plant</button>');
     }
