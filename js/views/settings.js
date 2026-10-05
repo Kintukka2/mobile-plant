@@ -25,13 +25,64 @@ window.ViewSettings = (function () {
      Backup & restore
      ====================================================================== */
 
+  /* The store builds can't download anything. The Android WebView has no
+     handler for a blob: link, so the <a download> below was dropped without
+     an error: the button flashed and nothing was saved. PrimeTestLab found
+     it on the first device build (report 7959, M-01).
+
+     So the shell writes the file to its own cache and hands it to the share
+     sheet. That isn't just a workaround for the missing download: a copy
+     left in the phone's Downloads is lost with the phone, which is exactly
+     the case a backup is for, while the share sheet offers Drive, Files and
+     email alongside saving locally. Nothing is sent anywhere until the
+     reader picks a destination. */
+  function nativeFiles() {
+    const C = window.Capacitor;
+    if (!C || typeof C.isNativePlatform !== 'function' || !C.isNativePlatform()) return null;
+    const p = C.Plugins || {};
+    return p.Filesystem && p.Share ? { fs: p.Filesystem, share: p.Share } : null;
+  }
+
+  /* The share sheet takes a second to appear and refuses a second request
+     while the first is open, so a quick double tap would otherwise end in
+     an error toast on top of a working sheet. */
+  let exporting = false;
+
+  function exportNative(n, json, name) {
+    exporting = true;
+    n.fs.writeFile({ path: name, data: json, directory: 'CACHE', encoding: 'utf8' })
+      .then(function (r) {
+        return n.share.share({ title: 'Sprout backup', dialogTitle: 'Save your backup', files: [r.uri] });
+      })
+      .then(function () {
+        UI.toast('Backup saved', 'leaf');
+      })
+      .catch(function (e) {
+        /* Both platforms reject with this message when the reader closes
+           the sheet without choosing anything. That is a decision, not a
+           failure, but it does mean there is no backup, so it is said. */
+        if (e && /cancel/i.test(e.message || '')) {
+          UI.toast('No backup saved this time');
+        } else {
+          console.error(e);
+          UI.toast('Could not create the backup', 'warn');
+        }
+      })
+      .then(function () { exporting = false; });
+  }
+
   function exportData() {
+    if (exporting) return;
     try {
       const json = Store.exportAll();
+      const name = 'sprout-backup-' + UI.toISO(new Date()) + '.json';
+      const n = nativeFiles();
+      if (n) { exportNative(n, json, name); return; }
+
       const blob = new Blob([json], { type: 'application/json' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = 'sprout-backup-' + UI.toISO(new Date()) + '.json';
+      a.download = name;
       document.body.appendChild(a);
       a.click();
       setTimeout(function () {
@@ -60,8 +111,15 @@ window.ViewSettings = (function () {
           'Everything I\'m holding now will be replaced by the contents of ' + file.name + '.',
           'Restore', function () {
             try {
-              Store.importAll(reader.result);
-              UI.toast('Backup restored', 'leaf');
+              const r = Store.importAll(reader.result);
+              /* A failed save has already said so, in Store.save. Saying
+                 "restored" after it would contradict the toast above. */
+              if (r.saved && r.photosDropped) {
+                UI.toast('Backup restored, but ' + UI.plural(r.photosDropped, 'photo') +
+                         ' didn\'t fit. Free some space and restore again', 'warn');
+              } else if (r.saved) {
+                UI.toast('Backup restored', 'leaf');
+              }
               App.go('/today');
               App.refresh();
             } catch (e) {

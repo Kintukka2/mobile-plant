@@ -433,12 +433,17 @@ window.Store = (function () {
     const parsed = JSON.parse(json);
     if (!parsed.state) throw new Error('That does not look like a Sprout backup file.');
     state = Object.assign(blankState(), parsed.state);
+    /* Each photo is written on its own so one that doesn't fit doesn't cost
+       the rest, but the failures are counted rather than swallowed: a
+       restore that quietly drops photos reads as complete until someone
+       opens a diary entry and finds it blank. */
+    let dropped = 0;
     if (parsed.photos) {
       Object.keys(parsed.photos).forEach(function (id) {
-        try { localStorage.setItem(PHOTO_PREFIX + id, parsed.photos[id]); } catch (e) {}
+        try { localStorage.setItem(PHOTO_PREFIX + id, parsed.photos[id]); } catch (e) { dropped++; }
       });
     }
-    save();
+    return { saved: save(), photosDropped: dropped };
   }
 
   function resetAll() {
