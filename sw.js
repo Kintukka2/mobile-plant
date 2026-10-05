@@ -29,8 +29,11 @@
 /* v57: the character. Five small plates join the precache list, and the
    empty states and the all-clear panel now ask for them by name. */
 /* v59: the backup. Settings and the store both changed, so a visitor
-   holding v58 would keep the button that saves nothing in the shell. */
-const CACHE = 'sprout-v59-viridium';
+   holding v58 would keep the button that saves nothing in the shell.
+
+   v60: double adds and long names. The stylesheet and three views changed,
+   and a stale greenhouse.js would go on planting the same plant twice. */
+const CACHE = 'sprout-v60-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is

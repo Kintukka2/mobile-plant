@@ -191,6 +191,15 @@ window.ViewGreenhouse = (function () {
     });
   }
 
+  /* 60 holds "Monstera by the reading chair near the tall bookshelf", the
+     tester's example that 40 cut mid-word. Each screen that shows a name
+     was checked at phone width with 60 characters and wraps it or ends it
+     in an ellipsis, so the cap is about keeping a name a name, not about
+     fitting one particular box. */
+  const NICK_MAX = 60;
+  const NICK_WARN = 15;
+  const NICK_HINT = 'Named plants get looked after. No judgement from me.';
+
   /* Step 2: the details. Also used for editing, when `plant` is supplied. */
   function plantForm(speciesId, plant, presetRoomId) {
     const sp = window.PLANT_DATA.filter(function (s) { return s.id === speciesId; })[0];
@@ -244,9 +253,9 @@ window.ViewGreenhouse = (function () {
         : '') +
 
       '<label class="field"><span class="label">Give it a nickname?</span>' +
-        '<input class="input" id="f-nick" maxlength="40" placeholder="' + UI.attr(sp.common) + '" ' +
+        '<input class="input" id="f-nick" maxlength="' + NICK_MAX + '" placeholder="' + UI.attr(sp.common) + '" ' +
         'value="' + UI.attr(editing ? plant.nickname : '') + '">' +
-        '<p class="hint">Named plants get looked after. No judgement from me.</p>' +
+        '<p class="hint" id="f-nick-hint">' + NICK_HINT + '</p>' +
       '</label>' +
 
       '<label class="field"><span class="label">Which room will it live in?</span>' +
@@ -344,7 +353,29 @@ window.ViewGreenhouse = (function () {
       matEl.addEventListener('change', syncPending);
       syncPending();
 
+      /* The limit used to be invisible: the field simply stopped taking
+         letters at 40, so "Monstera by the reading chair near the tall
+         bookshelf" was saved as "…near the t" and nobody was told
+         (PrimeTestLab 7959, M-03). The count appears only near the end,
+         where it's news, and the hint returns once there's room again. */
+      const nickEl = root.querySelector('#f-nick');
+      const nickHint = root.querySelector('#f-nick-hint');
+      function syncNick() {
+        const left = NICK_MAX - nickEl.value.length;
+        nickHint.textContent = left <= 0 ? 'That\'s the longest a name can be.'
+                             : left <= NICK_WARN ? UI.plural(left, 'character') + ' left.'
+                             : NICK_HINT;
+      }
+      nickEl.addEventListener('input', syncNick);
+      syncNick();
+
+      /* Belt to the closing sheet's braces in the stylesheet: of every sheet
+         this is the one where a second run costs most, a duplicate plant
+         with its own reminders, so it can only ever run once. */
+      let saved = false;
       root.querySelector('#f-save').addEventListener('click', function () {
+        if (saved) return;
+        saved = true;
         const data = {
           speciesId: speciesId,
           nickname: root.querySelector('#f-nick').value.trim(),

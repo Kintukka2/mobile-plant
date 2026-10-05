@@ -450,7 +450,7 @@ window.ViewPlan = (function () {
        own type, with a dotted rule under it as the only sign it can be
        typed into. */
     let h = '<div class="section plan-sec"><div class="section-head"><h2 class="section-title plan-title-edit"><button class="plan-back" id="pl-back" aria-label="Back">' + CHEV + '</button>' +
-      '<input class="plan-title-input" id="pl-room-name" value="' + UI.attr(r.name) + '" placeholder="Room name" aria-label="Room name" maxlength="30" autocomplete="off"></h2>' +
+      '<input class="plan-title-input" id="pl-room-name" value="' + UI.attr(r.name) + '" placeholder="Room name" aria-label="Room name" maxlength="40" autocomplete="off"></h2>' +
       '<label class="plan-check" style="flex:0 0 auto;margin-left:12px"><input type="checkbox" id="pl-room-outdoor"' + (sh.outdoor ? ' checked' : '') + '> Outdoors?</label></div>';
     if (sh.outdoor) h += '<p class="hint" style="margin:0 0 12px">Every side with nothing built beyond it is open to the sky, so there is no need to mark windows here.</p>';
     /* Sizes left this panel for the ruler on the stage: one measured room

@@ -1296,6 +1296,13 @@ img { max-width: 100%; display: block; }
 .btn-lg { padding: 15px 28px; font-size: 12px; }
 .btn-block { display: flex; width: 100%; }
 
+/* A button never wraps, so a label carrying a plant's name ran straight
+   off the screen once nicknames could be long: "Remove Monstera by the
+   reading chair…" pushed the plant page 76px wider than the phone. The
+   name goes in this span and is cut with an ellipsis inside the button,
+   and the icon beside it keeps its size. */
+.btn-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
 /* Hairline only. The default for anything that is not the one primary
    action on a screen. */
 .btn-ghost {
@@ -4983,6 +4990,12 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
 }
 
 .sheet-backdrop.is-closing { animation: fadeOut var(--dur-1) var(--ease-io) both; }
+/* A sheet on its way out is still on screen for the length of the
+   animation, and it used to keep taking taps for all of it: a quick double
+   tap on "Add to my greenhouse" ran the save twice and planted two
+   identical ZZ plants (PrimeTestLab 7959, M-02). Whatever it says, a
+   closing sheet has already been answered. */
+.sheet-backdrop.is-closing { pointer-events: none; }
 .sheet-backdrop.is-closing .sheet { animation: slideDown var(--dur-1) var(--ease-io) both; }
 
 .lightbox.is-closing { animation: fadeOut var(--dur-1) var(--ease-io) both; }

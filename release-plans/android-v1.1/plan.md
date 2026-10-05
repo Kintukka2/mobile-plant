@@ -237,8 +237,8 @@ fed and content" (`js/views/today.js:52`).
 | Item | Status |
 | --- | --- |
 | M-01 Backup | Done in code; needs a device build to confirm |
-| M-02 Double add | Not started |
-| M-03 Nickname length | Not started |
+| M-02 Double add | Done; reproduced and fixed in headless Chromium |
+| M-03 Nickname length | Done; limit 60 with a live count, long names fit every screen |
 | M-04 Landscape strip | Not started |
 | S-01 Status bar | Not started |
 | S-02 Planner hints | Not started |
