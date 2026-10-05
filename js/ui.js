@@ -459,14 +459,44 @@ window.UI = (function () {
      views, because the offending character lived in ui.js. Call sites now
      pass an icon name and no fallback path can render a glyph at all.
      (Deliberately written without the characters themselves, so this comment
-     does not trip the audit that found them.) */
+     does not trip the audit that found them.)
+
+     The one exception is named, not inferred: 'sprout:<pose>' draws the
+     character's plate in place of the ring. That is a decision (Decision 13
+     in the brand guide), it is our own drawing in our own palette, and it
+     goes through an allow-list, so a wrong name still draws nothing rather
+     than something. Most empty states keep the ring. */
   function empty(name, title, text, actionHTML) {
-    return '<div class="empty">' +
-      '<span class="empty-mark">' + icon(name) + '</span>' +
+    const pose = name.indexOf('sprout:') === 0 ? name.slice(7) : null;
+    return '<div class="empty' + (pose ? ' empty-sprout' : '') + '">' +
+      (pose ? sprout(pose) : '<span class="empty-mark">' + icon(name) + '</span>') +
       '<h3>' + esc(title) + '</h3>' +
       '<p>' + esc(text) + '</p>' +
       (actionHTML || '') +
       '</div>';
+  }
+
+  /* The character, on its own ground. The art arrives with its forest field
+     painted in and the figure cropped off two edges, so it is only ever shown
+     framed — a plate, never a cut-out pretending to stand on the page. It is
+     the one illustration the system admits, and it is admitted at named
+     moments only (brand guide, section 10): it is the face of the
+     conversation zone, so it never appears beside care data, a diagnosis or
+     a toxicity note. alt is empty because the line next to it already says
+     what the face is feeling, and a screen reader hearing it twice is worse
+     than hearing it once. An unknown pose draws nothing and says so, rather
+     than falling back to some other face that would mean the wrong thing. */
+  const SPROUT_POSES = ['base', 'new-growth', 'watering', 'concerned', 'resting'];
+  function sprout(pose, cls) {
+    if (SPROUT_POSES.indexOf(pose) < 0) {
+      if (typeof console !== 'undefined' && console.warn) {
+        console.warn('UI.sprout: no pose named "' + pose + '"');
+      }
+      return '';
+    }
+    return '<span class="sprout-plate' + (cls ? ' ' + cls : '') + '">' +
+      '<img src="img/sprout/' + pose + '.webp" alt="" width="360" height="360" decoding="async">' +
+      '</span>';
   }
 
   /* ---------- Misc ---------- */
@@ -774,7 +804,7 @@ window.UI = (function () {
     MONTHS: MONTHS, DAYS: DAYS,
     toast: toast, openSheet: openSheet, closeSheet: closeSheet, sheetIsOpen: sheetIsOpen,
     roomMark: roomMark,
-    confirmSheet: confirmSheet, lightbox: lightbox, empty: empty, pill: pill,
+    confirmSheet: confirmSheet, lightbox: lightbox, empty: empty, sprout: sprout, pill: pill,
     lineChart: lineChart, plantTile: plantTile, monogram: monogram, tintClass: tintClass,
     eyebrow: eyebrow, script: script, ornament: ornament,
     sectionHead: sectionHead, stat: stat, specSheet: specSheet,

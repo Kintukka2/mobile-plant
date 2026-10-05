@@ -9,6 +9,7 @@ site/
   privacy.html   the policy both stores require; Play has this URL
   site.css       shared by both, so they cannot drift apart
   fonts/         a copy of css/fonts/, see below
+  img/           screenshots, and Sprout's cut-out for the hero corner
   _headers       security headers and cache policy
 ```
 
