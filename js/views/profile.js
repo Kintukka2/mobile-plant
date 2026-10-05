@@ -79,7 +79,7 @@ window.ViewProfile = (function () {
     const hemiSet = !Store.hemisphereIsGuess();
 
     const body =
-      '<p class="dim small" style="margin:0 0 16px;line-height:1.6">' +
+      '<p class="muted small" style="margin:0 0 16px;line-height:1.6">' +
         'I use this for two things: your local forecast, so I can offer to stretch or shorten watering before ' +
         'a wet or dry spell, and your latitude — which tells me which hemisphere you\'re in, and therefore ' +
         'which months are the growing season and which way a bright window faces.' +
@@ -597,7 +597,7 @@ window.ViewProfile = (function () {
     const name = (Store.get().profile.name || '').trim();
     const body =
       UI.sprout('base', 'is-small welcome-sprout') +
-      '<p class="dim" style="margin:0 0 18px;line-height:1.65">' +
+      '<p class="muted" style="margin:0 0 18px;line-height:1.65">' +
         'Hi' + (name ? ' ' + UI.esc(name) : '') + ', I\'m Sprout, and this is a home for your houseplants. Tell me what you have and which room ' +
         'they are in, and we can work out a routine around what each one actually needs — the species\' own ' +
         'requirements, adjusted for your pot, your light and the season you are really in.' +

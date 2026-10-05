@@ -64,7 +64,7 @@ window.ViewDiagnose = (function () {
   function stepPlant() {
     const plants = Store.activePlants();
 
-    let html = '<p class="dim small" style="margin:0 2px 16px;line-height:1.6">' +
+    let html = '<p class="muted small" style="margin:0 2px 16px;line-height:1.6">' +
       'Which one is struggling? I weight the likely causes towards what that species is actually prone to — ' +
       'a fern with crispy edges is a different problem from a cactus with crispy edges.' +
     '</p>';
@@ -245,7 +245,7 @@ window.ViewDiagnose = (function () {
         '<span class="sheet-ident-mark">' + UI.icon('stethoscope') + '</span>' +
         '<div style="min-width:0">' +
           '<div class="sheet-ident-t">' + UI.esc(symptom.label) + '</div>' +
-          '<p class="small dim" style="margin:3px 0 0">' + UI.esc(symptom.desc) + '</p>' +
+          '<p class="small muted" style="margin:3px 0 0">' + UI.esc(symptom.desc) + '</p>' +
         '</div>' +
       '</div>' +
       /* The step's one action, and it sits above the questions rather than
@@ -323,7 +323,7 @@ window.ViewDiagnose = (function () {
         '<span class="sheet-ident-mark">' + UI.icon('stethoscope') + '</span>' +
         '<div style="min-width:0">' +
           '<div class="sheet-ident-t">' + UI.esc(symptom.label) + '</div>' +
-          '<p class="small dim" style="margin:3px 0 0">' +
+          '<p class="small muted" style="margin:3px 0 0">' +
             (ticked.length
               ? UI.esc(ticked.join(' · '))
               : 'No clues ticked — this is the symptom on its own.') +
@@ -406,7 +406,7 @@ window.ViewDiagnose = (function () {
             '</div>' +
           '</div>' +
 
-          '<p class="small dim" style="margin:12px 0 0;line-height:1.65">' + UI.esc(c.why) + '</p>' +
+          '<p class="small muted" style="margin:12px 0 0;line-height:1.65">' + UI.esc(c.why) + '</p>' +
 
           (i === 0 || clues.length
             ? '<div class="eyebrow" style="margin-top:14px">What to do</div>' +
@@ -460,7 +460,7 @@ window.ViewDiagnose = (function () {
      looks like every other confirmation in the app. */
   function clashSheet(clash, params) {
     UI.openSheet('Can both be true?',
-      '<p class="dim" style="margin:0 0 14px;line-height:1.6">' +
+      '<p class="muted" style="margin:0 0 14px;line-height:1.6">' +
         (clash.length > 1 ? 'Some of those answers disagree with each other:'
                           : 'Two of those answers disagree with each other:') +
       '</p>' +
@@ -585,7 +585,7 @@ window.ViewDiagnose = (function () {
         const c = PROBLEM_DATA.CAUSES[ex.getAttribute('data-expand')];
         if (!c) return;
         UI.openSheet(c.name,
-          '<p class="small dim" style="margin:0 0 4px;line-height:1.65">' + UI.esc(c.why) + '</p>' +
+          '<p class="small muted" style="margin:0 0 4px;line-height:1.65">' + UI.esc(c.why) + '</p>' +
           '<div class="eyebrow" style="margin-top:14px">What to do</div>' +
           '<ol class="dx-steps">' + c.fix.map(function (s) {
             return '<li>' + UI.esc(s) + '</li>';

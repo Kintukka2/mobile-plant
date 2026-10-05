@@ -28,9 +28,23 @@ window.ViewToday = (function () {
     return (sum.seasonPhrase ? sum.seasonPhrase + ' ' : '') + sum.seasonMeta.note;
   }
 
+  /* Plants whose light is wrong, by the same rule the plant page uses for
+     its Wrong light badge and the room page for its nudges: 'bad' or 'poor'.
+     lightMatch returns null for a plant with no room or a room with no light
+     reading, and a drawn room has none while north or the hemisphere is
+     unconfirmed, so this stays silent exactly when the plan does. */
+  function misplaced() {
+    return Store.activePlants().map(function (p) {
+      return { plant: p, match: Schedule.lightMatch(p) };
+    }).filter(function (x) {
+      return x.match && (x.match.verdict === 'bad' || x.match.verdict === 'poor');
+    });
+  }
+
   function greeting() {
     const s = Store.get().profile;
     const sum = Schedule.summary();
+    const wrongLight = misplaced();
     const name = s.name ? ', ' + s.name : '';
 
     let line;
@@ -48,6 +62,15 @@ window.ViewToday = (function () {
     } else if (sum.soonCount) {
       line = 'Nothing needs you today. ' + UI.plural(sum.soonCount, 'job') +
              ' coming up over the next few days. ' + seasonLine();
+    } else if (wrongLight.length) {
+      /* "Content" was a claim about light as well as water, and the plant
+         page could be showing Wrong light underneath it (PrimeTestLab 7959,
+         S-05). The jobs are done; the light is not, so it says which. */
+      line = 'Everything is watered and fed, though ' +
+             (wrongLight.length === 1
+               ? Store.displayName(wrongLight[0].plant) + ' is in the wrong light for it. '
+               : wrongLight.length + ' plants are in the wrong light for them. ') +
+             seasonLine();
     } else {
       line = 'Everything is watered, fed and content. ' + seasonLine();
     }
@@ -158,6 +181,34 @@ window.ViewToday = (function () {
 
   let pending = [];
 
+  /* Under the day's jobs rather than above them: a plant in the wrong light
+     needs moving this week, not before its watering. Not dismissable,
+     unlike the weather nudges, because it stays true until the plant moves,
+     and moving it is what clears it. The reason is the room page's own
+     sentence, so the two screens never disagree about the same plant. */
+  const LIGHT_SHOWN = 3;
+  function lightSection() {
+    const list = misplaced();
+    if (!list.length) return '';
+    const more = list.length - LIGHT_SHOWN;
+    return '<div class="section">' +
+      '<div class="section-head"><h2 class="section-title">Light</h2></div>' +
+      '<div class="stack">' + list.slice(0, LIGHT_SHOWN).map(function (x) {
+        return '<div class="nudge nudge-warn is-link" data-plant="' + UI.attr(x.plant.id) + '">' +
+          '<span class="nudge-ico">' + UI.icon(x.match.verdict === 'bad' ? 'ban' : 'cloud') + '</span>' +
+          '<div class="grow" style="min-width:0"><div class="nudge-t">' +
+            UI.esc(Store.displayName(x.plant)) + ' is in the wrong light</div>' +
+          '<p class="nudge-p mb-0">' + UI.esc(x.match.text) + '</p></div>' +
+          UI.icon('chevron', 'muted') +
+        '</div>';
+      }).join('') + '</div>' +
+      (more > 0
+        ? '<p class="hint">' + UI.plural(more, 'more plant') + ' in the wrong light too. ' +
+          'Each one\'s page says why.</p>'
+        : '') +
+    '</div>';
+  }
+
   /* ---------- Tasks ---------- */
 
   function taskRow(t) {
@@ -257,6 +308,7 @@ window.ViewToday = (function () {
           '</div>') +
     '</div>';
 
+    html += lightSection();
     html += weatherStrip();
 
     if (soon.length) {

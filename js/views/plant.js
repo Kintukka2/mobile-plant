@@ -188,7 +188,7 @@ window.ViewPlant = (function () {
           '<div class="eyebrow">Watering</div>' +
           '<div style="font-family:var(--serif);font-size:22px;margin-top:3px">' +
             'Every ' + iv.days + ' days</div>' +
-          '<div class="dim small" style="margin-top:2px">About ' + ml + 'ml each time' +
+          '<div class="muted small" style="margin-top:2px">About ' + ml + 'ml each time' +
             (w.lastDate ? ' · last watered ' + UI.esc(UI.fmtDate(w.lastDate)) : '') + '</div>' +
         '</div>' +
         '<span class="pill ' + dueCls + ' pill-lg">' + UI.esc(dueLine) + '</span>' +
@@ -247,10 +247,10 @@ window.ViewPlant = (function () {
           (f && f.dormant
             ? '<div style="font-family:var(--serif);font-size:22px;margin-top:3px">Paused for ' +
                 UI.esc(season.label.toLowerCase()) + '</div>' +
-              '<div class="dim small" style="margin-top:2px">' + UI.esc(f.reason) + '</div>'
+              '<div class="muted small" style="margin-top:2px">' + UI.esc(f.reason) + '</div>'
             : '<div style="font-family:var(--serif);font-size:22px;margin-top:3px">Every ' +
                 sp.fert.everyDays + ' days</div>' +
-              '<div class="dim small" style="margin-top:2px">' + UI.esc(sp.fert.type) +
+              '<div class="muted small" style="margin-top:2px">' + UI.esc(sp.fert.type) +
                 ', at ' + UI.esc(sp.fert.strength) + ' strength</div>') +
         '</div>' +
         '<span class="pill ' + fCls + ' pill-lg">' + UI.esc(fLine) + '</span>' +
@@ -470,7 +470,7 @@ window.ViewPlant = (function () {
         '<button class="btn" data-quick="photo">' + UI.icon('camera') + 'Add the first photo</button>');
     }
 
-    return '<p class="dim small" style="margin:0 2px 14px">' +
+    return '<p class="muted small" style="margin:0 2px 14px">' +
         'A photo every few weeks turns into a surprisingly satisfying record. Photos are downscaled to save space.' +
       '</p>' +
       '<div class="photo-grid">' +
@@ -810,7 +810,7 @@ window.ViewPlant = (function () {
     const opts = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
 
     UI.openSheet('Adjust watering',
-      '<p class="dim small" style="margin:0 0 16px;line-height:1.6">' +
+      '<p class="muted small" style="margin:0 0 16px;line-height:1.6">' +
         'I make it every <strong>' + iv.days + ' days</strong> for this one. If you know your home runs ' +
         'hotter, draughtier or damper than I\'m assuming, nudge it here — I\'ll keep the seasonal and pot ' +
         'adjustments on top of whatever you choose.' +
@@ -840,7 +840,7 @@ window.ViewPlant = (function () {
 
     UI.openSheet(UI.fmtDate(log.date),
       '<img src="' + UI.attr(src) + '" alt="" style="width:100%;border-radius:14px;display:block">' +
-      (log.text ? '<p class="small dim" style="margin:12px 0 0">' + UI.esc(log.text) + '</p>' : '') +
+      (log.text ? '<p class="small muted" style="margin:12px 0 0">' + UI.esc(log.text) + '</p>' : '') +
       '<div class="stack" style="gap:8px;margin-top:16px">' +
         '<button class="btn btn-ghost" data-p="zoom">Open full size</button>' +
         (isCover
