@@ -1,4 +1,4 @@
-# Sprout: four voiced Reels
+# Sprout: five voiced Reels
 
 **What it is:** a houseplant app that works out each plant's care from the species, the pot, the
 room's light and the season, instead of asking how often to remind you.
@@ -47,6 +47,13 @@ The on-screen captions are the spoken words, so the reels work with the sound of
 - *Or look any plant up.* (search "monstera")
 - *Tell me who lives with you, and I'll warn you first.* (ring on **Not safe for your cats**: the seeded profile lives with cats)
 - *Rated separately for cats, dogs and humans.* (ring on the toxicity row: cats toxic, dogs toxic, people mildly)
+
+## 5 · The greenhouse
+- **Hook:** *Think of it as a smart home, for your plants.* (the README's own model: rooms, with plants instead of devices)
+- *Every room knows its light.* (the rooms list; ring on Living Room's **Bright indirect**)
+- *Step inside, and I'll tell you if each plant is happy there.* (into the Living Room; ring on **Every plant in here is in light it likes.**)
+- *Who needs water, and when.* (ring on the cards' water chips: in 1 day, today)
+- *And what else would thrive in there.* (ring on **Would thrive here**, the species suited to that light)
 
 ## Sound
 The Reels' piece (D major, 84 BPM, soft pad, a plucked pulse, taps tuned to the chord), mixed

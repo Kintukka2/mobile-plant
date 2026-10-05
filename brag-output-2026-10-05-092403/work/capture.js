@@ -175,6 +175,35 @@ const SPECS = {
       const w = [...document.querySelectorAll('.row-wrap')].find(e => /Cats:/.test(e.textContent));
       if (!w) return null; const r = w.getBoundingClientRect(); return [r.left, r.top, r.width, r.height];
     } }]
+  },
+  greenhouse: {
+    id: 'greenhouse', route: '#/greenhouse', from: 3.2, to: 16.6,
+    actions: [
+      { t: 4.3, scroll: { y: 150, dur: 1.2 } },
+      { t: 6.3, tap: { re: /Living Room/, sel: '.rcard' }, push: true },
+      { t: 10.2, scroll: { re: /^\s*Plants in here/i, sel: '.section-title,h2', offset: 110, dur: 1.0 } },
+      { t: 13.0, scroll: { re: /^\s*Would thrive here/i, sel: '.section-title,h2', offset: 190, dur: 1.1 } }
+    ],
+    rings: [{ id: 'light', t0: 4.6, t1: 6.2, rect: () => {
+      // the room card's light, which is too quiet in the app to read at reel size unaided
+      const c = document.querySelector('.rcard'); if (!c) return null;
+      const el = [...c.querySelectorAll('*')].filter(e => /Bright indirect/i.test(e.textContent)).sort((a, b) => a.textContent.length - b.textContent.length)[0];
+      if (!el) return null; const r = el.getBoundingClientRect(); return [r.left, r.top + 2, r.width, r.height - 4];
+    } }, { id: 'happy', t0: 7.6, t1: 10.2, rect: () => {
+      const el = [...document.querySelectorAll('.view *')].filter(e => e.offsetParent && /Every plant in here is in light it likes/.test(e.textContent)).sort((a, b) => a.textContent.length - b.textContent.length)[0];
+      if (!el) return null; const r = el.getBoundingClientRect(); return [r.left - 6, r.top - 4, r.width + 12, r.height + 8];
+    } }, { id: 'water', t0: 11.3, t1: 13.0, rect: () => {
+      // the first two cards' water chips: who is due, and when
+      const b = [...document.querySelectorAll('.view .pcard')].slice(0, 2).map(c => (c.querySelector('[class*="drop"],[class*="badge"]') || c).getBoundingClientRect());
+      if (!b.length) return null; const l = Math.min(...b.map(r => r.left)), t = Math.min(...b.map(r => r.top));
+      return [l, t, Math.max(...b.map(r => r.right)) - l, Math.max(...b.map(r => r.bottom)) - t];
+    } }, { id: 'thrive', t0: 14.1, t1: 16.0, rect: () => {
+      const h = [...document.querySelectorAll('.section-title,h2')].find(e => /Would thrive here/i.test(e.textContent));
+      const sec = h && (h.closest('.section') || h.parentElement.parentElement); if (!sec) return null;
+      const b = [...sec.querySelectorAll('button')].filter(e => e.offsetParent).map(e => e.getBoundingClientRect());
+      if (!b.length) return null; const l = Math.min(...b.map(r => r.left)), t = Math.min(...b.map(r => r.top));
+      return [l, t, Math.max(...b.map(r => r.right)) - l, Math.max(...b.map(r => r.bottom)) - t];
+    } }]
   }
 };
 

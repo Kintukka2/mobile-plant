@@ -117,6 +117,36 @@
      "accent": true
     }
    ]
+  },
+  "greenhouse": {
+   "eyebrow": "The greenhouse",
+   "hook": {
+    "text": [
+     "Think of it as a smart home,",
+     "for your plants."
+    ],
+    "say": "Think of it as a smart home, for your plants!",
+    "accent": 1
+   },
+   "lines": [
+    {
+     "text": "Every room knows its light.",
+     "say": "Every room knows its light."
+    },
+    {
+     "text": "Step inside, and I'll tell you if each plant is happy there.",
+     "say": "Step inside, and I'll tell you if each plant is happy there."
+    },
+    {
+     "text": "Who needs water, and when.",
+     "say": "Who needs water, and when."
+    },
+    {
+     "text": "And what else would thrive in there.",
+     "say": "And what else would thrive in there!",
+     "accent": true
+    }
+   ]
   }
  }
 }
