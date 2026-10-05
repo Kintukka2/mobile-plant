@@ -8,3 +8,4 @@ events-*.json
 music-*.wav
 mix-*.wav
 render.log
+crop*
