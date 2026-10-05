@@ -156,6 +156,14 @@ strong{ color:var(--ink); font-weight:400; }
              color-mix(in srgb, var(--sun) 4%, transparent) 55%, transparent 70%);
   pointer-events:none; }
 .hero > *{ position:relative; }
+/* Sprout in the corner. Absolute against the hero, and more specific than
+   the rule above so it is not pulled back into the flow. Its size is the
+   script's (--sprout-h), because the free room in this corner is anything
+   from 400px of gutter to a band under the buttons; see the note beside the
+   script. Above the sun wash, under nothing that takes a click. */
+.hero > .hero-sprout{ position:absolute; left:0; bottom:0; height:var(--sprout-h,0px); width:auto;
+  pointer-events:none; user-select:none; }
+.hero > .hero-sprout[hidden]{ display:none; }
 /* The lockup, sized off one variable so the mark cannot drift from the
    wordmark at any viewport.
 

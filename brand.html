@@ -1014,12 +1014,15 @@ body { padding-bottom: 80px; }
     </div>
   </div>
 
-  <p class="g-rule"><b>The character is always framed.</b> The art carries its
-  own forest ground and the figure runs off the left and bottom edges, so
-  unframed the crop reads as a mistake. In the app it sits on a plate with the
-  sheet's corner, <code>--r-xl</code>, and a hairline. In Conservatory the plate
-  stays dark on purpose, the way a plant tile keeps its own ground on ivory
-  paper.</p>
+  <p class="g-rule"><b>The character is framed, or anchored to a corner.</b>
+  The art carries its own forest ground and the figure runs off the left and
+  bottom edges, so set loose the crop reads as a mistake. In the app it sits on
+  a plate with the sheet's corner, <code>--r-xl</code>, and a hairline. In
+  Conservatory the plate stays dark on purpose, the way a plant tile keeps its
+  own ground on ivory paper. On the marketing site it is cut out and set into
+  the hero's bottom-left, the one placement where both cropped edges meet the
+  edges of the frame, so the crop becomes the page's edge and the figure leans
+  in from off-screen.</p>
 
   <p class="g-rule"><b>The persona is zoned, and the face goes with it.</b> It
   appears only where the voice is talking to the reader, and never where the
@@ -1035,6 +1038,7 @@ body { padding-bottom: 80px; }
         <tr><td>No plants yet (Today, Greenhouse)</td><td>new-growth</td><td>A first impression, and an invitation to start</td></tr>
         <tr><td>All caught up</td><td>resting</td><td>A reward, so it gets a face rather than a ring</td></tr>
         <tr><td>Diagnose with no plants</td><td>concerned</td><td>The way into a health check, before any answer is given</td></tr>
+        <tr><td>sproutevergreen.com hero, bottom-left</td><td>base, cut out</td><td>The face of the brand where it is advertised. Sized to the free corner, never over the copy</td></tr>
         <tr><td>Care data, diagnosis results, treatment, toxicity</td><td>Never</td><td>Reference zone: plain and authoritative, no persona</td></tr>
         <tr><td>Every other empty state</td><td>Never</td><td>Utility states keep the hairline ring. A face on all of them is furniture</td></tr>
       </tbody>
@@ -1050,7 +1054,10 @@ body { padding-bottom: 80px; }
   <div class="g-note"><b>Where it lives.</b> <code>img/sprout/&lt;pose&gt;.webp</code>,
   360&times;360, about 6KB each and precached in <code>sw.js</code>, because the
   screens that show them are the ones most likely to be opened offline. The
-  1254&times;1254 originals for marketing are in <code>marketing/character/</code>.
+  1254&times;1254 originals for marketing are in <code>marketing/character/</code>,
+  and the site's cut-out, <code>site/img/sprout-corner.webp</code>, is made from
+  <code>sprout-base.png</code> there, because the site cannot reach the app's
+  <code>img/</code>.
   Views call <code>UI.sprout(pose)</code>, or pass <code>'sprout:&lt;pose&gt;'</code>
   as the icon to <code>UI.empty</code>. Both go through an allow-list, so a
   misspelt pose draws nothing. The in-app plates carry an empty

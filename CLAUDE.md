@@ -276,9 +276,16 @@ Brand guide section 09 and Decision 13 are the full rule. The short version:
   Diagnose with no plants (`concerned`). `watering` is marketing only for now.
   Every other empty state keeps its hairline ring. A face on all of them is
   furniture.
-- **Always framed.** The art carries its own ground and is cropped off two
-  edges, so it renders through `UI.sprout(pose)` or `UI.empty('sprout:<pose>', …)`
-  as a `.sprout-plate`, never as a bare `<img>`. Both go through an allow-list.
+- **Framed, or anchored to a corner.** The art carries its own ground and is
+  cropped off two edges. In the app it renders through `UI.sprout(pose)` or
+  `UI.empty('sprout:<pose>', …)` as a `.sprout-plate`, never as a bare `<img>`;
+  both go through an allow-list. The one unframed placement is the site hero's
+  bottom-left, where the two cropped edges meet the page's edges.
+- **The site's copy is a separate cut-out.** `site/img/sprout-corner.webp` is
+  `marketing/character/sprout-base.png` with its ground removed and trimmed,
+  because `site/` cannot reach `../img`. Its height comes from a script in
+  `site/index.html` that measures the free room beside or below the copy;
+  a fixed size covered the call to action at 1280px and on every phone.
 - **It never replaces the mark.** Favicon, touch icon, store icon and sidebar
   stay the three-path sprig.
 
