@@ -99,6 +99,13 @@ async function run(spec) {
     } else {
       await p.clock.runFor(1000 / FPS);
     }
+    // Species photos are lazy and decode async, off the real clock, so a frame
+    // shot straight after a search showed empty cards; wait (briefly, off the
+    // page's faked timers) for every image on screen to be decoded first.
+    await Promise.race([p.evaluate(() => Promise.all([...document.images].filter(i => {
+      const r = i.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight && r.width > 0;
+    }).map(i => { i.loading = 'eager'; return i.decode().catch(() => {}); }))),
+      new Promise(res => setTimeout(res, 1500))]);
     await p.screenshot({ path: `${out}/${String(f).padStart(4, '0')}.jpg`, type: 'jpeg', quality: 93 });
   }
   fs.writeFileSync(`events-${spec.id}.json`, JSON.stringify(ev));
