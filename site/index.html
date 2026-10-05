@@ -854,9 +854,10 @@
      the only free space is under the buttons. A fixed size covered the call
      to action at 1280px and on every phone measured. So it takes the larger
      of the two rooms it could have — the gutter beside the copy, or the
-     band below the buttons — and keeps clear of the scroll cue. Below 96px
-     it is a sliver, and on a short screen the hero is no longer a screenful
-     to sit in, so it stays hidden. -->
+     band below the buttons — keeps clear of the scroll cue, and then takes
+     four fifths of that, so it reads as leaning into the corner rather than
+     filling it. Below 80px it is a sliver, and on a short screen the hero
+     is no longer a screenful to sit in, so it stays hidden. -->
 <script>
 (function () {
   var hero = document.querySelector(".hero");
@@ -866,7 +867,7 @@
   var cue = document.getElementById("hero-scroll");
   if (!hero || !img || !lead || !cta) return;
 
-  var ASPECT = 557 / 720, CAP = 360, MIN = 96, GAP = 16, ticking = false;
+  var ASPECT = 557 / 720, CAP = 360, SCALE = 0.8, MIN = 80, GAP = 16, ticking = false;
 
   function size() {
     ticking = false;
@@ -879,6 +880,7 @@
     // so this holds however far down the reader has scrolled.
     var c = cue && cue.getBoundingClientRect();
     if (c && c.width) h = Math.min(h, (c.left - hr.left - 12) / ASPECT);
+    h *= SCALE;
     if (h < MIN) { img.hidden = true; return; }
     img.style.setProperty("--sprout-h", Math.floor(h) + "px");
     img.hidden = false;
