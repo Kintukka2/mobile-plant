@@ -330,7 +330,7 @@ window.ViewPlant = (function () {
     /* --- Danger zone --- */
     html += '<div class="section">' +
       '<button class="btn btn-blood btn-block" data-delete="1">' + UI.icon('trash') +
-        'Remove ' + UI.esc(Store.displayName(p)) + '</button>' +
+        '<span class="btn-label">Remove ' + UI.esc(Store.displayName(p)) + '</span></button>' +
       '<p class="hint center">Its diary entries and photos go with it.</p>' +
     '</div>';
 
@@ -641,8 +641,8 @@ window.ViewPlant = (function () {
           }).join('') + '</ol>' +
           '<div class="card-foot">' +
             '<button class="btn btn-sm btn-soft" data-prop="' + i + '">' +
-              UI.icon('sprout') + 'Log that I propagated ' + UI.esc(Store.displayName(p)) +
-            '</button>' +
+              UI.icon('sprout') + '<span class="btn-label">Log that I propagated ' +
+              UI.esc(Store.displayName(p)) + '</span></button>' +
           '</div>' +
         '</div>';
       }).join('') + '</div>';

@@ -426,7 +426,7 @@ window.ViewDiagnose = (function () {
     /* --- Follow-up actions --- */
     html += '<div class="section"><div class="stack" style="gap:8px">' +
       (p ? '<button class="btn btn-soft" data-log="1">' + UI.icon('note') +
-        'Log this in ' + UI.esc(Store.displayName(p)) + '\'s diary</button>' : '') +
+        '<span class="btn-label">Log this in ' + UI.esc(Store.displayName(p)) + '\'s diary</span></button>' : '') +
       '<button class="btn btn-ghost" data-restart="1">Diagnose something else</button>' +
     '</div></div>';
 
