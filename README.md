@@ -169,7 +169,10 @@ Latin Extended subsets are fetched on first use and cached from then on.
 
 There is no account, no server of ours and no telemetry. Plants, rooms, diary
 entries, photos and the schedule live on the device and are never uploaded
-anywhere.
+anywhere. The one way they leave is a backup the reader makes: Settings
+writes them to a single file and the reader picks where it goes, through the
+share sheet in the store builds or a download on the web. Sprout sends
+nothing on its own.
 
 | Key | Contents |
 | --- | --- |
@@ -185,8 +188,9 @@ kilometre, before either request, so what travels is a neighbourhood rather
 than an address. Nothing else goes with them: no identifier, no account, and
 none of the plants.
 
-Those two requests are the only traffic the app ever makes. Nothing else
-leaves the device and nothing is fetched from a second origin. `native/store-privacy.md` turns the same facts into the answers
+Those two requests are the only traffic the app ever makes. Apart from a
+backup the reader sends somewhere themselves, nothing else leaves the device,
+and nothing is fetched from a second origin. `native/store-privacy.md` turns the same facts into the answers
 both app stores' privacy forms ask for.
 
 ---

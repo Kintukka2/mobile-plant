@@ -336,9 +336,11 @@ or replacing one means bumping `CACHE`, exactly like any other cached asset.
 ## Storage
 
 No account, no server of ours, no telemetry. Everything about the reader's
-plants stays on the device; a set location is the one thing that leaves, and
-it is rounded to roughly a kilometre first. Claims about this are load-bearing
-— see the note at the end of this section.
+plants stays on the device; a set location is the one thing the app sends,
+and it is rounded to roughly a kilometre first. The only other way anything
+leaves is a backup the reader makes and sends somewhere themselves through
+the share sheet (`js/views/settings.js`): never automatic, never to us.
+Claims about this are load-bearing — see the note at the end of this section.
 
 | Key | Contents |
 | --- | --- |
