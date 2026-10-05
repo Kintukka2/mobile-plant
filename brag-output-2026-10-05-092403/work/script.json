@@ -1,6 +1,4 @@
 {
- "voice": "af_heart",
- "speed": 1.06,
  "outro": [
   {
    "text": "Find me at sproutevergreen.com",
@@ -86,6 +84,36 @@
     {
      "text": "And I'll show you exactly where each plant should stand.",
      "say": "And I'll show you exactly where each plant should stand.",
+     "accent": true
+    }
+   ]
+  },
+  "pets": {
+   "eyebrow": "Pets",
+   "hook": {
+    "text": [
+     "Is that plant safe",
+     "for the cat?"
+    ],
+    "say": "Is that plant safe for the cat?",
+    "accent": 1
+   },
+   "lines": [
+    {
+     "text": "23 of my 48 species are safe for cats and dogs.",
+     "say": "Twenty-three of my forty-eight species are safe for cats and dogs!"
+    },
+    {
+     "text": "Or look any plant up.",
+     "say": "Or look any plant up."
+    },
+    {
+     "text": "Tell me who lives with you, and I'll warn you first.",
+     "say": "Tell me who lives with you, and I'll warn you first."
+    },
+    {
+     "text": "Rated separately for cats, dogs and humans.",
+     "say": "Rated separately, for cats, dogs, and humans.",
      "accent": true
     }
    ]

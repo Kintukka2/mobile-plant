@@ -99,6 +99,13 @@ async function run(spec) {
     } else {
       await p.clock.runFor(1000 / FPS);
     }
+    // Species photos are lazy and decode async, off the real clock, so a frame
+    // shot straight after a search showed empty cards; wait (briefly, off the
+    // page's faked timers) for every image on screen to be decoded first.
+    await Promise.race([p.evaluate(() => Promise.all([...document.images].filter(i => {
+      const r = i.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight && r.width > 0;
+    }).map(i => { i.loading = 'eager'; return i.decode().catch(() => {}); }))),
+      new Promise(res => setTimeout(res, 1500))]);
     await p.screenshot({ path: `${out}/${String(f).padStart(4, '0')}.jpg`, type: 'jpeg', quality: 93 });
   }
   fs.writeFileSync(`events-${spec.id}.json`, JSON.stringify(ev));
@@ -147,6 +154,27 @@ const SPECS = {
     // then straight to beat 9, a plant dropped in, for the last line.
     progress: t => t < 6.6 ? Math.max(0, t - 3.5) / 3.1 * 5 : t < 7.6 ? 5 + (t - 6.6) : t < 9.6 ? 6 + (t - 7.6) / 2.0 * 0.98 : 9 + (t - 9.6) / 4.6 * 0.98,
     actions: []
+  },
+  pets: {
+    id: 'pets', route: '#/discover', from: 2.8, to: 16.6,
+    actions: [
+      { t: 3.9, tap: { re: /^\s*Pet safe\s*$/, sel: 'button' } },
+      { t: 4.6, scroll: { y: 260, dur: 1.4 } },
+      { t: 6.4, scroll: { y: 0, dur: 0.5 } },
+      { t: 7.2, tap: { re: /^\s*Everything\s*$/, sel: 'button' } },
+      { t: 7.6, tap: { re: /Search by name/, sel: 'input' } },
+      { t: 7.75, type: { text: 'monstera', dt: 0.08 } },
+      { t: 9.0, tap: { re: /Monstera\s*Monstera deliciosa/, sel: 'button.pcard' }, push: true },
+      { t: 9.5, scroll: { re: /^\s*Not safe for your cats/, sel: '*', offset: 420, dur: 0.9 } },
+      { t: 12.4, scroll: { re: /^\s*Toxicity\s*$/i, sel: 'h2,h3,.section-title', offset: 260, dur: 1.1 } }
+    ],
+    rings: [{ id: 'cats', t0: 10.4, t1: 12.4, rect: () => {
+      const el = [...document.querySelectorAll('.view *')].filter(e => e.offsetParent && /^\s*Not safe for your cats/.test(e.textContent)).sort((a, b) => a.textContent.length - b.textContent.length)[0];
+      if (!el) return null; const box = el.closest('.nudge,.card') || el; const r = box.getBoundingClientRect(); return [r.left, r.top, r.width, r.height];
+    } }, { id: 'tox', t0: 13.5, t1: 16.0, rect: () => {
+      const w = [...document.querySelectorAll('.row-wrap')].find(e => /Cats:/.test(e.textContent));
+      if (!w) return null; const r = w.getBoundingClientRect(); return [r.left, r.top, r.width, r.height];
+    } }]
   }
 };
 

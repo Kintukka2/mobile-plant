@@ -1,4 +1,4 @@
-# Sprout: three voiced Reels
+# Sprout: four voiced Reels
 
 **What it is:** a houseplant app that works out each plant's care from the species, the pot, the
 room's light and the season, instead of asking how often to remind you.
@@ -41,6 +41,13 @@ The on-screen captions are the spoken words, so the reels work with the sound of
 - *Point me north.* (the north step)
 - *And I'll show you exactly where each plant should stand.* (a plant dropped in, the floor shades)
 
+## 4 · Pets
+- **Hook:** *Is that plant safe for the cat?*
+- *23 of my 48 species are safe for cats and dogs.* (Discover, Pet safe filter; the figures `.claude/check-species.js` checks)
+- *Or look any plant up.* (search "monstera")
+- *Tell me who lives with you, and I'll warn you first.* (ring on **Not safe for your cats**: the seeded profile lives with cats)
+- *Rated separately for cats, dogs and humans.* (ring on the toxicity row: cats toxic, dogs toxic, people mildly)
+
 ## Sound
 The Reels' piece (D major, 84 BPM, soft pad, a plucked pulse, taps tuned to the chord), mixed
 9dB down and side-chain ducked under the voice so she always sits on top. −16 LUFS.
@@ -52,8 +59,8 @@ the way the marketing site words it.
 
 ## Rebuilding
 Needs Node, Playwright with Chromium, ffmpeg, and Python with `kokoro-onnx` and `soundfile`.
-The Kokoro model files (`kokoro-v1.0.onnx`, `voices-v1.0.bin`, from the kokoro-onnx GitHub
-releases) are not committed; `work/vo.py` reads them from the `M` path at its top. From `work/`,
+The voice comes from `marketing/voice/` (the pinned vector, speed and model hash);
+`work/vo.py` fetches and checks the model through `marketing/voice/say.py` on first run. From `work/`,
 with `node .claude/serve.js` running at the repo root:
 
 ```bash

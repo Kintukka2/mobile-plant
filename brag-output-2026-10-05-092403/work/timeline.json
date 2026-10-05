@@ -1,8 +1,104 @@
 {
-  "schedule": { "duration": 20.0, "hookAt": 0.35, "hookEnd": 3.4, "phone": [3.4, 13.8], "drop": 13.8,
-                "lineAt": [3.7, 6.3, 10.3], "capEnd": [6.0, 9.9, 13.5], "outroAt": [14.4, 16.8], "poster": 11.6 },
-  "diagnose": { "duration": 20.1, "hookAt": 0.35, "hookEnd": 3.0, "phone": [3.0, 13.9], "drop": 13.9,
-                "lineAt": [3.4, 6.9, 9.9], "capEnd": [6.6, 9.5, 13.6], "outroAt": [14.5, 16.9], "poster": 12.9 },
-  "planner":  { "duration": 20.4, "hookAt": 0.35, "hookEnd": 3.5, "phone": [3.5, 14.2], "drop": 14.2,
-                "lineAt": [3.9, 7.7, 9.9], "capEnd": [7.4, 9.5, 14.0], "outroAt": [14.8, 17.2], "poster": 13.2 }
+ "schedule": {
+  "duration": 20.0,
+  "hookAt": 0.35,
+  "hookEnd": 3.4,
+  "phone": [
+   3.4,
+   13.8
+  ],
+  "drop": 13.8,
+  "lineAt": [
+   3.7,
+   6.3,
+   10.3
+  ],
+  "capEnd": [
+   6.0,
+   9.9,
+   13.5
+  ],
+  "outroAt": [
+   14.4,
+   16.8
+  ],
+  "poster": 11.6
+ },
+ "diagnose": {
+  "duration": 20.1,
+  "hookAt": 0.35,
+  "hookEnd": 3.0,
+  "phone": [
+   3.0,
+   13.9
+  ],
+  "drop": 13.9,
+  "lineAt": [
+   3.4,
+   6.9,
+   9.9
+  ],
+  "capEnd": [
+   6.6,
+   9.5,
+   13.6
+  ],
+  "outroAt": [
+   14.5,
+   16.9
+  ],
+  "poster": 12.9
+ },
+ "planner": {
+  "duration": 20.4,
+  "hookAt": 0.35,
+  "hookEnd": 3.5,
+  "phone": [
+   3.5,
+   14.2
+  ],
+  "drop": 14.2,
+  "lineAt": [
+   3.9,
+   7.7,
+   9.9
+  ],
+  "capEnd": [
+   7.4,
+   9.5,
+   14.0
+  ],
+  "outroAt": [
+   14.8,
+   17.2
+  ],
+  "poster": 13.2
+ },
+ "pets": {
+  "duration": 22.0,
+  "hookAt": 0.35,
+  "hookEnd": 2.8,
+  "phone": [
+   2.8,
+   16.0
+  ],
+  "drop": 16.0,
+  "lineAt": [
+   3.2,
+   7.4,
+   9.6,
+   12.8
+  ],
+  "capEnd": [
+   7.3,
+   9.2,
+   12.4,
+   15.9
+  ],
+  "outroAt": [
+   16.6,
+   19.0
+  ],
+  "poster": 14.6
+ }
 }
