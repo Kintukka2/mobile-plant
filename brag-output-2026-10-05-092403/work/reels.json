@@ -215,5 +215,169 @@
     "outro-1"
    ]
   ]
+ },
+ "pets": {
+  "eyebrow": "Pets",
+  "duration": 22.0,
+  "hook": [
+   "Is that plant safe",
+   "for the cat?"
+  ],
+  "hookAccent": 1,
+  "hookAt": 0.35,
+  "hookDur": 1.47,
+  "hookEnd": 2.8,
+  "phone": [
+   2.8,
+   16.0
+  ],
+  "drop": 16.0,
+  "captions": [
+   [
+    3.2,
+    7.3,
+    "23 of my 48 species are safe for cats and dogs.",
+    0
+   ],
+   [
+    7.4,
+    9.2,
+    "Or look any plant up.",
+    0
+   ],
+   [
+    9.6,
+    12.4,
+    "Tell me who lives with you, and I'll warn you first.",
+    0
+   ],
+   [
+    12.8,
+    15.9,
+    "Rated separately for cats, dogs and humans.",
+    1
+   ]
+  ],
+  "outro": [
+   "Find me at sproutevergreen.com",
+   "Coming to Google Play and the App Store."
+  ],
+  "outroAt": [
+   16.6,
+   19.0
+  ],
+  "poster": 14.6,
+  "vo": [
+   [
+    0.35,
+    "pets-hook"
+   ],
+   [
+    3.2,
+    "pets-0"
+   ],
+   [
+    7.4,
+    "pets-1"
+   ],
+   [
+    9.6,
+    "pets-2"
+   ],
+   [
+    12.8,
+    "pets-3"
+   ],
+   [
+    16.6,
+    "outro-0"
+   ],
+   [
+    19.0,
+    "outro-1"
+   ]
+  ]
+ },
+ "greenhouse": {
+  "eyebrow": "The greenhouse",
+  "duration": 22.0,
+  "hook": [
+   "Think of it as a smart home,",
+   "for your plants."
+  ],
+  "hookAccent": 1,
+  "hookAt": 0.35,
+  "hookDur": 2.2,
+  "hookEnd": 3.2,
+  "phone": [
+   3.2,
+   16.0
+  ],
+  "drop": 16.0,
+  "captions": [
+   [
+    3.6,
+    6.4,
+    "Every room knows its light.",
+    0
+   ],
+   [
+    6.6,
+    10.3,
+    "Step inside, and I'll tell you if each plant is happy there.",
+    0
+   ],
+   [
+    10.6,
+    13.0,
+    "Who needs water, and when.",
+    0
+   ],
+   [
+    13.4,
+    16.0,
+    "And what else would thrive in there.",
+    1
+   ]
+  ],
+  "outro": [
+   "Find me at sproutevergreen.com",
+   "Coming to Google Play and the App Store."
+  ],
+  "outroAt": [
+   16.6,
+   19.0
+  ],
+  "poster": 15.2,
+  "vo": [
+   [
+    0.35,
+    "greenhouse-hook"
+   ],
+   [
+    3.6,
+    "greenhouse-0"
+   ],
+   [
+    6.6,
+    "greenhouse-1"
+   ],
+   [
+    10.6,
+    "greenhouse-2"
+   ],
+   [
+    13.4,
+    "greenhouse-3"
+   ],
+   [
+    16.6,
+    "outro-0"
+   ],
+   [
+    19.0,
+    "outro-1"
+   ]
+  ]
  }
 }

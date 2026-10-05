@@ -99,6 +99,13 @@ async function run(spec) {
     } else {
       await p.clock.runFor(1000 / FPS);
     }
+    // Species photos are lazy and decode async, off the real clock, so a frame
+    // shot straight after a search showed empty cards; wait (briefly, off the
+    // page's faked timers) for every image on screen to be decoded first.
+    await Promise.race([p.evaluate(() => Promise.all([...document.images].filter(i => {
+      const r = i.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight && r.width > 0;
+    }).map(i => { i.loading = 'eager'; return i.decode().catch(() => {}); }))),
+      new Promise(res => setTimeout(res, 1500))]);
     await p.screenshot({ path: `${out}/${String(f).padStart(4, '0')}.jpg`, type: 'jpeg', quality: 93 });
   }
   fs.writeFileSync(`events-${spec.id}.json`, JSON.stringify(ev));
@@ -147,6 +154,56 @@ const SPECS = {
     // then straight to beat 9, a plant dropped in, for the last line.
     progress: t => t < 6.6 ? Math.max(0, t - 3.5) / 3.1 * 5 : t < 7.6 ? 5 + (t - 6.6) : t < 9.6 ? 6 + (t - 7.6) / 2.0 * 0.98 : 9 + (t - 9.6) / 4.6 * 0.98,
     actions: []
+  },
+  pets: {
+    id: 'pets', route: '#/discover', from: 2.8, to: 16.6,
+    actions: [
+      { t: 3.9, tap: { re: /^\s*Pet safe\s*$/, sel: 'button' } },
+      { t: 4.6, scroll: { y: 260, dur: 1.4 } },
+      { t: 6.4, scroll: { y: 0, dur: 0.5 } },
+      { t: 7.2, tap: { re: /^\s*Everything\s*$/, sel: 'button' } },
+      { t: 7.6, tap: { re: /Search by name/, sel: 'input' } },
+      { t: 7.75, type: { text: 'monstera', dt: 0.08 } },
+      { t: 9.0, tap: { re: /Monstera\s*Monstera deliciosa/, sel: 'button.pcard' }, push: true },
+      { t: 9.5, scroll: { re: /^\s*Not safe for your cats/, sel: '*', offset: 420, dur: 0.9 } },
+      { t: 12.4, scroll: { re: /^\s*Toxicity\s*$/i, sel: 'h2,h3,.section-title', offset: 260, dur: 1.1 } }
+    ],
+    rings: [{ id: 'cats', t0: 10.4, t1: 12.4, rect: () => {
+      const el = [...document.querySelectorAll('.view *')].filter(e => e.offsetParent && /^\s*Not safe for your cats/.test(e.textContent)).sort((a, b) => a.textContent.length - b.textContent.length)[0];
+      if (!el) return null; const box = el.closest('.nudge,.card') || el; const r = box.getBoundingClientRect(); return [r.left, r.top, r.width, r.height];
+    } }, { id: 'tox', t0: 13.5, t1: 16.0, rect: () => {
+      const w = [...document.querySelectorAll('.row-wrap')].find(e => /Cats:/.test(e.textContent));
+      if (!w) return null; const r = w.getBoundingClientRect(); return [r.left, r.top, r.width, r.height];
+    } }]
+  },
+  greenhouse: {
+    id: 'greenhouse', route: '#/greenhouse', from: 3.2, to: 16.6,
+    actions: [
+      { t: 4.3, scroll: { y: 150, dur: 1.2 } },
+      { t: 6.3, tap: { re: /Living Room/, sel: '.rcard' }, push: true },
+      { t: 10.2, scroll: { re: /^\s*Plants in here/i, sel: '.section-title,h2', offset: 110, dur: 1.0 } },
+      { t: 13.0, scroll: { re: /^\s*Would thrive here/i, sel: '.section-title,h2', offset: 190, dur: 1.1 } }
+    ],
+    rings: [{ id: 'light', t0: 4.6, t1: 6.2, rect: () => {
+      // the room card's light, which is too quiet in the app to read at reel size unaided
+      const c = document.querySelector('.rcard'); if (!c) return null;
+      const el = [...c.querySelectorAll('*')].filter(e => /Bright indirect/i.test(e.textContent)).sort((a, b) => a.textContent.length - b.textContent.length)[0];
+      if (!el) return null; const r = el.getBoundingClientRect(); return [r.left, r.top + 2, r.width, r.height - 4];
+    } }, { id: 'happy', t0: 7.6, t1: 10.2, rect: () => {
+      const el = [...document.querySelectorAll('.view *')].filter(e => e.offsetParent && /Every plant in here is in light it likes/.test(e.textContent)).sort((a, b) => a.textContent.length - b.textContent.length)[0];
+      if (!el) return null; const r = el.getBoundingClientRect(); return [r.left - 6, r.top - 4, r.width + 12, r.height + 8];
+    } }, { id: 'water', t0: 11.3, t1: 13.0, rect: () => {
+      // the first two cards' water chips: who is due, and when
+      const b = [...document.querySelectorAll('.view .pcard')].slice(0, 2).map(c => (c.querySelector('[class*="drop"],[class*="badge"]') || c).getBoundingClientRect());
+      if (!b.length) return null; const l = Math.min(...b.map(r => r.left)), t = Math.min(...b.map(r => r.top));
+      return [l, t, Math.max(...b.map(r => r.right)) - l, Math.max(...b.map(r => r.bottom)) - t];
+    } }, { id: 'thrive', t0: 14.1, t1: 16.0, rect: () => {
+      const h = [...document.querySelectorAll('.section-title,h2')].find(e => /Would thrive here/i.test(e.textContent));
+      const sec = h && (h.closest('.section') || h.parentElement.parentElement); if (!sec) return null;
+      const b = [...sec.querySelectorAll('button')].filter(e => e.offsetParent).map(e => e.getBoundingClientRect());
+      if (!b.length) return null; const l = Math.min(...b.map(r => r.left)), t = Math.min(...b.map(r => r.top));
+      return [l, t, Math.max(...b.map(r => r.right)) - l, Math.max(...b.map(r => r.bottom)) - t];
+    } }]
   }
 };
 
