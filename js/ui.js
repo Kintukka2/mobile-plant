@@ -243,6 +243,16 @@ window.UI = (function () {
     return Math.abs(n) + ' days overdue';
   }
 
+  /* The store builds are the same pages inside a native shell, and copy
+     written for a browser reads wrong there: "lives in this browser only"
+     in an installed app made testers ask which browser (PrimeTestLab 7959,
+     S-03). Anything that names where the data is asks here. */
+  function isNative() {
+    const C = window.Capacitor;
+    return !!(C && typeof C.isNativePlatform === 'function' && C.isNativePlatform());
+  }
+  function here() { return isNative() ? 'this device' : 'this browser'; }
+
   function plural(n, one, many) {
     return n + ' ' + (n === 1 ? one : (many || one + 's'));
   }
@@ -816,6 +826,7 @@ window.UI = (function () {
     esc: esc, attr: attr, icon: icon,
     today: today, toISO: toISO, fromISO: fromISO, daysBetween: daysBetween, addDays: addDays,
     fmtDate: fmtDate, relDays: relDays, relDue: relDue, plural: plural, deg: deg,
+    isNative: isNative, here: here,
     MONTHS: MONTHS, DAYS: DAYS,
     toast: toast, openSheet: openSheet, closeSheet: closeSheet, sheetIsOpen: sheetIsOpen,
     roomMark: roomMark,

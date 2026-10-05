@@ -126,7 +126,7 @@ window.Onboard = (function () {
 
   function locate() {
     const note = stage.querySelector('#ob-loc-note'), btn = stage.querySelector('[data-ob="locate"]');
-    note.hidden = false; note.textContent = 'Asking your browser for your location…';
+    note.hidden = false; note.textContent = 'Asking for your location…';
     if (btn) btn.disabled = true;
     Weather.locateMe(function (err, place) {
       if (finished) return;

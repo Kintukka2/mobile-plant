@@ -408,12 +408,24 @@ window.Store = (function () {
         if (k.indexOf(PHOTO_PREFIX) === 0) { photos += bytes; count++; }
       }
     } catch (e) {}
+    /* 5MB counted as UTF-16 bytes, which is about 2.5 million characters.
+       That is WebKit's limit, so it is the iOS build's; Chromium, and so the
+       Android build, measured 5 million characters before refusing. Taking
+       the smaller everywhere means the bar and the photo count can only ever
+       promise less room than there is, never more. */
+    const cap = 5 * 1048576;
+    /* "5MB" meant nothing to anyone reading Settings, and a diary fills it
+       at a photo a week within the year, so the figure that matters is how
+       many more photos fit. It uses the same arithmetic as the bar, so the
+       two never disagree, and the reader's own average photo, or 200KB of
+       UTF-16 for a typical 100KB JPEG before there is one to measure. */
+    const perPhoto = count ? photos / count : 200 * 1024;
     return {
       totalMB: (total / 1048576).toFixed(2),
       photoMB: (photos / 1048576).toFixed(2),
       photoCount: count,
-      // Browsers typically allow 5–10MB for localStorage.
-      pctUsed: Math.min(100, Math.round((total / (5 * 1048576)) * 100))
+      pctUsed: Math.min(100, Math.round((total / cap) * 100)),
+      photosLeft: Math.max(0, Math.floor((cap - total) / perPhoto))
     };
   }
 
