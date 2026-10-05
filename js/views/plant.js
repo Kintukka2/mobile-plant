@@ -778,6 +778,7 @@ window.ViewPlant = (function () {
 
         UI.closeSheet();
         UI.toast('Added to the diary', 'leaf');
+        if (photoId) warnIfLow();
         App.refresh();
       });
     });
@@ -791,6 +792,17 @@ window.ViewPlant = (function () {
     App.refresh();
   }
 
+  /* Settings was the only place that said space was running out, and nobody
+     adding a photo is looking at Settings. So the warning comes at the
+     moment it becomes true, after the photo that brought it closer. */
+  function warnIfLow() {
+    const left = Store.storageUsage().photosLeft;
+    if (left > 10) return;
+    UI.toast(left
+      ? 'I\'ve room for about ' + UI.plural(left, 'more photo') + '. Deleting a few older ones frees some up'
+      : 'That was about the last photo I can fit. Deleting a few older ones frees some up', 'warn');
+  }
+
   /* Add a photo straight into the diary. */
   function quickPhoto(p) {
     Photos.pick(function (dataUrl) {
@@ -800,6 +812,7 @@ window.ViewPlant = (function () {
       // The first photo becomes the cover automatically.
       if (!p.coverPhotoId) Store.updatePlant(p.id, { coverPhotoId: id });
       UI.toast('Photo saved', 'leaf');
+      warnIfLow();
       App.refresh();
     });
   }

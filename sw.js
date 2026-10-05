@@ -37,8 +37,10 @@
    v61: the status bar. app.js now repaints the native bar with the theme.
 
    v62: readable body text, and the wrong light on Today. The stylesheet
-   and six views changed. */
-const CACHE = 'sprout-v62-viridium';
+   and six views changed.
+
+   v63: storage in app terms, and the planner's hints moved off the grid. */
+const CACHE = 'sprout-v63-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is

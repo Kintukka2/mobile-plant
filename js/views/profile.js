@@ -145,7 +145,7 @@ window.ViewProfile = (function () {
       });
 
       root.querySelector('#loc-me').addEventListener('click', function () {
-        note.textContent = 'Asking your browser for your location…';
+        note.textContent = 'Asking for your location…';
         Weather.locateMe(function (err, place) {
           if (err) { note.textContent = err.message; return; }
           choose(place);
@@ -476,7 +476,10 @@ window.ViewProfile = (function () {
         remind.checked = false;
         Notify.ask().then(function (result) {
           if (result !== 'granted') {
-            UI.toast(result === 'denied' ? 'Your browser said no to notifications' : 'Reminders need permission', 'warn');
+            UI.toast(result === 'denied'
+              ? (UI.isNative() ? 'Notifications are off for Sprout in your device settings'
+                               : 'Your browser said no to notifications')
+              : 'Reminders need permission', 'warn');
             App.refresh();
             return;
           }

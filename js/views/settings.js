@@ -171,9 +171,9 @@ window.ViewSettings = (function () {
             (usage.pctUsed > 85 ? 'var(--terra)' : 'var(--leaf)') + '"></div>' +
         '</div>' +
         '<p class="hint">' + usage.photoMB + 'MB of that is ' + UI.plural(usage.photoCount, 'photo') + '. ' +
-          'Browsers give me around 5MB in total, so I shrink photos to about 1000px before saving them — ' +
-          'roughly 100KB each.' +
-          (usage.pctUsed > 85 ? ' <strong>You are running low. Delete a few older photos.</strong>' : '') +
+          'Space here is tight, so I shrink each photo to about 1000px before saving it. ' +
+          'There\'s room for about ' + UI.plural(usage.photosLeft, 'more photo') + '.' +
+          (usage.pctUsed > 85 ? ' <strong>Deleting a few older photos frees some up.</strong>' : '') +
         '</p>' +
       '</div>' +
     '</div>';
@@ -182,11 +182,17 @@ window.ViewSettings = (function () {
     html += '<div class="section">' +
       '<div class="section-head"><h2 class="section-title">Backup</h2></div>' +
       '<div class="card">' +
-        '<p class="small muted" style="margin:0 0 12px;line-height:1.6">Everything lives in this browser only — ' +
-          'I upload nothing, anywhere. That also means clearing your browser data would wipe it, so take a ' +
-          'backup now and then.</p>' +
+        /* "I upload nothing, anywhere" was not true: an approximate location
+           goes to Open-Meteo for the forecast. What never leaves is the
+           plants, so that is the claim, and it is the one the privacy
+           policy makes. */
+        '<p class="small muted" style="margin:0 0 12px;line-height:1.6">Your plants, rooms, diary and photos ' +
+          'live ' + (UI.isNative() ? 'on ' : 'in ') + UI.here() + ' and nowhere else. That also means ' +
+          (UI.isNative() ? 'uninstalling Sprout or clearing its data' : 'clearing your browser data') +
+          ' would wipe them, so take a backup now and then.</p>' +
         '<div class="row" style="gap:8px">' +
-          '<button class="btn btn-soft" data-export="1" style="flex:1">Download backup</button>' +
+          '<button class="btn btn-soft" data-export="1" style="flex:1">' +
+            (UI.isNative() ? 'Save a backup' : 'Download backup') + '</button>' +
           '<button class="btn btn-ghost" data-import="1" style="flex:1">Restore</button>' +
         '</div>' +
       '</div>' +
@@ -206,7 +212,7 @@ window.ViewSettings = (function () {
       '</div>' +
       '<button class="btn btn-blood btn-block" data-reset="1" style="margin-top:12px">' +
         UI.icon('trash') + 'Delete everything</button>' +
-      '<p class="hint center">Wipes all plants, rooms, diary entries and photos from this browser.</p>' +
+      '<p class="hint center">Wipes all plants, rooms, diary entries and photos from ' + UI.here() + '.</p>' +
     '</div>';
 
     return html;
@@ -220,7 +226,7 @@ window.ViewSettings = (function () {
 
       if (e.target.closest('[data-reset]')) {
         UI.confirmSheet('Delete everything?',
-          'Every plant, room, diary entry and photo goes, permanently, from this browser. ' +
+          'Every plant, room, diary entry and photo goes, permanently, from ' + UI.here() + '. ' +
           'If you haven\'t taken a backup, I can\'t get any of it back.',
           'Delete everything', function () {
             Store.resetAll();

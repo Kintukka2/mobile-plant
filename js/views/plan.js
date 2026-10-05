@@ -717,7 +717,21 @@ window.ViewPlan = (function () {
     else if (!Plan.known() && list.length) { n.textContent = 'I\'ll shade the light in each room once north is confirmed. Tap the compass.'; n.className = 'plan-notice is-gold'; n.hidden = false; }
     else if (tool === 'backdrop') { n.textContent = 'Drag to move the floorplan under the grid.'; n.className = 'plan-notice'; n.hidden = false; }
     else n.hidden = true;
-    root.querySelector('#pl-reshape').hidden = !(mode === 'plan' && sel && sel.type === 'room');
+    /* Once read, it stays read. The tip explains a gesture, and a gesture
+       learnt does not need explaining every time a room is selected. */
+    const tip = root.querySelector('#pl-reshape');
+    tip.hidden = !(mode === 'plan' && sel && sel.type === 'room') || !!Store.get().settings.reshapeTipDone;
+    const stage = root.querySelector('.plan-stage');
+    const hints = root.querySelector('#pl-hints');
+    if (ui.full) {
+      /* Back in front of the stage buttons rather than after them: the rule
+         that lifts a bottom button over the notice is a sibling selector. */
+      if (n.parentNode !== stage) { stage.insertBefore(n, stage.querySelector('.plan-tools')); stage.insertBefore(tip, n.nextSibling); }
+      hints.hidden = true;
+    } else {
+      if (n.parentNode !== hints) { hints.appendChild(n); hints.appendChild(tip); }
+      hints.hidden = n.hidden && tip.hidden;
+    }
     root.querySelector('#pl-quick-add').hidden = !(mode === 'plan' && sel && sel.type === 'room' && !drawing);
     root.querySelector('#pl-invite').hidden = !(mode === 'plan' && !drawing && !list.length && window.Tour);
     root.querySelector('#pl-add-room').hidden = !(mode === 'plan' && !drawing && !sel && list.length);
@@ -831,7 +845,8 @@ window.ViewPlan = (function () {
         '<div class="plan-stage" id="pl-stage">' +
           '<svg id="pl-canvas" xmlns="http://www.w3.org/2000/svg"></svg>' +
           '<div class="plan-notice" id="pl-notice" hidden></div>' +
-          '<div class="plan-overlay" id="pl-reshape" hidden>Drag a square corner to reshape the room. Drag the small dot on a wall to add a corner.</div>' +
+          '<div class="plan-overlay" id="pl-reshape" hidden><span>Drag a square corner to reshape the room. Drag the small dot on a wall to add a corner.</span>' +
+            '<button class="plan-tip-x" data-tip-done="1" aria-label="Got it, hide this tip">' + UI.icon('x') + '</button></div>' +
           '<div class="plan-tools">' +
             '<button class="plan-tool is-rose" data-open-compass="1" aria-label="Which way is north?"><svg id="pl-tool-compass" viewBox="-30 -30 60 60" aria-hidden="true"></svg></button>' +
             '<button class="plan-tool" data-open-dims="1" aria-label="Set the room sizes">' + UI.icon('ruler') + '</button>' +
@@ -857,6 +872,13 @@ window.ViewPlan = (function () {
             '</div>' +
           '</div>' +
         '</div>' +
+        /* Where the notice and the reshape tip live when the stage is in the
+           page. Both used to sit on the grid's bottom edge, stacked with Add a
+           plant, and together they covered the lower third of it: exactly
+           where a second room would go (PrimeTestLab 7959, S-02). Under the
+           grid they cover nothing. Full screen has no "under", so there
+           syncOverlays() hands them back to the stage. */
+        '<div class="plan-hints" id="pl-hints" hidden></div>' +
       '</div>' +
       '<div class="plan-panel" id="pl-panel"></div>' +
     '</div>';
@@ -890,6 +912,7 @@ window.ViewPlan = (function () {
       if (e.target.closest('.plan-tools [data-open-compass]')) { openCompass(); return; }
       if (e.target.closest('[data-open-dims]')) { openDims(sel && sel.type === 'room' ? sel.id : null); return; }
       if (e.target.closest('#pl-quick-add')) { if (sel && sel.type === 'room') quickAdd(room(sel.id)); return; }
+      if (e.target.closest('[data-tip-done]')) { Store.updateSettings({ reshapeTipDone: true }); syncOverlays(); return; }
       if (e.target.closest('[data-tour]')) { Tour.open(startTracing); return; }
       if (e.target.closest('#pl-add-room')) { startTracing(); return; }
       /* Not the Fullscreen API: iOS Safari grants it to video alone, so the
