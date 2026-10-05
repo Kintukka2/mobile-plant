@@ -132,14 +132,17 @@ this is why.
 rated separately for `cats`, `dogs` and `humans`. `normalise()` fills
 defaults, so a record only states what is distinctive about it.
 
-**Species photographs** are `img/species/<id>.webp`, one per species, cut
-4:5 at 720×900 to match the hero and card crop. All are from Pexels, which
-asks for no credit; where each came from is in
-`docs/species-photo-sources.csv`. `Store.speciesPhoto(id)` builds the path
+**Species photographs** are `img/species/<id>.webp`, one per species:
+cut-outs with a transparent background, 4:5 at 720×900 to match the hero
+and card crop. `UI.plantTile` draws them on the plant's tinted plate
+(`.tmark`), so one file suits both themes and the set reads as one; a
+replacement must be a cut-out too, or it brings its own backdrop back. All
+are cut from Pexels photographs, which ask for no credit and allow edits;
+where each came from is in `docs/species-photo-sources.csv`. `Store.speciesPhoto(id)` builds the path
 without looking, so a new species needs its photograph in the same commit —
 `node .claude/check-species.js` fails without one. A plant's tile shows the
 owner's own photo first and the species photo after (`Store.tilePhoto`).
-They are deliberately not in `sw.js` ASSETS (2MB, mostly never opened; each
+They are deliberately not in `sw.js` ASSETS (4MB, mostly never opened; each
 is cached on first view), and `native/copy-web.js` copies `img/` whole so the
 store builds carry every one.
 

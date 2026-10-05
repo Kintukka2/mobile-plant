@@ -28,7 +28,7 @@
    cache has never heard of. */
 /* v57: the character. Five small plates join the precache list, and the
    empty states and the all-clear panel now ask for them by name. */
-const CACHE = 'sprout-v57-viridium';
+const CACHE = 'sprout-v58-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is
@@ -61,7 +61,7 @@ const ASSETS = [
      may only be trying the web version.
 
      The species photographs in img/species are left out for the same
-     reason, at ten times the size: 2MB for forty-eight of them, most of
+     reason, at thirty times the size: 4MB for forty-eight of them, most of
      which a reader never opens. Each is cached the first time it is shown. */
   'css/fonts/hatton-ultralight.woff2',
   'css/fonts/hatton-medium.woff2',
