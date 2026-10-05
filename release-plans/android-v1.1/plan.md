@@ -221,11 +221,11 @@ fed and content" (`js/views/today.js:52`).
       `@capacitor/status-bar`, then `npm run sync`.
 - [x] `native/android/app/build.gradle`: `versionCode 3`, `versionName "1.1"`.
 - [x] `native/README.md`: list the three new plugins and what each is for.
-- [ ] Privacy: no change needed. A backup only leaves the phone when the
-      reader picks a destination in the share sheet. Nothing is sent
-      automatically and nothing reaches a server of ours. Re-read
-      `native/store-privacy.md` against the final code anyway, per
-      `CLAUDE.md`.
+- [x] Privacy: the store forms need no change. A backup only leaves the
+      phone when the reader picks a destination in the share sheet, nothing
+      is sent automatically and nothing reaches a server of ours. The four
+      documents now say so in the same words: `site/privacy.html`,
+      `CLAUDE.md`, `README.md` and `native/store-privacy.md`.
 - [ ] Headless Chromium covers M-02, M-03, S-02, S-04 and S-05. M-01, M-04
       and S-01 only show up on Android and need a device build before
       PrimeTestLab is told they are fixed.

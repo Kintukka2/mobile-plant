@@ -25,10 +25,21 @@ returns the same town.
 Nothing accompanies those requests: no identifier, no account, no device
 information beyond what any HTTPS request carries.
 
-**What never leaves, at all:** plants, species, rooms, the floor plan, photos,
+**What the app never sends:** plants, species, rooms, the floor plan, photos,
 diary entries, growth measurements, the reader's name, their pets, their
 experience level, the reminder schedule and the notification digest. Photos
-are in `localStorage`; the digest is in IndexedDB. Neither has anywhere to go.
+are in `localStorage`; the digest is in IndexedDB.
+
+**The one way they can leave is a backup the reader makes.** Settings writes
+them to a single JSON file and hands it to the system share sheet
+(`js/views/settings.js` → `exportNative()`), or downloads it on the web. The
+reader picks the destination, nothing moves until they do, and none of it
+reaches a server of ours. This does not change either form. A transfer the
+user starts, to a place the user chooses, is not collection by the app: the
+app never transmits the data and nobody but the reader can access it. Both
+stores' definitions turn on the developer or a third party receiving the
+data, which never happens here. Re-check that against each store's current
+wording before relying on it.
 
 **There is no second origin any more.** The three typefaces that used to
 load from Google Fonts — which handed Google an IP address and a user agent
@@ -89,7 +100,7 @@ Security section:
 | Field | Answer |
 | --- | --- |
 | Encrypted in transit | **Yes** — both Open-Meteo endpoints are HTTPS |
-| Users can request deletion | There is no account and no server copy. Uninstalling removes everything; Profile clears a saved location on demand. |
+| Users can request deletion | There is no account and no server copy. Uninstalling removes everything; Profile clears a saved location on demand. A backup file the reader saved elsewhere is theirs, in a place they chose. |
 
 **The one genuine judgement call: "shared".** Play treats a transfer to a
 third party as sharing, but exempts a service provider processing on your
