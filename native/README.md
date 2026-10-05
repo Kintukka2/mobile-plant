@@ -119,6 +119,29 @@ still worth having. Each checks for Node first and says where to get it rather t
 failing with a `'node' is not recognized`, and each holds its window open on
 an error so the message can be read.
 
+## How the backup gets off the phone
+
+A browser saves a backup by clicking an `<a download>` at a blob URL. The
+Android WebView has no handler for that and drops the click without an
+error, which is how 1.0 shipped a Download backup button that did nothing
+on the phone (PrimeTestLab report 7959, M-01).
+
+On the shell, `../js/views/settings.js` instead writes the JSON into the
+app's own cache with `@capacitor/filesystem` and hands the file to the
+system share sheet with `@capacitor/share`. The reader then chooses where it
+goes: Files, Drive, email, anything that accepts a file. Nothing leaves the
+phone until they choose, so the privacy statements are unchanged. The cache
+directory is already one of the FileProvider paths in
+`android/app/src/main/res/xml/file_paths.xml`, which is what lets another
+app read the file, and neither plugin needs a permission.
+
+| Plugin | Used for |
+| --- | --- |
+| `@capacitor/app` | Coming back to the foreground, to reschedule reminders |
+| `@capacitor/local-notifications` | Reminders, below |
+| `@capacitor/filesystem` | Writing the backup file to the cache |
+| `@capacitor/share` | Handing that file to the share sheet |
+
 ## How reminders actually work here
 
 `../js/notify.js` already builds the digest: one finished sentence per day
