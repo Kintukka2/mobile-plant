@@ -619,9 +619,24 @@ window.UI = (function () {
      The caller supplies the container (which owns the size and the radius);
      this fills it. The container needs `position: relative` — see .tmark. */
   function plantTile(photoSrc, seed, label) {
-    /* Lazy, because Discover puts all forty-eight species photographs on one
-       page and most of them are below the fold. */
-    if (photoSrc) return '<img src="' + attr(photoSrc) + '" alt="" loading="lazy" decoding="async">';
+    /* A photograph sits on the same tinted plate the letter does. For the
+       owner's own photo that plate is never seen — the picture covers it —
+       but the species photographs are cut-outs, and the plate is their
+       background: the plant's own hue, which follows the theme, so one file
+       reads correctly on Viridium and on Conservatory. They replaced
+       full-frame stock shots whose white studio backdrops glared on the dark
+       theme and whose mixed grounds (white, black, garden, wicker) never read
+       as one set.
+
+       A cut-out is contained, not cropped: in a 4:5 card the two are the same,
+       but in a 34px room-strip square cover would cut the pot off and keep a
+       slice of leaf. Lazy, because Discover puts all forty-eight on one page
+       and most of them are below the fold. */
+    if (photoSrc) {
+      const cut = String(photoSrc).indexOf('img/species/') === 0;
+      return '<span class="tmark ' + tintClass(seed || 'plant') + (cut ? ' tmark-cut' : '') + '">' +
+             '<img src="' + attr(photoSrc) + '" alt="" loading="lazy"></span>';
+    }
 
     /* The letter, not a leaf. A row of six identical hairline leaves in six
        near-identical dark tints reads as six empty placeholders; a row of

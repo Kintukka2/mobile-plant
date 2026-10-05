@@ -2440,6 +2440,7 @@ img { max-width: 100%; display: block; }
 .tmark {
   position: absolute;
   inset: 0;
+  border-radius: inherit;
   display: grid;
   place-items: center;
   color: var(--mint);
@@ -2721,18 +2722,20 @@ img { max-width: 100%; display: block; }
 }
 .rcard-dot img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
-/* A photograph fills its plate exactly as the lettered .tmark does. Without
-   this a card or a task row showed the image at its own size inside a
-   centring grid: right by accident on a 4:5 card, a strip of the top of the
-   plant in a 46px square row. */
-.pcard-img > img,
-.task-thumb > img {
+/* A photograph fills its tinted plate (UI.plantTile wraps it in .tmark).
+   Without this a card or a task row showed the image at its own size inside
+   a centring grid: right by accident on a 4:5 card, a strip of the top of
+   the plant in a 46px square row. A species cut-out is contained instead,
+   so the whole plant and its pot survive a square thumbnail. */
+.tmark > img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: inherit;
 }
+.tmark-cut > img { object-fit: contain; }
 
 .rcard-more {
   flex: 0 0 auto;
