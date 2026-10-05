@@ -53,7 +53,13 @@
   /* --- Ink --- */
   --ink:   #F3F6F1;
   --ink-2: rgba(228, 240, 232, 0.72);
-  --ink-3: rgba(206, 226, 214, 0.50);
+  /* Ink 3 was 0.50, which measured 4.1:1 on a card: just short of the
+     4.5:1 that small body text needs, and testers found the hints and
+     explanations hard to read in daylight (PrimeTestLab 7959, S-04). 0.58
+     clears 4.5 on every surface that carries text, the page through a
+     card's glass, and still sits well below Ink 2. Conservatory's Ink 3
+     already passed and is unchanged. */
+  --ink-3: rgba(206, 226, 214, 0.58);
   --ink-4: rgba(196, 218, 206, 0.32);
 
   /* --- Greens --- */
@@ -565,6 +571,11 @@ img { max-width: 100%; display: block; }
 .small { font-size: 13px; }
 .tiny  { font-size: 11.5px; letter-spacing: 0.04em; }
 .muted { color: var(--ink-3); }
+/* For a label, a date, a count: a few words that are there if wanted.
+   Never a sentence. At 2.4:1 in Viridium and 2.6:1 in Conservatory it was
+   carrying fifteen paragraphs, including the diagnosis explanations and the
+   backup note, and those were the ones testers could not read. They are
+   .muted now, and anything that has to be read belongs there too. */
 .dim   { color: var(--ink-4); }
 .nowrap { white-space: nowrap; }
 .center { text-align: center; }

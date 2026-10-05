@@ -415,7 +415,7 @@ window.UI = (function () {
   /* ---------- Confirm dialog ---------- */
   function confirmSheet(title, message, confirmLabel, onConfirm, danger) {
     openSheet(title,
-      '<p class="dim" style="margin:0 0 20px;line-height:1.6">' + esc(message) + '</p>' +
+      '<p class="muted" style="margin:0 0 20px;line-height:1.6">' + esc(message) + '</p>' +
       '<div class="row" style="gap:8px">' +
         '<button class="btn btn-ghost" data-act="sheet-cancel" style="flex:1">Cancel</button>' +
         '<button class="btn ' + (danger ? 'btn-blood' : '') + '" data-act="confirm-yes" style="flex:1">' +

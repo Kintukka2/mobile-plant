@@ -243,5 +243,5 @@ fed and content" (`js/views/today.js:52`).
 | S-01 Status bar | Done in code, Android only; needs a device build |
 | S-02 Planner hints | Not started |
 | S-03 Storage wording | Not started (IndexedDB move deferred) |
-| S-04 Contrast | Not started |
-| S-05 Light on Today | Not started |
+| S-04 Contrast | Done; no text of 25+ characters under 4.5:1 on the audited screens, either theme |
+| S-05 Light on Today | Done; greeting names the plant, Light section links to it |

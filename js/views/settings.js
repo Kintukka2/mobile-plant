@@ -154,7 +154,7 @@ window.ViewSettings = (function () {
     html += '<div class="section">' +
       '<div class="section-head"><h2 class="section-title">Appearance</h2></div>' +
       '<div class="card theme-card">' +
-        '<p class="small dim" style="margin:0;line-height:1.6">Viridium for the evening, Conservatory for ' +
+        '<p class="small muted" style="margin:0;line-height:1.6">Viridium for the evening, Conservatory for ' +
           'daylight. I\'ll keep whichever you choose.</p>' +
         '<button class="theme-toggle" data-theme-toggle="1" aria-label="Switch theme">' +
           App.themeToggleInner() + '</button>' +
@@ -182,7 +182,7 @@ window.ViewSettings = (function () {
     html += '<div class="section">' +
       '<div class="section-head"><h2 class="section-title">Backup</h2></div>' +
       '<div class="card">' +
-        '<p class="small dim" style="margin:0 0 12px;line-height:1.6">Everything lives in this browser only — ' +
+        '<p class="small muted" style="margin:0 0 12px;line-height:1.6">Everything lives in this browser only — ' +
           'I upload nothing, anywhere. That also means clearing your browser data would wipe it, so take a ' +
           'backup now and then.</p>' +
         '<div class="row" style="gap:8px">' +
@@ -196,7 +196,7 @@ window.ViewSettings = (function () {
     html += '<div class="section">' +
       '<div class="card">' +
         '<div class="eyebrow">About</div>' +
-        '<p class="small dim" style="margin:8px 0 0;line-height:1.65">' +
+        '<p class="small muted" style="margin:8px 0 0;line-height:1.65">' +
           'I carry care data for ' + window.PLANT_DATA.length + ' species and a diagnostic model built from ' +
           Object.keys(PROBLEM_DATA.SYMPTOMS).length + ' symptoms and ' +
           Object.keys(PROBLEM_DATA.CAUSES).length + ' causes. Watering intervals start from the species ' +
