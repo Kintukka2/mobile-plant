@@ -39,8 +39,10 @@
    v62: readable body text, and the wrong light on Today. The stylesheet
    and six views changed.
 
-   v63: storage in app terms, and the planner's hints moved off the grid. */
-const CACHE = 'sprout-v63-viridium';
+   v63: storage in app terms, and the planner's hints moved off the grid.
+
+   v64: the rating screen, js/rate.js, and its styles. */
+const CACHE = 'sprout-v64-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is
@@ -111,6 +113,7 @@ const ASSETS = [
   'js/views/settings.js',
   'js/views/diary.js',
   'js/onboard.js',
+  'js/rate.js',
   'js/app.js'
 ];
 

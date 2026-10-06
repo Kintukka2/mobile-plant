@@ -595,6 +595,13 @@ window.App = (function () {
     if (!Store.get().settings.seenWelcome && !(window.Onboard && Onboard.shouldRun())) {
       setTimeout(function () { ViewProfile.welcomeSheet(); }, 380);
     }
+
+    /* The rating screen has no trigger of its own yet; when and how often
+       it asks is still to be decided. Until then `?rate` opens it, so it
+       can be seen on a real device without a console. */
+    if (window.Rate && /[?&]rate(?:[=&]|$)/.test(location.search)) {
+      setTimeout(function () { Rate.open(); }, 380);
+    }
   }
 
   return {
