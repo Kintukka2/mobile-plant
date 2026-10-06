@@ -174,6 +174,16 @@ room's and never need to know the plan exists. The room form hides those
 two fields for a drawn room and points at the plan instead. Rooms without
 a shape are never touched: their light is whatever the reader said.
 
+**The room form draws too.** "Add a room" no longer asks for an aspect and
+a light level; it shows one rectangle and the planner's dial (the mini plan
+in `ViewGreenhouse.roomSheet`). Tap a wall to make it a window, turn the
+dial, and on save the room gets a real `shape`, placed clear of every drawn
+room by `freeSpot()`, so it is already on the plan when the planner is
+opened. Turning the dial writes `plan.north` and confirms it, because north
+belongs to the house, not the room. A room left blank is saved with no shape
+and no light (the old "Not sure"); editing a shapeless room keeps its typed
+light unless windows are marked.
+
 The plan obeys the same go-quiet rule as the room form: while north is
 unconfirmed or the hemisphere is a guess, every light function returns
 null and the plan renders unshaded. Openings borrow light from the room

@@ -369,9 +369,14 @@ window.Schedule = (function () {
       else if ((sp.light.avoid || []).indexOf(room.light) !== -1) score = 0;
       else score = 1;
 
-      // Humidity lovers do better in naturally humid rooms.
+      /* Humidity lovers do better in naturally humid rooms — which moves a
+         room up the list, but says nothing about its light. The light score
+         is kept apart for the labels: added together, a humid room the plant
+         only tolerates read "ideal light", and a humid room it should avoid
+         lost its "poor light" warning. */
+      const lightScore = score;
       if (sp.humidity === 'high' && room.humid === 'high') score += 1;
-      return { room: room, score: score };
+      return { room: room, score: score, light: lightScore };
     }).sort(function (a, b) { return b.score - a.score; });
   }
 

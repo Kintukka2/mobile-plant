@@ -606,7 +606,7 @@ window.ViewProfile = (function () {
         'requirements, adjusted for your pot, your light and the season you are really in.' +
       '</p>' +
 
-      '<div class="stack" style="gap:8px;margin-top:18px">' +
+      '<div class="stack" style="gap:8px;margin-top:18px;clear:both">' +
         '<button class="btn btn-lg" id="w-go">Set up my greenhouse</button>' +
         '<button class="btn btn-ghost" id="w-skip">Let me look around first</button>' +
       '</div>';

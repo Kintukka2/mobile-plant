@@ -1416,6 +1416,11 @@ img { max-width: 100%; display: block; }
 .pill-lg { padding: 7px 14px; font-size: 12px; }
 
 .pill-grey { border-color: var(--hair-2); background: var(--glass); color: var(--ink-2); }
+/* A pill that does something ("Add to room"): the pill's shape, a button's
+   affordance. */
+.pill-act { cursor: pointer; transition: border-color var(--dur-1) var(--ease), background var(--dur-1) var(--ease); }
+.pill-act:hover { border-color: var(--mint); }
+.pill-act svg { width: 11px; height: 11px; }
 .pill-mint { border-color: rgba(63, 190, 139, 0.3);  background: var(--mint-wash); color: var(--mint-2); }
 /* The class name stays — seven call sites across the views name it, and the
    name describes the role rather than the hex. Only the colour moves. */
@@ -2203,6 +2208,16 @@ img { max-width: 100%; display: block; }
   background: linear-gradient(90deg, transparent, var(--hair-2));
 }
 .ornament::after { background: linear-gradient(90deg, var(--hair-2), transparent); }
+/* The same rule with a word in the middle, where a choice between two
+   things needs saying ("or" on Diagnose). */
+.ornament-word { margin: 22px 0; }
+.ornament-word span {
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+}
 .ornament i {
   width: 5px;
   height: 5px;
@@ -2588,7 +2603,7 @@ img { max-width: 100%; display: block; }
    label crisp while the photograph behind it still moves. */
 .pcard:hover .pcard-drop { transform: scale(0.971); }
 
-.pcard-body { padding: 14px 15px 13px; flex: 1; }
+.pcard-body { padding: 14px 15px 13px; flex: 1; display: flex; flex-direction: column; }
 
 .pcard-name {
   font-family: var(--serif);
@@ -2599,6 +2614,7 @@ img { max-width: 100%; display: block; }
 }
 .pcard-sci {
   margin-top: 3px;
+  padding-bottom: 13px;
   font-family: var(--serif);
   font-size: 12.5px;
   font-style: italic;
@@ -2606,6 +2622,7 @@ img { max-width: 100%; display: block; }
   color: var(--ink-4);
   line-height: 1.35;
 }
+.pcard-sci:last-child { padding-bottom: 0; }
 
 /* Bled out to the card's edges. This was written as an edge-to-edge strip —
    its own 15px padding, its own border-top — but it lives inside .pcard-body,
@@ -2622,12 +2639,17 @@ img { max-width: 100%; display: block; }
    A clipped word gives no hint that anything is missing, so the failure is
    invisible in review at every width you did not happen to shoot; wrapping
    is ugly for one release and then gets fixed. */
+/* Pinned to the bottom of the card (margin-top: auto in a column body), so
+   the footers in a row line up when one card's name runs to two lines. At a
+   fixed 13px under the name, the card with the longer name carried its
+   "Add to room" pill a line lower than its neighbour's. The 13px of air is
+   now the name block's own padding. */
 .pcard-foot {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  margin: 13px -15px -13px;
+  margin: auto -15px -13px;
   padding: 11px 15px;
   border-top: 1px solid var(--hair);
   font-size: 10.5px;
@@ -3579,6 +3601,9 @@ img { max-width: 100%; display: block; }
   color: var(--ink-2);
   line-height: 1.6;
 }
+/* A nudge's buttons sat on its last line of text ("Set the aspect" under
+   "Tag this room's light"), close enough to read as part of the sentence. */
+.nudge-p + .row { margin-top: 14px; }
 
 /* Champagne, not rose. The overdue task row already established that this
    system raises concerns in gold; a pink card alongside it would read as a
@@ -3673,6 +3698,17 @@ img { max-width: 100%; display: block; }
    at a time in the species picker, and 40 mint circles would be a pattern
    rather than a list. */
 .dx-opt-ico { flex: 0 0 auto; display: flex; align-items: center; }
+/* A species photo in an option row (the plant picker). Sized to the two
+   lines of text beside it, so the row keeps its height. */
+.dx-opt-thumb {
+  position: relative;
+  overflow: hidden;
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--hair);
+  border-radius: var(--r-sm);
+}
 .dx-opt-ico svg { width: 18px; height: 18px; stroke-width: 1.2; color: var(--ink-4); }
 .dx-opt:hover .dx-opt-ico svg { color: var(--mint); }
 
@@ -3792,6 +3828,24 @@ img { max-width: 100%; display: block; }
   line-height: 1.65;
 }
 .dx-steps > li:last-child { margin-bottom: 0; }
+
+/* The prevention note after the last step. .dx-steps drops the last step's
+   margin, so at 2px "Next time" sat on the final step and read as a
+   seventh one. A hairline and real air make it the aside it is. */
+.hint.dx-next {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--hair);
+}
+
+/* A cause's name with its pills beside it (wrapping under it on a phone). */
+.dx-cause-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
+.dx-cause-t { font-family: var(--serif); font-size: 18px; line-height: 1.3; margin-right: 4px; }
 .dx-step::before, .dx-steps > li::before {
   content: counter(dx);
   position: absolute;
@@ -4114,7 +4168,10 @@ img { max-width: 100%; display: block; }
 .sprout-plate img { display: block; width: 100%; height: 100%; }
 .empty-sprout .sprout-plate { margin-bottom: 24px; }
 .sprout-plate.is-small { width: 96px; height: 96px; border-radius: 11px; }
-.welcome-sprout { margin: 2px 0 18px; }
+/* Floated so the welcome text wraps round the face rather than starting
+   under it: a 96px plate above a paragraph left a column of empty sheet
+   beside it and pushed the buttons below the fold on a phone. */
+.welcome-sprout { float: left; margin: 4px 16px 6px 0; }
 
 .empty h3 {
   font-family: var(--display);
@@ -5137,6 +5194,48 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
 .plan-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; }
 .plan-mark { flex: 0 0 auto; width: 26px; height: 6px; border-radius: 3px; margin-top: 8px; }
 .plan-dial { width: 120px; height: 120px; flex: 0 0 auto; touch-action: none; cursor: grab; }
+
+/* The room form's mini plan: one room, its walls, and the planner's dial. */
+.mini-plan-row { display: flex; align-items: center; gap: 14px; }
+.mini-plan { flex: 1 1 auto; min-width: 0; max-width: 320px; height: auto; overflow: visible; }
+.mini-plan .mini-wall { cursor: pointer; }
+.mini-plan .mini-wall:hover { stroke: rgba(63, 190, 139, 0.14); }
+.mini-plan-t { font-family: var(--sans); font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; fill: var(--ink-3); pointer-events: none; }
+.mini-dial { width: 96px; height: 96px; }
+.mini-dial:focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; border-radius: 50%; }
+/* The "i" sits on the dial's corner, so it reads as belonging to the
+   compass, and its bubble opens straight beneath it. */
+.mini-dial-wrap { position: relative; flex: 0 0 auto; padding: 10px 16px 0 0; }
+.mini-info {
+  position: absolute; top: 0; right: 0;
+  width: 28px; height: 28px; display: grid; place-items: center;
+  border: 1px solid var(--hair-2); border-radius: 50%;
+  background: var(--bg-2); color: var(--ink-3); cursor: pointer;
+  transition: color var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease);
+}
+.mini-info svg { width: 15px; height: 15px; stroke-width: 1.6; }
+.mini-info:hover, .mini-info[aria-expanded="true"] { color: var(--mint); border-color: var(--hair-3); }
+.mini-info:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+.mini-tip {
+  /* Over the page rather than in it, so opening it moves nothing below. */
+  position: absolute; top: calc(100% + 12px); right: 0; z-index: 5;
+  width: min(260px, 70vw); margin: 0;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+  padding: 10px 14px; border: 1px solid var(--hair-2); border-radius: 12px;
+  background: var(--bg-3); color: var(--ink-2);
+  font-size: 13.5px; line-height: 1.45;
+}
+.mini-tip::before {
+  content: ""; position: absolute; top: -6px; right: 9px;
+  width: 10px; height: 10px; background: inherit;
+  border-left: 1px solid var(--hair-2); border-top: 1px solid var(--hair-2);
+  transform: rotate(45deg);
+}
+.mini-plan-foot { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-top: 14px; }
+.mini-plan-foot > .hint { margin: 0; }
+/* A toggle chip shows its tick only once it is on: a tick on an unpressed
+   chip reads as already chosen. */
+.chip-toggle:not(.is-on) svg { display: none; }
 .plan-mini-rose { width: 40px; height: 40px; flex: 0 0 auto; cursor: pointer; overflow: visible; }
 
 .plan-row {
