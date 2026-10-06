@@ -274,7 +274,11 @@ the stiffness is visible to the reader and the escape is not.
 
 Sprout has a face: a jade leaf spirit, in five poses, at `img/sprout/<pose>.webp`
 (`base`, `new-growth`, `watering`, `concerned`, `resting`). The 1254² originals
-and the designer's notes are in `marketing/character/` for the site and ads.
+and the designer's notes are in `marketing/character/` for the site and ads:
+those five plus twelve with no app placement yet. Four are app scenes
+(diagnose, discover, greenhouse, home planner), three are weather (sunny,
+cold, rainy) and five are emotions (happy, sad, excited, informative,
+thinking). A file being there does not put a face on a screen.
 Brand guide section 09 and Decision 13 are the full rule. The short version:
 
 - **The face follows the voice zoning.** It appears only on conversation
