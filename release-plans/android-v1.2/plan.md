@@ -72,20 +72,26 @@ container.
 - [x] `native/README.md` plugin table and the rating note in `CLAUDE.md`.
 - [x] `CACHE` in `sw.js`: already `sprout-v65-viridium` from the rating PRs.
       This release changes no cached app file.
-- [ ] **Device build** (`native/prepare-android.bat`), then:
-  - [ ] It builds. This is the first build with the new plugin.
-  - [ ] Open the screen on demand. Connect the phone, open
+- [x] **Device build** (`native/prepare-android.bat`), confirmed on a phone
+      on 6 October 2026:
+  - [x] It builds. This is the first build with the new plugin.
+  - [x] Open the screen on demand. Connect the phone, open
         `chrome://inspect` on a computer, pick the Sprout WebView, and run
         `Rate.open()` in its console. `Rate.eligible()` says why a device
-        would or wouldn't be asked on its own.
-  - [ ] Tap **Leave a rating**. Play shows its sheet only when the app was
+        would or wouldn't be asked on its own. If the DevTools window opens
+        blank, with an empty address bar and nothing printed after Enter,
+        use the **inspect fallback** link instead of **inspect**. The plain
+        link downloads a matching DevTools from Google, and when that fails
+        the window looks open but is attached to nothing.
+  - [x] Tap **Leave a rating**. Play shows its sheet only when the app was
         installed from Play, and decides for itself whether to show it at
         all, so seeing no sheet is not by itself a failure. For a build that
         is sure to show it, use Play's internal app sharing, which is the
-        route Google documents for testing this API.
-  - [ ] **No sheet appeared? Open the store page** opens the Play listing.
-  - [ ] The 1.1 checks, if 1.1 was never verified on a device: backup and
-        restore, the status bar in both themes, the landscape cutout band.
+        route Google documents for testing this API. Tapped on a build
+        installed from Android Studio: no sheet, as expected there.
+  - [x] **No sheet appeared? Open the store page** opens the Play listing.
+  - [x] The 1.1 checks: backup and restore, the status bar in both themes,
+        the landscape cutout band. All pass.
 - [ ] **Privacy.** The app never sees a rating or a review: Google's own
       sheet collects it and sends it to Google. So nothing in the four
       privacy documents changes. Before submitting, check Play's current

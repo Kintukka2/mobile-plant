@@ -226,9 +226,9 @@ fed and content" (`js/views/today.js:52`).
       is sent automatically and nothing reaches a server of ours. The four
       documents now say so in the same words: `site/privacy.html`,
       `CLAUDE.md`, `README.md` and `native/store-privacy.md`.
-- [ ] Headless Chromium covers M-02, M-03, S-02, S-04 and S-05. M-01, M-04
-      and S-01 only show up on Android and need a device build before
-      PrimeTestLab is told they are fixed.
+- [x] Headless Chromium covers M-02, M-03, S-02, S-04 and S-05. M-01, M-04
+      and S-01 only show up on Android, and were confirmed on a phone on
+      6 October 2026 with the 1.2 build, which carries all of 1.1.
 - [ ] Reply on report Nº 7959 in the PrimeTestLab dashboard with the build
       number and the items addressed.
 
@@ -236,11 +236,11 @@ fed and content" (`js/views/today.js:52`).
 
 | Item | Status |
 | --- | --- |
-| M-01 Backup | Done in code; needs a device build to confirm |
+| M-01 Backup | Done; backup and restore confirmed on a phone (6 Oct 2026) |
 | M-02 Double add | Done; reproduced and fixed in headless Chromium |
 | M-03 Nickname length | Done; limit 60 with a live count, long names fit every screen |
-| M-04 Landscape strip | Done in code (window background); needs a device build. Cutout drawing not attempted |
-| S-01 Status bar | Done in code, Android only; needs a device build |
+| M-04 Landscape strip | Done; no white strip in either landscape orientation on a phone (6 Oct 2026). Cutout drawing not attempted |
+| S-01 Status bar | Done, Android only; both themes confirmed on a phone (6 Oct 2026) |
 | S-02 Planner hints | Done; hints under the grid, reshape tip dismissible and remembered |
 | S-03 Storage wording | Done (wording, photo count, low-space warning); IndexedDB move deferred |
 | S-04 Contrast | Done; no text of 25+ characters under 4.5:1 on the audited screens, either theme |
