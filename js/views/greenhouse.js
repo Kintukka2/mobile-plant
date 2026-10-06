@@ -815,8 +815,13 @@ window.ViewGreenhouse = (function () {
       /* The plan leads, because tracing a home is what makes the light real —
          but someone with three plants on a windowsill should not have to
          trace their flat before logging a watering, so the quick path stays
-         a tap away, and both produce the same thing: rooms. */
-      return UI.empty('leaf', 'Room to grow',
+         a tap away, and both produce the same thing: rooms.
+
+         The face is the greenhouse scene, Sprout with a pot in each arm,
+         and it is this screen's own: the first visit here and the empty
+         All plants tab below both wear it, while Today keeps new-growth, so
+         the two tabs a newcomer opens first do not show the same picture. */
+      return UI.empty('sprout:greenhouse', 'Room to grow',
         'Trace your home and I\'ll read the light in every room from its windows. Or start small with a single room, or a plant.',
         '<div class="stack" style="gap:10px;align-items:center">' +
           '<button class="btn" data-go="/plan">' + UI.icon('compass') + 'Create your greenhouse</button>' +
@@ -881,7 +886,7 @@ window.ViewGreenhouse = (function () {
           '</div>' +
           '<button class="btn btn-soft btn-block" data-open="plant" style="margin-top:12px">' +
             UI.icon('plus') + 'Add a plant</button>'
-        : UI.empty('sprout:new-growth', 'No plants yet', 'Add your first and I\'ll build its care schedule from real species data.',
+        : UI.empty('sprout:greenhouse', 'No plants yet', 'Add your first and I\'ll build its care schedule from real species data.',
             '<button class="btn" data-open="plant">Add a plant</button>');
     }
 

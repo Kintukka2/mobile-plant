@@ -4289,6 +4289,10 @@ img { max-width: 100%; display: block; }
   box-shadow: 0 0 0 1px var(--hair-2), var(--shadow);
 }
 .rate-plate img { animation: rateFloat 6s var(--ease-io) 1.6s infinite; }
+/* The thank-you face fades in over the ask's, which js/rate.js removes once
+   it is covered. */
+.rate-plate.sprout-plate { transition: opacity 600ms var(--ease); }
+.rate-plate.is-entering { opacity: 0; }
 .rate-ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .rate-ring-track, .rate-ring-fill { fill: none; stroke-width: 3; }
 .rate-ring-track { stroke: var(--hair-2); }
@@ -5035,6 +5039,13 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
   color: var(--ink-2);
 }
 .plan-invite .hint { max-width: 34ch; margin: 7px 0 15px; }
+.plan-invite-sprout { margin-bottom: 14px; flex: 0 0 auto; }
+/* The stage is half the viewport with a 300px floor, and the plate, title,
+   hint and both buttons need about 330px between them. Below that the face
+   is the part to lose: the buttons are the invitation, the face only
+   decorates it, and a plate that pushed them off the grid would be the
+   wrong way round. */
+@media (max-height: 719px) { .plan-invite-sprout { display: none; } }
 
 /* ---- The walkthrough itself ---- */
 .tour {

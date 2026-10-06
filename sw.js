@@ -43,8 +43,10 @@
 
    v64: the rating screen, js/rate.js, and its styles.
 
-   v65: its trigger, on the Today tap that clears the day. */
-const CACHE = 'sprout-v65-viridium';
+   v65: its trigger, on the Today tap that clears the day.
+
+   v66: four more of the character's plates, and concerned out of the set. */
+const CACHE = 'sprout-v66-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is
@@ -85,14 +87,18 @@ const ASSETS = [
   'css/fonts/jost-var.woff2',
   'css/fonts/sacramento-400.woff2',
   /* The character's plates are precached, unlike the species photographs,
-     because they are the opposite trade: five files, 28KB together, and the
-     screens that show them (a first run, an empty greenhouse, a day with
-     nothing due) are exactly the ones most likely to be opened offline. */
+     because they are the opposite trade: eight files, 48KB together, and the
+     screens that show them (a first run, an empty greenhouse, an empty plan,
+     a day with nothing due) are exactly the ones most likely to be opened
+     offline. This list and SPROUT_POSES in js/ui.js name the same poses. */
   'img/sprout/base.webp',
   'img/sprout/new-growth.webp',
   'img/sprout/watering.webp',
-  'img/sprout/concerned.webp',
   'img/sprout/resting.webp',
+  'img/sprout/greenhouse.webp',
+  'img/sprout/diagnose.webp',
+  'img/sprout/home-planner.webp',
+  'img/sprout/excited.webp',
   'js/data/lookups.js',
   'js/data/plants.js',
   'js/data/problems.js',
