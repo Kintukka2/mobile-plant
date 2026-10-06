@@ -413,6 +413,10 @@ window.ViewToday = (function () {
     UI.toast(verb + ' ' + Store.displayName(plant), 'leaf');
 
     setTimeout(function () { App.refresh(); }, 420);
+
+    /* The tap that empties the list is the one moment the rating screen
+       may appear. Rate decides whether it actually does. */
+    if (window.Rate && !Schedule.tasks(0).length) Rate.maybeAsk();
   }
 
   return {
