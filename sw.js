@@ -41,7 +41,7 @@
 
    v63: storage in app terms, and the planner's hints moved off the grid.
 
-   v64: the rating screen, js/rate.js, and its styles. */
+   v64: the rating screen, js/rate.js, its styles, and its trigger on Today. */
 const CACHE = 'sprout-v64-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.

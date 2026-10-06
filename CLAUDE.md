@@ -305,8 +305,15 @@ pose means a WebP at 360×360, an entry in `SPROUT_POSES` in `js/ui.js`, an
 ASSETS line, and a `CACHE` bump. Make every new pose from `sprout-base.png`, or
 the character drifts.
 
-**The rating screen** (`Rate.open()`, `js/rate.js`) is built and has no
-trigger yet; `?rate` on the URL opens it for review. It asks once, through
+**The rating screen** (`Rate.open()`, `js/rate.js`) has one trigger: the
+tap on Today that clears the day's last task, while "All caught up" is on
+screen. `Rate.maybeAsk()` then decides, from `POLICY` at the top of the
+file: native only, a week since install, ten care actions over three days
+and two plants, no diagnosis in the last fortnight, ninety days between
+asks, three asks ever, and never again after the button is tapped. The
+count lives in `settings.rating`. `Rate.eligible()` in the console says why
+a device is or is not being asked, and `?rate` on the URL opens the screen
+for review without counting. It asks once, through
 the store's own review sheet, and never asks whether the reader is enjoying
 the app first: both stores forbid an opinion question in front of the rating
 prompt, and routing only the happy ones to the stars is review gating. The

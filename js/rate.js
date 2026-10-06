@@ -9,9 +9,13 @@
    are champagne, the one metallic; the ring is a frame around the plate,
    because the character is always framed.
 
-   Nothing opens this yet. Where it appears and how often is a separate
-   decision, so for now it is reached by hand: `Rate.open()` from the
-   console, or `?rate` on the URL, which app.js reads on boot.
+   It is asked for at one moment only: the tap that clears the last task on
+   Today, while the reader is looking at "All caught up". That is the one
+   moment the app can be sure has just gone well, and the reader has just
+   finished something rather than being in the middle of it. `maybeAsk()`
+   below holds the rest of the policy. `Rate.open()` from the console and
+   `?rate` on the URL still open it unconditionally, for review, and are
+   not counted as an ask.
 
    The ask itself is the platform's. A store only lets an app *request* its
    review sheet, and both stores decide on their own whether to show it,
@@ -31,6 +35,25 @@ window.Rate = (function () {
   /* Not on the App Store yet. When it is, its numeric id goes here and the
      store link turns on for iPhone readers by itself. */
   const APP_STORE_ID = null;
+
+  /* Who gets asked, and how often. Every number here is a judgement, and
+     they are kept together so the next one is changed in one place.
+
+       Native only. A browser has no review sheet, so the web would be
+       asking for something it then cannot open.
+       A week in, on three separate days of care, with ten care actions and
+       two plants. Long enough to have an opinion that is about the app,
+       not about the first five minutes of it.
+       Never within a fortnight of a diagnosis. Someone whose plant is
+       ailing is not having the week the stars are asking about.
+       Once a season at most, three times ever, and never again after the
+       first tap on the button. The stores cap their own sheet tighter than
+       that anyway; this keeps the full screen from outliving the cap. */
+  const POLICY = {
+    minDays: 7, minCareDays: 3, minCare: 10, minPlants: 2,
+    quietAfterProblem: 14, gapDays: 90, maxAsks: 3
+  };
+  const CARE = ['water', 'fertilise', 'repot', 'rotate', 'mist', 'prune', 'inspect'];
 
   const POSE = 'new-growth';
   const RESTING = 0.8;            // how full the frame sits before the tap
@@ -345,5 +368,72 @@ window.Rate = (function () {
     }, reduceMotion.matches ? 0 : 420);
   }
 
-  return { open: open, close: close, isOpen: function () { return !!root; } };
+  /* ---------- When to ask ---------- */
+
+  function record() {
+    const r = Store.get().settings.rating || {};
+    return { asks: r.asks || 0, lastAsked: r.lastAsked || null, rated: r.rated || null };
+  }
+
+  /* The reason is returned rather than just a yes or no, so `Rate.eligible()`
+     in the console says why a device is not being asked. */
+  function eligible() {
+    const s = Store.get(), r = record(), today = UI.today();
+    const ago = function (iso) { const d = UI.fromISO(iso); return d ? UI.daysBetween(d, today) : Infinity; };
+
+    if (platform() === 'web') return { ok: false, why: 'web has no review sheet' };
+    if (r.rated) return { ok: false, why: 'already tapped Leave a rating' };
+    if (r.asks >= POLICY.maxAsks) return { ok: false, why: 'asked ' + r.asks + ' times' };
+    if (ago(r.lastAsked) < POLICY.gapDays) return { ok: false, why: 'asked ' + ago(r.lastAsked) + ' days ago' };
+    if (ago(s.profile.createdAt) < POLICY.minDays) return { ok: false, why: 'installed ' + ago(s.profile.createdAt) + ' days ago' };
+    if (Store.activePlants().length < POLICY.minPlants) return { ok: false, why: 'fewer than ' + POLICY.minPlants + ' plants' };
+
+    const care = s.logs.filter(function (l) { return CARE.indexOf(l.kind) !== -1; });
+    const days = {};
+    care.forEach(function (l) { days[l.date] = true; });
+    if (care.length < POLICY.minCare) return { ok: false, why: care.length + ' care actions' };
+    if (Object.keys(days).length < POLICY.minCareDays) return { ok: false, why: Object.keys(days).length + ' days of care' };
+
+    const ill = s.logs.some(function (l) { return l.kind === 'problem' && ago(l.date) < POLICY.quietAfterProblem; });
+    if (ill) return { ok: false, why: 'a diagnosis in the last ' + POLICY.quietAfterProblem + ' days' };
+
+    return { ok: true, why: 'eligible' };
+  }
+
+  /* Anything else on screen wins. A sheet, the lightbox, the tour or the
+     splash means the reader is busy, and the ask waits for the next
+     clear day rather than stacking on top. */
+  function busy() {
+    const sheet = document.getElementById('sheet-backdrop');
+    const splash = document.getElementById('splash');
+    return !!root || (sheet && !sheet.hidden) || !!document.querySelector('.lightbox, .tour') ||
+      (splash && !splash.classList.contains('is-out'));
+  }
+
+  let askedThisSession = false;
+
+  /* Called by Today when a tap clears the day. The pause lets the toast
+     land and "All caught up" settle on screen first, so the reader sees
+     the reason before the ask arrives. */
+  function maybeAsk() {
+    if (askedThisSession || !eligible().ok) return false;
+    askedThisSession = true;
+    setTimeout(function () {
+      if (busy() || App.route().name !== 'today') { askedThisSession = false; return; }
+      const r = record();
+      Store.updateSettings({ rating: { asks: r.asks + 1, lastAsked: UI.toISO(UI.today()), rated: r.rated } });
+      open({
+        onRequest: function () {
+          const now = record();
+          Store.updateSettings({ rating: { asks: now.asks, lastAsked: now.lastAsked, rated: UI.toISO(UI.today()) } });
+        }
+      });
+    }, 1600);
+    return true;
+  }
+
+  return {
+    open: open, close: close, isOpen: function () { return !!root; },
+    maybeAsk: maybeAsk, eligible: eligible
+  };
 })();
