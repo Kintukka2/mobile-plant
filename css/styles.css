@@ -2603,7 +2603,7 @@ img { max-width: 100%; display: block; }
    label crisp while the photograph behind it still moves. */
 .pcard:hover .pcard-drop { transform: scale(0.971); }
 
-.pcard-body { padding: 14px 15px 13px; flex: 1; }
+.pcard-body { padding: 14px 15px 13px; flex: 1; display: flex; flex-direction: column; }
 
 .pcard-name {
   font-family: var(--serif);
@@ -2614,6 +2614,7 @@ img { max-width: 100%; display: block; }
 }
 .pcard-sci {
   margin-top: 3px;
+  padding-bottom: 13px;
   font-family: var(--serif);
   font-size: 12.5px;
   font-style: italic;
@@ -2621,6 +2622,7 @@ img { max-width: 100%; display: block; }
   color: var(--ink-4);
   line-height: 1.35;
 }
+.pcard-sci:last-child { padding-bottom: 0; }
 
 /* Bled out to the card's edges. This was written as an edge-to-edge strip —
    its own 15px padding, its own border-top — but it lives inside .pcard-body,
@@ -2637,12 +2639,17 @@ img { max-width: 100%; display: block; }
    A clipped word gives no hint that anything is missing, so the failure is
    invisible in review at every width you did not happen to shoot; wrapping
    is ugly for one release and then gets fixed. */
+/* Pinned to the bottom of the card (margin-top: auto in a column body), so
+   the footers in a row line up when one card's name runs to two lines. At a
+   fixed 13px under the name, the card with the longer name carried its
+   "Add to room" pill a line lower than its neighbour's. The 13px of air is
+   now the name block's own padding. */
 .pcard-foot {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  margin: 13px -15px -13px;
+  margin: auto -15px -13px;
   padding: 11px 15px;
   border-top: 1px solid var(--hair);
   font-size: 10.5px;
@@ -5187,6 +5194,15 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
 .plan-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; }
 .plan-mark { flex: 0 0 auto; width: 26px; height: 6px; border-radius: 3px; margin-top: 8px; }
 .plan-dial { width: 120px; height: 120px; flex: 0 0 auto; touch-action: none; cursor: grab; }
+
+/* The room form's mini plan: one room, its walls, and the planner's dial. */
+.mini-plan-row { display: flex; align-items: center; gap: 14px; }
+.mini-plan { flex: 1 1 auto; min-width: 0; max-width: 320px; height: auto; overflow: visible; }
+.mini-plan .mini-wall { cursor: pointer; }
+.mini-plan .mini-wall:hover { stroke: rgba(63, 190, 139, 0.14); }
+.mini-plan-t { font-family: var(--sans); font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; fill: var(--ink-3); pointer-events: none; }
+.mini-dial { width: 96px; height: 96px; }
+.mini-dial:focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; border-radius: 50%; }
 .plan-mini-rose { width: 40px; height: 40px; flex: 0 0 auto; cursor: pointer; overflow: visible; }
 
 .plan-row {

@@ -222,7 +222,7 @@ window.ViewGreenhouse = (function () {
 
     const roomOpts = '<option value="">Not in a room yet</option>' +
       rooms.map(function (r) {
-        const suits = r.score >= 4 ? ' — ideal light' : r.score === 3 ? ' — will cope' : r.score === 0 ? ' — poor light' : '';
+        const suits = r.light >= 4 ? ' — ideal light' : r.light === 3 ? ' — will cope' : r.light === 0 ? ' — poor light' : '';
         return '<option value="' + UI.attr(r.room.id) + '"' + (r.room.id === chosenRoom ? ' selected' : '') + '>' +
           UI.esc(r.room.name + suits) + '</option>';
       }).join('');
@@ -422,6 +422,35 @@ window.ViewGreenhouse = (function () {
 
   /* ---------- Room form ---------- */
 
+  /* A rectangle in plan cells, clockwise from the top-left — the order the
+     planner's own drag-box uses, so walls come out top, right, bottom, left. */
+  function rectPts(x, y, w, h) {
+    return [{ x: x, y: y }, { x: x + w, y: y }, { x: x + w, y: y + h }, { x: x, y: y + h }];
+  }
+
+  /* Somewhere on the plan for a room made in the form, clear of every room
+     already drawn. Beside the existing drawing first, then under it, then
+     the first free gap; on an empty plan, the middle of the planner's home
+     frame. A cell of air either side, so two rooms placed here never read as
+     sharing a wall — Plan.across() would otherwise light one through the
+     other. The reader can drag it into place on the plan whenever they like. */
+  function freeSpot(w, h) {
+    const GW = Plan.GW, GH = Plan.GH;
+    const boxes = Plan.shaped().map(function (r) { return Plan.bbox(r.shape.pts); });
+    if (!boxes.length) return { x: Math.round((GW - w) / 2), y: Math.round((GH - h) / 2) };
+    function clear(x, y) {
+      if (x < 0 || y < 0 || x + w > GW || y + h > GH) return false;
+      return boxes.every(function (b) { return x + w + 1 <= b.x0 || x >= b.x1 + 1 || y + h + 1 <= b.y0 || y >= b.y1 + 1; });
+    }
+    const all = boxes.reduce(function (m, b) {
+      return { x0: Math.min(m.x0, b.x0), y0: Math.min(m.y0, b.y0), x1: Math.max(m.x1, b.x1), y1: Math.max(m.y1, b.y1) };
+    });
+    const tries = [{ x: Math.ceil(all.x1) + 1, y: Math.floor(all.y0) }, { x: Math.floor(all.x0), y: Math.ceil(all.y1) + 1 }];
+    for (let i = 0; i < tries.length; i++) if (clear(tries[i].x, tries[i].y)) return tries[i];
+    for (let y = 0; y + h <= GH; y++) for (let x = 0; x + w <= GW; x++) if (clear(x, y)) return { x: x, y: y };
+    return { x: 0, y: 0 };
+  }
+
   /* onCreated, when given, takes the new room instead of the usual jump to
      its page: "Add to room" wants the plant placed and the reader left on
      the Greenhouse, not carried off to an empty room page. */
@@ -464,33 +493,20 @@ window.ViewGreenhouse = (function () {
        autofill is gated on the same flag. */
     let hemiConfirmed = !Store.hemisphereIsGuess();
 
-    /* 'No window' sits at the top, next to 'Not sure', because it is the
-       other answer that is not a compass point — a windowless bathroom is a
-       real room with real plants in it, and the list previously had no way
-       to say so. It needs no hemisphere: a cupboard faces nowhere on either
-       side of the equator, so it keeps its suffix and its autofill
-       throughout. The compass options then follow in order. */
-    function aspectOptionText(a) {
-      const name = LOOKUPS.ASPECT_NAMES[a] + '-facing';
-      if (!hemiConfirmed) return name;
-      const prof = LOOKUPS.aspectProfile(a, Store.hemisphere());
-      return name + ' — ' + LOOKUPS.LIGHT[prof.light].short.toLowerCase();
-    }
-
-    const aspectOpts = '<option value="">Not sure</option>' +
-      '<option value="NONE"' + (editing && room.aspect === 'NONE' ? ' selected' : '') + '>' +
-        'No window — no natural light</option>' +
-      LOOKUPS.ASPECTS.map(function (a) {
-        return '<option value="' + a + '"' + (editing && room.aspect === a ? ' selected' : '') + '>' +
-          UI.esc(aspectOptionText(a)) +
-        '</option>';
-      }).join('');
-
-    const lightOpts = '<option value="">Not sure yet</option>' +
-      Object.keys(LOOKUPS.LIGHT).map(function (k) {
-        return '<option value="' + k + '"' + (editing && room.light === k ? ' selected' : '') + '>' +
-          UI.esc(LOOKUPS.LIGHT[k].label) + '</option>';
-      }).join('');
+    /* A drawn room's light belongs to the plan (see drawnRoom below). Every
+       other room is now described the same way the plan describes one: a
+       rectangle whose walls you tap into windows, and a compass. The two
+       dropdowns that used to stand here — "Which way does the window face?"
+       and "Light level" — asked the reader to translate their room into our
+       vocabulary; the drawing asks them to point at it. It also means a room
+       made here is already on the plan, the right way round, the first time
+       the planner is opened. */
+    const pl = Store.get().plan;
+    const cell = pl.cell || 0.5;
+    /* 4 m by 3 m, in the plan's own cells: big enough to tap a wall on, and a
+       sensible starting size to drag out on the full plan later. */
+    const RW = Math.max(4, Math.min(16, Math.round(4 / cell)));
+    const RH = Math.max(3, Math.min(12, Math.round(3 / cell)));
 
     /* Which way is the bright way is the single fact this question turns on,
        and it is the opposite fact either side of the equator. Once settled,
@@ -565,35 +581,30 @@ window.ViewGreenhouse = (function () {
                 (room.aspect && room.aspect !== 'NONE' ? ', through a ' + UI.esc(LOOKUPS.aspectLabel(room.aspect).toLowerCase()) : '') + '. Change its windows there and this follows.'
               : 'This room is on your plan, so its light is read from its windows once north is confirmed there.') + '</p>' +
             '<button type="button" class="link-btn" data-go-plan="' + UI.attr(room.id) + '">Open the plan</button>' +
-            '<select id="r-aspect" hidden>' + aspectOpts + '</select>' +
-            '<select id="r-light" hidden>' + lightOpts + '</select>' +
-            '<p id="r-light-note" hidden></p>' +
           '</div>' +
           '<label class="field"><span class="label">Humidity</span>' +
             '<select class="select" id="r-humid">' + humidOpts + '</select>' +
           '</label>'
-        : '<div class="field"><label class="label" for="r-aspect">Which way does the window face?</label>' +
-            '<select class="select" id="r-aspect">' + aspectOpts + '</select>' +
-            '<p class="hint" id="r-aspect-note">' +
-              UI.esc(hemiConfirmed
-                ? 'Tell me this and I\'ll work out the light level. ' + settledHint()
-                : 'Tell me this and I\'ll work out the light level.') + '</p>' +
-            (hemiConfirmed ? '' : hemiAsk) +
+        /* A div, not a label: the walls, the dial and the hemisphere chips
+           are all controls of their own, and a label would hand every tap
+           inside it to the first of them. */
+        : '<div class="field"><span class="label">Which way does the window face?</span>' +
+            '<p class="hint" style="margin:0 0 12px">Tap the wall your window is on, then turn the compass until N ' +
+              'points north.</p>' +
+            '<div class="mini-plan-row">' +
+              '<svg id="r-plan" class="mini-plan" viewBox="-16 -16 ' + (RW * 20 + 32) + ' ' + (RH * 20 + 32) + '" ' +
+                'role="group" aria-label="Your room. Tap a wall to mark a window."></svg>' +
+              '<svg id="r-dial" class="plan-dial mini-dial" viewBox="-50 -50 100 100" role="slider" ' +
+                'aria-label="Which way is north" tabindex="0"></svg>' +
+            '</div>' +
+            '<p class="hint" id="r-reading" style="margin-top:12px"></p>' +
+            '<p class="hint" id="r-north-note" hidden>North is the same for the whole house, so this sets it on your plan too.</p>' +
+            '<button type="button" class="link-btn" id="r-nowin" style="margin-top:2px">No windows in here</button>' +
+            (hemiConfirmed ? '<p class="hint" id="r-aspect-note" style="margin-top:10px">' + UI.esc(settledHint()) + '</p>' : hemiAsk) +
           '</div>' +
-
-          '<div class="env-row">' +
-            '<label class="field"><span class="label">Light level</span>' +
-              '<select class="select" id="r-light">' + lightOpts + '</select>' +
-            '</label>' +
-            '<label class="field"><span class="label">Humidity</span>' +
-              '<select class="select" id="r-humid">' + humidOpts + '</select>' +
-            '</label>' +
-          '</div>' +
-          /* The light note sits under the pair rather than inside the light
-             column: it runs to three lines for some values, and a hint that tall
-             inside one half of a two-column row drags the other half's control
-             out of line with it. */
-          '<p class="hint" id="r-light-note" style="margin:8px 0 18px"></p>') +
+          '<label class="field"><span class="label">Humidity</span>' +
+            '<select class="select" id="r-humid">' + humidOpts + '</select>' +
+          '</label>') +
 
       '<label class="field"><span class="label">Notes (optional)</span>' +
         '<textarea class="textarea" id="r-notes" maxlength="400" ' +
@@ -607,22 +618,6 @@ window.ViewGreenhouse = (function () {
 
     UI.openSheet(editing ? 'Edit ' + room.name : 'Add a room', body, function (root) {
       const nameEl   = root.querySelector('#r-name');
-      const aspectEl = root.querySelector('#r-aspect');
-      const lightEl  = root.querySelector('#r-light');
-      const lightNote = root.querySelector('#r-light-note');
-
-      /* The empty-state line is a promise, so it has to track whether the
-         promise can be kept: with the hemisphere unsettled, picking an
-         aspect deliberately fills nothing in. */
-      function describeLight() {
-        const v = lightEl.value;
-        if (v) { lightNote.textContent = LOOKUPS.LIGHT[v].desc; return; }
-        lightNote.textContent = hemiConfirmed
-          ? 'Pick a window aspect above and I\'ll fill this in.'
-          : 'Answer the equator question above and I\'ll fill this in from the window — or just set it yourself.';
-      }
-      describeLight();
-
       /* The preset is a shortcut for typing the name, so it only means
          anything while the name still matches it. Type over "Hallway" and
          the select claiming Hallway is stale — it was still sitting there
@@ -674,8 +669,6 @@ window.ViewGreenhouse = (function () {
         syncPresetLabel();
       }
 
-      const aspectNote = root.querySelector('#r-aspect-note') || document.createElement('p');
-
       const goPlan = root.querySelector('[data-go-plan]');
       if (goPlan) goPlan.addEventListener('click', function () {
         UI.closeSheet();
@@ -683,68 +676,200 @@ window.ViewGreenhouse = (function () {
         App.go('/plan');
       });
 
-      /* Fill the light level from the aspect — but only from a hemisphere we
-         actually have, and always for 'No window', which needs none. */
-      function applyAspect() {
-        const v = aspectEl.value;
-        if (!v) return;
-        if (v !== 'NONE' && !hemiConfirmed) return;
-        const prof = LOOKUPS.aspectProfile(v, Store.hemisphere());
-        if (!prof) return;
-        lightEl.value = prof.light;
-        describeLight();
-        aspectNote.textContent = prof.note;
+      /* ---- The mini plan ----
+         win[i] per wall in screen order — top, right, bottom, left — which is
+         the clockwise order Plan.normalise() expects, so the same array goes
+         onto the stored shape unchanged. Only wall and window: a single room
+         has nothing for a doorway to open onto. */
+      const svg = root.querySelector('#r-plan');
+      const dial = root.querySelector('#r-dial');
+      const reading = root.querySelector('#r-reading');
+      const noWinBtn = root.querySelector('#r-nowin');
+      const win = [0, 0, 0, 0];
+      let noWindows = false;
+      let north = pl.north || 0;
+      let northSet = !!pl.northConfirmed;
+      let northTouched = false;
+
+      function previewShape() {
+        return Plan.normalise({ pts: rectPts(0, 0, RW, RH), win: win.slice(), outdoor: false });
+      }
+      /* The planner's own reading of a wall, on the dial's north rather than
+         the stored one, so the floor shades while the dial is still turning. */
+      function wallAspect(e) {
+        const b = ((Plan.screenBearing(e) - north) % 360 + 360) % 360;
+        return LOOKUPS.ASPECTS[Math.round(b / 45) % 8];
+      }
+      function readable() { return northSet && hemiConfirmed; }
+      function windowsRead() {
+        if (!readable()) return [];
+        return Plan.edges(previewShape()).filter(function (e) { return e.kind === Plan.WINDOW; }).map(function (e) {
+          const a = wallAspect(e), prof = LOOKUPS.aspectProfile(a, Store.hemisphere());
+          return { e: e, aspect: a, prof: prof, rank: Plan.rankOf(prof.light) };
+        });
       }
 
-      aspectEl.addEventListener('change', applyAspect);
+      function drawPlan() {
+        if (!svg) return;
+        const S = 20, sh = previewShape(), reads = windowsRead();
+        const best = reads.reduce(function (m, w) { return !m || w.rank > m.rank ? w : m; }, null);
+        const rank = noWindows ? 0 : best ? best.rank : null;
+        const fill = rank === null ? 'var(--plan-floor-x)' : 'var(--plan-floor-' + rank + ')';
+        let h = '<polygon points="' + sh.pts.map(function (p) { return (p.x * S) + ',' + (p.y * S); }).join(' ') + '" ' +
+          'style="fill:' + fill + ';stroke:var(--plan-wall-edge);stroke-width:2.5;stroke-linejoin:round"/>';
+        Plan.edges(sh).forEach(function (e) {
+          const x1 = e.a.x * S, y1 = e.a.y * S, x2 = e.b.x * S, y2 = e.b.y * S;
+          if (e.kind === Plan.WINDOW) {
+            const r = reads.filter(function (w) { return w.e.i === e.i; })[0];
+            const col = !r ? 'var(--ink-4)' : r.rank >= 3 ? 'var(--gold)' : 'var(--plan-pane-dim)';
+            h += '<line x1="' + (x1 + (x2 - x1) * 0.12) + '" y1="' + (y1 + (y2 - y1) * 0.12) + '" ' +
+              'x2="' + (x1 + (x2 - x1) * 0.88) + '" y2="' + (y1 + (y2 - y1) * 0.88) + '" ' +
+              'stroke="' + col + '" stroke-width="6" stroke-linecap="round" style="pointer-events:none"/>';
+          }
+          /* The target is the whole wall, 28 units thick, not a badge: on a
+             phone the wall is the obvious thing to tap and a badge is not. */
+          h += '<line class="mini-wall" data-wall="' + e.i + '" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" ' +
+            'stroke="transparent" stroke-width="28" stroke-linecap="round"/>';
+        });
+        const label = noWindows ? 'No windows' : !win.some(Boolean) ? 'Tap a wall'
+          : rank === null ? (hemiConfirmed ? 'Set north' : 'Which hemisphere?') : LOOKUPS.LIGHT[Plan.keyOf(rank)].short;
+        h += '<text class="mini-plan-t" x="' + (RW * S / 2) + '" y="' + (RH * S / 2 + 4) + '" text-anchor="middle">' + UI.esc(label) + '</text>';
+        svg.innerHTML = h;
+
+        if (!reading) return;
+        if (noWindows) {
+          const prof = LOOKUPS.aspectProfile('NONE', Store.hemisphere());
+          reading.textContent = 'No natural light. ' + (prof && prof.note ? prof.note : '');
+        } else if (!win.some(Boolean)) {
+          reading.textContent = editing && room.light
+            ? 'At the moment this room is set to ' + LOOKUPS.LIGHT[room.light].label.toLowerCase() + '. Mark its windows and I\'ll read it from them instead.'
+            : 'Not sure? Leave it blank and I\'ll skip the light for now.';
+        } else if (!hemiConfirmed) {
+          reading.textContent = 'Answer the equator question below and I\'ll read these windows.';
+        } else if (!northSet) {
+          reading.textContent = 'Now turn the compass until N points north, and I\'ll read the light.';
+        } else {
+          reading.textContent = LOOKUPS.aspectLabel(best.aspect) + ' — ' +
+            LOOKUPS.LIGHT[best.prof.light].short.toLowerCase() + '. ' + best.prof.note +
+            (reads.length > 1 ? ' (The brightest of ' + reads.length + ' windows.)' : '');
+        }
+        if (noWinBtn) noWinBtn.textContent = noWindows ? 'It does have a window' : 'No windows in here';
+      }
+
+      /* Only once the dial has been turned, and only if it changes something
+         already set: a first room is setting north, not moving it. */
+      function showNorthNote() {
+        const n = root.querySelector('#r-north-note');
+        if (n && pl.northConfirmed && north !== (pl.north || 0)) n.hidden = false;
+      }
+
+      function drawDial() {
+        if (!dial) return;
+        dial.innerHTML = '<circle r="46" style="fill:var(--bg-3);stroke:var(--hair-2)"/>' +
+          '<g transform="rotate(' + north + ')"><line x1="0" y1="34" x2="0" y2="-34" style="stroke:var(--hair-3);stroke-width:1.5"/>' +
+          '<polygon points="0,-40 6,-22 -6,-22" style="fill:' + (northSet ? 'var(--terra)' : 'var(--ink-4)') + '"/>' +
+          '<text y="-30" text-anchor="middle" style="font-family:var(--sans);font-size:9px;fill:' +
+            (northSet ? 'var(--ink)' : 'var(--gold)') + ';letter-spacing:0.1em">' + (northSet ? 'N' : 'N?') + '</text>' +
+          '<circle r="4" style="fill:var(--ink-3)"/></g>';
+        dial.setAttribute('aria-valuenow', String(north));
+      }
+
+      if (svg) {
+        svg.addEventListener('click', function (e) {
+          const w = e.target.closest('[data-wall]');
+          if (!w) return;
+          const i = +w.getAttribute('data-wall');
+          win[i] = win[i] ? 0 : Plan.WINDOW;
+          if (win[i]) noWindows = false;
+          drawPlan();
+        });
+        if (noWinBtn) noWinBtn.addEventListener('click', function () {
+          noWindows = !noWindows;
+          if (noWindows) { for (let i = 0; i < 4; i++) win[i] = 0; }
+          drawPlan();
+        });
+        /* The planner's dial, inline. Its own sheet would replace this one,
+           and with it everything typed so far. Same maths: the angle from the
+           dial's centre, five-degree steps. North is the house's, not the
+           room's, so turning it here turns it for the whole plan — the hint
+           under the dial says as much once it has been turned. */
+        dial.addEventListener('pointerdown', function (e) {
+          e.preventDefault();
+          try { dial.setPointerCapture(e.pointerId); } catch (err) { }
+          const rc = dial.getBoundingClientRect(), cx = rc.left + rc.width / 2, cy = rc.top + rc.height / 2;
+          function move(ev) {
+            north = Math.round(((Math.atan2(ev.clientX - cx, -(ev.clientY - cy)) * 180 / Math.PI + 360) % 360) / 5) * 5 % 360;
+            northSet = true; northTouched = true;
+            drawDial(); drawPlan(); showNorthNote();
+          }
+          move(e);
+          function up() { dial.removeEventListener('pointermove', move); dial.removeEventListener('pointerup', up); }
+          dial.addEventListener('pointermove', move); dial.addEventListener('pointerup', up);
+        });
+        dial.addEventListener('keydown', function (e) {
+          const step = e.key === 'ArrowRight' || e.key === 'ArrowUp' ? 5 : e.key === 'ArrowLeft' || e.key === 'ArrowDown' ? -5 : 0;
+          if (!step) return;
+          e.preventDefault();
+          north = (north + step + 360) % 360; northSet = true; northTouched = true;
+          drawDial(); drawPlan(); showNorthNote();
+        });
+        drawDial(); drawPlan();
+      }
 
       /* Answering here writes it to the profile for good, then brings the
-         field to life in place: the options grow their light suffix and the
-         current pick fills the level. Rebuilding the page would have been
-         simpler and would have closed the sheet out from under the reader
-         mid-form. */
+         plan to life in place. Rebuilding the page would have closed the sheet
+         out from under the reader mid-form. */
       const hemiAskEl = root.querySelector('#r-hemi-ask');
       if (hemiAskEl) {
         hemiAskEl.querySelectorAll('[data-room-hemi]').forEach(function (b) {
           b.addEventListener('click', function () {
             Store.updateProfile({ hemisphere: b.getAttribute('data-room-hemi') });
             hemiConfirmed = true;
-            hemiAskEl.remove();
-            LOOKUPS.ASPECTS.forEach(function (a) {
-              const opt = aspectEl.querySelector('option[value="' + a + '"]');
-              if (opt) opt.textContent = aspectOptionText(a);
-            });
-            aspectNote.textContent = 'Tell me this and I\'ll work out the light level. ' + settledHint();
-            /* Before applyAspect, which returns early when no aspect is
-               picked yet — and would leave the light hint still telling the
-               reader to answer a question that is no longer on screen. */
-            describeLight();
-            applyAspect();
+            const note = document.createElement('p');
+            note.className = 'hint'; note.id = 'r-aspect-note'; note.style.marginTop = '10px';
+            note.textContent = settledHint();
+            hemiAskEl.replaceWith(note);
+            drawPlan();
           });
         });
       }
 
-      lightEl.addEventListener('change', describeLight);
+      /* A shape only when the reader drew something: a window, or "No
+         windows". A room left blank is saved without one and its light stays
+         unknown, exactly as "Not sure" did — the form never claims a light
+         the reader did not give it. */
+      function builtShape() {
+        if (drawnRoom || !svg || (!win.some(Boolean) && !noWindows)) return null;
+        const at = freeSpot(RW, RH);
+        return Plan.normalise({ pts: rectPts(at.x, at.y, RW, RH), win: win.slice(), outdoor: false });
+      }
 
       root.querySelector('#r-save').addEventListener('click', function () {
         const name = nameEl.value.trim();
         if (!name) { UI.toast('Give the room a name first', 'warn'); nameEl.focus(); return; }
+        const shape = builtShape();
         const data = {
           name: name,
           icon: iconValue || null,
-          /* A drawn room's light and aspect belong to the plan. */
-          light: drawnRoom ? room.light : (lightEl.value || null),
-          aspect: drawnRoom ? room.aspect : (aspectEl.value || null),
           humid: root.querySelector('#r-humid').value || null,
           notes: root.querySelector('#r-notes').value.trim()
         };
+        /* With a shape, light and aspect are the plan's to write (Plan.sync
+           below). Without one, a new room starts unknown and an edited room
+           keeps what it had. */
+        if (shape) { data.shape = shape; data.light = null; data.aspect = null; }
+        else if (!editing) { data.light = null; data.aspect = null; }
+        if (northTouched) Store.updatePlan({ north: north, northConfirmed: true });
+
         if (editing) {
           Store.updateRoom(room.id, data);
+          if (shape) Plan.sync();
           UI.closeSheet();
           UI.toast('Room updated', 'leaf');
           App.refresh();
         } else {
           const created = Store.addRoom(data);
+          if (shape) Plan.sync();
           UI.closeSheet();
           if (onCreated) { onCreated(created); return; }
           UI.toast(created.name + ' added', 'leaf');
