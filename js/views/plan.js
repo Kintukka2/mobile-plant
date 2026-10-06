@@ -863,7 +863,12 @@ window.ViewPlan = (function () {
           /* Offered, not asked. An empty grid has nothing to interrupt, so
              the invitation lives on it rather than in a dialog over it, and
              it goes the moment a first room exists. */
+          /* The home-planner scene sits above the title because this is the
+             one moment the plan talks to the reader before there is anything
+             to measure: a conversation, so the face is allowed, and gone
+             with the rest of the invitation once a room exists. */
           '<div class="plan-invite" id="pl-invite" hidden>' +
+            UI.sprout('home-planner', 'is-small plan-invite-sprout') +
             '<div class="plan-invite-t">Nothing drawn yet</div>' +
             '<p class="hint">I\'ll build a sample flat and name each part as it appears, if it helps to see one first.</p>' +
             '<div class="stack" style="gap:9px;align-items:center">' +

@@ -1008,13 +1008,17 @@ body { padding-bottom: 80px; }
   appear is as much a part of it as how it looks.</p>
 
   <div class="g-plate">
-    <div class="g-plate-lab">Five poses, one per moment</div>
+    <div class="g-plate-lab">The plates the app carries, one per moment</div>
     <div class="g-poses">
       <div class="g-pose"><span class="sprout-plate"><img src="img/sprout/base.webp" alt="Sprout, smiling with eyes closed"></span><div class="g-pose-cap">base<br>welcome</div></div>
-      <div class="g-pose"><span class="sprout-plate"><img src="img/sprout/new-growth.webp" alt="Sprout, waving and holding a seedling"></span><div class="g-pose-cap">new-growth<br>no plants yet, rating</div></div>
+      <div class="g-pose"><span class="sprout-plate"><img src="img/sprout/new-growth.webp" alt="Sprout, waving and holding a seedling"></span><div class="g-pose-cap">new-growth<br>today, no plants; rating</div></div>
+      <div class="g-pose"><span class="sprout-plate"><img src="img/sprout/greenhouse.webp" alt="Sprout, holding a potted plant in each arm"></span><div class="g-pose-cap">greenhouse<br>greenhouse, empty</div></div>
+      <div class="g-pose"><span class="sprout-plate"><img src="img/sprout/home-planner.webp" alt="Sprout in a hardhat, holding a drawn floor plan"></span><div class="g-pose-cap">home-planner<br>plan, nothing drawn</div></div>
+      <div class="g-pose"><span class="sprout-plate"><img src="img/sprout/diagnose.webp" alt="Sprout, looking at a seedling through a magnifying glass"></span><div class="g-pose-cap">diagnose<br>diagnose, no plants</div></div>
       <div class="g-pose"><span class="sprout-plate"><img src="img/sprout/resting.webp" alt="Sprout, asleep under a crescent moon"></span><div class="g-pose-cap">resting<br>all caught up</div></div>
-      <div class="g-pose"><span class="sprout-plate"><img src="img/sprout/concerned.webp" alt="Sprout, looking worried at a drooping seedling"></span><div class="g-pose-cap">concerned<br>diagnose, no plants</div></div>
+      <div class="g-pose"><span class="sprout-plate"><img src="img/sprout/excited.webp" alt="Sprout, beaming with both arms raised"></span><div class="g-pose-cap">excited<br>rating, thanks</div></div>
       <div class="g-pose"><span class="sprout-plate"><img src="img/sprout/watering.webp" alt="Sprout, watering a seedling"></span><div class="g-pose-cap">watering<br>marketing only</div></div>
+      <div class="g-pose"><span class="sprout-plate"><img src="img/sprout/concerned.webp" alt="Sprout, looking worried at a drooping seedling"></span><div class="g-pose-cap">concerned<br>in reserve</div></div>
     </div>
   </div>
 
@@ -1039,10 +1043,12 @@ body { padding-bottom: 80px; }
       <thead><tr><th>Where</th><th>Character</th><th>Why</th></tr></thead>
       <tbody>
         <tr><td>Welcome sheet</td><td>base</td><td>The one place it introduces itself by name</td></tr>
-        <tr><td>No plants yet (Today, Greenhouse)</td><td>new-growth</td><td>A first impression, and an invitation to start</td></tr>
+        <tr><td>No plants yet (Today)</td><td>new-growth</td><td>A first impression, and an invitation to start</td></tr>
+        <tr><td>Greenhouse, empty (first visit, and no plants yet)</td><td>greenhouse</td><td>The same invitation, on the screen that holds the plants, so the two tabs a newcomer opens first do not show the same picture</td></tr>
+        <tr><td>Plan, nothing drawn yet</td><td>home-planner</td><td>The one moment the plan talks before there is anything to measure. Dropped on short screens, where the buttons need the room</td></tr>
         <tr><td>All caught up</td><td>resting</td><td>A reward, so it gets a face rather than a ring</td></tr>
-        <tr><td>Diagnose with no plants</td><td>concerned</td><td>The way into a health check, before any answer is given</td></tr>
-        <tr><td>Rating screen</td><td>new-growth, in a frame that fills</td><td>The one time it asks for something back, so it asks in person. The frame closing round the plate is the thanks</td></tr>
+        <tr><td>Diagnose with no plants</td><td>diagnose</td><td>The way into a health check, before any answer is given. Curious rather than worried, because the line beside it says we can still work it out</td></tr>
+        <tr><td>Rating screen</td><td>new-growth, in a frame that fills; excited once tapped</td><td>The one time it asks for something back, so it asks in person. The frame closing round the plate, and the change of face, are the thanks</td></tr>
         <tr><td>sproutevergreen.com hero, bottom-left</td><td>base, cut out</td><td>The face of the brand where it is advertised. Sized to the free corner, never over the copy</td></tr>
         <tr><td>Care data, diagnosis results, treatment, toxicity</td><td>Never</td><td>Reference zone: plain and authoritative, no persona</td></tr>
         <tr><td>Every other empty state</td><td>Never</td><td>Utility states keep the hairline ring. A face on all of them is furniture</td></tr>
@@ -1059,9 +1065,13 @@ body { padding-bottom: 80px; }
   <div class="g-note"><b>Where it lives.</b> <code>img/sprout/&lt;pose&gt;.webp</code>,
   360&times;360, about 6KB each and precached in <code>sw.js</code>, because the
   screens that show them are the ones most likely to be opened offline. The
-  1254&times;1254 originals for marketing are in <code>marketing/character/</code>,
-  along with twelve more scenes (app screens, weather and emotions) that
-  have no app placement yet, and the site's cut-out, <code>site/img/sprout-corner.webp</code>, is made from
+  allow-list and the precache name the same poses; <code>concerned</code> left
+  both when Diagnose took its own scene, and its plate stays on disk for this
+  page. The 1254&times;1254 originals for marketing are in
+  <code>marketing/character/</code>, with the scenes in reserve: discover, the
+  three weather scenes (sunny, cold, rainy), four of the five emotions (happy,
+  sad, informative, thinking; excited is placed) and concerned, kept for a
+  future plant-health check. The site's cut-out, <code>site/img/sprout-corner.webp</code>, is made from
   <code>sprout-base.png</code> there, because the site cannot reach the app's
   <code>img/</code>.
   Views call <code>UI.sprout(pose)</code>, or pass <code>'sprout:&lt;pose&gt;'</code>
@@ -1224,8 +1234,11 @@ body { padding-bottom: 80px; }
         <div class="g-rec-a">The app had kept every illustration out, emoji
         included, because each one brought someone else's colour and weight.
         A character drawn in the house greens is not someone else's.
-        <b>Admitted, framed, at five named moments in the conversation zone
-        only</b>, and never in place of the mark.</div>
+        <b>Admitted, framed, at named moments in the conversation zone
+        only</b>, and never in place of the mark. Five at first; seven since
+        the second pack, which gave the Greenhouse, the plan and Diagnose
+        scenes of their own. The rest of that pack is held back on purpose,
+        for mechanics that do not exist yet and for promotion.</div>
       </div>
     </div>
   </div>

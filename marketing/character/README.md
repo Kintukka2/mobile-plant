@@ -39,6 +39,19 @@ Jade green and pale mint on a deep forest green background; clean rounded botani
 
 These are static PNG images with their original backgrounds, not transparent cutouts or animations. Original image bytes are preserved. Keep their square aspect ratio and avoid stretching. Make every new pose from sprout-base.png so the character keeps the same identity.
 
-Nothing in the app reads this folder. The app ships its own 360 × 360 WebP plates in `img/sprout/`, and only for the poses it places. Most of the images here have no app placement yet. Giving one a placement is a decision under brand guide Decision 13, not a file copy.
+Nothing in the app reads this folder. The app ships its own 360 × 360 WebP plates in `img/sprout/`, resized from these, and only for the poses it places:
+
+| Original | In the app |
+| --- | --- |
+| sprout-base.png | Welcome sheet |
+| sprout-new-growth.png | Today with no plants; the rating screen |
+| sprout-greenhouse.png | Greenhouse, empty |
+| sprout-home-planner.png | The plan's "Nothing drawn yet" invitation |
+| sprout-diagnose.png | Diagnose with no plants |
+| sprout-resting.png | All caught up |
+| sprout-excited.png | The rating screen's thank-you |
+| sprout-watering.png | Plate carried, marketing only |
+
+The other nine are in reserve: discover, sunny, cold, rainy, happy, sad, informative, thinking, and concerned, which Diagnose used until it took its own scene. Giving one a placement is a decision under brand guide Decision 13, not a file copy.
 
 Base and care scenes created 5 October 2026; app, weather and emotion scenes added 6 October 2026. Earlier exploratory candidates are excluded.

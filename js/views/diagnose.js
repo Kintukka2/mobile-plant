@@ -107,7 +107,12 @@ window.ViewDiagnose = (function () {
         '</button>';
       }).join('') + '</div>';
     } else {
-      html += UI.empty('sprout:concerned', 'No plants added yet',
+      /* The diagnose scene, magnifying glass over a seedling, rather than
+         concerned: the line beside it says we can still work it out, and a
+         worried face under that sentence contradicted it. This is the step
+         before any answer exists, so the face is still in the conversation
+         zone; the results that follow never carry one. */
+      html += UI.empty('sprout:diagnose', 'No plants added yet',
         'We can still work through it — I just won\'t be able to weight the causes towards a particular ' +
         'species.', '<button class="btn btn-ghost" data-open="plant">Add a plant</button>');
     }

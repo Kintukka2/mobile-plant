@@ -272,22 +272,29 @@ the stiffness is visible to the reader and the escape is not.
 
 ## The character
 
-Sprout has a face: a jade leaf spirit, in five poses, at `img/sprout/<pose>.webp`
-(`base`, `new-growth`, `watering`, `concerned`, `resting`). The 1254² originals
-and the designer's notes are in `marketing/character/` for the site and ads:
-those five plus twelve with no app placement yet. Four are app scenes
-(diagnose, discover, greenhouse, home planner), three are weather (sunny,
-cold, rainy) and five are emotions (happy, sad, excited, informative,
-thinking). A file being there does not put a face on a screen.
+Sprout has a face: a jade leaf spirit. The app carries eight plates at
+`img/sprout/<pose>.webp` (`base`, `new-growth`, `watering`, `resting`,
+`greenhouse`, `diagnose`, `home-planner`, `excited`), and `SPROUT_POSES` in
+`js/ui.js` and the `sw.js` ASSETS list name exactly those eight. The 1254²
+originals and the designer's notes are in `marketing/character/` for the
+site and ads, seventeen in all. The rest are held back on purpose, for
+mechanics that do not exist yet and for promotion: `discover`, the weather
+three (`sunny`, `cold`, `rainy`), `happy`, `sad`, `informative`, `thinking`,
+and `concerned`, which left the app when Diagnose took its own scene and is
+kept for a future plant-health check (its plate stays on disk for the brand
+guide). A file being there does not put a face on a screen.
 Brand guide section 09 and Decision 13 are the full rule. The short version:
 
 - **The face follows the voice zoning.** It appears only on conversation
   surfaces, never beside species care data, a diagnosis result, a treatment
   step or a toxicity note.
-- **Five placements, named, not spread.** Welcome sheet (`base`), "No plants
-  yet" on Today and Greenhouse (`new-growth`), "All caught up" (`resting`),
-  Diagnose with no plants (`concerned`), and the rating screen (`new-growth`,
-  `js/rate.js`). `watering` is marketing only for now.
+- **Seven placements, named, not spread.** Welcome sheet (`base`), "No
+  plants yet" on Today (`new-growth`), Greenhouse empty, on the first visit
+  and with rooms but no plants (`greenhouse`), the plan's "Nothing drawn yet"
+  invitation (`home-planner`, dropped below 720px of viewport height so the
+  buttons keep the grid), "All caught up" (`resting`), Diagnose with no
+  plants (`diagnose`), and the rating screen (`new-growth`, crossfading to
+  `excited` once tapped, `js/rate.js`). `watering` is marketing only for now.
   Every other empty state keeps its hairline ring. A face on all of them is
   furniture.
 - **Framed, or anchored to a corner.** The art carries its own ground and is
@@ -303,8 +310,8 @@ Brand guide section 09 and Decision 13 are the full rule. The short version:
 - **It never replaces the mark.** Favicon, touch icon, store icon and sidebar
   stay the three-path sprig.
 
-The plates are in `sw.js` ASSETS, unlike the species photographs: 28KB for all
-five, and they are on exactly the screens likely to be opened offline. A new
+The plates are in `sw.js` ASSETS, unlike the species photographs: 48KB for all
+eight, and they are on exactly the screens likely to be opened offline. A new
 pose means a WebP at 360×360, an entry in `SPROUT_POSES` in `js/ui.js`, an
 ASSETS line, and a `CACHE` bump. Make every new pose from `sprout-base.png`, or
 the character drifts.

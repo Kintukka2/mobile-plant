@@ -490,13 +490,17 @@ window.UI = (function () {
      painted in and the figure cropped off two edges, so it is only ever shown
      framed — a plate, never a cut-out pretending to stand on the page. It is
      the one illustration the system admits, and it is admitted at named
-     moments only (brand guide, section 10): it is the face of the
+     moments only (brand guide, section 09): it is the face of the
      conversation zone, so it never appears beside care data, a diagnosis or
      a toxicity note. alt is empty because the line next to it already says
      what the face is feeling, and a screen reader hearing it twice is worse
      than hearing it once. An unknown pose draws nothing and says so, rather
-     than falling back to some other face that would mean the wrong thing. */
-  const SPROUT_POSES = ['base', 'new-growth', 'watering', 'concerned', 'resting'];
+     than falling back to some other face that would mean the wrong thing.
+     The list is kept equal to the plates sw.js precaches: concerned left both
+     when Diagnose took its own scene, so a pose in reserve cannot be drawn
+     by accident on a screen that would then be blank offline. */
+  const SPROUT_POSES = ['base', 'new-growth', 'watering', 'resting',
+    'greenhouse', 'diagnose', 'home-planner', 'excited'];
   function sprout(pose, cls) {
     if (SPROUT_POSES.indexOf(pose) < 0) {
       if (typeof console !== 'undefined' && console.warn) {

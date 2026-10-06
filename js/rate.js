@@ -56,6 +56,11 @@ window.Rate = (function () {
   const CARE = ['water', 'fertilise', 'repot', 'rotate', 'mist', 'prune', 'inspect'];
 
   const POSE = 'new-growth';
+  /* The thank-you gets its own face. It is seen once per install at most,
+     so a bigger expression than the ask's can never wear thin, and the
+     change of face is what tells the reader the tap landed before the
+     copy has finished fading in. */
+  const THANKS_POSE = 'excited';
   const RESTING = 0.8;            // how full the frame sits before the tap
 
   /* The frame, drawn in a 300 box clockwise from the top centre, so the
@@ -298,6 +303,27 @@ window.Rate = (function () {
     later(apply, 260);
   }
 
+  /* Crossfaded rather than swapped, and the new face picks up the float
+     where the old one had got to, so the plate never jumps. Built through
+     UI.sprout so the allow-list still decides what can be drawn. */
+  function swapPlate(pose) {
+    const old = root.querySelector('.rate-plate');
+    const tmp = document.createElement('div');
+    tmp.innerHTML = UI.sprout(pose, 'rate-plate');
+    const next = tmp.firstElementChild;
+    if (!old || !next) return;
+    if (reduceMotion.matches) { old.replaceWith(next); return; }
+    next.classList.add('is-entering');
+    old.after(next);
+    const was = old.querySelector('img').getAnimations ? old.querySelector('img').getAnimations()[0] : null;
+    const now = next.querySelector('img').getAnimations ? next.querySelector('img').getAnimations()[0] : null;
+    if (was && now && was.currentTime != null) now.currentTime = was.currentTime;
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { next.classList.remove('is-entering'); });
+    });
+    later(function () { old.remove(); }, 700);
+  }
+
   function ask() {
     asked = true;
     requestReview();
@@ -305,6 +331,7 @@ window.Rate = (function () {
     root.querySelector('#rate-cta-label').textContent = 'Back to my plants';
     root.querySelector('[data-rate="store"]').hidden = !storeUrl();
     swapCopy(thanksTitle(), THANKS_TEXT);
+    swapPlate(THANKS_POSE);
     fillTo(1, 1300, IN_OUT, function () {
       root.classList.add('is-complete');
       fall(54);
