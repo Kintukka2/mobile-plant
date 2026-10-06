@@ -594,13 +594,29 @@ window.ViewGreenhouse = (function () {
             '<div class="mini-plan-row">' +
               '<svg id="r-plan" class="mini-plan" viewBox="-16 -16 ' + (RW * 20 + 32) + ' ' + (RH * 20 + 32) + '" ' +
                 'role="group" aria-label="Your room. Tap a wall to mark a window."></svg>' +
-              '<svg id="r-dial" class="plan-dial mini-dial" viewBox="-50 -50 100 100" role="slider" ' +
-                'aria-label="Which way is north" tabindex="0"></svg>' +
+              /* Which hemisphere the compass is read for is worth being able
+                 to check, not worth a standing line under every room: it sits
+                 behind the dial it explains, one tap away. Tap, not hover,
+                 because a phone has no hover. */
+              '<div class="mini-dial-wrap">' +
+                '<svg id="r-dial" class="plan-dial mini-dial" viewBox="-50 -50 100 100" role="slider" ' +
+                  'aria-label="Which way is north" tabindex="0"></svg>' +
+                '<button type="button" class="mini-info" id="r-info" aria-label="How I read the compass" ' +
+                  'aria-expanded="false" aria-controls="r-tip"' + (hemiConfirmed ? '' : ' hidden') + '>' + UI.icon('info') + '</button>' +
+                '<p class="mini-tip" id="r-tip" hidden>' + UI.esc(settledHint()) + '</p>' +
+              '</div>' +
             '</div>' +
-            '<p class="hint" id="r-reading" style="margin-top:12px"></p>' +
-            '<p class="hint" id="r-north-note" hidden>North is the same for the whole house, so this sets it on your plan too.</p>' +
-            '<button type="button" class="link-btn" id="r-nowin" style="margin-top:2px">No windows in here</button>' +
-            (hemiConfirmed ? '<p class="hint" id="r-aspect-note" style="margin-top:10px">' + UI.esc(settledHint()) + '</p>' : hemiAsk) +
+            /* One column, one gap: the reading, then the answer for a room
+               with no window at all. That answer is a chip rather than a link
+               because it is a choice the reader makes — and it has to exist,
+               since a blank room means "not sure" and saves no light, while a
+               windowless bathroom is a real reading of none. */
+            '<div class="mini-plan-foot">' +
+              '<p class="hint" id="r-reading"></p>' +
+              '<button type="button" class="chip chip-toggle" id="r-nowin" aria-pressed="false">' + UI.icon('check') + 'No windows in here</button>' +
+              '<p class="hint" id="r-north-note" hidden>North is the same for the whole house, so this sets it on your plan too.</p>' +
+              (hemiConfirmed ? '' : hemiAsk) +
+            '</div>' +
           '</div>' +
           '<label class="field"><span class="label">Humidity</span>' +
             '<select class="select" id="r-humid">' + humidOpts + '</select>' +
@@ -753,7 +769,7 @@ window.ViewGreenhouse = (function () {
             LOOKUPS.LIGHT[best.prof.light].short.toLowerCase() + '. ' + best.prof.note +
             (reads.length > 1 ? ' (The brightest of ' + reads.length + ' windows.)' : '');
         }
-        if (noWinBtn) noWinBtn.textContent = noWindows ? 'It does have a window' : 'No windows in here';
+        if (noWinBtn) { noWinBtn.classList.toggle('is-on', noWindows); noWinBtn.setAttribute('aria-pressed', String(noWindows)); }
       }
 
       /* Only once the dial has been turned, and only if it changes something
@@ -816,6 +832,24 @@ window.ViewGreenhouse = (function () {
         drawDial(); drawPlan();
       }
 
+      const info = root.querySelector('#r-info');
+      const tip = root.querySelector('#r-tip');
+      function showTip(open) {
+        if (!tip || !info) return;
+        tip.hidden = !open; info.setAttribute('aria-expanded', String(open));
+      }
+      if (info) {
+        info.addEventListener('click', function () { showTip(tip.hidden); });
+        /* Anywhere else in the sheet closes it, as does Escape — a bubble
+           that has to be aimed at to dismiss is one the reader stops opening. */
+        root.addEventListener('click', function (e) {
+          if (!tip.hidden && !e.target.closest('#r-info') && !e.target.closest('#r-tip')) showTip(false);
+        });
+        root.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && !tip.hidden) { e.stopPropagation(); showTip(false); info.focus(); }
+        });
+      }
+
       /* Answering here writes it to the profile for good, then brings the
          plan to life in place. Rebuilding the page would have closed the sheet
          out from under the reader mid-form. */
@@ -825,10 +859,9 @@ window.ViewGreenhouse = (function () {
           b.addEventListener('click', function () {
             Store.updateProfile({ hemisphere: b.getAttribute('data-room-hemi') });
             hemiConfirmed = true;
-            const note = document.createElement('p');
-            note.className = 'hint'; note.id = 'r-aspect-note'; note.style.marginTop = '10px';
-            note.textContent = settledHint();
-            hemiAskEl.replaceWith(note);
+            hemiAskEl.remove();
+            if (tip) tip.textContent = settledHint();
+            if (info) info.hidden = false;
             drawPlan();
           });
         });

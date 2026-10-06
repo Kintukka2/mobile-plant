@@ -5203,6 +5203,39 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
 .mini-plan-t { font-family: var(--sans); font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; fill: var(--ink-3); pointer-events: none; }
 .mini-dial { width: 96px; height: 96px; }
 .mini-dial:focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; border-radius: 50%; }
+/* The "i" sits on the dial's corner, so it reads as belonging to the
+   compass, and its bubble opens straight beneath it. */
+.mini-dial-wrap { position: relative; flex: 0 0 auto; }
+.mini-info {
+  position: absolute; top: -6px; right: -8px;
+  width: 28px; height: 28px; display: grid; place-items: center;
+  border: 1px solid var(--hair-2); border-radius: 50%;
+  background: var(--bg-2); color: var(--ink-3); cursor: pointer;
+  transition: color var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease);
+}
+.mini-info svg { width: 15px; height: 15px; stroke-width: 1.6; }
+.mini-info:hover, .mini-info[aria-expanded="true"] { color: var(--mint); border-color: var(--hair-3); }
+.mini-info:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+.mini-tip {
+  /* Over the page rather than in it, so opening it moves nothing below. */
+  position: absolute; top: calc(100% + 12px); right: 0; z-index: 5;
+  width: min(260px, 70vw); margin: 0;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+  padding: 10px 14px; border: 1px solid var(--hair-2); border-radius: 12px 4px 12px 12px;
+  background: var(--bg-3); color: var(--ink-2);
+  font-size: 13.5px; line-height: 1.45;
+}
+.mini-tip::before {
+  content: ""; position: absolute; top: -6px; right: 1px;
+  width: 10px; height: 10px; background: inherit;
+  border-left: 1px solid var(--hair-2); border-top: 1px solid var(--hair-2);
+  transform: rotate(45deg);
+}
+.mini-plan-foot { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-top: 14px; }
+.mini-plan-foot > .hint { margin: 0; }
+/* A toggle chip shows its tick only once it is on: a tick on an unpressed
+   chip reads as already chosen. */
+.chip-toggle:not(.is-on) svg { display: none; }
 .plan-mini-rose { width: 40px; height: 40px; flex: 0 0 auto; cursor: pointer; overflow: visible; }
 
 .plan-row {
