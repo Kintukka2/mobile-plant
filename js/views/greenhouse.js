@@ -88,10 +88,16 @@ window.ViewGreenhouse = (function () {
     const sp = Store.species(plant);
     const room = plant.roomId ? Store.getRoom(plant.roomId) : null;
 
+    /* A plant with no room gets the way to fix that, not a label saying so.
+       "No room" was a pill — a statement — on the one card where the next
+       step was obvious and two screens away. It is a span rather than a
+       button because the whole card is already a button; the click handler
+       in mount() checks for it before it checks for the card. */
     const foot = context === 'room' ? '' : (room
       ? '<span class="pill pill-grey">' + UI.roomMark(room, 'mono-sm') +
           UI.esc(room.name) + '</span>'
-      : UI.pill('No room', 'grey'));
+      : '<span class="pill pill-mint pill-act" role="button" data-add-room="' + UI.attr(plant.id) + '">' +
+          UI.icon('plus') + 'Add to room</span>');
 
     return '<button class="pcard" data-plant="' + UI.attr(plant.id) + '">' +
       '<div class="pcard-img">' + plantThumb(plant) + dropBadge(plant) + '</div>' +
@@ -161,7 +167,11 @@ window.ViewGreenhouse = (function () {
         }
         list.innerHTML = results.map(function (sp) {
           return '<button class="dx-opt" data-species="' + UI.attr(sp.id) + '" style="margin-bottom:0">' +
-            '<span class="dx-opt-ico">' + UI.icon('leaf') + '</span>' +
+            /* The species photograph, at 40px: the height of the two text
+               lines beside it, so a row is exactly as tall as it was with
+               the leaf glyph. Picking a plant by name alone asked the reader
+               to know the name; most people know the plant by sight. */
+            '<span class="dx-opt-thumb">' + UI.plantTile(Store.speciesPhoto(sp.id), sp.id, sp.common) + '</span>' +
             '<span style="min-width:0">' +
               '<span class="dx-opt-t">' + UI.esc(sp.common) + '</span>' +
               '<span class="dx-opt-d italic">' + UI.esc(sp.botanical) + '</span>' +
@@ -412,7 +422,10 @@ window.ViewGreenhouse = (function () {
 
   /* ---------- Room form ---------- */
 
-  function roomSheet(room) {
+  /* onCreated, when given, takes the new room instead of the usual jump to
+     its page: "Add to room" wants the plant placed and the reader left on
+     the Greenhouse, not carried off to an empty room page. */
+  function roomSheet(room, onCreated) {
     const editing = !!room;
     const hemi = Store.hemisphere();
 
@@ -733,6 +746,7 @@ window.ViewGreenhouse = (function () {
         } else {
           const created = Store.addRoom(data);
           UI.closeSheet();
+          if (onCreated) { onCreated(created); return; }
           UI.toast(created.name + ' added', 'leaf');
           App.go('/room/' + created.id);
         }
@@ -741,6 +755,57 @@ window.ViewGreenhouse = (function () {
   }
 
   /* The "+" menu. */
+  /* "Add to room" on a plant card. With rooms, a list of them and a way to
+     make a new one; with none, straight to the room form, since a list of
+     nothing is a step that only gets in the way. Either way the plant ends up
+     in the room and the reader stays where they were. */
+  function roomPicker(plantId) {
+    const plant = Store.getPlant(plantId);
+    if (!plant) return;
+    const rooms = Store.get().rooms;
+
+    function place(room) {
+      Store.updatePlant(plant.id, { roomId: room.id });
+      UI.toast(Store.displayName(plant) + ' is in ' + room.name, 'leaf');
+      App.refresh();
+    }
+
+    if (!rooms.length) { roomSheet(null, place); return; }
+
+    UI.openSheet('Which room?',
+      '<div class="stack" style="gap:8px">' +
+        rooms.map(function (r) {
+          const light = LOOKUPS.LIGHT[r.light];
+          const n = Store.plantsInRoom(r.id).length;
+          return '<button class="dx-opt" data-pick-room="' + UI.attr(r.id) + '" style="margin:0">' +
+            UI.roomMark(r) +
+            '<span style="min-width:0">' +
+              '<span class="dx-opt-t">' + UI.esc(r.name) + '</span>' +
+              '<span class="dx-opt-d">' + UI.esc(UI.plural(n, 'plant') + (light ? ' · ' + light.label : '')) + '</span>' +
+            '</span>' + UI.icon('chevron', 'muted') +
+          '</button>';
+        }).join('') +
+        '<button class="dx-opt" data-pick-room="new" style="margin:0">' +
+          '<span class="dx-opt-ico">' + UI.icon('plus') + '</span>' +
+          '<span style="min-width:0">' +
+            '<span class="dx-opt-t">A new room</span>' +
+            '<span class="dx-opt-d">I\'ll put ' + UI.esc(Store.displayName(plant)) + ' in it once it\'s made.</span>' +
+          '</span>' +
+        '</button>' +
+      '</div>',
+      function (root) {
+        root.addEventListener('click', function (e) {
+          const b = e.target.closest('[data-pick-room]');
+          if (!b) return;
+          const id = b.getAttribute('data-pick-room');
+          UI.closeSheet();
+          if (id === 'new') { setTimeout(function () { roomSheet(null, place); }, 220); return; }
+          const room = Store.getRoom(id);
+          if (room) place(room);
+        });
+      });
+  }
+
   function addMenu() {
     UI.openSheet('Add to your greenhouse',
       '<div class="stack" style="gap:8px">' +
@@ -874,7 +939,7 @@ window.ViewGreenhouse = (function () {
           '<div class="section-head"><h2 class="section-title">Not in a room yet</h2>' +
           '<span class="section-note">' + UI.plural(unassigned.length, 'plant') + '</span></div>' +
           '<div class="grid grid-plants">' + unassigned.map(plantCard).join('') + '</div>' +
-          '<p class="hint" style="padding:0 2px">Put these in a room and I can factor the light into their watering.</p>' +
+          '<p class="hint" style="padding:0 2px;margin-top:16px">Put these in a room and I can factor the light into their watering.</p>' +
         '</div>';
       }
     } else {
@@ -915,6 +980,9 @@ window.ViewGreenhouse = (function () {
         return;
       }
 
+      const ar = e.target.closest('[data-add-room]');
+      if (ar) { roomPicker(ar.getAttribute('data-add-room')); return; }
+
       const rc = e.target.closest('[data-room]');
       if (rc) { App.go('/room/' + rc.getAttribute('data-room')); return; }
 
@@ -929,6 +997,6 @@ window.ViewGreenhouse = (function () {
     /* shared */
     plantCard: plantCard, roomCard: roomCard, dropBadge: dropBadge, plantThumb: plantThumb,
     addPlantSheet: addPlantSheet, plantForm: plantForm, speciesPicker: speciesPicker,
-    searchSpecies: searchSpecies, roomSheet: roomSheet, addMenu: addMenu
+    searchSpecies: searchSpecies, roomSheet: roomSheet, roomPicker: roomPicker, addMenu: addMenu
   };
 })();

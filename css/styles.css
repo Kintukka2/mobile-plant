@@ -1416,6 +1416,11 @@ img { max-width: 100%; display: block; }
 .pill-lg { padding: 7px 14px; font-size: 12px; }
 
 .pill-grey { border-color: var(--hair-2); background: var(--glass); color: var(--ink-2); }
+/* A pill that does something ("Add to room"): the pill's shape, a button's
+   affordance. */
+.pill-act { cursor: pointer; transition: border-color var(--dur-1) var(--ease), background var(--dur-1) var(--ease); }
+.pill-act:hover { border-color: var(--mint); }
+.pill-act svg { width: 11px; height: 11px; }
 .pill-mint { border-color: rgba(63, 190, 139, 0.3);  background: var(--mint-wash); color: var(--mint-2); }
 /* The class name stays — seven call sites across the views name it, and the
    name describes the role rather than the hex. Only the colour moves. */
@@ -3589,6 +3594,9 @@ img { max-width: 100%; display: block; }
   color: var(--ink-2);
   line-height: 1.6;
 }
+/* A nudge's buttons sat on its last line of text ("Set the aspect" under
+   "Tag this room's light"), close enough to read as part of the sentence. */
+.nudge-p + .row { margin-top: 14px; }
 
 /* Champagne, not rose. The overdue task row already established that this
    system raises concerns in gold; a pink card alongside it would read as a
@@ -3683,6 +3691,17 @@ img { max-width: 100%; display: block; }
    at a time in the species picker, and 40 mint circles would be a pattern
    rather than a list. */
 .dx-opt-ico { flex: 0 0 auto; display: flex; align-items: center; }
+/* A species photo in an option row (the plant picker). Sized to the two
+   lines of text beside it, so the row keeps its height. */
+.dx-opt-thumb {
+  position: relative;
+  overflow: hidden;
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--hair);
+  border-radius: var(--r-sm);
+}
 .dx-opt-ico svg { width: 18px; height: 18px; stroke-width: 1.2; color: var(--ink-4); }
 .dx-opt:hover .dx-opt-ico svg { color: var(--mint); }
 
@@ -4142,7 +4161,10 @@ img { max-width: 100%; display: block; }
 .sprout-plate img { display: block; width: 100%; height: 100%; }
 .empty-sprout .sprout-plate { margin-bottom: 24px; }
 .sprout-plate.is-small { width: 96px; height: 96px; border-radius: 11px; }
-.welcome-sprout { margin: 2px 0 18px; }
+/* Floated so the welcome text wraps round the face rather than starting
+   under it: a 96px plate above a paragraph left a column of empty sheet
+   beside it and pushed the buttons below the fold on a phone. */
+.welcome-sprout { float: left; margin: 4px 16px 6px 0; }
 
 .empty h3 {
   font-family: var(--display);
