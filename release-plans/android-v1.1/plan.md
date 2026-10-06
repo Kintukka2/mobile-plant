@@ -6,6 +6,9 @@
 **Build tested:** 1.0 (versionCode 2).
 **This release:** 1.1 (versionCode 3). Bug fixes and polish only: no new
 screens, no change to the data format, so a minor bump rather than 2.0.
+**Shipped as part of 1.2.** 1.1 was never uploaded on its own. Every fix
+below reached testers in 1.2 (versionCode 4), sent to Closed testing on
+6 October 2026 (`../android-v1.2/plan.md`).
 
 The report's cover reads "10 of 10 checks passed, no issues logged". Its body
 does not: the coverage table fails three areas and logs four minor bugs

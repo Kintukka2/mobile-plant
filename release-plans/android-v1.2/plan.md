@@ -2,6 +2,8 @@
 
 **This release:** 1.2 (versionCode 4).
 **Previous:** 1.1 (versionCode 3), the fixes from PrimeTestLab report 7959.
+1.1 was never uploaded: 1.2 went to Play straight after 1.0 (versionCode 2),
+so version code 3 was never used.
 Everything in 1.1 is in this build as well, so if 1.1 never reached Play,
 this upload supersedes it and nothing is lost. Play only needs each version
 code to be higher than the last one uploaded.
@@ -97,8 +99,20 @@ container.
       privacy documents changes. Before submitting, check Play's current
       Data safety guidance on the Play In-App Review library, in case Play
       expects it listed.
-- [ ] **Upload** the bundle to the closed testing track, with the release
-      notes below.
+- [x] **Upload** the bundle to the closed testing track, with the release
+      notes below. Uploaded and sent for review on 6 October 2026 as
+      **4 (1.2)** on Closed testing (Alpha), with both paragraphs of the
+      notes, because 1.1 never reached Play. The previous release there was
+      2 (1.0), left out of this one. Play raised two warnings and no errors:
+      the download size grew (the 48 species photographs were added on
+      4 October, after 1.0; the bundle is 7.6MB), and there is no deobfuscation file, which only
+      matters for minified code and this build is not minified.
+      - Signed through **Generate Signed App Bundle or APK**, with the
+        password Android Studio remembered. A Gradle bundle without
+        `keystore.properties` is unsigned and Play refuses it with "All
+        uploaded bundles must be signed". Recording the password, or an
+        upload key reset in Play Console (App integrity → App signing), is
+        still to do, so that releases don't depend on this one machine.
 
 ---
 
