@@ -232,8 +232,10 @@ fed and content" (`js/views/today.js:52`).
 - [x] Headless Chromium covers M-02, M-03, S-02, S-04 and S-05. M-01, M-04
       and S-01 only show up on Android, and were confirmed on a phone on
       6 October 2026 with the 1.2 build, which carries all of 1.1.
-- [ ] Reply on report Nº 7959 in the PrimeTestLab dashboard with the build
-      number and the items addressed.
+- [x] Reply on report Nº 7959 in the PrimeTestLab dashboard with the build
+      number and the items addressed. Sent on 6 October 2026 as support
+      ticket #3229, naming 1.2 (build 4) and all nine items, with a request
+      to re-test M-01 to M-04 on the Sharp AQUOS R8.
 
 ## Status
 

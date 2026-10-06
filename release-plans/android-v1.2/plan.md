@@ -113,6 +113,9 @@ container.
         uploaded bundles must be signed". Recording the password, or an
         upload key reset in Play Console (App integrity → App signing), is
         still to do, so that releases don't depend on this one machine.
+- [x] **Approved.** Available to testers on Google Play, full roll-out, on
+      6 October 2026 at 13:16, in all 178 countries and regions on the
+      track. PrimeTestLab were told the same day (ticket #3229).
 
 ---
 
