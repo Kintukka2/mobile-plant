@@ -4154,6 +4154,234 @@ img { max-width: 100%; display: block; }
    ========================================================================== */
 
 /* ==========================================================================
+   C17 · Rating screen
+   --------------------------------------------------------------------------
+   Rate.open() in js/rate.js. A full screen over the app, on the splash's
+   own field, because the one time Sprout asks for something it should look
+   like the same place the reader first met it rather than like a sheet.
+   Below the toasts, so a toast raised behind it still reads.
+
+   Every hue here is a token. The laurels are mint hairlines in the mark's
+   round-capped stroke; the stars are the champagne, which is what that
+   metal is for; the frame fills in the house emerald. The plate stays dark
+   in Conservatory, the way it does everywhere else.
+   ========================================================================== */
+
+.rate {
+  --rate-glow: rgba(47, 154, 112, 0.22);
+  --rate-size: min(100%, 300px, calc(100vw - 72px));
+  position: fixed;
+  inset: 0;
+  z-index: 185;
+  display: flex;
+  flex-direction: column;
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 10px)
+    calc(env(safe-area-inset-right, 0px) + 22px)
+    calc(env(safe-area-inset-bottom, 0px) + 22px)
+    calc(env(safe-area-inset-left, 0px) + 22px);
+  overflow: hidden;
+  background:
+    radial-gradient(620px 520px at 50% 60%, var(--rate-glow), transparent 70%),
+    var(--bg-0);
+  color: var(--ink);
+  animation: rateIn 620ms var(--ease) both;
+}
+.rate.is-closing { animation: fadeOut 420ms var(--ease-io) both; pointer-events: none; }
+.rate:focus { outline: none; }
+.rate > * { width: 100%; max-width: 440px; margin-left: auto; margin-right: auto; }
+
+.rate-top {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  min-height: 44px;
+}
+.rate-close { margin-left: -8px; }
+.rate-brand {
+  font-family: var(--display); font-weight: 500; font-size: 13px;
+  letter-spacing: 0.34em; text-indent: 0.34em; text-transform: uppercase;
+  text-align: center; color: var(--ink-3);
+}
+
+.rate-intro { margin-top: clamp(10px, 3vh, 30px); text-align: center; }
+.rate-intro > * { animation: obIn 720ms var(--ease) both; }
+.rate-intro > :nth-child(2) { animation-delay: 90ms; }
+.rate-intro > :nth-child(3) { animation-delay: 180ms; }
+.rate-eyebrow {
+  margin: 0 0 12px;
+  font-family: var(--sans); font-size: 10.5px; font-weight: 400;
+  letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--gold);
+}
+.rate-title {
+  margin: 0;
+  font-family: var(--display); font-weight: 200;
+  font-size: clamp(30px, 8.4vw, 40px); line-height: 1.12; letter-spacing: 0.06em;
+  text-transform: uppercase; text-wrap: balance;
+  color: var(--ink);
+}
+.rate-text {
+  max-width: 31ch;
+  margin: 12px auto 0;
+  font-family: var(--serif); font-size: 19px; line-height: 1.45;
+  color: var(--ink-2); text-wrap: balance;
+  /* Three lines held open, so the thanks, which is shorter than the ask,
+     does not pull the stars and the face up the screen as it lands. */
+  min-height: 4.35em;
+}
+.rate-title, .rate-text { transition: opacity 260ms var(--ease-io), filter 260ms var(--ease-io), transform 260ms var(--ease-io); }
+.rate.is-swapping .rate-title,
+.rate.is-swapping .rate-text { opacity: 0; filter: blur(5px); transform: translateY(-6px); }
+
+/* ---- Laurels, stars, and the face in its frame ---- */
+
+.rate-hero {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(10px, 2.6vh, 24px);
+  padding: clamp(12px, 2.8vh, 28px) 0;
+}
+.rate-laurel { flex: none; display: block; width: min(100%, 290px); height: auto; overflow: visible; }
+.rate-stem, .rate-leaf {
+  stroke: var(--mint);
+  stroke-width: 4.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+}
+.rate-stem { fill: none; animation: rateDraw 900ms var(--ease) 150ms both; }
+.rate-leaf {
+  fill: var(--mint-wash);
+  animation: rateDraw 700ms var(--ease) both;
+  animation-delay: calc(250ms + var(--i, 0) * 40ms);
+}
+.rate-star {
+  fill: var(--gold);
+  stroke: var(--gold);
+  stroke-width: 6;
+  stroke-linejoin: round;
+  transform-box: fill-box;
+  transform-origin: 50% 55%;
+  animation: rateStar 720ms var(--ease) both;
+  animation-delay: calc(420ms + var(--i, 0) * 90ms);
+}
+.rate.is-complete .rate-star {
+  animation: rateShine 1600ms var(--ease-io) both;
+  animation-delay: calc(var(--i, 0) * 80ms);
+}
+
+.rate-stage { position: relative; flex: 1 1 0; width: 100%; min-height: 150px; }
+.rate-frame {
+  position: absolute; left: 50%; top: 50%;
+  height: var(--rate-size); aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  /* Not obIn: that animates transform, and would take the centring with
+     it. The individual translate property moves on top of it instead. */
+  animation: rateRise 900ms var(--ease) 520ms both;
+}
+.rate-plate.sprout-plate {
+  position: absolute; inset: 7%;
+  width: auto; height: auto;
+  box-shadow: 0 0 0 1px var(--hair-2), var(--shadow);
+}
+.rate-plate img { animation: rateFloat 6s var(--ease-io) 1.6s infinite; }
+.rate-ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.rate-ring-track, .rate-ring-fill { fill: none; stroke-width: 3; }
+.rate-ring-track { stroke: var(--hair-2); }
+.rate-ring-fill {
+  stroke: var(--emerald-glow);
+  stroke-linecap: round;
+  transition: filter 900ms var(--ease);
+}
+.rate.is-complete .rate-ring-fill { filter: drop-shadow(0 0 6px rgba(63, 190, 139, 0.55)); }
+
+.rate-bud {
+  position: absolute; left: 50%; top: 2%;
+  display: grid; place-items: center;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--bg-0);
+  box-shadow: 0 0 0 1px var(--emerald-glow), 0 0 18px -2px rgba(63, 190, 139, 0.45);
+  transform: translate(-50%, -50%);
+  animation: rateBud 620ms var(--ease) 1500ms both;
+}
+.rate-bud svg {
+  width: 24px; height: 24px;
+  fill: none; stroke: var(--mint); stroke-width: 7;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.rate.is-complete .rate-bud { animation: rateBloom 900ms var(--ease) both; }
+
+/* The leaves rate.js lets fall when the frame closes. */
+.rate-leaves { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.rate-leaves i {
+  position: absolute; top: 0; left: 0;
+  border-radius: 0 100% 0 100%;
+  will-change: transform, opacity;
+}
+
+/* ---- The ask ---- */
+
+.rate-actions {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  animation: obIn 900ms var(--ease) 700ms both;
+}
+.rate-cta { padding-top: 18px; padding-bottom: 18px; }
+.rate-cta .btn-label { display: inline-block; }
+.rate.is-asked .rate-cta .btn-label { animation: obIn 520ms var(--ease) both; }
+/* The star belongs to the ask. On the way out it would read as a second one. */
+.rate.is-asked .rate-cta svg { display: none; }
+.rate-alt {
+  margin: 0; padding: 12px 12px 0;
+  border: 0; background: none;
+  font-family: var(--sans); font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--ink-3); cursor: pointer;
+  text-decoration: underline; text-decoration-color: var(--hair-3); text-underline-offset: 4px;
+  animation: obIn 720ms var(--ease) 300ms both;
+}
+.rate-alt:hover { color: var(--ink-2); }
+
+@keyframes rateIn { from { opacity: 0; } }
+@keyframes rateRise { from { opacity: 0; translate: 0 18px; filter: blur(6px); } }
+@keyframes rateDraw { from { stroke-dashoffset: 1; fill-opacity: 0; } to { stroke-dashoffset: 0; } }
+@keyframes rateStar {
+  from { opacity: 0; transform: translateY(8px) scale(0.6); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes rateShine {
+  0%, 100% { filter: none; transform: none; }
+  35% { filter: drop-shadow(0 0 10px rgba(223, 197, 143, 0.75)) brightness(1.15); transform: scale(1.12); }
+}
+@keyframes rateBud {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+  to   { opacity: 1; transform: translate(-50%, -50%); }
+}
+@keyframes rateBloom {
+  0%   { transform: translate(-50%, -50%); }
+  40%  { transform: translate(-50%, -50%) scale(1.3); box-shadow: 0 0 0 1px var(--emerald-glow), 0 0 34px 4px rgba(63, 190, 139, 0.6); }
+  100% { transform: translate(-50%, -50%); }
+}
+@keyframes rateFloat {
+  0%, 100% { transform: none; }
+  50% { transform: translateY(-4px); }
+}
+
+/* Conservatory. Ivory under a faint emerald light, and a bud cut from the
+   paper rather than the forest. */
+[data-theme="conservatory"] .rate { --rate-glow: rgba(27, 96, 69, 0.10); background: radial-gradient(620px 520px at 50% 60%, var(--rate-glow), transparent 70%), var(--bg-1); }
+[data-theme="conservatory"] .rate-bud { background: var(--bg-2); box-shadow: 0 0 0 1px var(--emerald-glow), var(--shadow-sm); }
+[data-theme="conservatory"] .rate.is-complete .rate-ring-fill { filter: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rate, .rate *, .rate-leaves i { animation: none !important; transition: none !important; }
+  .rate-stem, .rate-leaf { stroke-dasharray: none; }
+}
+
+/* ==========================================================================
    D1 · Keyframes
    --------------------------------------------------------------------------
    Parts B and C reference these by name. `fade` and `rise` keep the names

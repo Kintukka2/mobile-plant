@@ -18,7 +18,7 @@ property that makes this project what it is.
 - **Classic `<script>` tags.** Not `type="module"`.
 - **Globals are the module system.** Each file assigns exactly one namespace:
   `UI`, `Store`, `Schedule`, `Plan`, `Weather`, `Photos`, `Onboard`, `Tour`,
-  `Notify`,
+  `Notify`, `Rate`,
   `PLANT_DATA`, `PROBLEM_DATA`, `LOOKUPS`, `App`, and one `View*` per screen.
 - **Load order in `index.html` is the dependency graph.** Data and utilities
   first, views next, router last.
@@ -280,9 +280,10 @@ Brand guide section 09 and Decision 13 are the full rule. The short version:
 - **The face follows the voice zoning.** It appears only on conversation
   surfaces, never beside species care data, a diagnosis result, a treatment
   step or a toxicity note.
-- **Four placements, named, not spread.** Welcome sheet (`base`), "No plants
-  yet" on Today and Greenhouse (`new-growth`), "All caught up" (`resting`), and
-  Diagnose with no plants (`concerned`). `watering` is marketing only for now.
+- **Five placements, named, not spread.** Welcome sheet (`base`), "No plants
+  yet" on Today and Greenhouse (`new-growth`), "All caught up" (`resting`),
+  Diagnose with no plants (`concerned`), and the rating screen (`new-growth`,
+  `js/rate.js`). `watering` is marketing only for now.
   Every other empty state keeps its hairline ring. A face on all of them is
   furniture.
 - **Framed, or anchored to a corner.** The art carries its own ground and is
@@ -303,6 +304,15 @@ five, and they are on exactly the screens likely to be opened offline. A new
 pose means a WebP at 360×360, an entry in `SPROUT_POSES` in `js/ui.js`, an
 ASSETS line, and a `CACHE` bump. Make every new pose from `sprout-base.png`, or
 the character drifts.
+
+**The rating screen** (`Rate.open()`, `js/rate.js`) is built and has no
+trigger yet; `?rate` on the URL opens it for review. It asks once, through
+the store's own review sheet, and never asks whether the reader is enjoying
+the app first: both stores forbid an opinion question in front of the rating
+prompt, and routing only the happy ones to the stars is review gating. The
+in-app sheet needs `@capacitor-community/in-app-review` in `native/`, which
+is not installed yet; without it the button opens the Play listing on
+Android, and on the web the screen only says thank you.
 
 ## Type
 
