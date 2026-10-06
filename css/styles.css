@@ -3709,6 +3709,9 @@ img { max-width: 100%; display: block; }
   border: 1px solid var(--hair);
   border-radius: var(--r-sm);
 }
+/* The room matches on Discover, where it takes the place of the 46px
+   initial and has to keep that row's height. */
+.dx-opt-thumb-lg { width: 46px; height: 46px; }
 .dx-opt-ico svg { width: 18px; height: 18px; stroke-width: 1.2; color: var(--ink-4); }
 .dx-opt:hover .dx-opt-ico svg { color: var(--mint); }
 
