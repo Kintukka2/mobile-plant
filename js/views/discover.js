@@ -171,7 +171,9 @@ window.ViewDiscover = (function () {
           '<div class="stack" style="gap:8px">' + picks.slice(0, 5).map(function (x) {
             const rl = LOOKUPS.LIGHT[x.room.light];
             return '<button class="dx-opt" data-species="' + UI.attr(x.sp.id) + '" style="margin:0">' +
-              UI.monogram(x.sp.common) +
+              /* The photograph, as on every other species row: the initial
+                 told a reader which letter, not which plant on the shelf. */
+              '<span class="dx-opt-thumb dx-opt-thumb-lg">' + UI.plantTile(Store.speciesPhoto(x.sp.id), x.sp.id, x.sp.common) + '</span>' +
               '<span style="min-width:0">' +
                 '<span class="dx-opt-t">' + UI.esc(x.sp.common) + '</span>' +
                 '<span class="dx-opt-d">Ideal for your ' + UI.esc(x.room.name) +
