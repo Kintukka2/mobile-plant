@@ -2,6 +2,8 @@
 
 **This release:** 1.2 (versionCode 4).
 **Previous:** 1.1 (versionCode 3), the fixes from PrimeTestLab report 7959.
+1.1 was never uploaded: 1.2 went to Play straight after 1.0 (versionCode 2),
+so version code 3 was never used.
 Everything in 1.1 is in this build as well, so if 1.1 never reached Play,
 this upload supersedes it and nothing is lost. Play only needs each version
 code to be higher than the last one uploaded.
@@ -72,27 +74,45 @@ container.
 - [x] `native/README.md` plugin table and the rating note in `CLAUDE.md`.
 - [x] `CACHE` in `sw.js`: already `sprout-v65-viridium` from the rating PRs.
       This release changes no cached app file.
-- [ ] **Device build** (`native/prepare-android.bat`), then:
-  - [ ] It builds. This is the first build with the new plugin.
-  - [ ] Open the screen on demand. Connect the phone, open
+- [x] **Device build** (`native/prepare-android.bat`), confirmed on a phone
+      on 6 October 2026:
+  - [x] It builds. This is the first build with the new plugin.
+  - [x] Open the screen on demand. Connect the phone, open
         `chrome://inspect` on a computer, pick the Sprout WebView, and run
         `Rate.open()` in its console. `Rate.eligible()` says why a device
-        would or wouldn't be asked on its own.
-  - [ ] Tap **Leave a rating**. Play shows its sheet only when the app was
+        would or wouldn't be asked on its own. If the DevTools window opens
+        blank, with an empty address bar and nothing printed after Enter,
+        use the **inspect fallback** link instead of **inspect**. The plain
+        link downloads a matching DevTools from Google, and when that fails
+        the window looks open but is attached to nothing.
+  - [x] Tap **Leave a rating**. Play shows its sheet only when the app was
         installed from Play, and decides for itself whether to show it at
         all, so seeing no sheet is not by itself a failure. For a build that
         is sure to show it, use Play's internal app sharing, which is the
-        route Google documents for testing this API.
-  - [ ] **No sheet appeared? Open the store page** opens the Play listing.
-  - [ ] The 1.1 checks, if 1.1 was never verified on a device: backup and
-        restore, the status bar in both themes, the landscape cutout band.
+        route Google documents for testing this API. Tapped on a build
+        installed from Android Studio: no sheet, as expected there.
+  - [x] **No sheet appeared? Open the store page** opens the Play listing.
+  - [x] The 1.1 checks: backup and restore, the status bar in both themes,
+        the landscape cutout band. All pass.
 - [ ] **Privacy.** The app never sees a rating or a review: Google's own
       sheet collects it and sends it to Google. So nothing in the four
       privacy documents changes. Before submitting, check Play's current
       Data safety guidance on the Play In-App Review library, in case Play
       expects it listed.
-- [ ] **Upload** the bundle to the closed testing track, with the release
-      notes below.
+- [x] **Upload** the bundle to the closed testing track, with the release
+      notes below. Uploaded and sent for review on 6 October 2026 as
+      **4 (1.2)** on Closed testing (Alpha), with both paragraphs of the
+      notes, because 1.1 never reached Play. The previous release there was
+      2 (1.0), left out of this one. Play raised two warnings and no errors:
+      the download size grew (the 48 species photographs were added on
+      4 October, after 1.0; the bundle is 7.6MB), and there is no deobfuscation file, which only
+      matters for minified code and this build is not minified.
+      - Signed through **Generate Signed App Bundle or APK**, with the
+        password Android Studio remembered. A Gradle bundle without
+        `keystore.properties` is unsigned and Play refuses it with "All
+        uploaded bundles must be signed". Recording the password, or an
+        upload key reset in Play Console (App integrity → App signing), is
+        still to do, so that releases don't depend on this one machine.
 
 ---
 
