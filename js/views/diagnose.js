@@ -117,11 +117,13 @@ window.ViewDiagnose = (function () {
         'species.', '<button class="btn btn-ghost" data-open="plant">Add a plant</button>');
     }
 
-    /* Held further off the list than the 8px between plants, because it is not
-       another plant. At the list's own gap it read as a fourth card and the
-       eye ran straight past it; the escape hatch has to look like a different
-       kind of answer or it is not one. */
-    html += '<div class="section" style="margin-top:20px">' +
+    /* Held off the list by an "or", because it is not another plant. At the
+       list's own 8px gap it read as one more card and the eye ran straight
+       past it; a wider gap alone still left the reader to work out that the
+       two were alternatives. The word says it. With no plants there is no
+       choice being offered, so the rule only appears beside a list. */
+    html += (plants.length ? '<div class="ornament ornament-word" aria-hidden="true"><span>or</span></div>' : '') +
+      '<div class="section"' + (plants.length ? '' : ' style="margin-top:20px"') + '>' +
       '<button class="dx-opt" data-dx-plant="any" style="margin:0;width:100%">' +
         '<span class="dx-opt-ico">' + UI.icon('search') + '</span>' +
         '<span style="min-width:0">' +
@@ -170,7 +172,10 @@ window.ViewDiagnose = (function () {
        viewport and the field itself is exactly as wide as it should be.
        Keeping these short is the only real defence, so the rule for the app
        is a placeholder that fits the narrowest phone with room to spare. */
-    let html = '<div class="field" style="margin-bottom:14px">' +
+    /* 32px, not the 14px it had: the search field and the list are different
+       things, and at 14px the section title sat on the field's bottom edge as
+       if it were the field's own label. */
+    let html = '<div class="field" style="margin-bottom:32px">' +
       '<input class="input input-search" id="dxq" type="search" autocomplete="off" ' +
         'placeholder="Search symptoms — &quot;yellow&quot;, &quot;spots&quot;">' +
     '</div>' +
@@ -267,7 +272,9 @@ window.ViewDiagnose = (function () {
         UI.icon('stethoscope') + 'Diagnose</button>' +
     '</div>';
 
-    html += '<div class="section" style="margin-top:0">' +
+    /* Same 32px as above the symptom list. The card has no margin of its
+       own, so at 0 the heading sat flush on the card's bottom border. */
+    html += '<div class="section" style="margin-top:32px">' +
       '<div class="section-head"><h2 class="section-title">What else is true?</h2>' +
         /* "tick any that apply" is nineteen characters of tracked micro-caps,
            and .section-head is one flex row — so the note took enough width
@@ -342,7 +349,7 @@ window.ViewDiagnose = (function () {
     const proneTo = sp ? (sp.problems || []) : [];
     const ranked = PROBLEM_DATA.diagnose(params.extra, clues, proneTo).slice(0, 4);
 
-    html += '<div class="section">' +
+    html += '<div class="section" style="margin-top:32px">' +
       '<div class="section-head"><h2 class="section-title">' +
         (clues.length ? 'Most likely causes' : 'Possible causes') + '</h2>' +
         /* Short, because .section-head is a single flex row and the note
@@ -378,7 +385,19 @@ window.ViewDiagnose = (function () {
           '<div class="row" style="align-items:flex-start;gap:10px">' +
             '<span class="dx-cause-mark">' + UI.icon(c.ico) + '</span>' +
             '<div style="flex:1;min-width:0">' +
-              '<div style="font-family:var(--serif);font-size:18px">' + UI.esc(c.name) + '</div>' +
+              /* The name and its pills on one line: what it is, how much it
+                 matters, and whether this species is prone to it, read as a
+                 single statement. The pills used to sit two rows down, under
+                 the confidence meter, which put the most actionable words on
+                 the card furthest from the name they qualify. On a phone the
+                 text column is about 256px, so the pills wrap under the name
+                 there, as a row of their own rather than mid-word. */
+              '<div class="dx-cause-head">' +
+                '<span class="dx-cause-t">' + UI.esc(c.name) + '</span>' +
+                (c.severity === 'high' ? UI.pill('Act quickly', 'terra-hi') :
+                 c.severity === 'med' ? UI.pill('Worth sorting soon', 'sun') : UI.pill('Not urgent', 'grey')) +
+                (proneTo.indexOf(r.id) !== -1 && sp ? UI.pill('Common in ' + sp.common, 'grey') : '') +
+              '</div>' +
               /* The confidence readout: the word and the bar it belongs to.
                  .dx-conf is a 2px track with overflow:hidden — it was never
                  a text box — so putting the label inside it hid the label
@@ -388,25 +407,12 @@ window.ViewDiagnose = (function () {
                  track, so the reader gets the language and the relative
                  weight at once: three causes can all say "Possible" while
                  scoring 84, 60 and 56, and the ranking is the entire point
-                 of the diagnosis.
-
-                 Its own line, above the pills rather than among them. The
-                 two are different kinds of statement — how sure we are
-                 against how much it matters — and they do not fit on one
-                 line anyway: inside the card the text column is about 256px
-                 at 390px, and the meter plus "Worth sorting soon" comes to
-                 roughly 260. Letting that wrap put the pill on a second row
-                 by accident, with flex row-gap deciding the spacing; two
-                 deliberate rows read as a structure instead of an overflow,
-                 and behave the same at every width. */
-              '<div class="dx-conf-wrap" style="margin-top:6px">' +
+                 of the diagnosis. It keeps its own line under the name: how
+                 sure I am is a different kind of statement from how much it
+                 matters, and the two read better apart. */
+              '<div class="dx-conf-wrap" style="margin-top:8px">' +
                 '<span class="dx-conf"><i style="width:' + r.share + '%"></i></span>' +
                 '<span class="dx-conf-t">' + UI.esc(r.confidence) + '</span>' +
-              '</div>' +
-              '<div class="row-wrap" style="margin-top:8px">' +
-                (c.severity === 'high' ? UI.pill('Act quickly', 'terra-hi') :
-                 c.severity === 'med' ? UI.pill('Worth sorting soon', 'sun') : UI.pill('Not urgent', 'grey')) +
-                (proneTo.indexOf(r.id) !== -1 && sp ? UI.pill('Common in ' + sp.common, 'grey') : '') +
               '</div>' +
             '</div>' +
           '</div>' +
@@ -418,7 +424,7 @@ window.ViewDiagnose = (function () {
               '<ol class="dx-steps">' + c.fix.map(function (s) {
                 return '<li>' + UI.esc(s) + '</li>';
               }).join('') + '</ol>' +
-              (c.prevent ? '<p class="hint" style="margin-top:2px"><strong>Next time:</strong> ' +
+              (c.prevent ? '<p class="hint dx-next"><strong>Next time:</strong> ' +
                 UI.esc(c.prevent) + '</p>' : '')
             : '<button class="link-btn" data-expand="' + UI.attr(r.id) + '" style="margin-top:12px">' +
               'Show treatment steps</button>') +
@@ -595,7 +601,7 @@ window.ViewDiagnose = (function () {
           '<ol class="dx-steps">' + c.fix.map(function (s) {
             return '<li>' + UI.esc(s) + '</li>';
           }).join('') + '</ol>' +
-          (c.prevent ? '<p class="hint"><strong>Next time:</strong> ' + UI.esc(c.prevent) + '</p>' : ''));
+          (c.prevent ? '<p class="hint dx-next"><strong>Next time:</strong> ' + UI.esc(c.prevent) + '</p>' : ''));
         return;
       }
 
