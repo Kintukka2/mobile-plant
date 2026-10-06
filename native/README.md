@@ -142,6 +142,7 @@ app read the file, and neither plugin needs a permission.
 | `@capacitor/filesystem` | Writing the backup file to the cache |
 | `@capacitor/share` | Handing that file to the share sheet |
 | `@capacitor/status-bar` | Android only: the status bar's colour and icons, below |
+| `@capacitor-community/in-app-review` | The store's own review sheet, behind the rating screen's one button (`../js/rate.js`) |
 
 ## The status bar and the window behind the app
 

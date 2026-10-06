@@ -4,6 +4,7 @@
   "webDir": "www",
   "ios": {
     "includePlugins": [
+      "@capacitor-community/in-app-review",
       "@capacitor/app",
       "@capacitor/filesystem",
       "@capacitor/local-notifications",

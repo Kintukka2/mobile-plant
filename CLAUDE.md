@@ -317,9 +317,9 @@ for review without counting. It asks once, through
 the store's own review sheet, and never asks whether the reader is enjoying
 the app first: both stores forbid an opinion question in front of the rating
 prompt, and routing only the happy ones to the stars is review gating. The
-in-app sheet needs `@capacitor-community/in-app-review` in `native/`, which
-is not installed yet; without it the button opens the Play listing on
-Android, and on the web the screen only says thank you.
+in-app sheet comes from `@capacitor-community/in-app-review` in `native/`
+(since Android 1.2). If the sheet call fails the button opens the Play
+listing instead, and on the web the screen only says thank you.
 
 ## Type
 

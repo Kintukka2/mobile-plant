@@ -30,9 +30,10 @@ android {
            a used version code even when the draft is discarded, so reusing
            it is a second rejection after a second full rebuild.
            3 is 1.1, the fixes from PrimeTestLab's closed-testing report 7959
-           (release-plans/android-v1.1/plan.md). */
-        versionCode 3
-        versionName "1.1"
+           (release-plans/android-v1.1/plan.md). 4 is 1.2, the rating screen
+           (release-plans/android-v1.2/plan.md). */
+        versionCode 4
+        versionName "1.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
