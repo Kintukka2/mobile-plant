@@ -1105,13 +1105,29 @@ window.ViewPlan = (function () {
 
     panel.addEventListener('input', function (e) {
       const t = e.target;
-      if (t.id === 'pl-room-name') { const r = room(sel.id); r.name = t.value; Store.save(); drawCanvas(); return; }
+      /* Saved as typed, so the label on the plan follows the keyboard, but
+         never saved empty. It used to be, and a room cleared here stayed
+         nameless: a blank card in the greenhouse and a blank choice in every
+         room picker (PrimeTestLab 8220, M-01). An empty field now leaves the
+         last real name in the store, and the change handler below puts it
+         back in the field when the reader leaves it. */
+      if (t.id === 'pl-room-name') {
+        const r = room(sel.id), v = t.value.trim();
+        if (v) { r.name = v; Store.save(); drawCanvas(); }
+        return;
+      }
       if (t.id === 'pl-bd-op') { plan().backdrop.opacity = +t.value; Store.save(); drawCanvas(); return; }
       if (t.id === 'pl-bd-sc') { plan().backdrop.scale = +t.value; Store.save(); drawCanvas(); return; }
     });
 
     panel.addEventListener('change', function (e) {
       const t = e.target;
+      if (t.id === 'pl-room-name') {
+        const r = room(sel.id);
+        if (!t.value.trim()) { t.value = r.name; UI.toast('Every room needs a name, so I\'ve kept ' + r.name, 'leaf'); }
+        else t.value = r.name;
+        return;
+      }
       if (t.id === 'pl-done') {
         /* Ticking done drops the image: it has done its job, and it is the
            one thing here that costs real storage. */

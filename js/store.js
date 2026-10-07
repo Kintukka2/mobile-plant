@@ -76,12 +76,30 @@ window.Store = (function () {
       if (!Array.isArray(state.rooms)) state.rooms = [];
       if (!Array.isArray(state.plants)) state.plants = [];
       if (!Array.isArray(state.logs)) state.logs = [];
+      nameBlankRooms(state.rooms);
       return state;
     } catch (e) {
       console.error('Could not read saved data, starting fresh:', e);
       state = blankState();
       return state;
     }
+  }
+
+  /* The planner's name field could once save a room with no name at all
+     (PrimeTestLab 8220, M-01). It no longer can, but a device that hit it
+     still holds the blank, and a blank room is a card and a picker choice
+     nobody can tell apart from the next. Each one gets the first "Room N"
+     not already taken, which is what the planner calls a freshly traced
+     room anyway. In memory only: the next ordinary save writes it down. */
+  function nameBlankRooms(rooms) {
+    const taken = {};
+    rooms.forEach(function (r) { if (r && typeof r.name === 'string' && r.name.trim()) taken[r.name.trim()] = true; });
+    let n = 1;
+    rooms.forEach(function (r) {
+      if (!r || (typeof r.name === 'string' && r.name.trim())) return;
+      while (taken['Room ' + n]) n++;
+      r.name = 'Room ' + n; taken[r.name] = true;
+    });
   }
 
   function save() {
@@ -446,6 +464,7 @@ window.Store = (function () {
     const parsed = JSON.parse(json);
     if (!parsed.state) throw new Error('That does not look like a Sprout backup file.');
     state = Object.assign(blankState(), parsed.state);
+    if (Array.isArray(state.rooms)) nameBlankRooms(state.rooms);
     /* Each photo is written on its own so one that doesn't fit doesn't cost
        the rest, but the failures are counted rather than swallowed: a
        restore that quietly drops photos reads as complete until someone
