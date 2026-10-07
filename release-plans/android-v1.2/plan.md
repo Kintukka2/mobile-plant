@@ -57,7 +57,7 @@ Also checked:
 - `npx cap sync` lists the plugin for both platforms.
 - It registers as `InAppReview` with `requestReview()`, the name and method
   `js/rate.js` calls.
-- It needs no Android permission and supports minSdk 23. Its review library
+- It needs no Android permission and supports minSdk 23 (the app now needs 24, from 1.3). Its review library
   defaults to `com.google.android.play:review:2.0.1`, and it builds against
   the same Android Gradle plugin (8.7.2) as the app.
 

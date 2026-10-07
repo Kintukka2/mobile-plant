@@ -123,7 +123,7 @@ was lost. If the plan ever needs re-shooting, it has to come off a phone.
 
 ## Before the bundle will upload
 
-Two things Play rejects at **Preview and confirm**, after the bundle has
+Three things Play rejects at upload or at **Preview and confirm**, after the bundle has
 already built and uploaded. Neither is caught by Gradle, Android Studio or
 anything local, so they cost a full rebuild each time.
 
@@ -131,6 +131,11 @@ anything local, so they cost a full rebuild each time.
   36 as of the first submission, and it rises roughly every August. The
   Capacitor template pins whatever was current when it was generated, so
   check `native/android/variables.gradle` before building rather than after.
+- **Minimum SDK.** Play automatic protection, one of the enhancements Play
+  Console switches on, needs `minSdkVersion` 24 or higher. The Capacitor
+  template pins 23, and the 1.3 upload was refused for it ("requires a
+  minimum SDK version of 24 or higher"). It is 24 in
+  `native/android/variables.gradle` now; leave it there or above.
 - **Version code.** Play keeps a version code once a bundle carrying it has
   been uploaded, even to a draft release that is then discarded. Bump
   `versionCode` in `native/android/app/build.gradle` for every upload

@@ -1,6 +1,7 @@
 # Android 1.3 — the rating ask off for closed testing
 
-**This release:** 1.3 (versionCode 5).
+**This release:** 1.3 (versionCode 6). Code 5 was the first 1.3 bundle,
+which Play refused for its minimum SDK (below).
 **Previous:** 1.2 (versionCode 4), live to closed testers since 6 October 2026.
 
 ---
@@ -30,7 +31,12 @@ qualify in 1.2.
   - the species photo in Discover's room matches
 - `CACHE` is `sprout-v73-viridium`.
 
-No native change: the plugins are as in 1.2.
+One native change: **minSdk 24** (Android 7.0), up from the template's 23.
+The first 1.3 upload, as 5 (1.3), was refused on 7 October 2026 with "Play
+automatic protection requires a minimum SDK version of 24 or higher". That
+protection is a Play Console enhancement, not something in the build, so
+1.2 went through before it applied. Raising the floor drops only Android 6
+phones. The plugins are as in 1.2.
 
 ## Checked here
 
@@ -50,7 +56,9 @@ here.
 
 - [x] `js/rate.js`: `LIVE = false`. `CLAUDE.md` says so in the rating
       paragraph.
-- [x] `native/android/app/build.gradle`: `versionCode 5`, `versionName "1.3"`.
+- [x] `native/android/app/build.gradle`: `versionCode 6`, `versionName "1.3"`.
+      Code 5 went to the refused upload and is treated as spent.
+- [x] `native/android/variables.gradle`: `minSdkVersion = 24`.
 - [x] `CACHE` bumped to `sprout-v73-viridium`.
 - [ ] **Build.** Run `native/prepare-android.bat`, then sync in Android
       Studio. Sign through **Generate Signed App Bundle or APK** (the
@@ -59,7 +67,9 @@ here.
 - [ ] **Quick device check.** The new Greenhouse, room form and Diagnose
       screens look right. Optionally run `Rate.eligible()` through
       `chrome://inspect` and confirm it says "switched off".
-- [ ] **Upload** to Closed testing as **5 (1.3)**, with the notes below.
+- [ ] **Upload** to Closed testing as **6 (1.3)**, with the notes below.
+      Remove the refused 5 (1.3) bundle from the draft release first (the ✕
+      beside it), or Play keeps reporting its error.
 - [ ] **Reply to PrimeTestLab** on ticket #3229: the ask is off from 1.3.
 
 ---
