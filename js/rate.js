@@ -55,6 +55,14 @@ window.Rate = (function () {
   };
   const CARE = ['water', 'fertilise', 'repot', 'rotate', 'mist', 'prune', 'inspect'];
 
+  /* Off until the production release. Closed testing runs on paid testers,
+     and Play treats ratings from people paid to use the app as incentivised:
+     it can strip them and penalise the listing. PrimeTestLab raised this on
+     ticket #3229 after 1.2 went out with the ask live. Rate.open() and
+     ?rate still open the screen for review; only the automatic ask waits.
+     Turn this on in the build that goes to production, and nowhere earlier. */
+  const LIVE = false;
+
   const POSE = 'new-growth';
   /* The thank-you gets its own face. It is seen once per install at most,
      so a bigger expression than the ask's can never wear thin, and the
@@ -408,6 +416,7 @@ window.Rate = (function () {
     const s = Store.get(), r = record(), today = UI.today();
     const ago = function (iso) { const d = UI.fromISO(iso); return d ? UI.daysBetween(d, today) : Infinity; };
 
+    if (!LIVE) return { ok: false, why: 'switched off until the production release' };
     if (platform() === 'web') return { ok: false, why: 'web has no review sheet' };
     if (r.rated) return { ok: false, why: 'already tapped Leave a rating' };
     if (r.asks >= POLICY.maxAsks) return { ok: false, why: 'asked ' + r.asks + ' times' };
