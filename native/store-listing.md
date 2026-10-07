@@ -124,7 +124,7 @@ was lost. If the plan ever needs re-shooting, it has to come off a phone.
 ## Before the bundle will upload
 
 Three things Play rejects at upload or at **Preview and confirm**, after the bundle has
-already built and uploaded. Neither is caught by Gradle, Android Studio or
+already built and uploaded. None is caught by Gradle, Android Studio or
 anything local, so they cost a full rebuild each time.
 
 - **Target API level.** Play refuses a new app below the current floor —
