@@ -45,8 +45,10 @@
 
    v65: its trigger, on the Today tap that clears the day.
 
-   v66: four more of the character's plates, and concerned out of the set. */
-const CACHE = 'sprout-v72-viridium';
+   v66: four more of the character's plates, and concerned out of the set.
+
+   v73: the automatic rating ask switched off for closed testing. */
+const CACHE = 'sprout-v73-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is

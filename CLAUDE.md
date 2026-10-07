@@ -328,7 +328,10 @@ the character drifts.
 
 **The rating screen** (`Rate.open()`, `js/rate.js`) has one trigger: the
 tap on Today that clears the day's last task, while "All caught up" is on
-screen. `Rate.maybeAsk()` then decides, from `POLICY` at the top of the
+screen. **It is switched off (`LIVE = false`) until the production
+release:** closed testers are paid, and Play can strip ratings from paid
+testers and penalise the listing. Flip it in the production build only.
+When it is on, `Rate.maybeAsk()` decides, from `POLICY` at the top of the
 file: native only, a week since install, ten care actions over three days
 and two plants, no diagnosis in the last fortnight, ninety days between
 asks, three asks ever, and never again after the button is tapped. The
