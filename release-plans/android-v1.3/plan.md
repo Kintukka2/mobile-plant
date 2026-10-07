@@ -60,17 +60,26 @@ here.
       Code 5 went to the refused upload and is treated as spent.
 - [x] `native/android/variables.gradle`: `minSdkVersion = 24`.
 - [x] `CACHE` bumped to `sprout-v73-viridium`.
-- [ ] **Build.** Run `native/prepare-android.bat`, then sync in Android
+- [x] **Build.** Run `native/prepare-android.bat`, then sync in Android
       Studio. Sign through **Generate Signed App Bundle or APK** (the
       password is the one Android Studio remembers). The file lands in
       `native\android\app\release\app-release.aab`.
 - [ ] **Quick device check.** The new Greenhouse, room form and Diagnose
       screens look right. Optionally run `Rate.eligible()` through
       `chrome://inspect` and confirm it says "switched off".
-- [ ] **Upload** to Closed testing as **6 (1.3)**, with the notes below.
+- [x] **Upload** to Closed testing as **6 (1.3)**, with the notes below.
       Remove the refused 5 (1.3) bundle from the draft release first (the ✕
-      beside it), or Play keeps reporting its error.
-- [ ] **Reply to PrimeTestLab** on ticket #3229: the ask is off from 1.3.
+      beside it), or Play keeps reporting its error. Uploaded and sent for
+      review on 7 October 2026 as **6 (1.3)** on Closed testing (Alpha),
+      full roll-out, with managed publishing off, so it goes live as soon
+      as Google approves it.
+- [ ] **Approved.** Not yet: Play was still running its quick checks
+      when the upload was recorded.
+- [x] **Reply to PrimeTestLab** on ticket #3229: the ask is off from 1.3.
+      Sent on 7 October 2026. It names 6 (1.3), says the build is in
+      review, gives the new Android 7.0 floor (the AQUOS R8 is unaffected),
+      repeats the request to re-test M-01 to M-04, and asks any tester who
+      was prompted in 1.2 not to rate.
 
 ---
 
