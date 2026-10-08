@@ -380,7 +380,10 @@ window.ViewSpecies = (function () {
       ['globe', 'Native to', s.origin || 'Unknown', s.family ? 'Family: ' + s.family + '.' : '']
     ].filter(Boolean);
 
-    html += '<div class="section">' +
+    /* The add button above has no margin of its own, so without this the
+       heading sat flush against it. Collapses into the pet warning's 42px
+       when that sits between them, so it only ever opens the button gap. */
+    html += '<div class="section" style="margin-top:32px">' +
       '<div class="section-head"><h2 class="section-title">Care</h2></div>' +
       UI.specSheet(facts) +
     '</div>';
