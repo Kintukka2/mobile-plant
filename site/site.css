@@ -156,13 +156,14 @@ strong{ color:var(--ink); font-weight:400; }
              color-mix(in srgb, var(--sun) 4%, transparent) 55%, transparent 70%);
   pointer-events:none; }
 .hero > *{ position:relative; }
-/* Sprout in the corner. Absolute against the hero, and more specific than
+/* Sprout in the corner, mirrored so the cut-out's cropped edges meet the
+   right and bottom of the page. Absolute against the hero, and more specific than
    the rule above so it is not pulled back into the flow. Its size is the
    script's (--sprout-h), because the free room in this corner is anything
    from 400px of gutter to a band under the buttons; see the note beside the
    script. Above the sun wash, under nothing that takes a click. */
-.hero > .hero-sprout{ position:absolute; left:0; bottom:0; height:var(--sprout-h,0px); width:auto;
-  pointer-events:none; user-select:none; }
+.hero > .hero-sprout{ position:absolute; right:0; bottom:0; height:var(--sprout-h,0px); width:auto;
+  transform:scaleX(-1); pointer-events:none; user-select:none; }
 .hero > .hero-sprout[hidden]{ display:none; }
 /* The lockup, sized off one variable so the mark cannot drift from the
    wordmark at any viewport.
@@ -651,3 +652,35 @@ footer{ padding-block:26px; }
   [data-ui-snap-panel] .film{ max-width:none; }
   [data-ui-snap-panel] .sp-list{ max-height:420px; }
 }
+
+/* ---- The intro. Sprout walks a branch that blooms behind it, lands in the
+   hero's corner, and the layer dissolves onto the page; the script that
+   builds it is first in index.html's body, and says when it plays. The
+   layer is the splash's world, a deeper field than the page, so the
+   dissolve reads as a lid lifting rather than one page fading into another. */
+.intro{ position:fixed; inset:0; z-index:1000; overflow:hidden; color:var(--ink);
+  background:
+    radial-gradient(38% 70% at 46% 58%, color-mix(in srgb, var(--sun) 10%, transparent), transparent 72%),
+    radial-gradient(760px 520px at 50% 42%, color-mix(in srgb, var(--leaf) 18%, transparent), transparent 70%),
+    #050A08;
+  transition:opacity .8s cubic-bezier(.4,0,.2,1), visibility .8s; }
+.intro.is-out{ opacity:0; visibility:hidden; }
+/* Skipped: the reader has asked for the page, so it comes quickly. */
+.intro.is-skip{ opacity:0; visibility:hidden; transition-duration:.35s; }
+.intro-stage{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+.intro-mark{ position:absolute; left:0; right:0; padding-inline:16px; text-align:center; pointer-events:none;
+  top:calc(env(safe-area-inset-top, 0px) + max(72px, 13vh)); will-change:transform; }
+.intro-word{ font-family:var(--display); font-weight:200; font-size:clamp(40px,11vw,74px);
+  letter-spacing:.22em; text-indent:.22em; text-transform:uppercase; line-height:1.05; }
+.intro-word span{ display:inline-block; opacity:0; will-change:transform, opacity, filter; }
+.intro-script{ font-family:var(--script); font-size:clamp(26px,7vw,40px); color:var(--mint);
+  margin-top:-2px; padding-bottom:.12em; opacity:0; }
+.intro-rule{ margin:20px auto 0; width:132px; height:1px; background:var(--hair);
+  position:relative; overflow:hidden; transform:scaleX(0); }
+.intro-rule i{ position:absolute; inset:0; transform:translateX(-100%);
+  background:linear-gradient(90deg, transparent, var(--mint), transparent); }
+.intro-skip{ position:absolute; z-index:1; top:calc(env(safe-area-inset-top, 0px) + 14px); right:16px;
+  font-family:var(--sans); font-size:11px; letter-spacing:.24em; text-transform:uppercase;
+  color:var(--ink-3); background:none; border:0; padding:10px 12px; cursor:pointer; }
+.intro-skip:hover, .intro-skip:focus-visible{ color:var(--ink-2); }
+.intro-skip:focus-visible{ outline:1px solid var(--mint); outline-offset:2px; }

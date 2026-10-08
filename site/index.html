@@ -29,6 +29,796 @@
 </head>
 <body>
 
+<!-- =========================================================================
+     The first visit opens on Sprout. It walks a bare branch that blooms
+     behind it, leaps into the corner where the hero keeps it, gathers the
+     garden back into seeds, and sends one spark up to draw the line under the
+     name. Then this layer dissolves and the page is underneath, already in
+     place: the Sprout it lands as is the hero's own, at the hero's size.
+
+     Here, first in the body, so it covers the first paint rather than
+     arriving over a page the reader has started reading. Once a session, and
+     never for a reader who asked for less motion, who arrived on a #section
+     link, or who has no script (the layer is built here, so without script
+     there is nothing to hide). Any tap, key, wheel or swipe hands the page
+     over at once. Every frame is a function of the clock, so a frame can be
+     held for review with ?intro=8.4; ?intro on its own replays it.
+
+     The figure is marketing/character/rig at web weight, in img/sprout-rig/:
+     body and two leaf arms, which stack back into the corner cut-out with the
+     arms at rest. The legs are drawn here, in the arms' jade.
+     ====================================================================== -->
+<script>
+(function () {
+  'use strict';
+  var q = (location.search.match(/[?&]intro(?:=([\d.]+))?(?:&|$)/) || null);
+  var hold = q && q[1] ? parseFloat(q[1]) : null;
+  if (!q) {
+    if (location.hash) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    try {
+      if (sessionStorage.getItem('sprout.intro')) return;
+      sessionStorage.setItem('sprout.intro', '1');
+    } catch (e) { /* private mode: play it, and again next time */ }
+  }
+  if (!window.CanvasRenderingContext2D) return;
+
+  var root = document.documentElement;
+  var layer = document.createElement('div');
+  layer.className = 'intro';
+  layer.innerHTML =
+    '<canvas class="intro-stage" aria-hidden="true"></canvas>' +
+    '<div class="intro-mark" aria-hidden="true"><div class="intro-word"><span>S</span><span>P</span><span>R</span><span>O</span><span>U</span><span>T</span></div>' +
+    '<div class="intro-script">evergreen</div><div class="intro-rule"><i></i></div></div>' +
+    '<button type="button" class="intro-skip">Skip intro</button>';
+  document.body.appendChild(layer);
+  // Snap scrolling stands down while it plays. The page's own scroll is left
+  // alone: hiding the scrollbar would shift the hero sideways at the handover,
+  // and any attempt to scroll hands the page over anyway.
+  root.classList.add('ui-snap-paused');
+
+  // Found lazily: this runs before the hero has been parsed.
+  var heroSprout = null;
+
+  var load = function (src) { var i = new Image(); i.src = src; return i; };
+  var img = load('img/sprout-rig/body.webp');
+  // Boxes and pivots in the 557x720 frame of the corner cut-out. Each arm
+  // turns about the base of its leaf, low in the middle where the two meet.
+  var ARMS = {
+    L: { img: load('img/sprout-rig/arm-left.webp'), box: [41.6, 497.8, 325.6, 719.8], piv: [250.3, 704.6] },
+    R: { img: load('img/sprout-rig/arm-right.webp'), box: [320.4, 507.9, 552.4, 719.9], piv: [420.3, 704.6] }
+  };
+  var IA = 557 / 720;
+
+  var cvs = layer.querySelector('canvas');
+  var ctx = cvs.getContext('2d');
+  var TAU = Math.PI * 2;
+  var clamp = function (v, a, b) { a = a === undefined ? 0 : a; b = b === undefined ? 1 : b; return v < a ? a : v > b ? b : v; };
+  var lerp = function (a, b, u) { return a + (b - a) * u; };
+  var smooth = function (u) { return u * u * (3 - 2 * u); };
+  var easeOut = function (u) { return 1 - Math.pow(1 - u, 3); };
+  var easeInOut = function (u) { return u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2; };
+  var backOut = function (u, s) { s = s === undefined ? 1.9 : s; u -= 1; return u * u * ((s + 1) * u + s) + 1; };
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  // ---- Timeline (seconds) -------------------------------------------------
+  const T = { walk0: 0.35, walkDur: 4.2 };
+  T.walk1 = T.walk0 + T.walkDur;
+  // After the landing the garden gathers itself: a wave runs along the branch
+  // towards the corner, each plant folds back down into its stem, and every
+  // bloom sends its seed into Sprout's arms. Nothing wilts. It is kept, not lost.
+  T.out0 = T.walk1 + 1.95;
+  const WAVE = 1.0, OUT = 0.55;
+  T.settle = T.out0 + 1.6;    // the branch is clear: the wordmark moves to the centre
+  T.spark = T.out0 + 2.5;     // Sprout tosses one spark up to the wordmark
+  T.rule = T.spark + 0.85;    // which draws the splash's own hairline
+  // Held for a beat once the line is drawn, then the page is handed over.
+  T.end = T.rule + 0.9;
+
+  // Trapezoid velocity: a short pick-up, a steady stroll, a short slow-down.
+  // Position stays invertible, which is what lets each plant know the exact
+  // moment Sprout passes it.
+  const ACC = 0.07, DEC = 0.11, VM = 1 / (1 - ACC / 2 - DEC / 2);
+  function trap(u) {
+    if (u <= 0) return 0; if (u >= 1) return 1;
+    if (u < ACC) return VM * u * u / (2 * ACC);
+    if (u < 1 - DEC) return VM * (ACC / 2 + (u - ACC));
+    const r = 1 - u; return 1 - VM * r * r / (2 * DEC);
+  }
+  function trapV(u) {
+    if (u <= 0 || u >= 1) return 0;
+    if (u < ACC) return u / ACC;
+    if (u > 1 - DEC) return (1 - u) / DEC;
+    return 1;
+  }
+
+  // ---- Layout ---------------------------------------------------------------
+  const L = {};
+  let dpr = 1;
+  function layout() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+    L.W = window.innerWidth; L.H = window.innerHeight;
+    cvs.width = Math.round(L.W * dpr); cvs.height = Math.round(L.H * dpr);
+    const portrait = L.H > L.W;
+    L.S = clamp(Math.min(L.W * 0.16, L.H * 0.14), 64, 118);   // walker height
+    L.G = L.H * (portrait ? 0.57 : 0.62);                      // branch line
+    L.xEnd = L.W - Math.max(L.S * 1.05, L.W * 0.14);           // branch tip
+    L.x0 = -L.S * 0.7;
+    L.xStop = L.xEnd - L.S * 0.34;
+    L.v = (L.xStop - L.x0) / T.walkDur;
+    aim();
+  }
+  // Where the landing is: exactly on the hero's own Sprout, so when this layer
+  // dissolves the figure underneath is already in the same place at the same
+  // size, and the eye reads one Sprout staying put. Measured every frame,
+  // because the hero sizes it from the copy, and the copy moves when the
+  // fonts land. If the hero has no room for it, Sprout lands in a corner of
+  // its own and leaves with the layer.
+  function aim() {
+    const r = heroSprout && !heroSprout.hidden ? heroSprout.getBoundingClientRect() : null;
+    if (r && r.height > 40 && r.top >= 0 && r.bottom <= L.H + 2) {
+      L.Hc = r.height; L.Wc = r.width; L.cx = r.left + r.width / 2; L.cb = r.bottom;
+    } else {
+      L.Hc = Math.min(L.H * 0.36, (L.W * 0.42) / IA, 340); L.Wc = L.Hc * IA;
+      L.cx = L.W - L.Wc / 2; L.cb = L.H;
+    }
+  }
+
+  function xAt(t) { return L.x0 + (L.xStop - L.x0) * trap((t - T.walk0) / T.walkDur); }
+  function tPass(x) {
+    if (x >= L.xStop) return T.walk1 + (x - L.xStop) / L.v * 0.9;
+    if (x <= L.x0) return T.walk0;
+    let lo = 0, hi = 1;
+    for (let i = 0; i < 32; i++) {
+      const m = (lo + hi) / 2;
+      if (L.x0 + (L.xStop - L.x0) * trap(m) < x) lo = m; else hi = m;
+    }
+    return T.walk0 + lo * T.walkDur;
+  }
+
+  // Branch: a gently wavering line, bare until Sprout has walked over it.
+  const baseY = x => L.G + Math.sin(x * 0.011 + 1) * 2.2 + Math.sin(x * 0.027) * 1.1;
+  const tWave = x => T.out0 + clamp(x / L.xEnd) * WAVE;
+  const lushAt = (x, t) => clamp((t - tPass(x) - 0.05) / 0.9) * (1 - smooth(clamp((t - tWave(x) - 0.3) / 0.6)));
+  // Growth runs forward on the way in and backward on the way out, so a
+  // flower's head puffs once (the overshoot, reversed) before it folds.
+  const grow = (e, t) => Math.min(clamp((t - e.start) / e.dur), 1 - clamp((t - e.out) / OUT));
+  const thickAt = (x, t) => 1 + 5.2 * easeOut(lushAt(x, t)) * (1 + 0.18 * Math.sin(x * 0.07));
+  const surf = (x, t) => baseY(x) - thickAt(x, t) / 2;
+  const wind = (x, t) => Math.sin(t * 1.25 + x * 0.013) + 0.5 * Math.sin(t * 2.1 + x * 0.031);
+
+  // ---- Scene: every plant is decided once, from a fixed seed -------------
+  const GREENS = ['#1F6B4C', '#2F9A70', '#3FBE8B', '#27845F', '#4FCB98'];
+  const BLADES = ['#2F9A70', '#3FBE8B', '#1F6B4C', '#56C99A', '#27845F'];
+  const FLOWERS = {
+    daisy:   { petals: ['#F3EBD3', '#F6E7A8', '#F2B8C6', '#FFFFFF'], centre: ['#E0A43A', '#C8A96B', '#D98B3A'] },
+    bloom:   { petals: ['#EE8F7A', '#E86F8A', '#F2CF63', '#D08A62', '#F49E5C'], centre: ['#7A3B2E', '#F6EDE9', '#5A2A22'] },
+    tulip:   { petals: ['#E7A1BF', '#F08A6E', '#B7A6E6', '#F2CF63', '#E86F8A'], centre: ['#000'] },
+    cluster: { petals: ['#B7A6E6', '#9FB7F0', '#F3EBD3', '#E7A1BF', '#C7B3F5'], centre: ['#000'] }
+  };
+  const KINDS = Object.keys(FLOWERS);
+  let back = [], hang = [], front = [], moss = [], motes = [], seeds = [], arrive = [];
+
+  function build() {
+    const r = mulberry32(20261008);
+    const pick = a => a[Math.floor(r() * a.length)];
+    const S = L.S;
+    back = []; hang = []; front = []; moss = []; motes = []; seeds = []; arrive = [];
+    const outAt = x => tWave(x) + r() * 0.25;
+
+    function flower(x, extraDelay) {
+      const kind = pick(KINDS), f = FLOWERS[kind];
+      return {
+        type: 'flower', x, kind,
+        start: Math.min(tPass(x) + 0.18 + extraDelay, T.walk1 + 1.3), dur: 0.9 + r() * 0.6, out: outAt(x),
+        h: S * (0.22 + r() * 0.55), lean: (r() - 0.5) * 0.5, side: r() < 0.5 ? -1 : 1,
+        r: S * (0.055 + r() * 0.045), tilt: (r() - 0.5) * 0.5,
+        petal: pick(f.petals), centre: pick(f.centre), n: 7 + Math.floor(r() * 6),
+        stem: pick(['#2F9A70', '#27845F', '#3FBE8B']), sw: 1.3 + r() * 0.8,
+        seed: Math.floor(r() * 1e9)
+      };
+    }
+
+    let x = S * 0.05;
+    while (x < L.xEnd - S * 0.08) {
+      const k = r();
+      const delay = 0.08 + r() * 0.5;
+      if (k < 0.42) {
+        const blades = [];
+        const n = 3 + Math.floor(r() * 4);
+        for (let i = 0; i < n; i++) blades.push({
+          a: (r() - 0.5) * 1.0, h: S * (0.07 + r() * 0.22), w: 1 + r() * 1.3,
+          c: pick(BLADES), bend: (r() - 0.5) * 0.6
+        });
+        const tuft = { type: 'grass', x, start: tPass(x) + 0.12 + delay * 0.6, dur: 0.6 + r() * 0.5, out: outAt(x), blades };
+        (r() < 0.35 ? front : back).push(tuft);
+      } else if (k < 0.58) {
+        const leaves = [];
+        const n = 5 + Math.floor(r() * 5);
+        for (let i = 0; i < n; i++) leaves.push({
+          a: -Math.PI + 0.35 + (i + r() * 0.6) / n * (Math.PI - 0.7),
+          len: S * (0.11 + r() * 0.17), c: pick(GREENS), dx: (r() - 0.5) * S * 0.08
+        });
+        const berries = r() < 0.4 ? pick(['#D08A62', '#E86F8A', '#F2CF63']) : null;
+        back.push({ type: 'shrub', x, start: tPass(x) + 0.15 + delay, dur: 0.9 + r() * 0.4, out: outAt(x), leaves, berries, seed: Math.floor(r() * 1e9) });
+      } else if (k < 0.82) {
+        back.push(flower(x, delay));
+      } else if (k < 0.92) {
+        back.push({
+          type: 'vine', x, dir: -1, start: tPass(x) + 0.2 + delay, dur: 1.4 + r() * 0.8, out: outAt(x),
+          len: S * (0.6 + r() * 0.8), k0: (r() - 0.5) * 0.08, ph: r() * TAU, curl: r() < 0.5 ? -1 : 1,
+          tip: r() < 0.6 ? flower(x, 0) : null
+        });
+      } else {
+        hang.push({
+          type: 'vine', x, dir: 1, start: tPass(x) + 0.25 + delay, dur: 1.6 + r() * 0.8, out: outAt(x),
+          len: S * (0.35 + r() * 0.9), k0: (r() - 0.5) * 0.06, ph: r() * TAU, curl: r() < 0.5 ? -1 : 1,
+          tip: null
+        });
+      }
+      x += S * (0.06 + r() * 0.11);
+    }
+    // Late pops, scattered anywhere already passed, so the colour keeps
+    // arriving after the main wave rather than all at once.
+    for (let i = 0; i < Math.round(L.xEnd / S * 1.4); i++) {
+      back.push(flower(S * 0.1 + r() * (L.xEnd - S * 0.2), 0.8 + r() * 1.9));
+    }
+    back.sort((a, b) => (a.type === 'vine' ? 0 : 1) - (b.type === 'vine' ? 0 : 1));
+
+    for (let mx = 0; mx < L.xEnd; mx += 1.6 + r() * 2.4) {
+      moss.push({ x: mx, dy: (r() - 0.5) * 2.2, r: 0.5 + r() * 1.3, th: r(), c: r() < 0.08 ? '#9FD3BE' : pick(['#3FBE8B', '#2F9A70', '#56C99A', '#1F6B4C']) });
+    }
+    // One seed per bloom, shrub and flowering vine, leaving as its plant closes.
+    for (const e of back) {
+      let sx, sy, c;
+      if (e.type === 'flower') { sx = e.x + e.lean * e.h; sy = baseY(e.x) - e.h; c = e.petal; }
+      else if (e.type === 'shrub') { sx = e.x; sy = baseY(e.x) - S * 0.12; c = e.berries || '#9FD3BE'; }
+      else if (e.type === 'vine' && e.tip) { sx = e.x; sy = baseY(e.x) - e.len * 0.6; c = e.tip.petal; }
+      else continue;
+      seeds.push({ x: sx, y: sy, c, t0: e.out + OUT * 0.35, dur: 0.7 + r() * 0.3, lift: S * (0.3 + r() * 0.9),
+        jx: (r() - 0.5) * 0.9, jy: (r() - 0.5) * 0.6, r: 2.1 + r() * 1.7 });
+    }
+    arrive = seeds.map(q => q.t0 + q.dur).sort((a, b) => a - b);
+    for (const e of back) {
+      if (e.type === 'grass') continue;
+      for (let i = 0; i < 2; i++) motes.push({
+        x: e.x + (r() - 0.5) * S * 0.3, y0: r() * S * 0.4, t0: e.start + r() * 0.6,
+        life: 1.8 + r() * 1.6, gap: 1.5 + r() * 4, vy: S * (0.12 + r() * 0.25),
+        sway: S * (0.04 + r() * 0.08), ph: r() * TAU, rad: 0.7 + r() * 1.1,
+        c: r() < 0.5 ? '#DFC58F' : '#9FD3BE'
+      });
+    }
+  }
+
+  // ---- Drawing helpers --------------------------------------------------------
+  function leaf(x, y, ang, len, wid, color) {
+    if (len < 0.3) return;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
+    ctx.beginPath(); ctx.moveTo(0, 0);
+    ctx.quadraticCurveTo(len * 0.45, -wid, len, 0);
+    ctx.quadraticCurveTo(len * 0.45, wid, 0, 0);
+    ctx.fillStyle = color; ctx.fill();
+    ctx.restore();
+  }
+
+  function drawGrass(e, t) {
+    const g = grow(e, t); if (g <= 0) return;
+    const by = surf(e.x, t) + 1, sw = wind(e.x, t);
+    for (const b of e.blades) {
+      const h = b.h * easeOut(g);
+      const a = b.a + sw * 0.05;
+      const tx = e.x + Math.sin(a) * h + b.bend * h * 0.4, ty = by - Math.cos(a) * h;
+      const cx = e.x + Math.sin(a) * h * 0.4, cy = by - h * 0.55;
+      ctx.beginPath(); ctx.moveTo(e.x - b.w, by);
+      ctx.quadraticCurveTo(cx - b.w * 0.5, cy, tx, ty);
+      ctx.quadraticCurveTo(cx + b.w * 0.5, cy, e.x + b.w, by);
+      ctx.fillStyle = b.c; ctx.fill();
+    }
+  }
+
+  function drawShrub(e, t) {
+    const g = grow(e, t); if (g <= 0) return;
+    const by = surf(e.x, t) + 1, sw = wind(e.x, t) * 0.04;
+    e.leaves.forEach((l, i) => {
+      const gi = clamp((g - i * 0.05) / 0.65); if (gi <= 0) return;
+      const len = l.len * backOut(gi, 2.2);
+      leaf(e.x + l.dx, by, l.a + sw, len, len * 0.34, l.c);
+    });
+    if (e.berries && g > 0.7) {
+      const rr = mulberry32(e.seed), pg = backOut(clamp((g - 0.7) / 0.3), 3);
+      ctx.fillStyle = e.berries;
+      for (let i = 0; i < 4; i++) {
+        const a = -Math.PI * (0.2 + rr() * 0.6), d = L.S * (0.06 + rr() * 0.1);
+        ctx.beginPath(); ctx.arc(e.x + Math.cos(a) * d, by + Math.sin(a) * d, L.S * 0.018 * pg, 0, TAU); ctx.fill();
+      }
+    }
+  }
+
+  function flowerHead(e, gp) {
+    const r = e.r;
+    if (e.kind === 'daisy') {
+      ctx.fillStyle = e.petal;
+      for (let i = 0; i < e.n; i++) {
+        ctx.save(); ctx.rotate(i * TAU / e.n);
+        ctx.beginPath(); ctx.ellipse(r * 0.55, 0, r * 0.5, r * 0.17, 0, 0, TAU); ctx.fill();
+        ctx.restore();
+      }
+      ctx.fillStyle = e.centre; ctx.beginPath(); ctx.arc(0, 0, r * 0.3, 0, TAU); ctx.fill();
+    } else if (e.kind === 'bloom') {
+      ctx.fillStyle = e.petal;
+      for (let i = 0; i < 5; i++) {
+        const a = i * TAU / 5;
+        ctx.beginPath(); ctx.arc(Math.cos(a) * r * 0.42, Math.sin(a) * r * 0.42, r * 0.44, 0, TAU); ctx.fill();
+      }
+      ctx.fillStyle = 'rgba(0,0,0,0.12)'; ctx.beginPath(); ctx.arc(0, 0, r * 0.36, 0, TAU); ctx.fill();
+      ctx.fillStyle = e.centre; ctx.beginPath(); ctx.arc(0, 0, r * 0.2, 0, TAU); ctx.fill();
+    } else if (e.kind === 'tulip') {
+      ctx.fillStyle = e.petal;
+      ctx.beginPath();
+      ctx.moveTo(-r * 0.5, -r * 0.05);
+      ctx.lineTo(-r * 0.48, -r * 0.95); ctx.lineTo(-r * 0.16, -r * 0.6);
+      ctx.lineTo(0, -r * 1.05); ctx.lineTo(r * 0.16, -r * 0.6);
+      ctx.lineTo(r * 0.48, -r * 0.95); ctx.lineTo(r * 0.5, -r * 0.05);
+      ctx.quadraticCurveTo(0, r * 0.6, -r * 0.5, -r * 0.05);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.18)';
+      ctx.beginPath(); ctx.ellipse(-r * 0.18, -r * 0.3, r * 0.08, r * 0.3, 0.2, 0, TAU); ctx.fill();
+    } else {
+      const rr = mulberry32(e.seed);
+      for (let i = 0; i < 7; i++) {
+        const a = rr() * TAU, d = r * 0.55 * Math.sqrt(rr());
+        ctx.fillStyle = i % 3 === 0 ? '#F3EBD3' : e.petal;
+        ctx.beginPath(); ctx.arc(Math.cos(a) * d, Math.sin(a) * d - r * 0.2, r * (0.2 + rr() * 0.12), 0, TAU); ctx.fill();
+      }
+    }
+  }
+
+  function drawFlowerAt(e, x, by, g, t) {
+    const gs = easeOut(clamp(g / 0.6));
+    const hh = e.h * gs;
+    const sway = wind(x, t) * e.h * 0.07 * gs;
+    const tx = x + e.lean * hh + sway, ty = by - hh;
+    const cx = x + e.lean * hh * 0.25, cy = by - hh * 0.55;
+    ctx.strokeStyle = e.stem; ctx.lineWidth = e.sw; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x, by); ctx.quadraticCurveTo(cx, cy, tx, ty); ctx.stroke();
+    const lg = clamp((g - 0.25) / 0.4);
+    if (lg > 0) {
+      const s = 0.38, px = (1 - s) * (1 - s) * x + 2 * (1 - s) * s * cx + s * s * tx,
+        py = (1 - s) * (1 - s) * by + 2 * (1 - s) * s * cy + s * s * ty;
+      leaf(px, py, -Math.PI / 2 + 1.0 * e.side, e.h * 0.24 * backOut(lg, 2), e.h * 0.075, e.stem);
+    }
+    const gp = clamp((g - 0.5) / 0.5); if (gp <= 0) return;
+    ctx.save(); ctx.translate(tx, ty);
+    ctx.rotate(e.tilt + sway * 0.01 - (1 - gp) * 0.7);
+    const sc = backOut(gp, 2.6); ctx.scale(sc, sc);
+    flowerHead(e, gp);
+    ctx.restore();
+  }
+  function drawFlower(e, t) {
+    const g = grow(e, t); if (g <= 0) return;
+    drawFlowerAt(e, e.x, surf(e.x, t) + 1, g, t);
+  }
+
+  // A vine is grown by walking a heading: a slow wander, then a tightening
+  // curl over the last quarter, which is what makes it read as a tendril
+  // rather than a wavy line.
+  function drawVine(e, t) {
+    const g = grow(e, t); if (g <= 0) return;
+    const N = 34, step = e.len / N, upto = Math.max(1, Math.floor(easeOut(g) * N));
+    let x = e.x, y = e.dir < 0 ? surf(e.x, t) + 1 : baseY(e.x) + thickAt(e.x, t) / 2 - 1;
+    let hd = e.dir < 0 ? -Math.PI / 2 : Math.PI / 2;
+    const sw = wind(e.x, t) * 0.012;
+    const pts = [[x, y]];
+    for (let i = 0; i < upto; i++) {
+      const s = i / N;
+      hd += e.k0 + Math.sin(s * 5 + e.ph) * 0.05 + sw * s + (s > 0.72 ? e.curl * (s - 0.72) * 1.9 : 0);
+      x += Math.cos(hd) * step; y += Math.sin(hd) * step;
+      pts.push([x, y]);
+    }
+    ctx.lineCap = 'round'; ctx.strokeStyle = '#2F9A70';
+    for (let i = 1; i < pts.length; i++) {
+      ctx.lineWidth = lerp(2.2, 0.7, i / N);
+      ctx.beginPath(); ctx.moveTo(pts[i - 1][0], pts[i - 1][1]); ctx.lineTo(pts[i][0], pts[i][1]); ctx.stroke();
+    }
+    for (let i = 3; i < pts.length - 2; i += 4) {
+      const age = clamp((upto - i) / 6);
+      const side = (i / 4) % 2 < 1 ? 1 : -1;
+      const a = Math.atan2(pts[i + 1][1] - pts[i][1], pts[i + 1][0] - pts[i][0]) + side * 0.9;
+      leaf(pts[i][0], pts[i][1], a, L.S * 0.1 * backOut(age, 2) * (1 - i / N * 0.4), L.S * 0.035, i % 8 === 3 ? '#3FBE8B' : '#56C99A');
+    }
+    if (e.tip && g > 0.8) {
+      const [tx, ty] = pts[Math.max(1, Math.floor(pts.length * 0.72))];
+      drawFlowerAt(Object.assign({}, e.tip, { h: L.S * 0.06, lean: 0 }), tx, ty, clamp((g - 0.8) / 0.2) * 0.5 + 0.5, t);
+    }
+  }
+
+  function drawBranch(t) {
+    // The path not yet walked: a dotted seed line.
+    ctx.fillStyle = 'rgba(159, 211, 190, 0.32)';
+    for (let x = 2; x < L.xEnd; x += 7) {
+      const gone = clamp((t - tWave(x) - 0.3) / 0.5); if (gone >= 1) continue;
+      if (lushAt(x, t) > 0.6) continue;
+      ctx.globalAlpha = 1 - gone;
+      ctx.fillRect(x, baseY(x) - 0.6, 1.4, 1.4);
+    }
+    ctx.globalAlpha = 1;
+    // The living band, thickening as Sprout passes.
+    ctx.beginPath();
+    let started = false;
+    for (let x = -4; x <= L.xEnd; x += 4) {
+      const th = thickAt(x, t); if (th <= 1.05) { if (started) break; continue; }
+      const y = baseY(x) - th / 2;
+      if (!started) { ctx.moveTo(x, baseY(x)); started = true; }
+      ctx.lineTo(x, y);
+    }
+    if (started) {
+      let lastX = -4;
+      for (let x = -4; x <= L.xEnd; x += 4) { if (thickAt(x, t) > 1.05) lastX = x; }
+      const endTh = thickAt(lastX, t);
+      ctx.arc(lastX, baseY(lastX), endTh / 2, -Math.PI / 2, Math.PI / 2);
+      for (let x = lastX; x >= -4; x -= 4) ctx.lineTo(x, baseY(x) + thickAt(x, t) / 2);
+      ctx.closePath();
+      const gr = ctx.createLinearGradient(0, L.G - 4, 0, L.G + 4);
+      gr.addColorStop(0, '#3FBE8B'); gr.addColorStop(1, '#1F6B4C');
+      ctx.fillStyle = gr; ctx.fill();
+    }
+    for (const m of moss) {
+      const l = lushAt(m.x, t); if (l <= m.th) continue;
+      const a = clamp((l - m.th) / 0.25);
+      ctx.globalAlpha = a; ctx.fillStyle = m.c;
+      const s = m.r * (0.5 + a * 0.5);
+      ctx.fillRect(m.x - s / 2, baseY(m.x) - thickAt(m.x, t) / 2 + m.dy - s, s, s);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawMotes(t) {
+    for (const m of motes) {
+      if (t < m.t0) continue;
+      const age = (t - m.t0) % (m.life + m.gap); if (age > m.life) continue;
+      const u = age / m.life, keep = 1 - clamp((t - tWave(m.x)) / 0.4);
+      if (keep <= 0) continue;
+      ctx.globalAlpha = Math.sin(Math.PI * u) * 0.75 * keep;
+      ctx.fillStyle = m.c;
+      ctx.beginPath();
+      ctx.arc(m.x + Math.sin(m.ph + age * 1.7) * m.sway, baseY(m.x) - m.y0 - m.vy * age, m.rad, 0, TAU);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // ---- The gathering ------------------------------------------------------------
+  // The chest between Sprout's leaf arms in the corner, in screen space. The
+  // corner figure is mirrored, so the source x runs right to left.
+  function cornerPt(sx, sy) {
+    const k = L.Hc / 720;
+    return [L.cx - (sx - 278.5) * k, L.cb - L.Hc + sy * k];
+  }
+  const qpt = (a, b, c, u) => [(1 - u) * (1 - u) * a[0] + 2 * (1 - u) * u * b[0] + u * u * c[0],
+                               (1 - u) * (1 - u) * a[1] + 2 * (1 - u) * u * b[1] + u * u * c[1]];
+  function dot(x, y, r, color, a) {
+    if (a <= 0.01 || r <= 0.1) return;
+    ctx.globalAlpha = a; ctx.fillStyle = color;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+  }
+  function drawSeeds(t) {
+    ctx.globalCompositeOperation = 'lighter';
+    for (const q of seeds) {
+      const u = (t - q.t0) / q.dur; if (u < 0 || u > 1.12) continue;
+      const P0 = [q.x, q.y], P2 = cornerPt(300 + q.jx * 120, 640 + q.jy * 90);
+      const P1 = [lerp(P0[0], P2[0], 0.45), Math.min(P0[1], P2[1]) - q.lift];
+      const fade = clamp(u / 0.12) * (u > 1 ? 1 - (u - 1) / 0.12 : 1);
+      const toMint = smooth(clamp((u - 0.35) / 0.5));
+      for (let i = 5; i >= 0; i--) {
+        const [x, y] = qpt(P0, P1, P2, easeInOut(clamp(u - i * 0.035)));
+        const rr = q.r * (1 - i * 0.13) * (1 - 0.35 * easeInOut(clamp(u)));
+        const a = fade * (1 - i / 6) * 0.9;
+        dot(x, y, rr * 2.4, q.c, a * 0.12 * (1 - toMint));
+        dot(x, y, rr, q.c, a * (1 - toMint));
+        dot(x, y, rr, '#9FD3BE', a * toMint);
+      }
+    }
+    // The spark: one seed handed back, carried up to underline the name.
+    const u = (t - T.spark) / 0.85;
+    if (u >= 0 && u <= 1.1) {
+      const rect = rule.getBoundingClientRect();
+      const P0 = cornerPt(290, 600), P2 = [rect.left + rect.width / 2, rect.top + rect.height / 2];
+      const P1 = [lerp(P0[0], P2[0], 0.12), P2[1] - L.S * 0.7];
+      const fade = u > 1 ? 1 - (u - 1) / 0.1 : 1;
+      for (let i = 9; i >= 0; i--) {
+        const [x, y] = qpt(P0, P1, P2, easeInOut(clamp(u - i * 0.025)));
+        dot(x, y, 3.2 * (1 - i * 0.08) * 2.6, '#9FD3BE', fade * (1 - i / 10) * 0.12);
+        dot(x, y, 2.4 * (1 - i * 0.08), i === 0 ? '#F3F6F1' : '#9FD3BE', fade * (1 - i / 10));
+      }
+    }
+    const fl = (t - T.rule) / 0.6;
+    if (fl >= 0 && fl <= 1) {
+      const rect = rule.getBoundingClientRect(), cx = rect.left + rect.width / 2, cy = rect.top;
+      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, 90);
+      g.addColorStop(0, 'rgba(159,211,190,' + (0.35 * (1 - fl)).toFixed(3) + ')'); g.addColorStop(1, 'rgba(159,211,190,0)');
+      ctx.globalAlpha = 1; ctx.fillStyle = g; ctx.fillRect(cx - 90, cy - 90, 180, 180);
+    }
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  }
+  // How hard seeds are landing right now: a soft pulse per arrival.
+  function absorbAt(t) {
+    let s = 0;
+    for (const a of arrive) {
+      const d = (t - a) / 0.12;
+      if (d < -3) break;
+      if (d < 3) s += Math.exp(-d * d);
+    }
+    return Math.min(1, s * 0.22);
+  }
+  function arrivedAt(t) {
+    let n = 0; for (const a of arrive) { if (a > t) break; n++; }
+    return arrive.length ? n / arrive.length : 0;
+  }
+  function drawCornerGlow(t) {
+    if (t < T.out0) return;
+    const [cx, cy] = cornerPt(290, 560);
+    const held = arrivedAt(t), pulse = absorbAt(t);
+    const settle = smooth(clamp((t - T.spark) / 1.2));
+    const a = (0.05 + 0.16 * held) * (1 - 0.5 * settle) + 0.14 * pulse;
+    const R = L.Hc * (0.85 + 0.2 * pulse);
+    const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R);
+    g.addColorStop(0, 'rgba(63,190,139,' + a.toFixed(3) + ')'); g.addColorStop(1, 'rgba(63,190,139,0)');
+    ctx.fillStyle = g; ctx.fillRect(cx - R, cy - R, R * 2, R * 2);
+  }
+
+  // ---- Sprout ---------------------------------------------------------------
+  function bottomRounded(x, y, w, h, r) {
+    r = Math.min(r, w / 2, h / 2);
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + w, y);
+    ctx.lineTo(x + w, y + h - r);
+    if (r > 0) ctx.arcTo(x + w, y + h, x + w - r, y + h, r); else ctx.lineTo(x + w, y + h);
+    ctx.lineTo(x + r, y + h);
+    if (r > 0) ctx.arcTo(x, y + h, x, y + h - r, r); else ctx.lineTo(x, y + h);
+    ctx.closePath();
+  }
+  const HIP = 0.07, LEG = 0.19, FOOT = 0.034;
+  function drawLeg(hx, hy, a, len, h) {
+    const lw = 0.085 * h;
+    ctx.save(); ctx.translate(hx, hy); ctx.rotate(a);
+    const g = ctx.createLinearGradient(-lw / 2, 0, lw / 2, 0);
+    g.addColorStop(0, '#3CC191'); g.addColorStop(1, '#23905F');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.moveTo(-lw / 2, 0); ctx.lineTo(-lw / 2, len); ctx.arc(0, len, lw / 2, Math.PI, 0, true);
+    ctx.lineTo(lw / 2, 0); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#2A9D71';
+    ctx.beginPath(); ctx.ellipse(lw * 0.3, len + lw * 0.1, 0.066 * h, FOOT * h, 0, 0, TAU); ctx.fill();
+    ctx.restore();
+  }
+  function drawSprout(p) {
+    if (!img.complete || !img.naturalWidth) return;
+    const h = p.h, w = h * IA;
+    ctx.save();
+    ctx.translate(p.x, p.yB); ctx.rotate(p.tilt || 0); ctx.scale(p.flip * (p.sx || 1), p.sy || 1);
+    if (p.legL > 0.01) {
+      drawLeg(-0.12 * h, -HIP * h, p.la, p.legL * LEG * h, h);
+      drawLeg(0.12 * h, -HIP * h, p.lb, p.legL * LEG * h, h);
+    }
+    ctx.save();
+    const r = p.round * 0.36 * w;
+    // Union of the rounded body and a wide band above the rounding, so an
+    // arm swung outwards is not cut off at the image's own edge.
+    ctx.beginPath(); ctx.rect(-w * 0.9, -h * 1.3, w * 1.8, h * 1.3 - Math.max(r, 0.5));
+    bottomRounded(-w / 2, -h, w, h, r); ctx.clip();
+    ctx.drawImage(img, -w / 2, -h, w, h);
+    // The right arm sits behind the left: the left casts the shadow at the seam.
+    drawArm(ARMS.R, p.aR || 0, p.liftR || 0, w, h);
+    drawArm(ARMS.L, p.aL || 0, p.liftL || 0, w, h);
+    ctx.restore();
+    ctx.restore();
+  }
+  function drawArm(a, ang, lift, w, h) {
+    if (!a.img.complete || !a.img.naturalWidth) return;
+    const k = h / 720, b = a.box;
+    ctx.save();
+    ctx.translate(-w / 2 + a.piv[0] * k, -h + (a.piv[1] + lift * 720) * k);
+    ctx.rotate(ang);
+    ctx.drawImage(a.img, (b[0] - a.piv[0]) * k, (b[1] - a.piv[1]) * k, (b[2] - b[0]) * k, (b[3] - b[1]) * k);
+    ctx.restore();
+  }
+  // Body-bottom height that puts the lower foot exactly on the branch.
+  function standY(x, t, h, la, lb, legL = 1) {
+    const reach = -HIP * h + legL * LEG * h * Math.cos(Math.max(Math.abs(la), Math.abs(lb))) + FOOT * h;
+    return surf(x, t) - reach;
+  }
+
+  function sproutAt(t) {
+    const S = L.S;
+    if (t <= T.walk1) {
+      const u = (t - T.walk0) / T.walkDur;
+      const x = xAt(t), vf = trapV(u);
+      const ph = (x - L.x0) / (S * 0.46) * TAU;
+      const amp = 0.48 * smooth(vf);
+      const la = Math.sin(ph) * amp, lb = -Math.sin(ph) * amp;
+      // Arms swing against the legs. Both leaves turn the same way about
+      // their bases, so one tip lifts outwards as the other tucks in.
+      const sw = Math.sin(ph) * smooth(vf);
+      return { x, yB: standY(x, t, S, la, lb), h: S, flip: 1, tilt: Math.sin(ph) * 0.035 * vf,
+        sy: 1 + 0.014 * Math.cos(2 * ph) * vf, legL: 1, la, lb, round: 1,
+        aL: 0.15 * sw, aR: 0.15 * sw, liftL: -0.014 * Math.max(0, sw), liftR: -0.014 * Math.max(0, -sw) };
+    }
+    const yStand = standY(L.xStop, t, S, 0, 0);
+    // Jump to the corner: crouch, leap, turn around in the air, grow, and
+    // land as the cropped corner cut-out, mirrored.
+    const c = clamp((t - T.walk1) / 0.35);
+    const f = clamp((t - T.walk1 - 0.35) / 0.95);
+    const l = clamp((t - T.walk1 - 1.3) / 0.55);
+    if (f <= 0) {
+      const sq = Math.sin(smooth(c) * Math.PI / 2);
+      return { x: L.xStop, yB: yStand + 0.05 * S * sq, h: S, flip: 1, tilt: 0, sy: 1 - 0.12 * sq, sx: 1 + 0.06 * sq,
+        legL: 1 - 0.22 * sq, la: -0.25 * sq, lb: 0.25 * sq, round: 1,
+        aL: 0.14 * sq, aR: -0.14 * sq, liftL: 0.01 * sq, liftR: 0.01 * sq };
+    }
+    const P0 = [L.xStop, yStand], P2 = [L.cx, L.cb];
+    const P1 = [lerp(P0[0], P2[0], 0.35), Math.min(P0[1], L.cb - L.Hc) - S * 1.5];
+    const e = f * 0.55 + smooth(f) * 0.45;
+    const bx = (1 - e) * (1 - e) * P0[0] + 2 * (1 - e) * e * P1[0] + e * e * P2[0];
+    const by = (1 - e) * (1 - e) * P0[1] + 2 * (1 - e) * e * P1[1] + e * e * P2[1];
+    const stretch = Math.sin(Math.PI * clamp(f * 1.6)) * (1 - f);
+    const land = l > 0 ? Math.sin(Math.PI * l) * (1 - l) : 0;
+    // Arms fling wide on take-off and are folded home before touchdown, so
+    // the landed frame is the untouched original.
+    const fling = Math.sin(Math.PI * smooth(clamp(f / 0.85)));
+    // Gathering: the arms close in to hold what arrives, each landing seed
+    // gives a small swell, and the spark goes up with a flick of both leaves.
+    const pulse = absorbAt(t);
+    const hug = smooth(clamp((t - T.out0 - 0.9) / 0.4)) * (1 - smooth(clamp((t - T.spark + 0.15) / 0.3)));
+    const toss = Math.sin(Math.PI * clamp((t - T.spark + 0.15) / 0.5));
+    const swell = 0.022 * pulse + 0.03 * toss;
+    return {
+      x: bx, yB: by, h: lerp(S, L.Hc, easeInOut(f)) * (1 + swell),
+      flip: Math.cos(Math.PI * smooth(clamp(f * 1.5))), tilt: 0.18 * Math.sin(Math.PI * f) * (1 - f),
+      sy: 1 + 0.14 * stretch - 0.08 * land + (l >= 1 ? Math.sin(t * 1.5) * 0.004 : 0),
+      sx: 1 - 0.06 * stretch + 0.05 * land,
+      legL: 1 - smooth(clamp(f / 0.55)), la: -0.5 * smooth(clamp(f / 0.4)), lb: 0.5 * smooth(clamp(f / 0.4)),
+      round: 1 - smooth(clamp(f / 0.85)),
+      aL: -0.55 * fling - 0.07 * land + 0.09 * hug - 0.28 * toss,
+      aR: 0.55 * fling + 0.07 * land - 0.09 * hug + 0.28 * toss,
+      liftL: -0.04 * fling - 0.03 * toss, liftR: -0.04 * fling - 0.03 * toss
+    };
+  }
+
+  // ---- Wordmark, driven by the same clock so scrubbing moves it too -----------
+  const letters = Array.from(layer.querySelectorAll('.intro-word span'));
+  const script = layer.querySelector('.intro-script');
+  const rule = layer.querySelector('.intro-rule'), sweep = rule.firstChild;
+  const mark = layer.querySelector('.intro-mark');
+  function domAt(t) {
+    letters.forEach((s, i) => {
+      const u = easeOut(clamp((t - 0.06 - 0.07 * i) / 0.9));
+      s.style.opacity = u; s.style.transform = 'translateY(' + ((1 - u) * 20).toFixed(2) + 'px)';
+      s.style.filter = u < 1 ? 'blur(' + ((1 - u) * 7).toFixed(2) + 'px)' : 'none';
+    });
+    const p = easeInOut(clamp((t - 0.78) / 1.0));
+    script.style.clipPath = 'inset(0 ' + ((1 - p) * 100).toFixed(2) + '% 0 0)';
+    script.style.opacity = clamp(p * 2.5);
+    // The wordmark waits above the branch while there is a garden to watch,
+    // then settles into the middle once the branch has gone, where the splash
+    // has always kept it. offsetTop ignores transforms, so this never drifts.
+    const m = easeInOut(clamp((t - T.settle) / 1.0));
+    const dy = (L.H * 0.47 - (mark.offsetTop + mark.offsetHeight / 2)) * m;
+    mark.style.transform = 'translateY(' + dy.toFixed(1) + 'px)';
+    rule.style.transform = 'scaleX(' + easeOut(clamp((t - T.rule) / 0.7)).toFixed(3) + ')';
+    const sw = t - T.rule - 0.7;
+    sweep.style.transform = 'translateX(' + (sw < 0 ? -100 : -100 + 200 * easeInOut((sw % 1.7) / 1.7)).toFixed(1) + '%)';
+  }
+
+  // ---- Frame --------------------------------------------------------------------
+  function render(t) {
+    aim();
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, L.W, L.H);
+    const sp = sproutAt(t);
+    // A soft light carried with Sprout, so the growth reads as coming from it.
+    const glow = ctx.createRadialGradient(sp.x, sp.yB - sp.h * 0.4, 0, sp.x, sp.yB - sp.h * 0.4, L.S * 2.6);
+    glow.addColorStop(0, 'rgba(63,190,139,0.13)'); glow.addColorStop(1, 'rgba(63,190,139,0)');
+    ctx.fillStyle = glow; ctx.fillRect(0, 0, L.W, L.H);
+
+    for (const e of hang) drawVine(e, t);
+    for (const e of back) {
+      if (e.type === 'vine') drawVine(e, t);
+      else if (e.type === 'shrub') drawShrub(e, t);
+      else if (e.type === 'flower') drawFlower(e, t);
+      else drawGrass(e, t);
+    }
+    drawBranch(t);
+    drawMotes(t);
+    drawCornerGlow(t);
+    drawSprout(sp);
+    for (const e of front) drawGrass(e, t);
+    drawSeeds(t);
+    domAt(t);
+  }
+
+  // ---- Clock and the handover ------------------------------------------------
+  // The name has a place on the page too, top left in the hero's lockup.
+  // Left centred, it ghosted across the headline while the layer faded, so
+  // as the layer goes the wordmark travels into the lockup's SPROUT at its
+  // size, and the two cross over where they agree. The script line and the
+  // rule have no partner there, so they simply leave first.
+  function settleOnto() {
+    var word = layer.querySelector('.intro-word');
+    var first = word.firstChild, target = document.querySelector('.hero .word');
+    if (!target || !first) return;
+    var w = word.getBoundingClientRect(), f = first.getBoundingClientRect(), h = target.getBoundingClientRect();
+    if (!h.width || h.bottom < 0) return;
+    var k = parseFloat(getComputedStyle(target).fontSize) / parseFloat(getComputedStyle(word).fontSize);
+    word.style.transformOrigin = (f.left - w.left).toFixed(1) + 'px 50%';
+    word.style.transition = 'transform .8s cubic-bezier(.4,0,.2,1)';
+    word.style.transform = 'translate(' + (h.left - f.left).toFixed(1) + 'px,' +
+      (h.top + h.height / 2 - (w.top + w.height / 2)).toFixed(1) + 'px) scale(' + k.toFixed(4) + ')';
+    [script, rule].forEach(function (el) { el.style.transition = 'opacity .3s'; el.style.opacity = '0'; });
+  }
+
+  var t = hold != null ? hold : 0, last = null, done = false, raf = 0;
+
+  function finish(quick) {
+    if (done) return;
+    done = true;
+    if (!quick) settleOnto();
+    layer.classList.add(quick ? 'is-skip' : 'is-out');
+    // The page is underneath and already laid out; it only needs its snap back.
+    root.classList.remove('ui-snap-paused');
+    var gone = function (e) {
+      // The wordmark's own transitions bubble up here, and the script line's
+      // finishes first; only the layer's fade means it has gone.
+      if (e && e.target !== layer) return;
+      cancelAnimationFrame(raf);
+      if (layer.parentNode) layer.parentNode.removeChild(layer);
+    };
+    layer.addEventListener('transitionend', gone);
+    setTimeout(gone, 1400);
+  }
+  function tick(now) {
+    if (last != null && hold == null) t += Math.min(0.05, (now - last) / 1000);
+    last = now;
+    if (!heroSprout) heroSprout = document.getElementById('hero-sprout');
+    render(t);
+    if (t >= T.end && hold == null) finish(false);
+    raf = requestAnimationFrame(tick);
+  }
+
+  var skip = function () { if (hold == null) finish(true); };
+  layer.querySelector('.intro-skip').addEventListener('click', skip);
+  layer.addEventListener('pointerdown', skip);
+  window.addEventListener('wheel', skip, { passive: true, once: true });
+  window.addEventListener('touchmove', skip, { passive: true, once: true });
+  window.addEventListener('keydown', function onKey(e) {
+    if (done) { window.removeEventListener('keydown', onKey); return; }
+    if (e.key === 'Tab') return;
+    skip();
+  });
+  window.addEventListener('resize', function () { layout(); build(); });
+
+  layout(); build();
+  // The wordmark must not arrive in a fallback face, so the clock waits for
+  // the two it sets (a second at most), and for the figure's three images.
+  var ready = [img, ARMS.L.img, ARMS.R.img].map(function (i) {
+    return i.decode ? i.decode().catch(function () {}) : Promise.resolve();
+  });
+  if (document.fonts && document.fonts.load) {
+    ready.push(Promise.race([
+      Promise.all([document.fonts.load('200 40px "PP Hatton"'), document.fonts.load('40px "Sacramento"')]),
+      new Promise(function (r) { setTimeout(r, 1000); })
+    ]).catch(function () {}));
+  }
+  Promise.all(ready).then(function () { raf = requestAnimationFrame(tick); });
+})();
+</script>
+
+
 <!-- The bar the hero's mark flies into. It is present from the first paint
      but shows nothing except that mark until the reader leaves the hero,
      because on the hero the mark is not the bar's — it is the lockup's, and
@@ -83,8 +873,11 @@
   </button>
 
   <!-- Sprout, leaning in from the corner. The art is cropped off its left
-       and bottom edges, so this is the one place it can sit unframed: set
-       into the bottom-left, the crop becomes the page's own edge. Hidden
+       and bottom edges, so this is the one place it can sit unframed:
+       mirrored into the bottom-right, the crop becomes the page's own edge.
+       The right rather than the left because the copy is set left, so the
+       free room on a wide screen is on this side, and because it is where
+       the intro above lands it, at this size, before handing over. Hidden
        until the script below has found room for it, so a reader without
        script never gets it at a size that covers the call to action.
        Decorative, because the headline already says what the page is. -->
@@ -849,12 +1642,13 @@
 </script>
 
 <!-- How big Sprout can be in the corner, measured rather than set at
-     breakpoints. The corner is empty on a wide screen, where the copy starts
-     400px in, and crowded on a phone, where the copy runs edge to edge and
-     the only free space is under the buttons. A fixed size covered the call
-     to action at 1280px and on every phone measured. So it takes the larger
-     of the two rooms it could have — the gutter beside the copy, or the
-     band below the buttons — keeps clear of the scroll cue, and then takes
+     breakpoints. The corner is empty on a wide screen, where the copy is
+     set left and stops well short of the right edge, and crowded on a phone,
+     where the copy runs edge to edge and the only free space is under the
+     buttons. A fixed size covered the call to action at 1280px and on every
+     phone measured. So it takes the larger of the two rooms it could have —
+     the gutter right of the copy, or the band below the buttons — keeps
+     clear of the scroll cue, and then takes
      four fifths of that, so it reads as leaning into the corner rather than
      filling it. Below 80px it is a sliver, and on a short screen the hero
      is no longer a screenful to sit in, so it stays hidden. -->
@@ -872,14 +1666,22 @@
   function size() {
     ticking = false;
     var hr = hero.getBoundingClientRect();
-    var fromGutter = (lead.getBoundingClientRect().left - hr.left - 24) / ASPECT;
+    // The copy's right edge, from the elements that are as wide as what they
+    // hold. Not the lockup row, the button row or the script line under the
+    // wordmark: those are blocks as wide as the column, so measuring them
+    // put the copy's edge at the far side of the page.
+    var right = 0;
+    [].forEach.call(hero.querySelectorAll(".word, h1, .lead, .cta > *"), function (el) {
+      right = Math.max(right, el.getBoundingClientRect().right);
+    });
+    var fromGutter = (hr.right - right - 24) / ASPECT;
     var fromBelow = hr.bottom - cta.getBoundingClientRect().bottom - GAP;
     var h = Math.min(CAP, hr.height * 0.42, Math.max(fromGutter, fromBelow));
     // The cue is centred at the foot of the hero, so a figure wide enough
     // to reach it would sit on it. Its box is still laid out while it fades,
     // so this holds however far down the reader has scrolled.
     var c = cue && cue.getBoundingClientRect();
-    if (c && c.width) h = Math.min(h, (c.left - hr.left - 12) / ASPECT);
+    if (c && c.width) h = Math.min(h, (hr.right - c.right - 12) / ASPECT);
     h *= SCALE;
     if (h < MIN) { img.hidden = true; return; }
     img.style.setProperty("--sprout-h", Math.floor(h) + "px");
