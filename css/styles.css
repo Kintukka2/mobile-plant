@@ -5028,7 +5028,7 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
   border: 0;
   border-radius: 0;
 }
-.plan-stage.is-full .plan-tools,
+.plan-stage.is-full .plan-history,
 .plan-stage.is-full .plan-stage-btn { top: calc(12px + env(safe-area-inset-top, 0px)); }
 .plan-stage.is-full .plan-stage-btn.is-bottom { top: auto; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
 .plan-stage.is-full .plan-notice { bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
@@ -5041,8 +5041,10 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
 
 /* The compass and the ruler live on the stage, not in the drawing. In the
    drawing they sat at the grid's far corner and left the frame the moment
-   the view centred on the rooms. */
-.plan-tools { position: absolute; top: 12px; right: 12px; z-index: 5; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+   the view centred on the rooms. They sit at the middle of the right edge,
+   which hands the top-right corner to undo and redo; the walkthrough's
+   mock stage uses the same rule, so it shows them where they really are. */
+.plan-tools { position: absolute; top: 50%; right: 12px; z-index: 5; display: flex; flex-direction: column; align-items: center; gap: 8px; transform: translateY(-50%); }
 .plan-tool {
   width: 44px; height: 44px; padding: 0;
   border: 1px solid var(--hair-2); border-radius: 50%;
@@ -5055,7 +5057,6 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
 
 /* The room's name is its heading. Same face and tracking as the title
    around it; the dotted rule is the one cue that it takes typing. */
-.plan-title-edit { display: flex; align-items: center; min-width: 0; flex: 1; }
 .plan-title-input {
   flex: 1; min-width: 0; width: 100%;
   font: inherit; letter-spacing: inherit; text-transform: inherit; color: inherit;
@@ -5076,11 +5077,226 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
    no other view has needed. */
 .plan-sec { margin-bottom: 26px; }
 .plan-step { display: inline-block; font-family: var(--sans); font-size: 9.5px; letter-spacing: 0.2em; color: var(--gold-lit); margin-right: 8px; vertical-align: 1px; }
-.plan-toggle { cursor: pointer; user-select: none; -webkit-user-select: none; }
-.plan-chev { display: inline-block; width: 8px; height: 8px; border-right: 1.5px solid var(--ink-3); border-bottom: 1.5px solid var(--ink-3); transform: rotate(-45deg); transition: transform var(--dur-2) var(--ease); margin-right: 2px; }
-.plan-chev.is-open { transform: rotate(45deg); }
 .plan-check { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); cursor: pointer; }
 .plan-check input { width: 17px; height: 17px; accent-color: var(--emerald-glow); margin: 0; flex: 0 0 auto; }
+
+/* ---- Undo and redo ----
+   The top-right corner of the stage, a little smaller than the tools
+   below them, and faded rather than hidden when there is nothing to undo,
+   so the corner does not change shape as the history fills. */
+.plan-history { position: absolute; top: 12px; right: 12px; z-index: 5; display: flex; gap: 8px; }
+.plan-history .plan-tool { width: 40px; height: 40px; }
+.plan-history .plan-tool svg { width: 18px; height: 18px; }
+.plan-history .plan-tool:disabled { opacity: 0.35; cursor: default; }
+
+/* Home view: the walls switch has the top-left corner (the bottom-right
+   belongs to the dock), and Centre steps down beneath it. */
+.plan-stage.is-home #pl-walls-toggle:not([hidden]) ~ #pl-view-reset { top: 54px; }
+
+/* ---- The step dock ----
+   The four steps, as buttons on the stage's bottom-right corner. A done
+   step wears a tick in the house colour; the chosen one wears the primary
+   button's own gradient, so "which step am I on" reads at the same weight
+   as "what do I press". The chosen step keeps its number even when done,
+   with the tick moved to a badge on its rim: a lit button with only a tick
+   in it hid the one thing a lit button is for. */
+.plan-dock {
+  position: absolute; right: 12px; bottom: 12px; z-index: 6;
+  display: flex; gap: 4px; padding: 3px;
+  border: 1px solid var(--hair-2); border-radius: 999px;
+  background: var(--bg-2);
+  box-shadow: var(--shadow-sm);
+}
+.plan-dock-btn {
+  position: relative;
+  width: 34px; height: 34px; border-radius: 50%;
+  display: grid; place-items: center;
+  border: 1px solid var(--hair-2); background: none; color: var(--ink-2);
+  font-family: var(--sans); font-size: 12px; font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: background var(--dur-2) var(--ease), color var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease);
+}
+.plan-dock-btn svg { width: 14px; height: 14px; }
+.plan-dock-btn:hover { color: var(--ink); border-color: var(--hair-3); }
+.plan-dock-btn.is-done { color: var(--mint); border-color: transparent; background: var(--mint-wash); }
+[data-theme="conservatory"] .plan-dock-btn.is-done { color: var(--emerald); }
+.plan-dock-btn.is-on {
+  color: var(--btn-ink); border-color: transparent;
+  background: linear-gradient(175deg, var(--emerald-lit), var(--emerald));
+  box-shadow: var(--sheen), 0 2px 12px -4px rgba(47, 154, 112, 0.5);
+}
+.plan-dock-btn:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+.plan-dock-tick {
+  position: absolute; right: -3px; top: -3px;
+  width: 14px; height: 14px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--bg-2); border: 1px solid var(--emerald-glow); color: var(--mint);
+}
+[data-theme="conservatory"] .plan-dock-tick { color: var(--emerald); }
+.plan-dock-btn .plan-dock-tick svg { width: 9px; height: 9px; stroke-width: 2; }
+/* The same lift the bottom buttons get over a notice. */
+.plan-notice:not([hidden]) ~ .plan-dock { bottom: 64px; }
+.plan-stage.is-full .plan-dock { bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
+.plan-stage.is-full .plan-notice:not([hidden]) ~ .plan-dock { bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+
+/* Step 2's one action: the stage's Add a room, lit and breathing. */
+.plan-stage-btn.is-cta {
+  color: var(--btn-ink); border-color: transparent;
+  background: linear-gradient(175deg, var(--emerald-lit), var(--emerald));
+  box-shadow: var(--sheen), 0 2px 12px -4px rgba(47, 154, 112, 0.5);
+}
+.plan-stage-btn.is-cta::after {
+  content: ''; position: absolute; inset: -1px; border-radius: inherit;
+  border: 1.5px solid var(--emerald-glow); pointer-events: none;
+  animation: ctaBreathe 2.4s var(--ease) infinite;
+}
+@keyframes ctaBreathe {
+  0%   { transform: scale(1); opacity: 0.8; }
+  70%  { transform: scale(1.12, 1.35); opacity: 0; }
+  100% { transform: scale(1.12, 1.35); opacity: 0; }
+}
+
+/* ---- The compass asks for north ----
+   Three signals, each quiet on its own: the needle hunts either side of
+   the top, a gold ring breathes out from the dial, and a tag reading "Set
+   north" leans towards it. All three stop the moment north is set, which
+   is its own small reward. They replace a sentence under the plan that
+   explained the compass needed tapping. */
+.plan-tool.is-rose { position: relative; }
+.plan-tool.is-rose.is-unset::after {
+  content: ''; position: absolute; inset: 0; border-radius: 50%;
+  border: 1.5px solid var(--gold);
+  animation: roseBreathe 2.4s var(--ease) infinite;
+  pointer-events: none;
+}
+@keyframes roseBreathe {
+  0%   { transform: scale(0.92); opacity: 0.85; }
+  70%  { transform: scale(1.55); opacity: 0; }
+  100% { transform: scale(1.55); opacity: 0; }
+}
+.plan-seek { animation: roseSeek 2.8s ease-in-out infinite; }
+@keyframes roseSeek {
+  0%, 100% { transform: rotate(-38deg); }
+  50%      { transform: rotate(32deg); }
+}
+.plan-rose-tag {
+  position: absolute; right: calc(100% + 10px); top: 50%;
+  display: none; align-items: center; gap: 6px;
+  padding: 6px 10px; border-radius: 999px;
+  border: 1px solid var(--gold); background: var(--bg-2);
+  box-shadow: 0 0 0 4px var(--gold-wash);
+  color: var(--gold-lit);
+  font-family: var(--sans); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap;
+  transform: translateY(-50%);
+  animation: roseLean 2.4s var(--ease) infinite;
+}
+[data-theme="conservatory"] .plan-rose-tag { color: var(--gold); }
+.plan-tool.has-tag .plan-rose-tag { display: inline-flex; }
+.plan-tool.is-rose .plan-rose-tag svg { width: 10px; height: 10px; }
+@keyframes roseLean {
+  0%, 100% { transform: translate(0, -50%); }
+  50%      { transform: translate(4px, -50%); }
+}
+/* Reduced motion keeps the gold and the tag and stills the rest. */
+@media (prefers-reduced-motion: reduce) {
+  .plan-tool.is-rose.is-unset::after, .plan-seek, .plan-rose-tag, .plan-stage-btn.is-cta::after { animation: none; }
+  .plan-tool.is-rose.is-unset::after { transform: scale(1.18); opacity: 0.6; }
+  .plan-stage-btn.is-cta::after { opacity: 0; }
+}
+
+/* Plan / Home in the header, beside the title. */
+.plan-modes { flex: 0 0 auto; }
+.plan-modes .tab-btn { padding: 7px 12px; }
+
+/* The selected room's size, under its light. */
+.plan-dims { font-family: var(--sans); font-size: 8.5px; letter-spacing: 0.12em; fill: var(--mint); font-variant-numeric: tabular-nums; pointer-events: none; }
+[data-theme="conservatory"] .plan-dims { fill: var(--emerald); }
+
+/* ---- One step at a time ----
+   The step number sits on its own line so the title gets the full width,
+   and every step ends in the same footer: Previous on the left, Next on
+   the right, both as quiet text. */
+.plan-step-sec .section-head { margin-bottom: 12px; align-items: flex-end; }
+.plan-step-sec .plan-step { display: block; margin: 0 0 6px; }
+.plan-step-sec input[type="range"] { accent-color: var(--emerald-glow); }
+.plan-step-lede { margin: 0 0 14px; }
+.plan-step-acts { gap: 8px; flex-wrap: wrap; }
+.grid-2 + .plan-step-acts { margin-top: 12px; }
+/* Step 1 as two panels: what the step is on the left, the button right. */
+.plan-step-pair { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 18px; }
+.plan-step-pair .hint { margin: 0; }
+.plan-bd-done {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+  margin: 0 0 14px; padding: 10px 12px;
+  border: 1px solid var(--hair-2); border-radius: var(--r-lg); background: var(--glass);
+  font-size: 13px; color: var(--ink-2);
+}
+.plan-step-nav {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+  margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--hair);
+}
+.plan-step-nav .link-btn { display: inline-flex; align-items: center; gap: 6px; min-width: 0; max-width: 50%; text-align: left; }
+.plan-step-nav .link-btn svg { flex: 0 0 auto; }
+.plan-step-nav .link-btn:only-child { max-width: none; }
+.plan-step-nav .plan-step-next { margin-left: auto; text-align: right; justify-content: flex-end; }
+.plan-step-nav .plan-step-prev { color: var(--ink-3); }
+
+/* ---- The room and plant panels ----
+   A heading row (back, name, icon buttons) over a hairline, then the
+   detail, then Done on the left and the rare action as quiet text on the
+   right. A locked room greys what the lock is holding still. */
+.plan-room-head { display: flex; align-items: center; gap: 10px; padding-bottom: 14px; margin-bottom: 16px; border-bottom: 1px solid var(--hair); }
+.plan-room-head .plan-title-input { flex: 1 1 auto; min-width: 0; }
+.plan-room-head .plan-title-input[readonly] { border-bottom-color: transparent; cursor: default; }
+.plan-room-ico {
+  flex: 0 0 auto; width: 38px; height: 38px; border-radius: 50%;
+  display: grid; place-items: center; padding: 0;
+  border: 1px solid var(--hair-2); background: none; color: var(--ink-2); cursor: pointer;
+}
+.plan-room-ico svg { width: 17px; height: 17px; }
+.plan-room-ico:hover { color: var(--ink); border-color: var(--hair-3); }
+.plan-room-ico.is-on { color: var(--gold-lit); border-color: var(--gold); background: var(--gold-wash); }
+[data-theme="conservatory"] .plan-room-ico.is-on { color: var(--gold); }
+.plan-room-ico:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+.plan-room-lockline {
+  display: flex; align-items: flex-start; gap: 8px; margin: 0 0 14px;
+  font-size: 13px; line-height: 1.45; color: var(--gold-lit);
+}
+[data-theme="conservatory"] .plan-room-lockline { color: var(--gold); }
+.plan-room-lockline svg { flex: 0 0 auto; width: 15px; height: 15px; margin-top: 2px; }
+.plan-room-sub { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.plan-room-sub .label { display: inline-flex; align-items: center; gap: 8px; margin: 0; }
+.plan-room-sun { margin: 14px 0 0; }
+.plan-room.is-locked .plan-wall { opacity: 0.55; cursor: not-allowed; }
+.plan-room.is-locked .plan-check { opacity: 0.55; }
+.plan-room-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; }
+.plan-room-remove { display: inline-flex; align-items: center; gap: 6px; color: var(--terra); }
+.plan-room-remove svg { width: 15px; height: 15px; }
+.plan-room-remove:disabled { opacity: 0.4; cursor: not-allowed; }
+.plan-unplace { color: var(--ink-3); }
+
+.plan-plant-title { flex: 1 1 auto; min-width: 0; }
+.plan-plant-name { font-family: var(--serif); font-size: 24px; line-height: 1.15; color: var(--ink); overflow-wrap: anywhere; }
+.plan-plant-sub { margin-top: 2px; font-size: 13px; color: var(--ink-3); }
+.plan-facts { margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.plan-facts > div { display: grid; grid-template-columns: 84px minmax(0, 1fr); align-items: baseline; gap: 12px; }
+.plan-facts > .is-pills { align-items: center; }
+.plan-facts dt { font-family: var(--sans); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-4); }
+.plan-facts dd { margin: 0; font-size: 14px; line-height: 1.45; color: var(--ink-2); }
+.plan-facts > .is-pills dd { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.plan-fact-quiet { color: var(--ink-3); }
+.plan-legend { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 14px 0 0; font-size: 12px; color: var(--ink-3); }
+.plan-legend .plan-swatch { margin: 0 2px 0 6px; }
+.plan-legend .plan-swatch:first-child { margin-left: 0; }
+.plan-legend-note { margin-left: 6px; color: var(--ink-4); }
+.plan-better {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 16px;
+  margin-top: 18px; padding: 12px 14px;
+  border: 1px solid var(--hair-2); border-radius: var(--r-lg); background: var(--glass);
+}
+.plan-better p { margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--ink-2); }
+.plan-better b { display: block; margin-bottom: 2px; font-family: var(--sans); font-weight: 500; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mint); }
+[data-theme="conservatory"] .plan-better b { color: var(--emerald); }
 
 /* ---- The walkthrough invitation ----
    Laid over the empty grid rather than inside a dialog, and transparent to

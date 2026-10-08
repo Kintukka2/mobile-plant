@@ -28,7 +28,7 @@ window.Store = (function () {
         experience: null,       // a key from LOOKUPS.EXPERIENCE
         createdAt: UI.toISO(new Date())
       },
-      rooms: [],                // { id, name, icon, light, aspect, humid, notes, shape }
+      rooms: [],                // { id, name, icon, light, aspect, humid, notes, shape, locked }
       plants: [],               // see addPlant()
       /* The floor plan: one per greenhouse, and there is one greenhouse.
          Rooms drawn on it carry a `shape`; rooms added through the form do

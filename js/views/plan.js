@@ -36,7 +36,22 @@ window.ViewPlan = (function () {
   let drawing = null;                 // { pts: [], forRoomId } while tracing corners
   let drag = null;
   let ghostEl = null;
-  const ui = { open: { 1: undefined, 2: undefined, 3: undefined, 4: undefined }, hideInner: false, full: false };
+  /* `step` is the step chosen on the dock, or null for "the first one not
+     yet done". Kept for the visit; a fresh arrival starts from null. */
+  const ui = { hideInner: false, full: false, step: null };
+  const OPEN_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6"/><path d="M20 4 11 13"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
+  /* A locked room keeps its shape, its place and its walls. It is stored on
+     the room, so it outlives the visit, and it is honoured on the canvas
+     whatever the panel looks like. */
+  function isLocked(r) { return !!(r && r.locked); }
+  const LOCK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+  const UNLOCK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.6-1.8"/></svg>';
+  let lockToastAt = 0;
+  function lockedNudge(r) {
+    const t = Date.now(); if (t - lockToastAt < 2500) return; lockToastAt = t;
+    UI.toast(r.name + ' is locked. Tap the lock to change it.', 'leaf');
+  }
+  let modesBound = false;
   /* Bound once for the life of the page rather than per mount: the view is
      rebuilt on every refresh, and a listener added there would stack up. */
   let escBound = false, resizeBound = false;
@@ -104,7 +119,10 @@ window.ViewPlan = (function () {
   function viewChanged() {
     const v = curView();
     if (v.k !== 1 || v.cx !== 0 || v.cy !== 0) return true;
-    return mode === 'plan' && !sameBox(fitBox, fitOf());
+    /* No fitted frame yet means nothing has moved: mount() asks this before
+       its first drawCanvas() has fitted one, and treating that as "moved"
+       showed Centre on every arrival until the next redraw. */
+    return mode === 'plan' && !!fitBox && !sameBox(fitBox, fitOf());
   }
   /* The box is grown to the stage's own shape before it is used, so
      xMidYMid meet has nothing left to letterbox. Without this a portrait
@@ -188,11 +206,18 @@ window.ViewPlan = (function () {
     drawn().forEach(function (r) {
       const rank = Plan.roomRank(r), c = Plan.centroid(r.shape.pts), cx = c.x * P, cy = c.y * P;
       h += '<text class="plan-name" x="' + cx + '" y="' + (cy - 2) + '" text-anchor="middle">' + UI.esc(r.name) + '</text>';
-      h += '<text class="plan-tiny" x="' + cx + '" y="' + (cy + 11) + '" text-anchor="middle">' + UI.esc(lightLabel(rank)) + (r.shape.outdoor ? (rank === null ? 'outdoors' : ' · outdoors') : '') + '</text>';
+      const tiny = [lightLabel(rank), r.shape.outdoor ? 'outdoors' : '', isLocked(r) ? 'locked' : ''].filter(Boolean).join(' · ');
+      h += '<text class="plan-tiny" x="' + cx + '" y="' + (cy + 11) + '" text-anchor="middle">' + UI.esc(tiny) + '</text>';
+      /* The selected room's size lives on the plan, under its light, rather
+         than in the panel restating what the plan already shows. */
+      if (sel && sel.type === 'room' && sel.id === r.id) {
+        const dm = roomDims(r);
+        h += '<text class="plan-dims" x="' + cx + '" y="' + (cy + 24) + '" text-anchor="middle">' + UI.esc(fmtM(dm.w) + ' × ' + fmtM(dm.h)) + '</text>';
+      }
     });
 
     const selRoom = sel && sel.type === 'room' ? room(sel.id) : null;
-    if (selRoom && selRoom.shape) {
+    if (selRoom && selRoom.shape && !isLocked(selRoom)) {
       Plan.edges(selRoom.shape).forEach(function (e) {
         const bx = (e.mid.x + e.nx * 0.7) * P, by = (e.mid.y + e.ny * 0.7) * P;
         const fill = e.kind === WINDOW ? 'var(--gold)' : e.kind === OPENING ? 'var(--emerald-glow)' : 'var(--bg-2)';
@@ -227,7 +252,12 @@ window.ViewPlan = (function () {
       h += '<g transform="rotate(' + th + ')"><polygon points="0,' + (-r + 5) + ' 4,0 -4,0" style="fill:var(--terra)"/><polygon points="0,' + (r - 5) + ' 4,0 -4,0" style="fill:var(--ink-4)"/>' +
         '<text class="plan-n" y="' + (-r - 4) + '" text-anchor="middle">N</text></g>';
     } else {
-      h += '<text class="plan-n" y="3" text-anchor="middle" style="fill:var(--gold-lit)">N?</text>';
+      /* No north yet, so the needle hunts for it: a gold needle swinging
+         either side of the top, never settling, which is what a compass
+         does before it has found anything. The swing is CSS, so reduced
+         motion stills it and the gold alone still marks it as unset. */
+      h += '<g class="plan-seek"><polygon points="0,' + (-r + 5) + ' 4,0 -4,0" style="fill:var(--gold)"/><polygon points="0,' + (r - 5) + ' 4,0 -4,0" style="fill:var(--ink-4)"/></g>' +
+        '<circle r="2.2" style="fill:var(--gold-lit)"/>';
     }
     return h + '</g>';
   }
@@ -337,101 +367,151 @@ window.ViewPlan = (function () {
     panelHome();
   }
 
-  /* Every step folds, and every step starts folded: the plan opens as a
-     plan, with four headings under it, not a page of instructions. Opening
-     one is remembered for the visit, not saved — a fold is a way of clearing
-     the page, not a setting. Two exceptions open a step by themselves:
-     loading a floorplan image opens Step 1, and Step 2 will not fold while a
-     room is being drawn, because the Finish and Undo buttons live inside it. */
-  function stepOpen(n) {
-    if (n === 2 && drawing) return true;
-    return ui.open[n] === true;
-  }
+  /* The four steps used to fold, all of them under the plan at once, and
+     with every one open the tray in step 4 sat a screen below the plan it
+     is dragged onto. Now they are a dock on the stage and the panel shows
+     one at a time, so whichever step is in hand sits right under the plan. */
+  const STEP_TITLE = { 1: 'Build your floorplan', 2: 'Manage rooms', 3: 'Which way is north?', 4: 'Add plants' };
 
-  function step(n, title, done) {
-    return '<div class="section-head plan-toggle" data-toggle="' + n + '"><h2 class="section-title"><span class="plan-step">Step ' + n + '</span>' + UI.esc(title) + '</h2>' +
-      '<span class="row" style="gap:8px">' + (done ? UI.pill('Done', 'mint') : '') + '<span class="plan-chev' + (stepOpen(n) ? ' is-open' : '') + '"></span></span></div>';
+  /* Whether each step is finished, read from the plan itself rather than
+     stored, so a tick can never disagree with what is on the grid. */
+  function stepDone(n) {
+    const list = rooms(), plants = Store.activePlants();
+    if (n === 1) return !!plan().done;
+    if (n === 2) return list.length > 0 && !list.some(function (r) { return !r.shape; });
+    if (n === 3) return Plan.known();
+    return plants.length > 0 && plants.every(function (p) { return p.pos && Plan.roomAt(p.pos.x, p.pos.y); });
   }
+  function firstOpenStep() { for (let n = 1; n <= 4; n++) if (!stepDone(n)) return n; return 4; }
+  /* Drawing a room lives in step 2, whatever the dock says: the Finish and
+     Undo buttons are there. */
+  function curStep() { if (drawing) return 2; return ui.step || firstOpenStep(); }
+  function goStep(n) { ui.step = Math.max(1, Math.min(4, n)); }
 
-  function panelHome() {
+  function stepBody(n) {
     const pl = plan(), list = rooms(), undrawn = list.filter(function (r) { return !r.shape; });
     let h = '';
-
-    /* Step 1 — the floorplan image. */
-    h += '<div class="section plan-sec">' + step(1, 'Build your floorplan', pl.done);
-    if (stepOpen(1)) {
-      h += '<div class="row" style="justify-content:space-between;margin-bottom:10px">' +
-        (pl.backdrop ? '' : '<button class="btn btn-ghost btn-sm" id="pl-bd-load">Load a floorplan image</button>') +
-        '<label class="plan-check"><input type="checkbox" id="pl-done"' + (pl.done ? ' checked' : '') + '> Done with the floorplan</label></div>';
-      if (pl.backdrop) {
-        h += '<div class="grid-2"><label class="field" style="margin:0"><span class="label">Opacity</span><input class="input" id="pl-bd-op" type="range" min="0.1" max="1" step="0.05" value="' + pl.backdrop.opacity + '"></label>' +
-          '<label class="field" style="margin:0"><span class="label">Size</span><input class="input" id="pl-bd-sc" type="range" min="0.3" max="2.5" step="0.02" value="' + pl.backdrop.scale + '"></label></div>' +
-          '<div class="row" style="margin-top:10px"><button class="btn btn-ghost btn-sm' + (tool === 'backdrop' ? ' is-on' : '') + '" id="pl-tool-bd">' + (tool === 'backdrop' ? 'Dragging the image' : 'Move the image') + '</button><button class="btn btn-blood btn-sm" id="pl-bd-remove">Remove backdrop</button></div>' +
-          '<p class="hint">Line the image up under the grid and trace each room over it in Step 2. Tick done once every room is drawn and I\'ll drop the image — it never leaves this phone either way.</p>';
+    if (n === 1) return stepOne();
+    if (n === 2) {
+      if (drawing) {
+        h += '<p class="hint" style="margin:0 0 10px">Tap each corner in turn. Tap the first corner again to close the room, or drag instead to draw a plain box.</p>' +
+          '<div class="row"><button class="btn btn-sm" id="pl-draw-finish"' + (drawing.pts.length < 3 ? ' disabled' : '') + '>Finish room</button>' +
+          '<button class="btn btn-ghost btn-sm" id="pl-draw-undo"' + (!drawing.pts.length ? ' disabled' : '') + '>Undo corner</button>' +
+          '<button class="btn btn-ghost btn-sm" id="pl-draw-cancel">Cancel</button></div>';
       } else {
-        h += '<p class="hint">Upload an image of your floorplan. Then use <b>Add a room</b> to trace over it and create each room. Set the dimensions, add windows and you\'re ready to go. Tick the checkbox when you are done.</p>' +
-          '<p class="hint" style="margin-top:8px">Or skip this step and draw rooms freehand.</p>';
+        if (pl.backdrop) {
+          h += '<div class="plan-bd-done"><span>Finished tracing over the floorplan?</span><button class="btn btn-ghost btn-sm" id="pl-bd-finish">Done with the image</button></div>';
+        }
+        /* Step 2 has no button of its own. It had one, a hand's width from
+           the stage's own Add a room, which was the same button twice; the
+           stage's is the one lit instead, where the drawing happens. */
+        h += '<p class="hint plan-step-lede">' + (mode !== 'plan' ? 'Switch to Plan to draw.' : 'Tap <b>' + (drawn().length ? 'Add a room' : 'trace one yourself') + '</b> on the plan, then drag for a box or tap corners for any shape.') + '</p>';
+        if (list.length) {
+          h += '<div class="stack" style="gap:6px;margin-top:10px">' + list.map(function (r) {
+            if (r.shape) return '<button class="plan-row" data-sel-room="' + UI.attr(r.id) + '"><span class="plan-row-nm">' + UI.roomMark(r, 'mono-sm') + UI.esc(r.name) + (r.shape.outdoor ? ' <small>outdoors</small>' : '') + '</span>' + lightPill(Plan.roomRank(r)) + '</button>';
+            return '<button class="plan-row is-undrawn" data-draw-room="' + UI.attr(r.id) + '"><span class="plan-row-nm">' + UI.roomMark(r, 'mono-sm') + UI.esc(r.name) + '</span>' + UI.pill('Draw it', 'grey', 'plus') + '</button>';
+          }).join('') + '</div>';
+          if (undrawn.length) h += '<p class="hint">' + (undrawn.length === 1 ? 'One room was described rather than drawn. ' : undrawn.length + ' rooms were described rather than drawn. ') + 'Tap one to trace it and I\'ll read its light from the plan instead.</p>';
+        } else {
+          h += '<p class="hint">Nothing drawn yet. Rooms snap to the grid; open one afterwards to name it, mark its windows and type its real size.</p>';
+        }
       }
-      /* Kept within reach after the invitation has gone: the beat a reader
-         comes back for is usually windows or north, not the grid. */
-      if (window.Tour) {
-        h += '<p style="margin-top:12px"><button class="link-btn" data-tour="1">Watch the walkthrough again</button></p>';
-      }
-    }
-    h += '</div>';
-
-    /* Step 2 — rooms. */
-    h += '<div class="section plan-sec">' + step(2, 'Manage rooms', list.length > 0 && !undrawn.length);
-    if (!stepOpen(2)) {
-      /* folded */
-    } else if (drawing) {
-      h += '<p class="hint" style="margin:0 0 10px">Tap each corner in turn. Tap the first corner again to close the room, or drag instead to draw a plain box.</p>' +
-        '<div class="row"><button class="btn btn-sm" id="pl-draw-finish"' + (drawing.pts.length < 3 ? ' disabled' : '') + '>Finish room</button>' +
-        '<button class="btn btn-ghost btn-sm" id="pl-draw-undo"' + (!drawing.pts.length ? ' disabled' : '') + '>Undo corner</button>' +
-        '<button class="btn btn-ghost btn-sm" id="pl-draw-cancel">Cancel</button></div>';
+    } else if (n === 3) {
+      const known = Plan.known();
+      h += '<div class="row" style="justify-content:space-between">' +
+          '<span class="row" style="gap:10px"><svg class="plan-mini-rose" viewBox="-30 -30 60 60" data-open-compass="1" aria-hidden="true">' + compassRose(0, 0, 22, 'var(--bg-4)') + '</svg>' +
+            (known ? UI.pill('North set · ' + Math.round(pl.north) + '°', 'mint') : UI.pill(pl.northConfirmed ? 'Hemisphere needed' : 'Not set yet', 'sun')) + '</span>' +
+          '<button class="btn btn-sm' + (known ? ' btn-ghost' : '') + '" id="pl-open-compass">' + (known ? 'Change' : 'Set north') + '</button></div>' +
+        (known ? '' : '<p class="hint">I shade each room by its light only once north is confirmed. Tapping the compass on the plan opens the same dial.</p>');
     } else {
-      h += '<button class="btn btn-sm' + (tool === 'add' ? ' is-on' : '') + '" id="pl-tool-add">' + UI.icon('plus') + 'Add a room</button>' +
-        '<p class="hint" style="margin-top:8px">' + (mode !== 'plan' ? 'Switch to Plan to draw.' : 'Drag for a box, or tap corners for any shape.') + '</p>';
-      if (list.length) {
-        h += '<div class="stack" style="gap:6px;margin-top:10px">' + list.map(function (r) {
-          if (r.shape) return '<button class="plan-row" data-sel-room="' + UI.attr(r.id) + '"><span class="plan-row-nm">' + UI.roomMark(r, 'mono-sm') + UI.esc(r.name) + (r.shape.outdoor ? ' <small>outdoors</small>' : '') + '</span>' + lightPill(Plan.roomRank(r)) + '</button>';
-          return '<button class="plan-row is-undrawn" data-draw-room="' + UI.attr(r.id) + '"><span class="plan-row-nm">' + UI.roomMark(r, 'mono-sm') + UI.esc(r.name) + '</span>' + UI.pill('Draw it', 'grey', 'plus') + '</button>';
+      const plants = Store.activePlants();
+      const loose = plants.filter(function (p) { return !(p.pos && Plan.roomAt(p.pos.x, p.pos.y)); });
+      if (!plants.length) {
+        h += '<p class="hint">No plants yet. Add one in the greenhouse and it will appear here to place.</p>';
+      } else if (loose.length) {
+        /* The instruction comes first: it is read before the chips it is
+           about, and it sits nearer the plan they are dragged onto. */
+        h += '<p class="hint plan-step-lede">Drag a plant into your home to see the best place for it.</p>';
+        h += '<div class="plan-tray">' + loose.map(function (p) {
+          const r0 = p.roomId ? Store.getRoom(p.roomId) : null;
+          return '<div class="plan-sp" data-plant-tray="' + UI.attr(p.id) + '"><span class="plan-sp-mono">' + UI.esc(Store.displayName(p).charAt(0).toUpperCase()) + '</span><span class="plan-sp-nm">' + UI.esc(Store.displayName(p)) + (r0 ? '<small>' + UI.esc(r0.name) + '</small>' : '') + '</span></div>';
         }).join('') + '</div>';
-        if (undrawn.length) h += '<p class="hint">' + (undrawn.length === 1 ? 'One room was described rather than drawn. ' : undrawn.length + ' rooms were described rather than drawn. ') + 'Tap one to trace it and I\'ll read its light from the plan instead.</p>';
       } else {
-        h += '<p class="hint">Nothing drawn yet. Rooms snap to the grid; open one afterwards to name it, mark its windows and type its real size.</p>';
+        h += '<p class="hint">Every plant is on the plan. Tap one to see how it is doing there.</p>';
       }
     }
-    h += '</div>';
+    return h;
+  }
 
-    /* Step 3 — north. */
-    const known = Plan.known();
-    h += '<div class="section plan-sec">' + step(3, 'Which way is north?', known);
-    if (stepOpen(3)) h += '<div class="row" style="justify-content:space-between">' +
-        '<span class="row" style="gap:10px"><svg class="plan-mini-rose" viewBox="-30 -30 60 60" data-open-compass="1" aria-hidden="true">' + compassRose(0, 0, 22, 'var(--bg-4)') + '</svg>' +
-          (known ? UI.pill('North set · ' + Math.round(pl.north) + '°', 'mint') : UI.pill(pl.northConfirmed ? 'Hemisphere needed' : 'Not set yet', 'sun')) + '</span>' +
-        '<button class="btn btn-sm' + (known ? ' btn-ghost' : '') + '" id="pl-open-compass">' + (known ? 'Change' : 'Set north') + '</button></div>' +
-      (known ? '' : '<p class="hint">I shade each room by its light only once north is confirmed. Tapping the compass on the plan opens the same dial.</p>');
-    h += '</div>';
-
-    /* Step 4 — plants. */
-    const plants = Store.activePlants();
-    const loose = plants.filter(function (p) { return !(p.pos && Plan.roomAt(p.pos.x, p.pos.y)); });
-    h += '<div class="section plan-sec">' + step(4, 'Add plants', plants.length > 0 && !loose.length);
-    if (!stepOpen(4)) {
-      /* folded */
-    } else if (!plants.length) {
-      h += '<p class="hint">No plants yet. Add one in the greenhouse and it will appear here to place.</p>';
-    } else if (loose.length) {
-      h += '<div class="plan-tray">' + loose.map(function (p) {
-        const r0 = p.roomId ? Store.getRoom(p.roomId) : null;
-        return '<div class="plan-sp" data-plant-tray="' + UI.attr(p.id) + '"><span class="plan-sp-mono">' + UI.esc(Store.displayName(p).charAt(0).toUpperCase()) + '</span><span class="plan-sp-nm">' + UI.esc(Store.displayName(p)) + (r0 ? '<small>' + UI.esc(r0.name) + '</small>' : '') + '</span></div>';
-      }).join('') + '</div><p class="hint">Drag a plant into your home to see the best place for it.</p>';
-    } else {
-      h += '<p class="hint">Every plant is on the plan. Tap one to see how it is doing there.</p>';
+  /* Step 1: one choice, not a checkbox and four paragraphs. Without
+     an image it is load one or skip; with one it is line it up and go and
+     trace. "Done" still means what it always has, finished with the image,
+     and it still drops the image, because that is the one thing here that
+     costs real storage. With an image loaded it is offered in step 2, where
+     the tracing happens, rather than here before any room exists. */
+  function stepOne() {
+    const pl = plan();
+    if (pl.backdrop) {
+      return '<p class="hint plan-step-lede">Line the image up under the grid, then trace each room over it. It stays on this phone, and I\'ll drop it once you\'re done.</p>' +
+        '<div class="grid-2"><label class="field" style="margin:0"><span class="label">Opacity</span><input class="input" id="pl-bd-op" type="range" min="0.1" max="1" step="0.05" value="' + pl.backdrop.opacity + '"></label>' +
+        '<label class="field" style="margin:0"><span class="label">Size</span><input class="input" id="pl-bd-sc" type="range" min="0.3" max="2.5" step="0.02" value="' + pl.backdrop.scale + '"></label></div>' +
+        '<div class="row plan-step-acts"><button class="btn btn-ghost btn-sm' + (tool === 'backdrop' ? ' is-on' : '') + '" id="pl-tool-bd">' + (tool === 'backdrop' ? 'Dragging the image' : 'Move the image') + '</button>' +
+          '<button class="btn btn-ghost btn-sm" id="pl-bd-remove">Remove image</button></div>';
     }
-    h += '</div>';
-    panel.innerHTML = h;
+    /* Two panels, no rule between them: what the step is on the left, the
+       one thing to do about it on the right. */
+    return '<div class="plan-step-pair">' +
+        '<p class="hint">Trace over a picture of your floorplan, or skip this and draw your rooms freehand.</p>' +
+        '<button class="btn btn-ghost btn-sm" id="pl-bd-load">' + UI.icon('upload') + 'Load a floorplan</button>' +
+      '</div>';
+  }
+
+  /* One step at a time, chosen on the dock. A step that is not chosen
+     costs no height under the stage. */
+  function panelHome() {
+    const n = curStep();
+    panel.innerHTML = '<div class="section plan-sec plan-step-sec">' +
+      '<div class="section-head"><h2 class="section-title"><span class="plan-step">Step ' + n + ' of 4</span>' + UI.esc(STEP_TITLE[n]) + '</h2>' +
+        (stepDone(n) ? UI.pill('Done', 'mint') : '') + '</div>' +
+      stepBody(n) +
+      stepNav(n) +
+    '</div>';
+  }
+
+  /* The same footer on every step, so moving between them is one habit:
+     back on the left, on on the right, both as quiet text. Step 1's Next
+     is also its skip: without an image, moving on is the decision that
+     there will not be one, so it ticks the step as it goes. With an image
+     it only moves, because tracing over it is what step 2 is for. */
+  function stepNav(n) {
+    if (drawing) return '';
+    const prev = n > 1 ? n - 1 : null, next = n < 4 ? n + 1 : null;
+    /* Step 1 has nothing behind it, so its left slot carries the
+       walkthrough instead: the way back to the start of everything. Only
+       once something is drawn; before that the plan's own invitation is
+       offering it a hand's width above. */
+    const tour = n === 1 && window.Tour && drawn().length;
+    const chev = function (d) { return '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + (d < 0 ? 'M10 3 5 8l5 5' : 'M6 3l5 5-5 5') + '"/></svg>'; };
+    return '<nav class="plan-step-nav" aria-label="Steps">' +
+      (prev ? '<button class="link-btn plan-step-prev" data-dock="' + prev + '">' + chev(-1) + '<span>Previous: ' + UI.esc(STEP_TITLE[prev]) + '</span></button>'
+       : tour ? '<button class="link-btn plan-step-prev" data-tour="1"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M5 3.5v9l7-4.5z"/></svg><span>Watch the walkthrough again</span></button>' : '') +
+      (next ? '<button class="link-btn plan-step-next" ' + (n === 1 ? 'id="pl-step1-next"' : 'data-dock="' + next + '"') + '><span>Next: ' + UI.esc(STEP_TITLE[next]) + '</span>' + chev(1) + '</button>' : '') +
+    '</nav>';
+  }
+
+  function dockHtml() {
+    const cur = sel ? null : curStep();
+    let h = '';
+    for (let n = 1; n <= 4; n++) {
+      const done = stepDone(n), on = n === cur;
+      h += '<button class="plan-dock-btn' + (done ? ' is-done' : '') + (on ? ' is-on' : '') + '" data-dock="' + n + '" aria-pressed="' + on + '" aria-label="Step ' + n + ', ' + UI.attr(STEP_TITLE[n]) + (done ? ', done' : '') + '">' +
+        /* The chosen step keeps its number even when done, with the tick
+           moved to a badge on its rim: a lit button with only a tick in it
+           said "done" and hid "which step this is", the one thing a lit
+           button is for. */
+        (done && !on ? UI.icon('check') : '<span>' + n + '</span>' + (done ? '<i class="plan-dock-tick" aria-hidden="true">' + UI.icon('check') + '</i>' : '')) + '</button>';
+    }
+    return h;
   }
 
   const KIND_LABEL = ['Wall', 'Window', 'Opening'];
@@ -442,82 +522,95 @@ window.ViewPlan = (function () {
     return { w: (b.x1 - b.x0) * cell, h: (b.y1 - b.y0) * cell, cw: b.x1 - b.x0, ch: b.y1 - b.y0 };
   }
 
+  /* The heading row carries everything about the room itself: its name,
+     the lock, and the sheet with icon, humidity and notes. The walls follow
+     straight after. Its size and light are on the plan, so the panel does
+     not say them again. Removing is a quiet link rather than a red button:
+     it is rare and already asks first, so it need not be the loudest thing
+     here. */
   function panelRoom(r) {
-    const sh = r.shape, d = roomDims(r), sun = Plan.sunReach(r), pl = plan();
+    const sh = r.shape, d = roomDims(r), sun = Plan.sunReach(r), pl = plan(), lk = isLocked(r);
     const here = plantsOnPlan().filter(function (p) { return Plan.roomAt(p.pos.x, p.pos.y) === r; });
-    /* The heading is the name. A "Room" title over a Name field said the same
-       thing twice; the field now sits where the title was, in the title's
-       own type, with a dotted rule under it as the only sign it can be
-       typed into. */
-    let h = '<div class="section plan-sec"><div class="section-head"><h2 class="section-title plan-title-edit"><button class="plan-back" id="pl-back" aria-label="Back">' + CHEV + '</button>' +
-      '<input class="plan-title-input" id="pl-room-name" value="' + UI.attr(r.name) + '" placeholder="Room name" aria-label="Room name" maxlength="40" autocomplete="off"></h2>' +
-      '<label class="plan-check" style="flex:0 0 auto;margin-left:12px"><input type="checkbox" id="pl-room-outdoor"' + (sh.outdoor ? ' checked' : '') + '> Outdoors?</label></div>';
-    if (sh.outdoor) h += '<p class="hint" style="margin:0 0 12px">Every side with nothing built beyond it is open to the sky, so there is no need to mark windows here.</p>';
-    /* Sizes left this panel for the ruler on the stage: one measured room
-       scales the whole plan, so asking for a width and depth on every room
-       implied each one needed typing. */
-    h += '<span class="label" style="display:flex;align-items:center;gap:8px;margin-bottom:2px">Wall / Window / Opening <button class="plan-help" id="pl-walls-help" aria-label="What do these mean?">?</button></span>' +
-      '<p class="hint" style="margin:0 0 10px">Tap to cycle through the options.</p><div class="grid-2">' +
-      Plan.edges(sh).map(function (e) {
+    let h = '<div class="section plan-sec plan-room' + (lk ? ' is-locked' : '') + '">' +
+      '<div class="plan-room-head">' +
+        '<button class="plan-back" id="pl-back" aria-label="Back to the steps">' + CHEV + '</button>' +
+        '<input class="plan-title-input" id="pl-room-name" value="' + UI.attr(r.name) + '" placeholder="Room name" aria-label="Room name" maxlength="40" autocomplete="off"' + (lk ? ' readonly' : '') + '>' +
+        '<button class="plan-room-ico' + (lk ? ' is-on' : '') + '" id="pl-room-lock" aria-pressed="' + lk + '" aria-label="' + (lk ? 'Unlock this room' : 'Lock this room') + '">' + (lk ? LOCK_SVG : UNLOCK_SVG) + '</button>' +
+        '<button class="plan-room-ico" id="pl-room-more" aria-label="Icon, humidity and notes">' + UI.icon('sliders') + '</button>' +
+      '</div>';
+    if (lk) h += '<p class="plan-room-lockline">' + LOCK_SVG + '<span>Locked, so its shape, walls and name stay put. Tap the lock to change them.</span></p>';
+    h += '<div class="plan-room-sub"><span class="label">Walls <button class="plan-help" id="pl-walls-help" aria-label="What do these mean?">?</button></span>' +
+        '<label class="plan-check"><input type="checkbox" id="pl-room-outdoor"' + (sh.outdoor ? ' checked' : '') + (lk ? ' disabled' : '') + '> Outdoors</label></div>';
+    if (sh.outdoor) h += '<p class="hint" style="margin:0 0 10px">Open to the sky wherever nothing is built beyond.</p>';
+    h += '<div class="grid-2">' + Plan.edges(sh).map(function (e) {
         const nb = Plan.across(r, e), a = Plan.aspectOf(e), sr = Plan.skyRank(e);
         let sub;
         if (e.kind === WINDOW) sub = a ? LOOKUPS.ASPECT_NAMES[a] + ' · ' + LOOKUPS.LIGHT[Plan.keyOf(sr)].short.toLowerCase() : 'window';
-        else if (e.kind === OPENING) sub = nb ? 'open to ' + nb.name : 'opening · nothing beyond';
+        else if (e.kind === OPENING) sub = nb ? 'to ' + nb.name : 'nothing beyond';
         else if (sh.outdoor && !nb) sub = a ? 'sky · ' + LOOKUPS.ASPECT_NAMES[a].toLowerCase() : 'open to the sky';
-        else sub = nb ? 'shared with ' + nb.name : fmtM(e.len * (pl.cell || 0.5));
-        return '<button class="chip plan-wall' + (e.kind === WINDOW ? ' is-on' : e.kind === OPENING ? ' is-open' : '') + '" data-wall="' + e.i + '"><span>' + (e.i + 1) + ' · ' + KIND_LABEL[e.kind] + '</span><small>' + UI.esc(sub) + '</small></button>';
+        else sub = nb ? nb.name : fmtM(e.len * (pl.cell || 0.5));
+        return '<button class="chip plan-wall' + (e.kind === WINDOW ? ' is-on' : e.kind === OPENING ? ' is-open' : '') + '" data-wall="' + e.i + '"' + (lk ? ' disabled' : '') + '><span>' + (e.i + 1) + ' · ' + KIND_LABEL[e.kind] + '</span><small>' + UI.esc(sub) + '</small></button>';
       }).join('') + '</div>' +
       (Plan.known() ? '' : '<p class="hint">Set north and I can say which way each wall faces.</p>');
-    if (sun) h += '<p class="hint">Midday sun reaches about ' + fmtM(Math.min(sun.winter, d.h)) + ' into this room in midwinter, and ' + (sun.summer < 0.2 ? 'barely past the sill' : 'about ' + fmtM(sun.summer)) + ' in midsummer.</p>';
+    if (sun) h += '<p class="hint plan-room-sun">Midday sun reaches about ' + fmtM(Math.min(sun.winter, d.h)) + ' in midwinter, and ' + (sun.summer < 0.2 ? 'barely past the sill' : 'about ' + fmtM(sun.summer)) + ' in midsummer.</p>';
     h += '</div>';
     if (here.length) {
       h += '<div class="section plan-sec"><div class="section-head"><h2 class="section-title">In here</h2></div><div class="stack" style="gap:6px">' + here.map(function (p) {
         return '<button class="plan-row" data-sel-plant="' + UI.attr(p.id) + '"><span class="plan-row-nm">' + UI.esc(Store.displayName(p)) + '</span>' + verdictPill(Plan.verdict(Store.species(p), Plan.pointRank(r, p.pos.x, p.pos.y))) + '</button>';
       }).join('') + '</div></div>';
     }
-    h += '<div class="section plan-sec"><div class="stack" style="gap:10px">' +
-      '<button class="btn btn-ghost btn-sm" id="pl-room-more" style="align-self:flex-start">' + UI.icon('sliders') + 'Icon, humidity, notes</button>' +
-      '<div class="row"><button class="btn btn-sm" id="pl-done-sel">Done</button>' +
-      '<button class="btn btn-blood btn-sm" id="pl-room-delete">Remove room</button></div></div></div>';
+    h += '<div class="plan-room-foot"><button class="btn btn-sm" id="pl-done-sel">Done</button>' +
+      '<button class="link-btn plan-room-remove" id="pl-room-delete"' + (lk ? ' disabled' : '') + '>' + UI.icon('trash') + '<span>Remove room</span></button></div>';
     panel.innerHTML = h;
   }
 
+
+  /* The plant panel. The name heads it, with a way out to the
+     plant's own page beside it. Under that, the verdict, then three short
+     facts laid out as a list rather than three sentences to read: the
+     light here, the light it wants, and where that light comes from. A
+     better spot, when there is one, is a single line with its button. */
   function panelPlant(p) {
     const sp = Store.species(p), r0 = Plan.roomAt(p.pos.x, p.pos.y);
     const rank = r0 ? Plan.pointRank(r0, p.pos.x, p.pos.y) : null, v = Plan.verdict(sp, rank);
-    let h = '<div class="section plan-sec"><div class="section-head"><h2 class="section-title"><button class="plan-back" id="pl-back" aria-label="Back">' + CHEV + '</button>Plant</h2></div>' +
-      '<div class="plan-reading">' + UI.esc(Store.displayName(p)) + '</div>' +
-      '<p class="hint" style="margin-top:4px">' + (sp ? UI.esc(sp.common) + ' · ' : '') + (r0 ? 'in the ' + UI.esc(r0.name) : 'not in a room') + '</p>' +
-      '<div class="row" style="margin-top:10px">' + lightPill(rank) + verdictPill(v) + '</div>';
+    const name = Store.displayName(p), common = sp ? sp.common : '';
+    const sub = [common && common !== name ? common : '', r0 ? 'in the ' + r0.name : 'not in a room'].filter(Boolean).join(' · ');
+    let h = '<div class="section plan-sec plan-room plan-plant">' +
+      '<div class="plan-room-head">' +
+        '<button class="plan-back" id="pl-back" aria-label="Back to the steps">' + CHEV + '</button>' +
+        '<div class="plan-plant-title"><div class="plan-plant-name">' + UI.esc(name) + '</div><div class="plan-plant-sub">' + UI.esc(sub) + '</div></div>' +
+        '<button class="plan-room-ico" id="pl-open-plant" aria-label="Open ' + UI.attr(name) + '">' + OPEN_SVG + '</button>' +
+      '</div>';
+    const facts = [];
+    facts.push(['Here', rank === null ? '<span class="plan-fact-quiet">Light unknown</span>' : lightPill(rank) + (v ? verdictPill(v) : '')]);
     if (sp && sp.light) {
-      h += '<p class="hint">Wants ' + UI.esc(LOOKUPS.LIGHT[sp.light.ideal].label.toLowerCase()) +
-        ((sp.light.tolerates || []).length ? '; copes with ' + sp.light.tolerates.map(function (k) { return LOOKUPS.LIGHT[k].label.toLowerCase(); }).join(' and ') : '') + '.</p>';
+      const tol = (sp.light.tolerates || []).map(function (k) { return LOOKUPS.LIGHT[k].label.toLowerCase(); });
+      facts.push(['Wants', UI.esc(LOOKUPS.LIGHT[sp.light.ideal].label) + (tol.length ? '<span class="plan-fact-quiet"> · copes with ' + UI.esc(tol.join(' and ')) + '</span>' : '')]);
     }
     if (r0 && rank !== null) {
       let near = null, via = null;
       (Plan.sources(r0) || []).forEach(function (s) { const dd = Plan.distToEdge(s.e, p.pos.x, p.pos.y) * (plan().cell || 0.5); if (near === null || dd < near) { near = dd; via = s; } });
-      if (via) h += '<p class="hint">About ' + fmtM(near) + ' from the nearest light' + (via.borrowed ? ', borrowed through the opening to the ' + UI.esc(via.borrowed.name) : '') + '.</p>';
+      if (via) facts.push(['Light from', fmtM(near) + ' away' + (via.borrowed ? '<span class="plan-fact-quiet"> · through the opening to the ' + UI.esc(via.borrowed.name) + '</span>' : '')]);
     }
-    if (Plan.known()) h += '<p class="hint"><span class="plan-swatch" style="background:' + HEAT.ideal + '"></span> perfect &nbsp; <span class="plan-swatch" style="background:' + HEAT.ok + '"></span> fine &nbsp;— shaded on the plan while this plant is selected.</p>';
-    h += '</div>';
+    h += '<dl class="plan-facts">' + facts.map(function (f, i) { return '<div' + (i === 0 ? ' class="is-pills"' : '') + '><dt>' + f[0] + '</dt><dd>' + f[1] + '</dd></div>'; }).join('') + '</dl>';
+    if (Plan.known()) h += '<p class="plan-legend"><span class="plan-swatch" style="background:' + HEAT.ideal + '"></span>perfect <span class="plan-swatch" style="background:' + HEAT.ok + '"></span>fine <span class="plan-legend-note">shaded on the plan</span></p>';
     if (v && v.verdict !== 'ideal' && Plan.known()) {
       const s = Plan.suggest(sp, p.pos);
       const sv = s ? Plan.verdict(sp, s.rank) : null;
       const better = s && sv && (sv.verdict === 'ideal' || (v.verdict !== 'ok' && sv.verdict === 'ok'));
       if (better) {
         const where = !s.edge ? '' : s.edge.kind === OPENING ? ', by the opening' : ', by the ' + LOOKUPS.ASPECT_NAMES[Plan.aspectOf(s.edge)].toLowerCase() + (s.room.shape.outdoor ? ' side' : ' window');
-        h += '<div class="section plan-sec"><div class="section-head"><h2 class="section-title">A better spot</h2></div>' +
-          '<p class="hint" style="margin:0 0 10px">' + (s.room === r0 ? 'Closer to the light in here' + UI.esc(where) + '.' : 'Happier in the ' + UI.esc(s.room.name) + UI.esc(where) + '.') + '</p>' +
+        h += '<div class="plan-better"><p><b>A better spot</b>' + (s.room === r0 ? 'Closer to the light in here' + UI.esc(where) + '.' : 'Happier in the ' + UI.esc(s.room.name) + UI.esc(where) + '.') + '</p>' +
           '<button class="btn btn-sm" id="pl-move-plant" data-x="' + s.spot.x + '" data-y="' + s.spot.y + '">Move it there</button></div>';
       } else if (v.verdict === 'bad' || v.verdict === 'poor') {
-        h += '<div class="section plan-sec"><div class="section-head"><h2 class="section-title">A better spot</h2></div><p class="hint" style="margin:0">Nowhere on this plan suits it yet. A room with a window facing the light it wants would.</p></div>';
+        h += '<div class="plan-better"><p><b>No better spot yet</b>A room with a window facing the light it wants would suit it.</p></div>';
       }
     }
-    h += '<div class="section plan-sec"><div class="row"><button class="btn btn-sm" id="pl-done-sel">Done</button>' +
-      '<button class="btn btn-ghost btn-sm" id="pl-open-plant">Open plant</button>' +
-      '<button class="btn btn-ghost btn-sm" id="pl-unplace">Take off the plan</button></div></div>';
+    h += '<div class="plan-room-foot"><button class="btn btn-sm" id="pl-done-sel">Done</button>' +
+      '<button class="link-btn plan-room-remove plan-unplace" id="pl-unplace"><span>Take off the plan</span></button></div></div>';
     panel.innerHTML = h;
   }
+
 
   /* ======================================================================
      Sheets
@@ -540,7 +633,10 @@ window.ViewPlan = (function () {
         ? '<div style="margin-top:16px"><span class="label">Which side of the equator are you on?</span>' +
           '<p class="hint" style="margin:0 0 8px">It decides which way your bright windows face, so I need it before I can read them.</p>' +
           '<div class="row-wrap"><button class="chip" data-pl-hemi="north">Northern hemisphere</button><button class="chip" data-pl-hemi="south">Southern hemisphere</button></div></div>'
-        : '<p class="hint" style="margin-top:14px">' + (Store.hemisphere() === 'south' ? 'I\'m reading your windows for the southern hemisphere, so north-facing is your bright side.' : 'I\'m reading your windows for the northern hemisphere, so south-facing is your bright side.') + '</p>') +
+        /* A known hemisphere says nothing here. The sentence that used to
+           sit here restated a setting made in Profile, under a dial already
+           being read. Asking is still done in full when it is a guess. */
+        : '') +
       '<div class="row" style="gap:8px;margin-top:18px">' +
         (pl.northConfirmed ? '<button class="btn btn-ghost" data-act="pl-north-clear" style="flex:1">I\'m not sure</button>' : '<button class="btn btn-ghost" data-act="sheet-cancel" style="flex:1">Cancel</button>') +
         '<button class="btn" data-act="pl-north-confirm" style="flex:1">' + (pl.northConfirmed ? 'Keep this' : 'Confirm north') + '</button>' +
@@ -571,7 +667,14 @@ window.ViewPlan = (function () {
         b.addEventListener('click', function () { Store.updateProfile({ hemisphere: b.getAttribute('data-pl-hemi') }); UI.closeSheet(); setTimeout(openCompass, 230); });
       });
       const ok = sheet.querySelector('[data-act="pl-north-confirm"]');
-      if (ok) ok.addEventListener('click', function () { Store.updatePlan({ northConfirmed: true }); UI.closeSheet(); UI.toast('North confirmed', 'leaf'); redraw(); });
+      if (ok) ok.addEventListener('click', function () {
+        const was = curStep();
+        Store.updatePlan({ northConfirmed: true }); UI.closeSheet(); UI.toast('North confirmed', 'leaf');
+        /* Confirming north from step 3 finishes it, so the dock moves on, as
+           ticking done with the floorplan does from step 1. */
+        if (!sel && was === 3 && Plan.known()) goStep(4);
+        redraw();
+      });
       const clr = sheet.querySelector('[data-act="pl-north-clear"]');
       if (clr) clr.addEventListener('click', function () { Store.updatePlan({ northConfirmed: false }); UI.closeSheet(); redraw(); });
     });
@@ -714,13 +817,13 @@ window.ViewPlan = (function () {
     const list = drawn();
     const n = root.querySelector('#pl-notice');
     if (drawing) { n.textContent = drawing.pts.length ? 'Tap the next corner. Tap the first one again to close the room.' : 'Tap a corner to start tracing, or drag to draw a box.'; n.className = 'plan-notice'; n.hidden = false; }
-    else if (!Plan.known() && list.length) { n.textContent = 'I\'ll shade the light in each room once north is confirmed. Tap the compass.'; n.className = 'plan-notice is-gold'; n.hidden = false; }
+    /* No sentence for an unset north: the compass asks for it itself. */
     else if (tool === 'backdrop') { n.textContent = 'Drag to move the floorplan under the grid.'; n.className = 'plan-notice'; n.hidden = false; }
     else n.hidden = true;
     /* Once read, it stays read. The tip explains a gesture, and a gesture
        learnt does not need explaining every time a room is selected. */
     const tip = root.querySelector('#pl-reshape');
-    tip.hidden = !(mode === 'plan' && sel && sel.type === 'room') || !!Store.get().settings.reshapeTipDone;
+    tip.hidden = !(mode === 'plan' && sel && sel.type === 'room') || !!Store.get().settings.reshapeTipDone || isLocked(sel && sel.type === 'room' ? room(sel.id) : null);
     const stage = root.querySelector('.plan-stage');
     const hints = root.querySelector('#pl-hints');
     if (ui.full) {
@@ -734,7 +837,11 @@ window.ViewPlan = (function () {
     }
     root.querySelector('#pl-quick-add').hidden = !(mode === 'plan' && sel && sel.type === 'room' && !drawing);
     root.querySelector('#pl-invite').hidden = !(mode === 'plan' && !drawing && !list.length && window.Tour);
-    root.querySelector('#pl-add-room').hidden = !(mode === 'plan' && !drawing && !sel && list.length);
+    const addRoom = root.querySelector('#pl-add-room');
+    addRoom.hidden = !(mode === 'plan' && !drawing && !sel && list.length);
+    /* On step 2 it is the step's one action, so it wears the primary green
+       and breathes, the way the compass does while north is unset. */
+    addRoom.classList.toggle('is-cta', curStep() === 2);
     const full = root.querySelector('#pl-full');
     full.innerHTML = UI.icon(ui.full ? 'shrink' : 'expand');
     full.setAttribute('aria-label', ui.full ? 'Leave full screen' : 'Fill the screen');
@@ -746,10 +853,86 @@ window.ViewPlan = (function () {
     wt.classList.toggle('is-on', !!ui.hideInner);
     root.querySelector('#pl-view-reset').hidden = !viewChanged();
     root.querySelector('#pl-tool-compass').innerHTML = compassRose(0, 0, 22, 'var(--bg-2)');
-    root.querySelectorAll('[data-mode]').forEach(function (b) { b.classList.toggle('is-on', b.getAttribute('data-mode') === mode); });
+    const rose = root.querySelector('#pl-rose');
+    if (rose) {
+      const unset = !Plan.known();
+      rose.classList.toggle('is-unset', unset);
+      /* The tag only once a room is drawn: on an empty grid there is no
+         light to read yet, and the invitation is the one thing to look at. */
+      rose.classList.toggle('has-tag', unset && list.length > 0 && !drawing);
+      rose.setAttribute('aria-label', unset ? 'Set north. Room light is off until it is set' : 'Which way is north?');
+    }
+    document.querySelectorAll('[data-mode]').forEach(function (b) { b.classList.toggle('is-on', b.getAttribute('data-mode') === mode); });
+    const dock = root.querySelector('#pl-dock');
+    if (dock) dock.innerHTML = dockHtml();
+    stage.classList.toggle('is-home', mode === 'home');
   }
 
-  function redraw() { if (!root || !document.body.contains(root)) return; Plan.sync(); drawPanel(); syncOverlays(); drawCanvas(); }
+  /* ======================================================================
+     Undo and redo
+     ----------------------------------------------------------------------
+     Snapshots of what the plan owns: every room (shape, name, windows, and
+     the rest of the record, so a removed room comes back whole), where each
+     plant stands, and the plan's own settings. Not the backdrop image: it
+     is the one heavy thing here, and moving it is not worth a history.
+
+     A snapshot is taken on every redraw and kept only if it differs from
+     the last, so one gesture is one step however many saves it made on the
+     way: a room dragged across the grid saves once and lands once, and a
+     name typed letter by letter is one change by the time anything redraws.
+     Kept for the visit, never saved.
+     ====================================================================== */
+  const hist = { past: [], future: [], applying: false };
+  const HIST_MAX = 60;
+  function snapOf() {
+    const s = Store.get(), pl = Object.assign({}, s.plan); delete pl.backdrop;
+    return JSON.stringify({
+      rooms: s.rooms,
+      plants: s.plants.map(function (p) { return [p.id, p.pos || null, p.roomId || null]; }),
+      plan: pl
+    });
+  }
+  function record() {
+    if (hist.applying) return;
+    const now = snapOf();
+    if (hist.past[hist.past.length - 1] === now) return;
+    hist.past.push(now); if (hist.past.length > HIST_MAX) hist.past.shift();
+    if (hist.past.length > 1) hist.future = [];
+  }
+  function applySnap(json) {
+    const d = JSON.parse(json), s = Store.get();
+    s.rooms.splice.apply(s.rooms, [0, s.rooms.length].concat(d.rooms));
+    const at = {}; d.plants.forEach(function (r) { at[r[0]] = r; });
+    /* A plant made since the snapshot keeps living in the greenhouse; it
+       only leaves the plan, which is all the plan can take back. */
+    s.plants.forEach(function (p) { const r = at[p.id]; p.pos = r ? r[1] : null; if (r) p.roomId = r[2]; });
+    const bd = s.plan.backdrop; Object.assign(s.plan, d.plan); s.plan.backdrop = bd;
+    hist.applying = true;
+    Store.save(); Plan.sync();
+    if (sel && sel.type === 'room' && !room(sel.id)) sel = null;
+    drawing = null; if (tool === 'add') tool = 'select';
+    redraw();
+    hist.applying = false;
+  }
+  function undo() {
+    if (hist.past.length < 2) return;
+    hist.future.push(hist.past.pop());
+    applySnap(hist.past[hist.past.length - 1]);
+  }
+  function redo() {
+    if (!hist.future.length) return;
+    const next = hist.future.pop(); hist.past.push(next);
+    applySnap(next);
+  }
+  const UNDO_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>';
+  const REDO_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg>';
+
+  function redraw() { if (!root || !document.body.contains(root)) return; Plan.sync(); drawPanel(); syncOverlays(); drawCanvas(); record(); syncHistory(); }
+  function syncHistory() {
+    const u = root && root.querySelector('#pl-undo'), r = root && root.querySelector('#pl-redo');
+    if (u) u.disabled = hist.past.length < 2;
+    if (r) r.disabled = !hist.future.length;
+  }
 
   /* ======================================================================
      The backdrop image
@@ -783,7 +966,7 @@ window.ViewPlan = (function () {
           const ok = Store.updatePlan({ backdrop: { src: c.toDataURL('image/jpeg', 0.55), opacity: 0.45, scale: 1, x: 0, y: 0 }, done: false });
           cleanup();
           if (!ok) { Store.updatePlan({ backdrop: null }); return; }
-          mode = 'plan'; tool = 'backdrop'; ui.open[1] = true; redraw();
+          mode = 'plan'; tool = 'backdrop'; goStep(1); redraw();
           UI.toast('Line it up, then trace your rooms over it', 'leaf');
         };
         img.onerror = function () { cleanup(); UI.toast('I could not read that image', 'warn'); };
@@ -799,7 +982,6 @@ window.ViewPlan = (function () {
   /* Where both the invitation's quiet link and the walkthrough's last
      button land: Step 2 open, the add tool armed, nothing drawn for them. */
   function startTracing() {
-    ui.open[2] = true;
     tool = 'add'; drawing = { pts: [] }; mode = 'plan'; sel = null;
     redraw();
   }
@@ -838,21 +1020,35 @@ window.ViewPlan = (function () {
     return UI.plural(n, 'room') + ' drawn' + (p ? ' · ' + UI.plural(p, 'plant') + ' placed' : '');
   }
 
+  function modeTabs() {
+    return '<button class="tab-btn' + (mode === 'plan' ? ' is-on' : '') + '" data-mode="plan">Plan</button><button class="tab-btn' + (mode === 'home' ? ' is-on' : '') + '" data-mode="home">Home</button>';
+  }
+  /* Plan and Home sit in the header beside the title, which hands the row
+     they used to take back to the stage. */
+  function actions() { return '<div class="tabs plan-modes" role="group" aria-label="View">' + modeTabs() + '</div>'; }
+  function setMode(m) { mode = m; if (mode === 'home') { tool = 'select'; drawing = null; } redraw(); }
+
   function render() {
     return '<div class="plan">' +
       '<div class="plan-main">' +
-        '<div class="tabs" style="margin-bottom:12px"><button class="tab-btn' + (mode === 'plan' ? ' is-on' : '') + '" data-mode="plan">Plan</button><button class="tab-btn' + (mode === 'home' ? ' is-on' : '') + '" data-mode="home">Home</button></div>' +
         '<div class="plan-stage" id="pl-stage">' +
           '<svg id="pl-canvas" xmlns="http://www.w3.org/2000/svg"></svg>' +
           '<div class="plan-notice" id="pl-notice" hidden></div>' +
           '<div class="plan-overlay" id="pl-reshape" hidden><span>Drag a square corner to reshape the room. Drag the small dot on a wall to add a corner.</span>' +
             '<button class="plan-tip-x" data-tip-done="1" aria-label="Got it, hide this tip">' + UI.icon('x') + '</button></div>' +
+          '<div class="plan-history"><button class="plan-tool" id="pl-undo" aria-label="Undo" disabled>' + UNDO_SVG + '</button><button class="plan-tool" id="pl-redo" aria-label="Redo" disabled>' + REDO_SVG + '</button></div>' +
           '<div class="plan-tools">' +
-            '<button class="plan-tool is-rose" data-open-compass="1" aria-label="Which way is north?"><svg id="pl-tool-compass" viewBox="-30 -30 60 60" aria-hidden="true"></svg></button>' +
+            '<button class="plan-tool is-rose" id="pl-rose" data-open-compass="1" aria-label="Which way is north?"><svg id="pl-tool-compass" viewBox="-30 -30 60 60" aria-hidden="true"></svg>' +
+              '<span class="plan-rose-tag" aria-hidden="true">Set north<svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h8M7 3l3 3-3 3"/></svg></span>' +
+            '</button>' +
             '<button class="plan-tool" data-open-dims="1" aria-label="Set the room sizes">' + UI.icon('ruler') + '</button>' +
             '<button class="plan-tool" id="pl-full" aria-label="Fill the screen"></button>' +
           '</div>' +
-          '<button class="plan-stage-btn is-bottom" id="pl-walls-toggle" hidden></button>' +
+          /* The bottom-right corner belongs to the dock, so the Home
+             view's walls switch takes the top-left, and Centre steps down
+             beneath it when both are showing. */
+          '<button class="plan-stage-btn is-left" id="pl-walls-toggle" hidden></button>' +
+          '<div class="plan-dock" id="pl-dock" role="group" aria-label="Planner steps"></div>' +
           '<button class="plan-stage-btn is-left" id="pl-view-reset" hidden>Centre</button>' +
           '<button class="plan-stage-btn is-left is-bottom" id="pl-quick-add" hidden>' + UI.icon('plus') + 'Add a plant</button>' +
           /* The same corner as Add a plant, and never at the same time: one
@@ -889,17 +1085,41 @@ window.ViewPlan = (function () {
     '</div>';
   }
 
-  function mount(el) {
+  function mount(el, params) {
     root = el;
+    /* Arriving is a fresh start; a refresh is not. Arriving puts the dock
+       back on the first step not yet done and starts a new undo history,
+       so an undo can never reach back into a change made on another screen
+       before this visit. A refresh (a sheet saved over the plan) keeps both.
+       The selection is left alone either way: focusRoom() sets it before
+       the arrival it is for. */
+    if (!(params && params.refresh)) { ui.step = null; drawing = null; tool = 'select'; hist.past = []; hist.future = []; }
     if (!escBound) {
       escBound = true;
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && ui.full) { ui.full = false; redraw(); }
+        /* Undo and redo from the keyboard too, but never out of a text
+           field, where the browser's own undo is the one wanted. */
+        if (!root || !document.body.contains(root) || UI.sheetIsOpen()) return;
+        if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+        const k = e.key.toLowerCase();
+        if ((e.ctrlKey || e.metaKey) && k === 'z') { e.preventDefault(); if (e.shiftKey) redo(); else undo(); }
+        else if ((e.ctrlKey || e.metaKey) && k === 'y') { e.preventDefault(); redo(); }
       });
-    } canvas = root.querySelector('#pl-canvas'); panel = root.querySelector('#pl-panel');
+    }
+    /* The header lives outside the view, and outlives it, so its listener is
+       bound once for the page like the Escape key above. */
+    if (!modesBound) {
+      modesBound = true;
+      document.addEventListener('click', function (e) {
+        const m = e.target.closest('.topbar [data-mode]');
+        if (m && root && document.body.contains(root)) setMode(m.getAttribute('data-mode'));
+      });
+    }
+    canvas = root.querySelector('#pl-canvas'); panel = root.querySelector('#pl-panel');
     drag = null; pinch = null; pointers.clear();
     views.plan.k = 1; views.plan.cx = 0; views.plan.cy = 0; fitBox = null;
-    drawPanel(); syncOverlays(); drawCanvas();
+    drawPanel(); syncOverlays(); drawCanvas(); record(); syncHistory();
     /* Once more when the layout has settled. The stage takes its height
        from the viewport, and the first measurement can land before that is
        final, which leaves the drawing fitted to a box a few pixels off. */
@@ -911,7 +1131,9 @@ window.ViewPlan = (function () {
 
     root.addEventListener('click', function (e) {
       const m = e.target.closest('[data-mode]');
-      if (m) { mode = m.getAttribute('data-mode'); if (mode === 'home') { tool = 'select'; drawing = null; } redraw(); return; }
+      if (m) { setMode(m.getAttribute('data-mode')); return; }
+      const dk = e.target.closest('[data-dock]');
+      if (dk) { pickStep(+dk.getAttribute('data-dock')); return; }
       if (e.target.closest('#pl-walls-toggle')) { ui.hideInner = !ui.hideInner; drawCanvas(); syncOverlays(); return; }
       if (e.target.closest('#pl-view-reset')) { centreView(); drawCanvas(); syncOverlays(); return; }
       if (e.target.closest('.plan-tools [data-open-compass]')) { openCompass(); return; }
@@ -920,6 +1142,8 @@ window.ViewPlan = (function () {
       if (e.target.closest('[data-tip-done]')) { Store.updateSettings({ reshapeTipDone: true }); syncOverlays(); return; }
       if (e.target.closest('[data-tour]')) { Tour.open(startTracing); return; }
       if (e.target.closest('#pl-add-room')) { startTracing(); return; }
+      if (e.target.closest('#pl-undo')) { undo(); return; }
+      if (e.target.closest('#pl-redo')) { redo(); return; }
       /* Not the Fullscreen API: iOS Safari grants it to video alone, so the
          one device where this is most wanted is the one where it would do
          nothing. A fixed, inset stage does the same job everywhere, and
@@ -961,6 +1185,7 @@ window.ViewPlan = (function () {
       if (tool === 'backdrop' && plan().backdrop) { const s = svgPoint(e); drag = { kind: 'bd', sx: s.x, sy: s.y, ox: plan().backdrop.x, oy: plan().backdrop.y }; return; }
       const rb = t.closest('[data-room-body]');
       if (tool === 'add' && !(rb && !drawing)) { drag = { kind: 'draw', sx: snap(start.x), sy: snap(start.y), rect: null, moved: false }; return; }
+      if (rb && isLocked(room(rb.getAttribute('data-room-body')))) { drag = { kind: 'pan', px: e.clientX, py: e.clientY, moved: false, roomId: rb.getAttribute('data-room-body') }; return; }
       if (rb) { drag = { kind: 'room', id: rb.getAttribute('data-room-body'), sx: start.x, sy: start.y, ax: 0, ay: 0, moved: false }; return; }
       drag = { kind: 'pan', px: e.clientX, py: e.clientY, moved: false, roomId: null };
     });
@@ -1069,15 +1294,14 @@ window.ViewPlan = (function () {
     /* ---- Panel clicks ---- */
     panel.addEventListener('click', function (e) {
       const t = e.target;
-      const tg = t.closest('[data-toggle]');
-      if (tg) { const n = +tg.getAttribute('data-toggle'); ui.open[n] = !stepOpen(n); drawPanel(); return; }
-      if (t.closest('#pl-tool-add')) { if (tool === 'add') { tool = 'select'; drawing = null; } else { tool = 'add'; drawing = { pts: [] }; mode = 'plan'; sel = null; } redraw(); return; }
       const dr = t.closest('[data-draw-room]');
       if (dr) { tool = 'add'; drawing = { pts: [], forRoomId: dr.getAttribute('data-draw-room') }; mode = 'plan'; sel = null; redraw(); UI.toast('Trace ' + room(dr.getAttribute('data-draw-room')).name + ' on the plan', 'leaf'); return; }
       if (t.closest('#pl-draw-finish')) { if (drawing && drawing.pts.length >= 3) finishRoom(drawing.pts); return; }
       if (t.closest('#pl-draw-undo')) { if (drawing) drawing.pts.pop(); redraw(); return; }
       if (t.closest('#pl-draw-cancel')) { drawing = null; tool = 'select'; redraw(); return; }
       if (t.closest('#pl-bd-load')) { pickBackdrop(); return; }
+      if (t.closest('#pl-step1-next')) { if (!plan().backdrop && !plan().done) Store.updatePlan({ done: true }); pickStep(2); return; }
+      if (t.closest('#pl-bd-finish')) { Store.updatePlan({ done: true, backdrop: null }); tool = 'select'; redraw(); UI.toast('Image removed. Your rooms stay.', 'leaf'); return; }
       if (t.closest('#pl-tool-bd')) { tool = tool === 'backdrop' ? 'select' : 'backdrop'; mode = 'plan'; redraw(); return; }
       if (t.closest('#pl-bd-remove')) { Store.updatePlan({ backdrop: null }); tool = 'select'; redraw(); UI.toast('Backdrop removed. Your rooms stay.', 'leaf'); return; }
       if (t.closest('#pl-open-compass') || t.closest('[data-open-compass]')) { openCompass(); return; }
@@ -1086,6 +1310,7 @@ window.ViewPlan = (function () {
       if (t.closest('#pl-room-more')) { const r = room(sel.id); if (r) ViewGreenhouse.roomSheet(r); return; }
       if (t.closest('#pl-room-delete')) {
         const r = room(sel.id); if (!r) return;
+        if (isLocked(r)) { lockedNudge(r); return; }
         UI.confirmSheet('Remove ' + r.name + '?', 'Its plants stay in your greenhouse, just not in a room any more.', 'Remove room', function () { Store.deleteRoom(r.id); sel = null; redraw(); UI.toast('Room removed', 'leaf'); }, true);
         return;
       }
@@ -1097,7 +1322,14 @@ window.ViewPlan = (function () {
         Store.updatePlant(sel.id, { pos: { x: x, y: y }, roomId: r0 ? r0.id : Store.getPlant(sel.id).roomId });
         redraw(); UI.toast('Moved', 'leaf'); return;
       }
+      if (t.closest('#pl-room-lock')) {
+        const r = room(sel.id); if (!r) return;
+        r.locked = !r.locked; Store.save(); redraw();
+        UI.toast(r.locked ? r.name + ' is locked' : r.name + ' is unlocked', 'leaf');
+        return;
+      }
       const wall = t.closest('[data-wall]');
+      if (wall && isLocked(room(sel.id))) { lockedNudge(room(sel.id)); return; }
       if (wall) { const r = room(sel.id), i = +wall.getAttribute('data-wall'); r.shape.win[i] = ((r.shape.win[i] || 0) + 1) % 3; saveShape(); redraw(); return; }
       const sr = t.closest('[data-sel-room]'); if (sr) { sel = { type: 'room', id: sr.getAttribute('data-sel-room') }; redraw(); return; }
       const spl = t.closest('[data-sel-plant]'); if (spl) { sel = { type: 'plant', id: spl.getAttribute('data-sel-plant') }; redraw(); return; }
@@ -1128,12 +1360,6 @@ window.ViewPlan = (function () {
         else t.value = r.name;
         return;
       }
-      if (t.id === 'pl-done') {
-        /* Ticking done drops the image: it has done its job, and it is the
-           one thing here that costs real storage. */
-        Store.updatePlan({ done: t.checked, backdrop: t.checked ? null : plan().backdrop });
-        ui.open[1] = !t.checked; redraw(); return;
-      }
       if (t.id === 'pl-room-outdoor') {
         const r = room(sel.id); r.shape.outdoor = t.checked;
         if (t.checked) r.shape.win = r.shape.win.map(function (v) { return v === WINDOW ? WALL : v; });
@@ -1142,8 +1368,21 @@ window.ViewPlan = (function () {
     });
   }
 
+  /* A dock tap is a way back to the steps, so it lets go of any room or
+     plant, and of full screen, where there is no panel to show the step. */
+  function pickStep(n) {
+    if (drawing && n !== 2) { drawing = null; tool = 'select'; }
+    sel = null; goStep(n);
+    if (ui.full) ui.full = false;
+    redraw();
+    if (window.matchMedia('(max-width: 899px)').matches) {
+      const pr = panel.getBoundingClientRect();
+      if (pr.top > window.innerHeight - 120) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }
+
   /* Arrive with a room already selected — from its sheet or its page. */
   function focusRoom(id) { sel = { type: 'room', id: id }; mode = 'plan'; tool = 'select'; drawing = null; }
 
-  return { title: title, sub: sub, back: true, render: render, mount: mount, stagger: false, focusRoom: focusRoom };
+  return { title: title, sub: sub, actions: actions, back: true, render: render, mount: mount, stagger: false, focusRoom: focusRoom };
 })();
