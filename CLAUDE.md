@@ -323,7 +323,12 @@ Brand guide section 09 and Decision 13 are the full rule. The short version:
   cropped off two edges. In the app it renders through `UI.sprout(pose)` or
   `UI.empty('sprout:<pose>', …)` as a `.sprout-plate`, never as a bare `<img>`;
   both go through an allow-list. The one unframed placement is the site hero's
-  bottom-left, where the two cropped edges meet the page's edges.
+  bottom-right, mirrored, where the two cropped edges meet the page's edges.
+  The site opens on Sprout once a session: an intro at the top of
+  `site/index.html` walks it along a blooming branch and lands it on that
+  exact corner before dissolving onto the page, so the corner and the
+  intro's landing have to move together. It draws the figure from
+  `site/img/sprout-rig/`, the rig at web weight.
 - **The site's copy is a separate cut-out.** `site/img/sprout-corner.webp` is
   `marketing/character/sprout-base.png` with its ground removed and trimmed,
   because `site/` cannot reach `../img`. Its height comes from a script in
