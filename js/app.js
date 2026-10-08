@@ -260,7 +260,9 @@ window.App = (function () {
     }
 
     currentView = view;
-    const params = { id: current.id, extra: current.extra, tail: current.tail };
+    /* `refresh` lets a view tell arriving from being redrawn in place. The
+       plan uses it to start a new undo history only on arrival. */
+    const params = { id: current.id, extra: current.extra, tail: current.tail, refresh: !!keepScroll };
 
     /* Drawn rooms carry a derived light and aspect. Settle them before any
        view reads a room, so the greenhouse, the schedule and the plan can

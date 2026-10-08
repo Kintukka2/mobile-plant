@@ -167,6 +167,14 @@ next room. A plant placed on the plan carries `plant.pos = { x, y }`.
 only trusted once `northConfirmed`), the metres-per-cell scale, and the
 tracing backdrop while it is needed.
 
+A room can also carry `room.locked`, set from the lock in its panel on the
+plan. A locked room cannot be dragged, reshaped, rewalled, renamed or
+removed there; plants still move in and out of it. It is stored on the room,
+so it survives a reload and rides along in a backup. The plan's undo and
+redo (`js/views/plan.js`) snapshot rooms, plant positions and `state.plan`
+minus the backdrop on each redraw. History lives in memory for one visit to
+the plan and starts fresh on every arrival, never on a refresh.
+
 **A drawn room's `light` and `aspect` are derived, never typed.**
 `Plan.sync()` writes them back onto the room before every render, so
 `Schedule`, the greenhouse and the room page read them like any other
