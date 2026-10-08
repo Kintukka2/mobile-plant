@@ -293,6 +293,10 @@ three (`sunny`, `cold`, `rainy`), `happy`, `sad`, `informative`, `thinking`,
 and `concerned`, which left the app when Diagnose took its own scene and is
 kept for a future plant-health check (its plate stays on disk for the brand
 guide). A file being there does not put a face on a screen.
+`marketing/character/rig/` is the base pose taken apart (body, both leaf
+arms, a leg, `rig.json`) plus a finished sitting cut-out, for anything that
+has to move Sprout or sit it on a ledge. Its chest and legs are painted,
+not the designer's; its README says which, and the same rule applies.
 Brand guide section 09 and Decision 13 are the full rule. The short version:
 
 - **The face follows the voice zoning.** It appears only on conversation

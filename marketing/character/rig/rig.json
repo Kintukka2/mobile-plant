@@ -1,0 +1,71 @@
+{
+  "source": "marketing/character/sprout-base.png, ground keyed out, framed as site/img/sprout-corner.webp",
+  "frame": [
+    937,
+    1212
+  ],
+  "parts": {
+    "body": {
+      "file": "body.png",
+      "at": [
+        0,
+        0
+      ]
+    },
+    "arm-right": {
+      "file": "arm-right.png",
+      "at": [
+        539,
+        855
+      ],
+      "pivot": [
+        707,
+        1186
+      ],
+      "order": "behind arm-left"
+    },
+    "arm-left": {
+      "file": "arm-left.png",
+      "at": [
+        70,
+        838
+      ],
+      "pivot": [
+        421,
+        1186
+      ]
+    },
+    "leg": {
+      "file": "leg.png",
+      "size": [
+        271,
+        341
+      ],
+      "pivot": [
+        135.5,
+        55.5
+      ],
+      "hips": [
+        [
+          323,
+          1127
+        ],
+        [
+          614,
+          1127
+        ]
+      ],
+      "order": "behind body"
+    }
+  },
+  "bottomRadius": 337,
+  "notes": "Angles are radians, clockwise positive (canvas rotate). Arms at 0 reproduce the original exactly. A walking or sitting figure clips body and arms to a rounded bottom of bottomRadius; the corner placement uses no rounding and no legs.",
+  "poses": {
+    "sitting": {
+      "legLeft": 0.1,
+      "legRight": -0.16,
+      "armLeft": 0,
+      "armRight": 0
+    }
+  }
+}

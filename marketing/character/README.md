@@ -54,4 +54,6 @@ Nothing in the app reads this folder. The app ships its own 360 × 360 WebP plat
 
 The other nine are in reserve: discover, sunny, cold, rainy, happy, sad, informative, thinking, and concerned, which Diagnose used until it took its own scene. Giving one a placement is a decision under brand guide Decision 13, not a file copy.
 
+`rig/` holds the base pose taken apart: body, both leaf arms, a leg, and a finished sitting pose, all as cut-outs, so Sprout can walk, sit and move its arms. It sits in its own folder because it is a different kind of file from the seventeen above, and its own README says what in it is painted rather than drawn.
+
 Base and care scenes created 5 October 2026; app, weather and emotion scenes added 6 October 2026. Earlier exploratory candidates are excluded.
