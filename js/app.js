@@ -81,6 +81,48 @@ window.App = (function () {
     Promise.resolve().then(function () { return S.setBackgroundColor({ color: t.color }); }).catch(function () {});
   }
 
+  /* Android's Back, on the store build. With no listener Capacitor runs
+     history.back(), and a sheet is an overlay over the route, not part of
+     it: Back changed the page underneath and left the sheet on top, so
+     Save then wrote the entry and redrew whatever page had arrived. That
+     is how a diary entry saved from a plant landed on Greenhouse, most
+     likely from a Back pressed to drop the keyboard (PrimeTestLab 8220).
+
+     So Back unwinds one layer at a time, outermost first, the way Escape
+     does on a keyboard, and only moves the page once nothing is open.
+     A listener replaces Capacitor's default entirely, which is why the
+     last branch has to exit the app itself. */
+  function onBackButton(ev) {
+    const lb = document.querySelector('.lightbox:not(.is-closing)');
+    if (lb) { lb.click(); return; }
+
+    /* The tour and the rating screen each close on their own Escape, with
+       their own exit, so they are handed one rather than torn down here. */
+    const layer = document.querySelector('.tour, .rate');
+    if (layer) {
+      layer.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      return;
+    }
+
+    /* The introduction has no way back by design, and a page changing
+       under it would be found only once it finished. */
+    if (document.querySelector('.ob')) return;
+
+    if (UI.sheetIsOpen()) { UI.closeSheet(); return; }
+
+    if (ev && ev.canGoBack) { window.history.back(); return; }
+    const cap = window.Capacitor.Plugins.App;
+    Promise.resolve().then(function () { return cap.exitApp(); }).catch(function () {});
+  }
+
+  function listenForBack() {
+    const C = window.Capacitor;
+    if (!C || typeof C.isNativePlatform !== 'function' || !C.isNativePlatform()) return;
+    const cap = C.Plugins && C.Plugins.App;
+    if (!cap || typeof cap.addListener !== 'function') return;
+    cap.addListener('backButton', onBackButton);
+  }
+
   function themeName() {
     const t = document.documentElement.getAttribute('data-theme');
     return THEMES[t] ? t : 'viridium';
@@ -584,6 +626,7 @@ window.App = (function () {
     /* index.html applies a stored Conservatory before first paint, but the
        native bar starts from capacitor.config.json's dark values. */
     paintStatusBar(themeName());
+    listenForBack();
 
     if (!location.hash) location.hash = '#/today';
     render();

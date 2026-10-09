@@ -176,6 +176,18 @@ Three settings here are easy to undo by accident:
   iOS silently goes without it. `npx cap sync` prints the plugins it found
   for each platform, so compare the two lists after adding one.
 
+## Android's Back button
+
+Capacitor's default for Back is `history.back()`, and Sprout's sheets sit
+over the route rather than in it. So Back with a sheet open changed the page
+underneath and left the sheet on top, and a diary entry saved from a plant
+landed on Greenhouse (PrimeTestLab 8220). `../js/app.js` now listens for
+`backButton` through the App plugin and closes the topmost layer first:
+the lightbox, the tour or rating screen, then a sheet. It only goes back a
+page once nothing is open, and exits when there is no page to go back to.
+A listener replaces the default entirely, so that last step is the app's
+own `exitApp()`. iOS has no Back button and never fires the event.
+
 ## How reminders actually work here
 
 `../js/notify.js` already builds the digest: one finished sentence per day

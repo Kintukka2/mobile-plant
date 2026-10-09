@@ -104,9 +104,27 @@ way `js/notify.js` already reaches the App plugin:
 Registering a listener turns Capacitor's default off, so all three branches
 are needed. The web build has no App plugin and is unchanged.
 
-**Check:** headless Chromium with a stubbed App plugin for the three
-branches. Then on a device: open the diary sheet, type, press Back to hide
-the keyboard, press Back again. The sheet closes and the plant page stays.
+Back unwinds one layer at a time, outermost first, the way Escape does on a
+keyboard: the lightbox, then the tour or the rating screen (each handed its
+own Escape, so each closes its own way), then a sheet. During the
+introduction Back does nothing, since there is no way back through it by
+design. Only once nothing is open does it move the page or exit.
+
+**Checked in headless Chromium** with a stubbed Android shell:
+
+| Open | Back does |
+| --- | --- |
+| Diary sheet on a plant | Closes the sheet, stays on the plant |
+| Nothing, with history | Goes back a page (plant to Greenhouse) |
+| A sheet with the lightbox over it | Closes only the lightbox, then the sheet on the next press |
+| The rating screen | Closes it |
+| The planner tour | Closes it, stays on the plan |
+| Nothing, no history | Exits the app |
+
+**Device check:** open the diary sheet, type, press Back to hide the
+keyboard, press Back again. The sheet closes and the plant page stays.
+With the keyboard up, Android uses the first Back to hide it and never
+passes it to the app.
 
 ### M-03 — A plant can't be removed
 
@@ -161,7 +179,8 @@ it. A feature, not a fix, so it isn't in 1.4.
 
 ## Release housekeeping
 
-- [x] `CACHE` in `sw.js`: bump with each fix. `sprout-v77-viridium` for M-02.
+- [x] `CACHE` in `sw.js`: bump with each fix. `sprout-v77-viridium` for M-02,
+      `sprout-v78-viridium` for the Back button.
 - [ ] `native/android/app/build.gradle`: `versionCode 7`, `versionName "1.4"`.
 - [ ] Device build: the Back button, M-01 and M-03 on a phone.
 - [ ] Upload to Closed testing as **7 (1.4)**.
@@ -174,7 +193,7 @@ it. A feature, not a fix, so it isn't in 1.4.
 | --- | --- |
 | M-01 Empty room name | Done on main (`bf3eada`); device check to do |
 | M-02 Care heading | Done; checked in headless Chromium |
-| Back button / diary save | Cause reproduced; fix to do |
+| Back button / diary save | Done; checked in headless Chromium, device check to do |
 | M-03 Remove a plant | To do |
 | S-01 Contrast | To do |
 | S-02 Diagnose confidence | To do |
