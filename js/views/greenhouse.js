@@ -336,6 +336,19 @@ window.ViewGreenhouse = (function () {
       '</div>' +
       '<p class="hint" style="margin-top:8px">Not sure? Let\'s get started now.</p>' +
 
+      /* Removing a plant used to live only at the very foot of its Care tab,
+         under "What tends to go wrong", and a tester who looked everywhere
+         a remove usually is, starting here, reported that it did not exist
+         (PrimeTestLab 8220, M-03). It stays there too. Above the action row
+         rather than in it, so liftSheetActions() still pins Save and this
+         scrolls with the form instead of sitting beside the primary. */
+      (editing
+        ? '<hr class="divider">' +
+          '<button type="button" class="btn btn-blood btn-block btn-sm" id="f-remove">' + UI.icon('trash') +
+            '<span class="btn-label">Remove this plant</span></button>' +
+          '<p class="hint center">Its diary entries and photos go with it.</p>'
+        : '') +
+
       '<div class="row" style="gap:8px;margin-top:20px">' +
         '<button class="btn btn-ghost" data-act="sheet-cancel" style="flex:1">Cancel</button>' +
         '<button class="btn" id="f-save" style="flex:2">' +
@@ -382,6 +395,9 @@ window.ViewGreenhouse = (function () {
       /* Belt to the closing sheet's braces in the stylesheet: of every sheet
          this is the one where a second run costs most, a duplicate plant
          with its own reminders, so it can only ever run once. */
+      const removeEl = root.querySelector('#f-remove');
+      if (removeEl) removeEl.addEventListener('click', function () { ViewPlant.confirmRemove(plant); });
+
       let saved = false;
       root.querySelector('#f-save').addEventListener('click', function () {
         if (saved) return;

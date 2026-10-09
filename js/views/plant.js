@@ -1027,21 +1027,27 @@ window.ViewPlant = (function () {
         return;
       }
 
-      if (e.target.closest('[data-delete]')) {
-        UI.confirmSheet('Remove ' + Store.displayName(p) + '?',
-          'Its diary entries, measurements and photos will all be deleted. This cannot be undone.',
-          'Remove plant', function () {
-            Store.deletePlant(p.id);
-            UI.toast('Removed from your greenhouse');
-            App.go('/greenhouse');
-          }, true);
-      }
+      if (e.target.closest('[data-delete]')) confirmRemove(p);
     });
+  }
+
+  /* One confirmation for both ways in: the button at the foot of the Care
+     tab and the one at the foot of the edit sheet. The edit sheet only
+     opens from this page, so Greenhouse is the right place to land. */
+  function confirmRemove(p) {
+    UI.confirmSheet('Remove ' + Store.displayName(p) + '?',
+      'Its diary entries, measurements and photos will all be deleted. This cannot be undone.',
+      'Remove plant', function () {
+        Store.deletePlant(p.id);
+        UI.toast('Removed from your greenhouse');
+        App.go('/greenhouse');
+      }, true);
   }
 
   return {
     guard: guard, title: title, sub: sub, actions: actions, onAction: onAction,
     back: true, render: render, mount: mount,
-    entrySheet: entrySheet, showTab: showTab, showEntry: showEntry
+    entrySheet: entrySheet, showTab: showTab, showEntry: showEntry,
+    confirmRemove: confirmRemove
   };
 })();
