@@ -196,7 +196,11 @@ window.ViewPlant = (function () {
 
       (iv.factors.length
         ? '<hr class="divider">' +
-          '<div class="eyebrow">Why ' + iv.days + ' and not ' + iv.base + '?</div>' +
+          /* Factors can also cancel out, a bright room against a big pot,
+             and then there is no "and not" to explain, only the sum. */
+          '<div class="eyebrow">' + (iv.days !== iv.ref
+            ? 'Why ' + iv.days + ' and not ' + iv.ref + '?'
+            : 'What goes into ' + iv.days + ' days') + '</div>' +
           '<div class="stack" style="gap:8px;margin-top:9px">' + iv.factors.map(function (fac) {
             const short = fac.effect === 'shorter';
             return '<div class="factor">' +

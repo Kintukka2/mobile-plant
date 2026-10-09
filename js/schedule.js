@@ -56,10 +56,17 @@ window.Schedule = (function () {
 
   /* ---------- The core calculation ---------- */
 
-  /* Returns { days, base, factors[], notes[] } */
+  /* Returns { days, base, ref, factors[], growing }.
+
+     `base` is this season's species figure, so out of the growing season it
+     already carries the dormancy factor listed below. `ref` is the growing-
+     season figure, the one every factor, dormancy included, is measured
+     from. The Care heading used to ask "Why <days> and not <base>?", and
+     with dormancy the only factor those are the same number: "Why 12 and
+     not 12?" on every plant in autumn (PrimeTestLab 8220, M-02). */
   function wateringInterval(plant) {
     const sp = Store.species(plant);
-    if (!sp || !sp.water) return { days: 7, base: 7, factors: [], notes: [] };
+    if (!sp || !sp.water) return { days: 7, base: 7, ref: 7, factors: [], notes: [] };
 
     const growing = isGrowingSeason();
     const base = growing ? sp.water.warm : sp.water.cool;
@@ -147,7 +154,7 @@ window.Schedule = (function () {
     }
 
     days = Math.max(1, Math.round(days));
-    return { days: days, base: base, factors: factors, growing: growing };
+    return { days: days, base: base, ref: sp.water.warm, factors: factors, growing: growing };
   }
 
   /* How much water, in millilitres, for this specific pot. */
