@@ -224,11 +224,13 @@ it. A feature, not a fix, so it isn't in 1.4.
       `sprout-v80-viridium` for S-01 to S-03.
 - [x] `native/android/app/build.gradle`: `versionCode 7`, `versionName "1.4"`.
 - [x] `js/rate.js` still has `LIVE = false`: 1.4 goes to closed testing.
-- [ ] **Build.** Run `native/prepare-android.bat`, then sync in Android
+- [x] **Build.** Run `native/prepare-android.bat`, then sync in Android
       Studio. Sign through **Generate Signed App Bundle or APK** (the
       password is the one Android Studio remembers). The file lands in
       `native\android\app\release\app-release.aab`.
-- [ ] **Device check**, on a build installed from Android Studio:
+- [ ] **Device check**, on a build installed from Android Studio. Not
+      recorded before the upload; still to do, and the first thing to look
+      at if the testers report any of these:
   - [ ] **Back button.** Open a plant's Diary, add a note, type something,
         press Back to drop the keyboard, then Back again. The sheet closes
         and the plant stays on screen.
@@ -238,9 +240,39 @@ it. A feature, not a fix, so it isn't in 1.4.
         sheet and removes it after the confirmation.
   - [ ] **The planner** (PR #93, new since 1.3): the step dock, undo and
         redo, and the room lock behave on a phone.
-- [ ] **Upload** to Closed testing as **7 (1.4)**, with the notes below.
-- [ ] **Reply** on report Nº 8220 with the build number and the items
-      addressed, and ask again for a re-test on the Sharp AQUOS R8.
+- [x] **Upload** to Closed testing as **7 (1.4)**, with the notes below.
+      Uploaded and sent for review on 9 October 2026: App bundle, Enhanced,
+      API 24+, target SDK 36, with the release notes below in full.
+- [ ] **Approved.** Not yet: in review when this was recorded.
+- [x] **Reply** on report Nº 8220 with the build number and the items
+      addressed. Sent on 9 October 2026. It names 7 (1.4) as in review,
+      goes through M-01 to M-03, the diary save and S-01 to S-03, says
+      S-04 is planned for a later release, mentions the planner rework and
+      that the rating prompt stays off, and asks for a re-test once 1.4
+      reaches the testers, on the Sharp AQUOS R8 as well as the Pixel 7 Pro.
+
+## Production access
+
+The closed test met Play's three conditions: a closed testing release
+published, at least 12 testers opted in, and 12 testers for at least 14
+days.
+
+- [x] **Applied** through Dashboard → Apply for production on 9 October
+      2026 at 23:33 local time. The questionnaire has three sections:
+      the closed test, the app, and production readiness. Every free-text
+      answer is limited to 300 characters. Play says review "usually takes
+      seven days or less" and emails the account owner.
+- [ ] **Granted.**
+- [ ] **Production build**, once access is granted:
+  - `LIVE = true` in `js/rate.js`, in this build and nowhere earlier
+    (closed testers are paid, see the 1.3 plan).
+  - A new version code, 8. Code 7 is the closed-testing build with the
+    rating ask off, so it can't be promoted as it is.
+  - Store listing, Data safety and the content rating checked again
+    before the first production release.
+
+If the application is refused, Play asks one more question on the next
+attempt: what was done differently this time.
 
 ## Release notes (Play "What's new", under 500 characters)
 
