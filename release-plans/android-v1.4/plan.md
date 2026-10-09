@@ -1,0 +1,182 @@
+# Android 1.4 — fixes from the second closed-testing report
+
+**From:** PrimeTestLab QA report Nº 8220 (test date 7 Oct 2026, window
+23 Sep – 7 Oct 2026, 25 testers). One device covered: Pixel 7 Pro, Android 17
+(SDK 37), 1080 × 2340.
+**Build tested:** 1.2 (versionCode 4), not 1.3. 1.3 was still in review when
+they tested, and they didn't use the Sharp AQUOS R8 we asked for in ticket
+#3229.
+**This release:** 1.4 (versionCode 7). Bug fixes and small polish, no change
+to the data format.
+
+The cover reads "0 issues logged". The body fails four areas, logs three
+minor bugs (M-01 to M-03), reports a fourth failure without a number (the
+diary save) and makes four suggestions (S-01 to S-04). Work from the body.
+
+**Confirmed fixed from report 7959,** on this device: backup through the share
+sheet, one plant from a double tap, the nickname counter, the status bar in
+both themes, landscape and the gesture bar, Back and resume, and the
+reminder permission prompt.
+
+---
+
+## Order of work
+
+1. **M-02**, the self-matching Care heading. Every plant shows it out of season.
+2. **Back button**, the diary failure. A native change, so it needs a
+   device build.
+3. **M-03**, plant removal in the edit sheet.
+4. **S-01**, **S-03**, then **S-02**.
+5. **M-01** is already on main and needs only a check.
+6. **S-04** is a feature and is not in 1.4.
+
+---
+
+## Bugs
+
+### M-01 — A room can be saved without a name
+
+**Reported:** Planner → open a room → clear the name field → leave. The
+room is saved with no name: a blank card in Greenhouse and a blank choice
+when assigning a plant.
+
+**Already fixed on main** (`bf3eada`, 7 October, after the 1.3 build). The
+field still saves as you type, but an empty value keeps the last real name,
+which is put back when the field is left, with a toast. Rooms already
+saved blank, on a device or in a backup, get the first free "Room N" when
+the store loads or restores (`nameBlankRooms()` in `js/store.js`). The room
+form already refused an empty name.
+
+**Check:** on the 1.4 device build, clear a room's name on the plan, leave
+the field, relaunch. The name is still there.
+
+### M-02 — "Why 12 and not 12?"
+
+**Reported:** Golden Pothos, Care tab: the heading over the watering reasons
+reads "Why 12 and not 12?", while the reason below it says autumn moved it
+from 7 to 12 days. Snake Plant "35 and not 35", Monstera "14 and not 14".
+
+**Cause.** `wateringInterval()` in `js/schedule.js` returns `base` as this
+season's species figure, so out of the growing season it already includes
+dormancy. Dormancy is then listed as a factor too, and the heading compared
+the result with `base`. With dormancy the only factor, they are the same
+number. That is every plant without a room, pot or offset that moves it, for
+the whole autumn and winter.
+
+**Fix.** `wateringInterval()` also returns `ref`, the growing-season figure
+that every factor, dormancy included, is measured from. The heading asks
+"Why 12 and not 7?". When the factors cancel out exactly (a dry-weather
+adjustment against dormancy, say), the heading reads "What goes into 7
+days" instead of asking a question with no answer.
+
+**Check:** headless Chromium, real autumn date, northern time zone:
+
+| Plant | Before | After |
+| --- | --- | --- |
+| Golden Pothos | Why 12 and not 12? | Why 12 and not 7? |
+| Snake Plant | Why 35 and not 35? | Why 35 and not 18? |
+| Monstera | Why 14 and not 14? | Why 14 and not 8? |
+| Golden Pothos, spring (Sydney), 30cm pot | Why 14 and not 7? | Why 14 and not 7? (unchanged) |
+| Golden Pothos, spring, nothing set | no heading | no heading (unchanged) |
+| Golden Pothos, autumn, −5 days | Why 7 and not 12? | What goes into 7 days |
+
+### The diary save returns to Greenhouse (no number in the report)
+
+**Reported:** Plant → Diary → add a note with a photo → **Save entry**. The
+entry is saved, but the app shows Greenhouse instead of the plant's diary.
+
+**Cause, reproduced in headless Chromium.** The app registers no handler for
+Android's Back button, so Capacitor's default runs `history.back()`. Sheets
+are an overlay that isn't tied to the route, so Back with a sheet open
+changes the page underneath to Greenhouse and leaves the sheet on top. Save
+then writes the entry for the right plant and redraws the page that is now
+current, Greenhouse. The likeliest trigger is Back used to hide the keyboard
+after typing the note. The same thing can happen behind every sheet: room,
+plant, entry, confirm.
+
+**Fix.** Listen for `backButton` through `window.Capacitor.Plugins.App`, the
+way `js/notify.js` already reaches the App plugin:
+
+- A sheet is open: close it and stay on the page.
+- Otherwise, if there is history: `history.back()`.
+- Otherwise: `App.exitApp()`, which is the default this listener replaces.
+
+Registering a listener turns Capacitor's default off, so all three branches
+are needed. The web build has no App plugin and is unchanged.
+
+**Check:** headless Chromium with a stubbed App plugin for the three
+branches. Then on a device: open the diary sheet, type, press Back to hide
+the keyboard, press Back again. The sheet closes and the plant page stays.
+
+### M-03 — A plant can't be removed
+
+**Reported:** no remove action in the plant header, the edit sheet, a card
+long-press or swipe, or Settings (only "Delete everything").
+
+**Cause.** The action exists: a "Remove <name>" button at the very bottom
+of the Care tab, under "What tends to go wrong". The tester looked in the
+edit sheet first, which is where a reader expects it, and didn't scroll to
+the end of the Care tab.
+
+**Fix.** A quiet "Remove this plant" at the foot of the edit sheet, with the
+existing confirmation ("Its diary entries, measurements and photos will all
+be deleted"). It shows only when editing, never when adding. Keep the Care
+tab button.
+
+**Check:** edit sheet → Remove → confirm. The plant is gone from Greenhouse,
+its room and Today, and its photos are gone from storage.
+
+---
+
+## Suggestions
+
+### S-01 — Long grey text still too faint
+
+The second time this has been raised (report 7959, S-04). The 1.1 fix moved
+paragraphs from `--ink-4` to `--ink-3` at `0.58`, which passes WCAG AA, but
+the backup note and diagnosis details still read as faint on a phone in
+normal light. Raise Viridium's `--ink-3` to about `0.68` and check the
+Conservatory value. `brand.html` reads the token from the cascade, so it
+follows.
+
+### S-02 — Diagnose sounds sure after contradictory answers
+
+After "Diagnose anyway" on answers Sprout flagged as conflicting, the result
+still says "Refined" and "Most likely". Label it lower confidence and keep
+the conflicting pair visible next to the result. This is a reference
+surface, so the label is plain, with no persona.
+
+### S-03 — The location card keeps coming back
+
+After "Not now" in onboarding, Today keeps showing "Add your location". Give
+the card a dismiss, remember it in settings, and keep the way in from
+Profile.
+
+### S-04 — Editing a diary entry
+
+Edit a saved entry's text, date or photo instead of deleting and recreating
+it. A feature, not a fix, so it isn't in 1.4.
+
+---
+
+## Release housekeeping
+
+- [x] `CACHE` in `sw.js`: bump with each fix. `sprout-v77-viridium` for M-02.
+- [ ] `native/android/app/build.gradle`: `versionCode 7`, `versionName "1.4"`.
+- [ ] Device build: the Back button, M-01 and M-03 on a phone.
+- [ ] Upload to Closed testing as **7 (1.4)**.
+- [ ] Reply on report Nº 8220 with the build number and the items addressed,
+      and ask again for a re-test on the Sharp AQUOS R8.
+
+## Status
+
+| Item | Status |
+| --- | --- |
+| M-01 Empty room name | Done on main (`bf3eada`); device check to do |
+| M-02 Care heading | Done; checked in headless Chromium |
+| Back button / diary save | Cause reproduced; fix to do |
+| M-03 Remove a plant | To do |
+| S-01 Contrast | To do |
+| S-02 Diagnose confidence | To do |
+| S-03 Location card | To do |
+| S-04 Edit diary entries | Not in 1.4 |
