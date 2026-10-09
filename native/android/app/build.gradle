@@ -34,9 +34,11 @@ android {
            (release-plans/android-v1.2/plan.md). 5 is 1.3: the rating ask
            off for closed testing, and the UI work since 1.2
            (release-plans/android-v1.3/plan.md). 6 is still 1.3: Play refused the
-           first 1.3 bundle for minSdk 23, so code 5 is treated as spent. */
-        versionCode 6
-        versionName "1.3"
+           first 1.3 bundle for minSdk 23, so code 5 is treated as spent.
+           7 is 1.4, the fixes from PrimeTestLab's second report, 8220
+           (release-plans/android-v1.4/plan.md). */
+        versionCode 7
+        versionName "1.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

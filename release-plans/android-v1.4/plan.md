@@ -222,11 +222,34 @@ it. A feature, not a fix, so it isn't in 1.4.
 - [x] `CACHE` in `sw.js`: bump with each fix. `sprout-v77-viridium` for M-02,
       `sprout-v78-viridium` for the Back button, `sprout-v79-viridium` for M-03,
       `sprout-v80-viridium` for S-01 to S-03.
-- [ ] `native/android/app/build.gradle`: `versionCode 7`, `versionName "1.4"`.
-- [ ] Device build: the Back button, M-01 and M-03 on a phone.
-- [ ] Upload to Closed testing as **7 (1.4)**.
-- [ ] Reply on report Nº 8220 with the build number and the items addressed,
-      and ask again for a re-test on the Sharp AQUOS R8.
+- [x] `native/android/app/build.gradle`: `versionCode 7`, `versionName "1.4"`.
+- [x] `js/rate.js` still has `LIVE = false`: 1.4 goes to closed testing.
+- [ ] **Build.** Run `native/prepare-android.bat`, then sync in Android
+      Studio. Sign through **Generate Signed App Bundle or APK** (the
+      password is the one Android Studio remembers). The file lands in
+      `native\android\app\release\app-release.aab`.
+- [ ] **Device check**, on a build installed from Android Studio:
+  - [ ] **Back button.** Open a plant's Diary, add a note, type something,
+        press Back to drop the keyboard, then Back again. The sheet closes
+        and the plant stays on screen.
+  - [ ] **M-01.** On the plan, clear a room's name and leave the field. The
+        old name comes back. Relaunch: still named.
+  - [ ] **M-03.** Edit a plant: **Remove this plant** is at the foot of the
+        sheet and removes it after the confirmation.
+  - [ ] **The planner** (PR #93, new since 1.3): the step dock, undo and
+        redo, and the room lock behave on a phone.
+- [ ] **Upload** to Closed testing as **7 (1.4)**, with the notes below.
+- [ ] **Reply** on report Nº 8220 with the build number and the items
+      addressed, and ask again for a re-test on the Sharp AQUOS R8.
+
+## Release notes (Play "What's new", under 500 characters)
+
+> A clearer floor planner: one step at a time, undo and redo, and a lock to
+> keep a finished room in place. You can now remove a plant from its edit
+> sheet, Back closes whatever is open before leaving the page, and the
+> watering explanation compares against the right figure. Diagnose says when
+> your answers disagree, the location card can be put off for a month, and
+> quieter text is easier to read.
 
 ## Status
 
