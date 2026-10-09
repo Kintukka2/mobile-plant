@@ -251,6 +251,29 @@ it. A feature, not a fix, so it isn't in 1.4.
       that the rating prompt stays off, and asks for a re-test once 1.4
       reaches the testers, on the Sharp AQUOS R8 as well as the Pixel 7 Pro.
 
+## Production access
+
+The closed test met Play's three conditions: a closed testing release
+published, at least 12 testers opted in, and 12 testers for at least 14
+days.
+
+- [x] **Applied** through Dashboard → Apply for production on 9 October
+      2026 at 23:33 local time. The questionnaire has three sections:
+      the closed test, the app, and production readiness. Every free-text
+      answer is limited to 300 characters. Play says review "usually takes
+      seven days or less" and emails the account owner.
+- [ ] **Granted.**
+- [ ] **Production build**, once access is granted:
+  - `LIVE = true` in `js/rate.js`, in this build and nowhere earlier
+    (closed testers are paid, see the 1.3 plan).
+  - A new version code, 8. Code 7 is the closed-testing build with the
+    rating ask off, so it can't be promoted as it is.
+  - Store listing, Data safety and the content rating checked again
+    before the first production release.
+
+If the application is refused, Play asks one more question on the next
+attempt: what was done differently this time.
+
 ## Release notes (Play "What's new", under 500 characters)
 
 > A clearer floor planner: one step at a time, undo and redo, and a lock to
