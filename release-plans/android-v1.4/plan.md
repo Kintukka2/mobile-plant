@@ -160,22 +160,55 @@ and its photo gone from storage, and the other plant untouched.
 The second time this has been raised (report 7959, S-04). The 1.1 fix moved
 paragraphs from `--ink-4` to `--ink-3` at `0.58`, which passes WCAG AA, but
 the backup note and diagnosis details still read as faint on a phone in
-normal light. Raise Viridium's `--ink-3` to about `0.68` and check the
-Conservatory value. `brand.html` reads the token from the cascade, so it
-follows.
+normal light.
+
+**Done.** Every one of those paragraphs is `.muted` or `.hint`, both
+`--ink-3`, so the token is the fix:
+
+| Theme | Before | After | Weakest surface | Page | Ink 2 |
+| --- | --- | --- | --- | --- | --- |
+| Viridium | `0.58` | `0.68` | 4.8 → 6.1:1 (`--glass-2`) | 5.3 → 6.8:1 | 8.6:1 |
+| Conservatory | `#5C6F66` | `#4E6057` | 4.45 → 5.6:1 (`--bg-4`) | 4.8 → 6.1:1 | 9.4:1 |
+
+Conservatory was failing on its selected surface, so it moves too. Ink 3
+stays clearly under Ink 2 in both, so a hint never reads as body copy.
+`brand.html` reads the token from the cascade and follows on its own.
 
 ### S-02 — Diagnose sounds sure after contradictory answers
 
 After "Diagnose anyway" on answers Sprout flagged as conflicting, the result
-still says "Refined" and "Most likely". Label it lower confidence and keep
-the conflicting pair visible next to the result. This is a reference
-surface, so the label is plain, with no persona.
+still said "Refined" and "Most likely".
+
+**Done.** With a clash in play (`PROBLEM_DATA.clashes()` on the ticked
+clues):
+
+| | Before | After |
+| --- | --- | --- |
+| Heading | Most likely causes | Possible causes |
+| Note | refined | mixed answers |
+| Top cause | Most likely | Possible |
+| Beside the result | nothing | "Two answers disagree", the pair, and Change an answer |
+| Diary entry | Most likely: X (most likely) | Some answers disagreed, so less certain. Best fit: X |
+
+The card is plain reference voice, with no persona. Results without a clash
+are unchanged: checked with one clue ("Most likely causes", "refined") and
+with none ("Possible causes", "symptom only").
 
 ### S-03 — The location card keeps coming back
 
-After "Not now" in onboarding, Today keeps showing "Add your location". Give
-the card a dismiss, remember it in settings, and keep the way in from
-Profile.
+After "Not now" in onboarding, Today kept showing "Add your location" every
+morning.
+
+**Done.** The card has a Not now of its own beside Set my location. That
+button and the introduction's Not now both hold the card back for thirty
+days (`Store.snoozeLocationAsk()`, stored in `settings.locationAsk` as the
+date it may come back). Toast: "I'll ask again in a month. Profile has it
+any time before then." Profile keeps the way in throughout.
+
+**Checked in headless Chromium:** Not now hides the card and the hide
+survives a reload. With the date moved past the month the card returns.
+With a location set it stays away. The introduction's Not now sets the
+same date.
 
 ### S-04 — Editing a diary entry
 
@@ -187,7 +220,8 @@ it. A feature, not a fix, so it isn't in 1.4.
 ## Release housekeeping
 
 - [x] `CACHE` in `sw.js`: bump with each fix. `sprout-v77-viridium` for M-02,
-      `sprout-v78-viridium` for the Back button, `sprout-v79-viridium` for M-03.
+      `sprout-v78-viridium` for the Back button, `sprout-v79-viridium` for M-03,
+      `sprout-v80-viridium` for S-01 to S-03.
 - [ ] `native/android/app/build.gradle`: `versionCode 7`, `versionName "1.4"`.
 - [ ] Device build: the Back button, M-01 and M-03 on a phone.
 - [ ] Upload to Closed testing as **7 (1.4)**.
@@ -202,7 +236,7 @@ it. A feature, not a fix, so it isn't in 1.4.
 | M-02 Care heading | Done; checked in headless Chromium |
 | Back button / diary save | Done; checked in headless Chromium, device check to do |
 | M-03 Remove a plant | Done; checked in headless Chromium |
-| S-01 Contrast | To do |
-| S-02 Diagnose confidence | To do |
-| S-03 Location card | To do |
+| S-01 Contrast | Done; Ink 3 raised in both themes |
+| S-02 Diagnose confidence | Done; checked in headless Chromium |
+| S-03 Location card | Done; checked in headless Chromium |
 | S-04 Edit diary entries | Not in 1.4 |
