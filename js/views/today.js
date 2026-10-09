@@ -333,7 +333,7 @@ window.ViewToday = (function () {
     }
 
     // A gentle prompt to unlock the weather features.
-    if (!Store.get().profile.location) {
+    if (Store.locationAskDue()) {
       html += '<div class="section"><div class="nudge">' +
         '<span class="nudge-ico">' + UI.icon('pin') + '</span>' +
         '<div class="grow" style="min-width:0">' +
@@ -347,8 +347,11 @@ window.ViewToday = (function () {
              Straight to the sheet, too — sending them to /profile put them
              at the top of a long page with the location card several screens
              down, which answers "where?" with "somewhere over there". */
-          '<button class="btn btn-block" data-act="set-location" style="margin-top:12px">' +
-            UI.icon('pin') + 'Set my location</button>' +
+          '<div class="row" style="gap:8px;margin-top:12px">' +
+            '<button class="btn" data-act="set-location" style="flex:2">' +
+              UI.icon('pin') + 'Set my location</button>' +
+            '<button class="btn btn-ghost" data-act="later-location" style="flex:1">Not now</button>' +
+          '</div>' +
         '</div>' +
       '</div></div>';
     }
@@ -387,6 +390,13 @@ window.ViewToday = (function () {
 
       if (e.target.closest('[data-act="set-location"]')) {
         ViewProfile.locationSheet();
+        return;
+      }
+
+      if (e.target.closest('[data-act="later-location"]')) {
+        Store.snoozeLocationAsk();
+        UI.toast('I\'ll ask again in a month. Profile has it any time before then.');
+        App.refresh();
         return;
       }
 

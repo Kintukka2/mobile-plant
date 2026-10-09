@@ -55,6 +55,7 @@ window.Store = (function () {
         remind: false,          // morning reminders, off until the reader asks
         remindHour: 8,          // local hour they arrive
         rating: { asks: 0, lastAsked: null, rated: null },  // see Rate.maybeAsk()
+        locationAsk: null,      // ISO date Today may suggest a location again, see locationAskDue()
         adjustments: {}         // plantId -> days offset accepted from a weather nudge
       }
     };
@@ -415,6 +416,24 @@ window.Store = (function () {
     save();
   }
 
+  /* "Add your location" sat on Today every morning however often the reader
+     said no, including straight after "Not now" in the introduction
+     (PrimeTestLab 8220, S-03). A no now holds for a month and then the
+     card comes back once more; Profile keeps the way in throughout. Stored
+     as the date it may return rather than the date of the no, so changing
+     the month later is one constant and no migration. */
+  const LOCATION_SNOOZE_DAYS = 30;
+
+  function snoozeLocationAsk() {
+    updateSettings({ locationAsk: UI.toISO(UI.addDays(UI.today(), LOCATION_SNOOZE_DAYS)) });
+  }
+
+  function locationAskDue() {
+    if (get().profile.location) return false;
+    const until = get().settings.locationAsk;
+    return !until || until <= UI.toISO(UI.today());
+  }
+
   /* ---------- Storage diagnostics ---------- */
   function storageUsage() {
     let total = 0, photos = 0, count = 0;
@@ -506,6 +525,7 @@ window.Store = (function () {
     speciesPhoto: speciesPhoto, tilePhoto: tilePhoto,
     setWeather: setWeather, getWeather: getWeather,
     updateSettings: updateSettings, storageUsage: storageUsage,
+    snoozeLocationAsk: snoozeLocationAsk, locationAskDue: locationAskDue,
     exportAll: exportAll, importAll: importAll, resetAll: resetAll
   };
 })();

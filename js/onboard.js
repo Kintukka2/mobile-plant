@@ -73,7 +73,9 @@ window.Onboard = (function () {
       '<p class="ob-hint" style="margin-top:0">For a local forecast, so I can offer to stretch or shorten watering before a wet or dry spell. I round it to about a kilometre and send that to Open-Meteo, nowhere else.</p>' +
       '<div class="ob-actions">' +
         '<button class="btn btn-lg" data-ob="locate">' + UI.icon('pin') + 'Use my location</button>' +
-        '<button class="btn btn-ghost" data-ob="finish">Not now</button>' +
+        /* A no here is the same no as the card on Today, so it holds there
+           too rather than being asked again the next morning. */
+        '<button class="btn btn-ghost" data-ob="loc-later">Not now</button>' +
       '</div>' +
       '<p class="ob-hint ob-note" id="ob-loc-note" hidden></p>';
   }
@@ -165,6 +167,7 @@ window.Onboard = (function () {
         if (a === 'next') { if (STEPS[at] === 'name') saveName(); next(); }
         else if (a === 'locate') locate();
         else if (a === 'finish') { if (STEPS[at] === 'name') saveName(); finish(); }
+        else if (a === 'loc-later') { Store.snoozeLocationAsk(); finish(); }
         return;
       }
       const pet = t.closest('[data-ob-pet]');
