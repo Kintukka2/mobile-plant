@@ -141,8 +141,15 @@ existing confirmation ("Its diary entries, measurements and photos will all
 be deleted"). It shows only when editing, never when adding. Keep the Care
 tab button.
 
-**Check:** edit sheet → Remove → confirm. The plant is gone from Greenhouse,
-its room and Today, and its photos are gone from storage.
+Both buttons now open the same confirmation (`ViewPlant.confirmRemove()`),
+so the wording and what gets deleted can't drift apart. The edit-sheet
+button sits above the action row, not in it: Save stays pinned in the
+footer and Remove scrolls with the form.
+
+**Checked in headless Chromium:** the add sheet has no Remove. The edit
+sheet does, below a divider, with Save still pinned. Remove → "Remove
+Monty?" → Remove plant lands on Greenhouse with the plant, its diary entry
+and its photo gone from storage, and the other plant untouched.
 
 ---
 
@@ -180,7 +187,7 @@ it. A feature, not a fix, so it isn't in 1.4.
 ## Release housekeeping
 
 - [x] `CACHE` in `sw.js`: bump with each fix. `sprout-v77-viridium` for M-02,
-      `sprout-v78-viridium` for the Back button.
+      `sprout-v78-viridium` for the Back button, `sprout-v79-viridium` for M-03.
 - [ ] `native/android/app/build.gradle`: `versionCode 7`, `versionName "1.4"`.
 - [ ] Device build: the Back button, M-01 and M-03 on a phone.
 - [ ] Upload to Closed testing as **7 (1.4)**.
@@ -194,7 +201,7 @@ it. A feature, not a fix, so it isn't in 1.4.
 | M-01 Empty room name | Done on main (`bf3eada`); device check to do |
 | M-02 Care heading | Done; checked in headless Chromium |
 | Back button / diary save | Done; checked in headless Chromium, device check to do |
-| M-03 Remove a plant | To do |
+| M-03 Remove a plant | Done; checked in headless Chromium |
 | S-01 Contrast | To do |
 | S-02 Diagnose confidence | To do |
 | S-03 Location card | To do |
