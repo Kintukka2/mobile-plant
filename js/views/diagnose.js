@@ -349,9 +349,18 @@ window.ViewDiagnose = (function () {
     const proneTo = sp ? (sp.problems || []) : [];
     const ranked = PROBLEM_DATA.diagnose(params.extra, clues, proneTo).slice(0, 4);
 
+    /* Answers the reader kept after "Can both be true?". The scorer still
+       adds the support of both sides, so the ranking is built partly on a
+       contradiction, and the page used to present it as "refined" with a
+       "Most likely" at the top as if nothing had happened (PrimeTestLab
+       8220, S-02). With a clash in play the page says so beside the
+       result, names the pair, and no cause is called more than possible. */
+    const clash = PROBLEM_DATA.clashes(clues);
+    const unsure = clash.length > 0;
+
     html += '<div class="section" style="margin-top:32px">' +
       '<div class="section-head"><h2 class="section-title">' +
-        (clues.length ? 'Most likely causes' : 'Possible causes') + '</h2>' +
+        (clues.length && !unsure ? 'Most likely causes' : 'Possible causes') + '</h2>' +
         /* Short, because .section-head is a single flex row and the note
            takes its width out of the title's. "tick clues to narrow this
            down" is 30 characters of tracked micro-caps — about 190px — and
@@ -366,8 +375,24 @@ window.ViewDiagnose = (function () {
            One word does the work here — the checklist above already says
            how many clues are in play ("2 selected"), so repeating "your
            clues" was telling the reader something they had just done. */
-        '<span class="section-note">' + (clues.length ? 'refined' : 'symptom only') + '</span>' +
+        '<span class="section-note">' +
+          (unsure ? 'mixed answers' : clues.length ? 'refined' : 'symptom only') + '</span>' +
       '</div>';
+
+    /* Reference voice: this sits beside the diagnosis, so it is a plain
+       statement of what the ranking rests on, with no persona. */
+    if (unsure && ranked.length) {
+      html += '<div class="card" style="margin-bottom:14px">' +
+        '<div class="eyebrow">' + (clash.length > 1 ? 'Some answers disagree' : 'Two answers disagree') + '</div>' +
+        '<div class="stack" style="gap:6px;margin-top:9px">' + clash.map(function (pair) {
+          return '<div class="small">' + UI.esc(pair[0]) +
+            ' <span class="muted">and</span> ' + UI.esc(pair[1]) + '</div>';
+        }).join('') + '</div>' +
+        '<p class="hint" style="margin-top:10px">Each one points to different causes, so this ranking is ' +
+          'less certain than usual. Checking the plant again and changing one of them gives a firmer result.</p>' +
+        '<button class="btn btn-ghost btn-sm btn-block" data-reclue="1" style="margin-top:12px">Change an answer</button>' +
+      '</div>';
+    }
 
     if (!ranked.length) {
       html += UI.empty('info', 'Nothing fits',
@@ -412,7 +437,7 @@ window.ViewDiagnose = (function () {
                  matters, and the two read better apart. */
               '<div class="dx-conf-wrap" style="margin-top:8px">' +
                 '<span class="dx-conf"><i style="width:' + r.share + '%"></i></span>' +
-                '<span class="dx-conf-t">' + UI.esc(r.confidence) + '</span>' +
+                '<span class="dx-conf-t">' + UI.esc(unsure && r.confidence === 'Most likely' ? 'Possible' : r.confidence) + '</span>' +
               '</div>' +
             '</div>' +
           '</div>' +
@@ -618,8 +643,13 @@ window.ViewDiagnose = (function () {
           (clues.length ? '. Noticed: ' + clues.map(function (c) {
             return PROBLEM_DATA.CLUES[c].label.toLowerCase();
           }).join(', ') : '') +
-          (ranked.length ? '. Most likely: ' + ranked[0].cause.name + ' (' +
-            ranked[0].confidence.toLowerCase() + ').' : '');
+          /* The diary keeps the same caveat the page showed, or a note read
+             back in a month would be surer than the diagnosis ever was. */
+          (ranked.length
+            ? (PROBLEM_DATA.clashes(clues).length
+                ? '. Some answers disagreed, so less certain. Best fit: ' + ranked[0].cause.name + '.'
+                : '. Most likely: ' + ranked[0].cause.name + ' (' + ranked[0].confidence.toLowerCase() + ').')
+            : '');
 
         Store.addLog({ plantId: p.id, kind: 'problem', date: UI.toISO(UI.today()), text: summary });
         UI.toast('Saved to the diary', 'leaf');
