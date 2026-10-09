@@ -56,10 +56,13 @@
   /* Ink 3 was 0.50, which measured 4.1:1 on a card: just short of the
      4.5:1 that small body text needs, and testers found the hints and
      explanations hard to read in daylight (PrimeTestLab 7959, S-04). 0.58
-     clears 4.5 on every surface that carries text, the page through a
-     card's glass, and still sits well below Ink 2. Conservatory's Ink 3
-     already passed and is unchanged. */
-  --ink-3: rgba(206, 226, 214, 0.58);
+     cleared 4.5 everywhere, 4.8:1 on the strongest glass, and the next
+     report still called the backup note and the diagnosis explanations
+     hard going in normal light (8220, S-01). Passing on paper is not the
+     same as comfortable on a phone held at arm's length. 0.68 gives 6.1:1
+     on that glass and 6.8:1 on the page, and still sits clearly under
+     Ink 2 at 8.6:1, so a hint never reads as body copy. */
+  --ink-3: rgba(206, 226, 214, 0.68);
   --ink-4: rgba(196, 218, 206, 0.32);
 
   /* --- Greens --- */
@@ -4622,7 +4625,11 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
 
   --ink:   #13231B;
   --ink-2: #32443A;
-  --ink-3: #5C6F66;
+  /* #5C6F66 passed on the page but fell to 4.45:1 on --bg-4, the
+     selected surface, and carried the same paragraphs testers found faint
+     in the dark theme (8220, S-01). #4E6057: 5.6:1 at the weakest, 6.1:1
+     on the page, against Ink 2 at 9.4:1. */
+  --ink-3: #4E6057;
   --ink-4: #92A199;
 
   --emerald-deep: #0B2E21;
