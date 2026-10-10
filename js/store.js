@@ -52,7 +52,7 @@ window.Store = (function () {
         weatherSync: true,
         seenWelcome: false,
         onboarded: false,       // the first-run questions were answered or skipped
-        remind: false,          // morning reminders, off until the reader asks
+        remind: false,          // care reminders, off until the reader asks
         remindHour: 8,          // local hour they arrive
         rating: { asks: 0, lastAsked: null, rated: null },  // see Rate.maybeAsk()
         locationAsk: null,      // ISO date Today may suggest a location again, see locationAskDue()

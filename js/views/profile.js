@@ -292,9 +292,9 @@ window.ViewProfile = (function () {
             '<input type="checkbox" id="p-remind"' + (on ? ' checked' : '') +
               (nState === 'denied' ? ' disabled' : '') + ' ' +
               'style="width:18px;height:18px;accent-color:var(--leaf)">' +
-            '<span style="flex:1;min-width:0"><span style="font-weight:600;font-size:14px">Morning reminders</span>' +
-              '<span class="tiny muted" style="display:block">One note a morning, and only when a plant ' +
-                'needs you. If nothing is due, I won\'t say a word.</span></span>' +
+            '<span style="flex:1;min-width:0"><span style="font-weight:600;font-size:14px">Care reminders</span>' +
+              '<span class="tiny muted" style="display:block">I\'ll nudge you whenever a plant needs you, ' +
+                'and stay quiet when nothing does.</span></span>' +
           '</label>' +
           (on
             /* The hour and its Set button share a row. Set starts inert and
@@ -302,7 +302,7 @@ window.ViewProfile = (function () {
                is never a live button that would do nothing, and never a
                changed hour sitting unsaved with no way to tell. */
             ? '<hr class="divider">' +
-              '<span class="label">What time suits you</span>' +
+              '<span class="label">When should I remind you?</span>' +
               '<div class="row" style="gap:8px;align-items:center;margin-top:6px">' +
                 '<select class="input select" id="p-remind-hour" style="flex:1;min-width:0">' +
                   [6, 7, 8, 9, 10, 11, 12, 17, 18, 19].map(function (h) {
@@ -356,8 +356,8 @@ window.ViewProfile = (function () {
               '<input type="checkbox" id="p-wsync"' + (settings.weatherSync ? ' checked' : '') + ' ' +
                 'style="width:18px;height:18px;accent-color:var(--leaf)">' +
               '<span style="flex:1;min-width:0"><span style="font-weight:600;font-size:14px">Weather-aware watering</span>' +
-                '<span class="tiny muted" style="display:block">Tick this and I\'ll keep an eye on your ' +
-                  'forecast, and tell you when a hot spell or a wet week means watering sooner or later.</span></span>' +
+                '<span class="tiny muted" style="display:block">Tick this and I\'ll keep an eye on the weather ' +
+                  'where you are, and adapt the plan to take better care of your plants.</span></span>' +
             '</label>' +
             '<div class="row" style="gap:8px;margin-top:12px">' +
               '<button class="btn btn-sm btn-soft" data-refresh="1">Refresh forecast</button>' +
