@@ -5285,6 +5285,7 @@ html.plan-full .tabbar { visibility: hidden; }
 .plan-room-lockline svg { flex: 0 0 auto; width: 15px; height: 15px; margin-top: 2px; }
 .plan-room-sub { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
 .plan-room-sub .label { display: inline-flex; align-items: center; gap: 8px; margin: 0; }
+.plan-walls-lede { margin: -2px 0 12px; }
 .plan-room-sun { margin: 14px 0 0; }
 .plan-room.is-locked .plan-wall { opacity: 0.55; cursor: not-allowed; }
 .plan-room.is-locked .plan-check { opacity: 0.55; }
@@ -5360,6 +5361,20 @@ html.plan-full .tabbar { visibility: hidden; }
   animation: coachIn var(--dur-3) var(--ease) both;
 }
 @keyframes coachIn { from { opacity: 0; transform: translate(-50%, calc(-50% + 8px)); } }
+.plan-coach-pick, .plan-coach-drag { display: flex; flex-direction: column; align-items: center; }
+/* The card keeps its size between its two faces, so choosing "myself"
+   swaps what is inside it rather than resizing the thing under the thumb. */
+.plan-coach { min-height: 206px; justify-content: center; }
+.plan-coach-drag { animation: coachSwap var(--dur-2) var(--ease) both; }
+@keyframes coachSwap { from { opacity: 0; transform: translateY(4px); } }
+.plan-coach-ico {
+  width: 44px; height: 44px; margin-bottom: 12px; border-radius: 50%;
+  display: grid; place-items: center;
+  border: 1px solid var(--hair-3); background: var(--mint-wash); color: var(--mint);
+}
+.plan-coach-ico svg { width: 18px; height: 18px; }
+.plan-coach-acts { display: flex; flex-direction: column; align-items: stretch; gap: 8px; width: 100%; margin-top: 14px; }
+.plan-coach-acts .btn { justify-content: center; pointer-events: auto; }
 .plan-coach-demo { position: relative; width: 104px; height: 72px; margin-bottom: 14px; }
 .plan-coach-box {
   position: absolute; left: 10px; top: 8px; width: 0; height: 0;
@@ -5405,7 +5420,7 @@ html.plan-full .tabbar { visibility: hidden; }
 .plan-coach-s { margin: 6px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--ink-3); }
 /* Still, the finished gesture: the box drawn and the fingertip at its end. */
 @media (prefers-reduced-motion: reduce) {
-  .plan-coach, .plan-coach-box, .plan-coach-dot, .plan-coach-dot::after { animation: none; }
+  .plan-coach, .plan-coach-drag, .plan-coach-box, .plan-coach-dot, .plan-coach-dot::after { animation: none; }
   .plan-coach-box { width: 84px; height: 56px; }
   .plan-coach-dot { transform: translate(84px, 56px); }
   .plan-coach-dot::after { opacity: 0; }

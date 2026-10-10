@@ -541,6 +541,10 @@ window.ViewPlan = (function () {
     if (lk) h += '<p class="plan-room-lockline">' + LOCK_SVG + '<span>Locked, so its shape, walls and name stay put. Tap the lock to change them.</span></p>';
     h += '<div class="plan-room-sub"><span class="label">Walls <button class="plan-help" id="pl-walls-help" aria-label="What do these mean?">?</button></span>' +
         '<label class="plan-check"><input type="checkbox" id="pl-room-outdoor"' + (sh.outdoor ? ' checked' : '') + (lk ? ' disabled' : '') + '> Outdoors</label></div>';
+    /* What the four buttons are for, before the reader has to guess. Which
+       way each one faces is step 3's business, so it is not raised here:
+       asking for north mid-room only hurried people past the walls. */
+    if (!lk) h += '<p class="hint plan-walls-lede">Tap each side to tell me what\'s there: a wall, a window, or an opening into the next room, like a hallway. The numbers match the ones on the plan.</p>';
     if (sh.outdoor) h += '<p class="hint" style="margin:0 0 10px">Open to the sky wherever nothing is built beyond.</p>';
     h += '<div class="grid-2">' + Plan.edges(sh).map(function (e) {
         const nb = Plan.across(r, e), a = Plan.aspectOf(e), sr = Plan.skyRank(e);
@@ -550,8 +554,7 @@ window.ViewPlan = (function () {
         else if (sh.outdoor && !nb) sub = a ? 'sky · ' + LOOKUPS.ASPECT_NAMES[a].toLowerCase() : 'open to the sky';
         else sub = nb ? nb.name : fmtM(e.len * (pl.cell || 0.5));
         return '<button class="chip plan-wall' + (e.kind === WINDOW ? ' is-on' : e.kind === OPENING ? ' is-open' : '') + '" data-wall="' + e.i + '"' + (lk ? ' disabled' : '') + '><span>' + (e.i + 1) + ' · ' + KIND_LABEL[e.kind] + '</span><small>' + UI.esc(sub) + '</small></button>';
-      }).join('') + '</div>' +
-      (Plan.known() ? '' : '<p class="hint">Set north and I can say which way each wall faces.</p>');
+      }).join('') + '</div>';
     if (sun) h += '<p class="hint plan-room-sun">Midday sun reaches about ' + fmtM(Math.min(sun.winter, d.h)) + ' in midwinter, and ' + (sun.summer < 0.2 ? 'barely past the sill' : 'about ' + fmtM(sun.summer)) + ' in midsummer.</p>';
     h += '</div>';
     if (here.length) {
@@ -842,7 +845,11 @@ window.ViewPlan = (function () {
     /* The line under the grid that used to carry this went unread: tracing
        starts on the grid, so that is where the eye already is. It goes at
        the first touch, and pointer-events: none lets that touch through. */
-    root.querySelector('#pl-coach').hidden = !(mode === 'plan' && drawing && !drawing.pts.length && !(drag && drag.kind === 'draw'));
+    const coaching = mode === 'plan' && drawing && !drawing.pts.length && !(drag && drag.kind === 'draw');
+    const picking = coaching && !drawing.picked && !drawing.forRoomId && !list.length && !plan().backdrop;
+    root.querySelector('#pl-coach').hidden = !coaching;
+    root.querySelector('#pl-coach-pick').hidden = !picking;
+    root.querySelector('#pl-coach-drag').hidden = picking;
     const addRoom = root.querySelector('#pl-add-room');
     addRoom.hidden = !(mode === 'plan' && !drawing && !sel && list.length);
     /* On step 2 it is the step's one action, so it wears the primary green
@@ -870,7 +877,7 @@ window.ViewPlan = (function () {
       rose.classList.toggle('is-unset', unset);
       /* The tag only once a room is drawn: on an empty grid there is no
          light to read yet, and the invitation is the one thing to look at. */
-      rose.classList.toggle('has-tag', unset && list.length > 0 && !drawing);
+      rose.classList.toggle('has-tag', unset && list.length > 0 && !drawing && curStep() === 3);
       rose.setAttribute('aria-label', unset ? 'Set north. Room light is off until it is set' : 'Which way is north?');
     }
     document.querySelectorAll('[data-mode]').forEach(function (b) { b.classList.toggle('is-on', b.getAttribute('data-mode') === mode); });
@@ -977,7 +984,7 @@ window.ViewPlan = (function () {
           const ok = Store.updatePlan({ backdrop: { src: c.toDataURL('image/jpeg', 0.55), opacity: 0.45, scale: 1, x: 0, y: 0 }, done: false });
           cleanup();
           if (!ok) { Store.updatePlan({ backdrop: null }); return; }
-          mode = 'plan'; tool = 'backdrop'; goStep(1); redraw();
+          mode = 'plan'; tool = 'backdrop'; drawing = null; goStep(1); redraw();
           UI.toast('Line it up, then trace your rooms over it', 'leaf');
         };
         img.onerror = function () { cleanup(); UI.toast('I could not read that image', 'warn'); };
@@ -1074,15 +1081,30 @@ window.ViewPlan = (function () {
              one moment the plan talks to the reader before there is anything
              to measure: a conversation, so the face is allowed, and gone
              with the rest of the invitation once a room exists. */
+          /* Two faces in one card. A first trace with no picture under the
+             grid asks first whether there is a floorplan to trace over,
+             since that gets the shapes right; then, or straight away when
+             there is one, the drag itself. */
           '<div class="plan-coach" id="pl-coach" hidden>' +
-            '<div class="plan-coach-demo" aria-hidden="true"><span class="plan-coach-box"></span><span class="plan-coach-dot"></span></div>' +
-            '<div class="plan-coach-t">Drag out a room</div>' +
-            '<p class="plan-coach-s">Or tap each corner, and I\'ll join them up.</p>' +
+            '<div class="plan-coach-pick" id="pl-coach-pick">' +
+              '<span class="plan-coach-ico" aria-hidden="true">' + UI.icon('upload') + '</span>' +
+              '<div class="plan-coach-t">Got a floorplan?</div>' +
+              '<p class="plan-coach-s">Load a picture of it and trace over the top, which I\'d recommend. Or draw your rooms freehand.</p>' +
+              '<div class="plan-coach-acts">' +
+                '<button class="btn btn-sm" id="pl-coach-load">' + UI.icon('upload') + 'Load a floorplan</button>' +
+                '<button class="btn btn-sm btn-ghost" id="pl-coach-self">I\'ll do it myself</button>' +
+              '</div>' +
+            '</div>' +
+            '<div class="plan-coach-drag" id="pl-coach-drag">' +
+              '<div class="plan-coach-demo" aria-hidden="true"><span class="plan-coach-box"></span><span class="plan-coach-dot"></span></div>' +
+              '<div class="plan-coach-t">Drag out a room</div>' +
+              '<p class="plan-coach-s">Or tap each corner, and I\'ll join them up.</p>' +
+            '</div>' +
           '</div>' +
           '<div class="plan-invite" id="pl-invite" hidden>' +
             UI.sprout('home-planner', 'is-small plan-invite-sprout') +
             '<div class="plan-invite-t">Nothing drawn yet</div>' +
-            '<p class="hint">I\'ll build a sample room and name each part as it appears, if it helps to see one first.</p>' +
+            '<p class="hint">I\'ll build a sample home and name each part as it appears, if it helps to see one first.</p>' +
             '<div class="stack" style="gap:9px;align-items:center">' +
               '<button class="btn btn-sm" data-tour="1">' + UI.icon('sparkle') + 'Watch me build one</button>' +
               '<button class="link-btn" id="pl-trace">or trace one yourself</button>' +
@@ -1175,6 +1197,8 @@ window.ViewPlan = (function () {
          navigation with nothing left to clean up. */
       if (e.target.closest('#pl-full')) { ui.full = !ui.full; syncOverlays(); drawCanvas(); return; }
       if (e.target.closest('#pl-trace')) { startTracing(); return; }
+      if (e.target.closest('#pl-coach-load')) { pickBackdrop(); return; }
+      if (e.target.closest('#pl-coach-self')) { if (drawing) drawing.picked = true; syncOverlays(); return; }
     });
 
     /* ---- Canvas: wheel, pinch, pan, drag ---- */
