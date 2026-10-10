@@ -262,7 +262,9 @@ days.
       the closed test, the app, and production readiness. Every free-text
       answer is limited to 300 characters. Play says review "usually takes
       seven days or less" and emails the account owner.
-- [ ] **Granted.**
+- [x] **Granted** on 10 October 2026, by email from Google Play Support
+      at 05:22 local time ("Your app has been granted Google Play
+      production access"), the morning after applying.
 - [ ] **Production build**, once access is granted:
   - `LIVE = true` in `js/rate.js`, in this build and nowhere earlier
     (closed testers are paid, see the 1.3 plan).
