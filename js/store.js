@@ -313,10 +313,32 @@ window.Store = (function () {
     return log;
   }
 
+  /* Which plant field a care entry's date anchors the schedule from. */
+  const ANCHORS = { water: 'lastWatered', fertilise: 'lastFertilised', repot: 'lastRepotted' };
+
   function updateLog(id, patch) {
     const l = get().logs.filter(function (x) { return x.id === id; })[0];
     if (!l) return null;
+    const oldDate = l.date;
     Object.assign(l, patch);
+
+    /* Editing a watering's date has to move the schedule with it, or the
+       diary and the next due date disagree. If this entry was the one the
+       anchor came from, the anchor becomes the latest entry of its kind;
+       if the anchor came from somewhere else (the plant form's "Last
+       watered"), it only moves forward, never back past what the reader
+       typed there. */
+    const field = ANCHORS[l.kind];
+    const plant = field ? getPlant(l.plantId) : null;
+    if (plant && patch.date && patch.date !== oldDate) {
+      const latest = get().logs.filter(function (x) {
+        return x.plantId === l.plantId && x.kind === l.kind;
+      }).reduce(function (m, x) { return x.date > m ? x.date : m; }, '');
+      const anchor = plant[field] === oldDate ? latest
+                   : (plant[field] && plant[field] > latest ? plant[field] : latest);
+      if (anchor) plant[field] = anchor;
+    }
+
     save();
     return l;
   }
