@@ -5022,10 +5022,14 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
    .view animates translateY on the way in. Zeroing the transform is not
    enough: an element carrying a transform animation stays a containing
    block whatever the current value is, so the animation itself has to go
-   while the stage is full. Written with :has() rather than a class, so
-   there is nothing to set and nothing to leak on the way out — the entrance
-   simply replays once as the page comes back. */
-#view:has(.plan-stage.is-full) { animation: none !important; transform: none !important; }
+   while the stage is full. This was once #view:has(.plan-stage.is-full),
+   which an Android WebView ignored, leaving the stage pinned to the view
+   under the header. The planner sets html.plan-full instead and clears it
+   on the way out; the entrance simply replays once as the page comes back.
+   The header and tab bar go too: a full-screen plan is the plan alone. */
+html.plan-full #view { animation: none !important; transform: none !important; }
+html.plan-full .topbar,
+html.plan-full .tabbar { visibility: hidden; }
 .plan-stage.is-full {
   position: fixed;
   top: 0;
@@ -5148,6 +5152,11 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
 .plan-notice:not([hidden]) ~ .plan-dock { bottom: 64px; }
 .plan-stage.is-full .plan-dock { bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
 .plan-stage.is-full .plan-notice:not([hidden]) ~ .plan-dock { bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+/* Full screen hands the reshape tip back to the stage, where it shares the
+   bottom-right corner with the dock. It sits above the dock instead of on
+   it, and a step higher again when the notice has lifted the dock. */
+.plan-stage.is-full .plan-overlay { bottom: calc(66px + env(safe-area-inset-bottom, 0px)); }
+.plan-stage.is-full .plan-notice:not([hidden]) + .plan-overlay { bottom: calc(118px + env(safe-area-inset-bottom, 0px)); }
 
 /* Step 2's one action: the stage's Add a room, lit and breathing. */
 .plan-stage-btn.is-cta {
@@ -5332,6 +5341,75 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
    decorates it, and a plate that pushed them off the grid would be the
    wrong way round. */
 @media (max-height: 719px) { .plan-invite-sprout { display: none; } }
+
+/* ---- The tracing coach ----
+   Shown on the grid the moment tracing starts, where the reader is already
+   looking: a box drawing itself under a fingertip, and the one sentence it
+   acts out. Transparent to the pointer, so the first drag goes straight
+   through it to the grid, and gone with that first touch. */
+.plan-coach {
+  position: absolute; left: 50%; top: 50%; z-index: 4;
+  width: min(290px, calc(100% - 112px));
+  display: flex; flex-direction: column; align-items: center;
+  padding: 18px 18px 16px; text-align: center;
+  border: 1px solid var(--hair-2); border-radius: var(--r-lg);
+  background: var(--bg-2);
+  box-shadow: 0 12px 32px -14px rgba(0, 0, 0, 0.55);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: coachIn var(--dur-3) var(--ease) both;
+}
+@keyframes coachIn { from { opacity: 0; transform: translate(-50%, calc(-50% + 8px)); } }
+.plan-coach-demo { position: relative; width: 104px; height: 72px; margin-bottom: 14px; }
+.plan-coach-box {
+  position: absolute; left: 10px; top: 8px; width: 0; height: 0;
+  border: 1.5px dashed var(--emerald-glow); border-radius: 3px;
+  background: var(--mint-wash);
+  animation: coachBox 2.8s var(--ease-io) infinite;
+}
+.plan-coach-dot {
+  position: absolute; left: 2px; top: 0; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--mint); box-shadow: 0 0 0 4px var(--mint-wash);
+  animation: coachDot 2.8s var(--ease-io) infinite;
+}
+.plan-coach-dot::after {
+  content: ''; position: absolute; inset: -1px; border-radius: 50%;
+  border: 1.5px solid var(--mint);
+  animation: coachPulse 2.8s var(--ease) infinite;
+}
+@keyframes coachBox {
+  0%, 14%  { width: 0; height: 0; opacity: 0; }
+  18%      { opacity: 1; }
+  62%, 84% { width: 84px; height: 56px; opacity: 1; }
+  100%     { width: 84px; height: 56px; opacity: 0; }
+}
+@keyframes coachDot {
+  0%       { transform: translate(0, 0) scale(1); opacity: 0; }
+  8%       { transform: translate(0, 0) scale(1); opacity: 1; }
+  14%      { transform: translate(0, 0) scale(0.82); }
+  62%      { transform: translate(84px, 56px) scale(0.82); }
+  70%, 84% { transform: translate(84px, 56px) scale(1); opacity: 1; }
+  100%     { transform: translate(84px, 56px) scale(1); opacity: 0; }
+}
+@keyframes coachPulse {
+  0%, 8%   { transform: scale(1); opacity: 0; }
+  12%      { transform: scale(1); opacity: 0.9; }
+  34%      { transform: scale(2.4); opacity: 0; }
+  100%     { transform: scale(2.4); opacity: 0; }
+}
+.plan-coach-t {
+  font-family: var(--display); font-weight: 500;
+  font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--ink);
+}
+.plan-coach-s { margin: 6px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--ink-3); }
+/* Still, the finished gesture: the box drawn and the fingertip at its end. */
+@media (prefers-reduced-motion: reduce) {
+  .plan-coach, .plan-coach-box, .plan-coach-dot, .plan-coach-dot::after { animation: none; }
+  .plan-coach-box { width: 84px; height: 56px; }
+  .plan-coach-dot { transform: translate(84px, 56px); }
+  .plan-coach-dot::after { opacity: 0; }
+}
 
 /* ---- The walkthrough itself ---- */
 .tour {

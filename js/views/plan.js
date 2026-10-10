@@ -816,7 +816,9 @@ window.ViewPlan = (function () {
   function syncOverlays() {
     const list = drawn();
     const n = root.querySelector('#pl-notice');
-    if (drawing) { n.textContent = drawing.pts.length ? 'Tap the next corner. Tap the first one again to close the room.' : 'Tap a corner to start tracing, or drag to draw a box.'; n.className = 'plan-notice'; n.hidden = false; }
+    /* The first instruction is drawn on the grid by the coach below, so the
+       notice only speaks once a corner is down. */
+    if (drawing && drawing.pts.length) { n.textContent = 'Tap the next corner. Tap the first one again to close the room.'; n.className = 'plan-notice'; n.hidden = false; }
     /* No sentence for an unset north: the compass asks for it itself. */
     else if (tool === 'backdrop') { n.textContent = 'Drag to move the floorplan under the grid.'; n.className = 'plan-notice'; n.hidden = false; }
     else n.hidden = true;
@@ -837,6 +839,10 @@ window.ViewPlan = (function () {
     }
     root.querySelector('#pl-quick-add').hidden = !(mode === 'plan' && sel && sel.type === 'room' && !drawing);
     root.querySelector('#pl-invite').hidden = !(mode === 'plan' && !drawing && !list.length && window.Tour);
+    /* The line under the grid that used to carry this went unread: tracing
+       starts on the grid, so that is where the eye already is. It goes at
+       the first touch, and pointer-events: none lets that touch through. */
+    root.querySelector('#pl-coach').hidden = !(mode === 'plan' && drawing && !drawing.pts.length && !(drag && drag.kind === 'draw'));
     const addRoom = root.querySelector('#pl-add-room');
     addRoom.hidden = !(mode === 'plan' && !drawing && !sel && list.length);
     /* On step 2 it is the step's one action, so it wears the primary green
@@ -847,6 +853,11 @@ window.ViewPlan = (function () {
     full.setAttribute('aria-label', ui.full ? 'Leave full screen' : 'Fill the screen');
     full.classList.toggle('is-on', !!ui.full);
     root.querySelector('.plan-stage').classList.toggle('is-full', !!ui.full);
+    /* Set from here rather than read with #view:has(.is-full), which some
+       Android WebViews do not apply: the stage then stayed fixed to the
+       animated view, under the header and hanging off the right edge. The
+       class also lets the header and tab bar step aside entirely. */
+    document.documentElement.classList.toggle('plan-full', !!ui.full);
     const wt = root.querySelector('#pl-walls-toggle');
     wt.hidden = mode !== 'home' || !list.length;
     wt.textContent = ui.hideInner ? 'Show inside walls' : 'Hide inside walls';
@@ -1063,10 +1074,15 @@ window.ViewPlan = (function () {
              one moment the plan talks to the reader before there is anything
              to measure: a conversation, so the face is allowed, and gone
              with the rest of the invitation once a room exists. */
+          '<div class="plan-coach" id="pl-coach" hidden>' +
+            '<div class="plan-coach-demo" aria-hidden="true"><span class="plan-coach-box"></span><span class="plan-coach-dot"></span></div>' +
+            '<div class="plan-coach-t">Drag out a room</div>' +
+            '<p class="plan-coach-s">Or tap each corner, and I\'ll join them up.</p>' +
+          '</div>' +
           '<div class="plan-invite" id="pl-invite" hidden>' +
             UI.sprout('home-planner', 'is-small plan-invite-sprout') +
             '<div class="plan-invite-t">Nothing drawn yet</div>' +
-            '<p class="hint">I\'ll build a sample flat and name each part as it appears, if it helps to see one first.</p>' +
+            '<p class="hint">I\'ll build a sample room and name each part as it appears, if it helps to see one first.</p>' +
             '<div class="stack" style="gap:9px;align-items:center">' +
               '<button class="btn btn-sm" data-tour="1">' + UI.icon('sparkle') + 'Watch me build one</button>' +
               '<button class="link-btn" id="pl-trace">or trace one yourself</button>' +
@@ -1093,9 +1109,17 @@ window.ViewPlan = (function () {
        before this visit. A refresh (a sheet saved over the plan) keeps both.
        The selection is left alone either way: focusRoom() sets it before
        the arrival it is for. */
-    if (!(params && params.refresh)) { ui.step = null; drawing = null; tool = 'select'; hist.past = []; hist.future = []; }
+    if (!(params && params.refresh)) { ui.step = null; ui.full = false; drawing = null; tool = 'select'; hist.past = []; hist.future = []; }
     if (!escBound) {
       escBound = true;
+      /* Leaving the plan while it fills the screen (the phone's own back
+         gesture) must not leave the header and tab bar hidden on the next
+         page. Checked once the router has swapped the view in. */
+      window.addEventListener('hashchange', function () {
+        setTimeout(function () {
+          if (!root || !document.body.contains(root)) { ui.full = false; document.documentElement.classList.remove('plan-full'); }
+        }, 0);
+      });
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && ui.full) { ui.full = false; redraw(); }
         /* Undo and redo from the keyboard too, but never out of a text
@@ -1184,7 +1208,7 @@ window.ViewPlan = (function () {
       }
       if (tool === 'backdrop' && plan().backdrop) { const s = svgPoint(e); drag = { kind: 'bd', sx: s.x, sy: s.y, ox: plan().backdrop.x, oy: plan().backdrop.y }; return; }
       const rb = t.closest('[data-room-body]');
-      if (tool === 'add' && !(rb && !drawing)) { drag = { kind: 'draw', sx: snap(start.x), sy: snap(start.y), rect: null, moved: false }; return; }
+      if (tool === 'add' && !(rb && !drawing)) { drag = { kind: 'draw', sx: snap(start.x), sy: snap(start.y), rect: null, moved: false }; root.querySelector('#pl-coach').hidden = true; return; }
       if (rb && isLocked(room(rb.getAttribute('data-room-body')))) { drag = { kind: 'pan', px: e.clientX, py: e.clientY, moved: false, roomId: rb.getAttribute('data-room-body') }; return; }
       if (rb) { drag = { kind: 'room', id: rb.getAttribute('data-room-body'), sx: start.x, sy: start.y, ax: 0, ay: 0, moved: false }; return; }
       drag = { kind: 'pan', px: e.clientX, py: e.clientY, moved: false, roomId: null };
