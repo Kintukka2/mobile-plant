@@ -169,7 +169,11 @@ window.ViewPlan = (function () {
 
   function edgeColour(e) {
     if (e.kind === OPENING) return 'var(--emerald-glow)';
-    const r = Plan.skyRank(e); if (r === null) return 'var(--ink-4)';
+    /* Without north there is no telling a bright window from a dim one, but
+       it is still a window: it wears the legend's gold, and a "?" on the
+       plan says what it is waiting for, rather than a grey that matched
+       nothing in the key. */
+    const r = Plan.skyRank(e); if (r === null) return 'var(--gold)';
     return r >= 3 ? 'var(--gold)' : 'var(--plan-pane-dim)';
   }
 
@@ -214,6 +218,17 @@ window.ViewPlan = (function () {
         const dm = roomDims(r);
         h += '<text class="plan-dims" x="' + cx + '" y="' + (cy + 24) + '" text-anchor="middle">' + UI.esc(fmtM(dm.w) + ' × ' + fmtM(dm.h)) + '</text>';
       }
+    });
+
+    if (!Plan.known()) drawn().forEach(function (r) {
+      Plan.edges(r.shape).forEach(function (e) {
+        if (e.kind !== WINDOW) return;
+        /* A third of the way along and just inside, clear of the side's
+           number outside and the add-a-corner dot at its middle. */
+        const qx = (e.a.x + e.dx * 0.3 - e.nx * 0.6) * P, qy = (e.a.y + e.dy * 0.3 - e.ny * 0.6) * P;
+        h += '<g data-win-help="1" style="cursor:pointer"><circle class="plan-win-q" cx="' + qx + '" cy="' + qy + '" r="8"/>' +
+          '<text class="plan-badge" x="' + qx + '" y="' + (qy + 3) + '" text-anchor="middle" style="fill:var(--bg-1)">?</text></g>';
+      });
     });
 
     const selRoom = sel && sel.type === 'room' ? room(sel.id) : null;
@@ -494,7 +509,7 @@ window.ViewPlan = (function () {
     const chev = function (d) { return '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + (d < 0 ? 'M10 3 5 8l5 5' : 'M6 3l5 5-5 5') + '"/></svg>'; };
     return '<nav class="plan-step-nav" aria-label="Steps">' +
       (prev ? '<button class="link-btn plan-step-prev" data-dock="' + prev + '">' + chev(-1) + '<span>Previous: ' + UI.esc(STEP_TITLE[prev]) + '</span></button>'
-       : tour ? '<button class="link-btn plan-step-prev" data-tour="1"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M5 3.5v9l7-4.5z"/></svg><span>Watch the walkthrough again</span></button>' : '') +
+       : tour ? '<button class="link-btn plan-step-prev" data-tour="1"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M5 3.5v9l7-4.5z"/></svg><span>Watch walkthrough again</span></button>' : '') +
       (next ? '<button class="link-btn plan-step-next" ' + (n === 1 ? 'id="pl-step1-next"' : 'data-dock="' + next + '"') + '><span>Next: ' + UI.esc(STEP_TITLE[next]) + '</span>' + chev(1) + '</button>' : '') +
     '</nav>';
   }
@@ -546,14 +561,16 @@ window.ViewPlan = (function () {
        asking for north mid-room only hurried people past the walls. */
     if (!lk) h += '<p class="hint plan-walls-lede">Tap each side to tell me what\'s there: a wall, a window, or an opening into the next room, like a hallway. The numbers match the ones on the plan.</p>';
     if (sh.outdoor) h += '<p class="hint" style="margin:0 0 10px">Open to the sky wherever nothing is built beyond.</p>';
+    /* Each side is a three-way stepper, and says only what it is. The
+       small print it used to carry repeated the plan (lengths), the label
+       (a window called "window") or nothing useful ("nothing beyond"). */
     h += '<div class="grid-2">' + Plan.edges(sh).map(function (e) {
-        const nb = Plan.across(r, e), a = Plan.aspectOf(e), sr = Plan.skyRank(e);
-        let sub;
-        if (e.kind === WINDOW) sub = a ? LOOKUPS.ASPECT_NAMES[a] + ' · ' + LOOKUPS.LIGHT[Plan.keyOf(sr)].short.toLowerCase() : 'window';
-        else if (e.kind === OPENING) sub = nb ? 'to ' + nb.name : 'nothing beyond';
-        else if (sh.outdoor && !nb) sub = a ? 'sky · ' + LOOKUPS.ASPECT_NAMES[a].toLowerCase() : 'open to the sky';
-        else sub = nb ? nb.name : fmtM(e.len * (pl.cell || 0.5));
-        return '<button class="chip plan-wall' + (e.kind === WINDOW ? ' is-on' : e.kind === OPENING ? ' is-open' : '') + '" data-wall="' + e.i + '"' + (lk ? ' disabled' : '') + '><span>' + (e.i + 1) + ' · ' + KIND_LABEL[e.kind] + '</span><small>' + UI.esc(sub) + '</small></button>';
+        const dis = lk ? ' disabled' : '', n = e.i + 1;
+        return '<div class="chip plan-wall' + (e.kind === WINDOW ? ' is-on' : e.kind === OPENING ? ' is-open' : '') + (lk ? ' is-disabled' : '') + '" data-wall="' + e.i + '">' +
+          '<button class="plan-wall-step" data-wall-step="-1" aria-label="Side ' + n + ': previous type"' + dis + '>' + CHEV + '</button>' +
+          '<span class="plan-wall-t">' + n + ' · ' + KIND_LABEL[e.kind] + '</span>' +
+          '<button class="plan-wall-step is-next" data-wall-step="1" aria-label="Side ' + n + ': next type"' + dis + '>' + CHEV + '</button>' +
+        '</div>';
       }).join('') + '</div>';
     if (sun) h += '<p class="hint plan-room-sun">Midday sun reaches about ' + fmtM(Math.min(sun.winter, d.h)) + ' in midwinter, and ' + (sun.summer < 0.2 ? 'barely past the sill' : 'about ' + fmtM(sun.summer)) + ' in midsummer.</p>';
     h += '</div>';
@@ -796,6 +813,29 @@ window.ViewPlan = (function () {
       wIn.addEventListener('input', function () { typed('w', wIn, hIn); });
       hIn.addEventListener('input', function () { typed('h', hIn, wIn); });
     }, function () { redraw(); });
+  }
+
+  /* What a window drawn before north is set is waiting for. It praises the
+     window and points at the compass rather than asking for north here and
+     now: north is step 3, and the reader can finish their walls first. */
+  function windowHelp() {
+    UI.openSheet('A window, noted',
+      '<p class="hint" style="margin:0 0 12px">Good call marking that window. How much light it brings in depends on which way it faces, and I can\'t work that out until I know where north is.</p>' +
+      '<p class="hint" style="margin:0 0 16px">Carry on with your walls if you like. North is step 3, and the compass on the plan is where you set it.</p>' +
+      '<div class="row" style="gap:8px"><button class="btn btn-sm" id="pl-wq-north">Set north now</button>' +
+        '<button class="btn btn-sm btn-ghost" id="pl-wq-later">Later</button></div>',
+      function (el) {
+        el.querySelector('#pl-wq-north').addEventListener('click', function () { openCompass(); });
+        el.querySelector('#pl-wq-later').addEventListener('click', function () { UI.closeSheet(); });
+      },
+      nudgeCompass);
+  }
+  /* A short wave from the compass after the sheet closes, so the reader
+     sees where it lives without being sent there. */
+  function nudgeCompass() {
+    const rose = root && root.querySelector('#pl-rose'); if (!rose) return;
+    rose.classList.remove('is-nudge'); void rose.offsetWidth; rose.classList.add('is-nudge');
+    setTimeout(function () { rose.classList.remove('is-nudge'); }, 2600);
   }
 
   function wallsHelp() {
@@ -1219,6 +1259,7 @@ window.ViewPlan = (function () {
         drawCanvas(); return;
       }
       if (pinch) return;
+      if (t.closest('[data-win-help]')) { drag = { kind: 'winhelp' }; return; }
       const pl = t.closest('[data-plant]');
       if (pl) { const p = Store.getPlant(pl.getAttribute('data-plant')); drag = { kind: 'plant', id: p.id, ox: p.pos.x, oy: p.pos.y, sx: start.x, sy: start.y, moved: false }; return; }
       if (mode !== 'plan') { const rb = t.closest('[data-room-body]'); drag = { kind: 'pan', px: e.clientX, py: e.clientY, moved: false, roomId: rb ? rb.getAttribute('data-room-body') : null }; return; }
@@ -1279,6 +1320,7 @@ window.ViewPlan = (function () {
       if (pinch) { if (pointers.size < 2) pinch = null; return; }
       if (!drag) return;
       const d = drag; drag = null;
+      if (d.kind === 'winhelp') { windowHelp(); return; }
       if (d.kind === 'pan') { if (!d.moved) { sel = d.roomId ? { type: 'room', id: d.roomId } : null; redraw(); } return; }
       if (d.kind === 'plant') {
         const p = Store.getPlant(d.id);
@@ -1378,7 +1420,13 @@ window.ViewPlan = (function () {
       }
       const wall = t.closest('[data-wall]');
       if (wall && isLocked(room(sel.id))) { lockedNudge(room(sel.id)); return; }
-      if (wall) { const r = room(sel.id), i = +wall.getAttribute('data-wall'); r.shape.win[i] = ((r.shape.win[i] || 0) + 1) % 3; saveShape(); redraw(); return; }
+      if (wall) {
+        /* The left chevron steps back; the right one, or anywhere else on
+           the card, steps on, so a plain tap still cycles as it always has. */
+        const r = room(sel.id), i = +wall.getAttribute('data-wall'), st = t.closest('[data-wall-step]');
+        const by = st && st.getAttribute('data-wall-step') === '-1' ? 2 : 1;
+        r.shape.win[i] = ((r.shape.win[i] || 0) + by) % 3; saveShape(); redraw(); return;
+      }
       const sr = t.closest('[data-sel-room]'); if (sr) { sel = { type: 'room', id: sr.getAttribute('data-sel-room') }; redraw(); return; }
       const spl = t.closest('[data-sel-plant]'); if (spl) { sel = { type: 'plant', id: spl.getAttribute('data-sel-plant') }; redraw(); return; }
     });

@@ -5216,9 +5216,20 @@ html.plan-full .tabbar { visibility: hidden; }
   0%, 100% { transform: translate(0, -50%); }
   50%      { transform: translate(4px, -50%); }
 }
+/* A window marked before north is set: the legend's gold, with a "?" that
+   says what it is waiting for. */
+.plan-win-q { fill: var(--gold); stroke: var(--bg-1); stroke-width: 1.5; }
+/* The compass waves once the window's "?" sheet closes: where north is set,
+   shown rather than demanded. */
+.plan-tool.is-rose.is-nudge { animation: roseNudge 0.8s var(--ease) 3; }
+@keyframes roseNudge {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 var(--gold-wash); }
+  40%      { transform: scale(1.14); box-shadow: 0 0 0 8px var(--gold-wash); }
+}
 /* Reduced motion keeps the gold and the tag and stills the rest. */
 @media (prefers-reduced-motion: reduce) {
-  .plan-tool.is-rose.is-unset::after, .plan-seek, .plan-rose-tag, .plan-stage-btn.is-cta::after { animation: none; }
+  .plan-tool.is-rose.is-unset::after, .plan-seek, .plan-rose-tag, .plan-stage-btn.is-cta::after, .plan-tool.is-rose.is-nudge { animation: none; }
+  .plan-tool.is-rose.is-nudge { box-shadow: 0 0 0 6px var(--gold-wash); }
   .plan-tool.is-rose.is-unset::after { transform: scale(1.18); opacity: 0.6; }
   .plan-stage-btn.is-cta::after { opacity: 0; }
 }
@@ -5571,8 +5582,19 @@ html.plan-full .tabbar { visibility: hidden; }
 .plan-row-nm small { font-family: var(--sans); font-size: 10.5px; letter-spacing: 0.08em; color: var(--ink-4); }
 .plan-row.is-undrawn { border-style: dashed; background: none; }
 
-.plan-wall { padding: 9px 10px; justify-content: space-between; border-radius: var(--r); text-align: left; }
-.plan-wall small { color: var(--ink-4); letter-spacing: 0.08em; text-transform: uppercase; font-size: 9.5px; text-align: right; }
+/* A side of the room as a three-way stepper: back, what it is, on. The
+   card is a div so its two chevrons can be real buttons; a tap anywhere
+   else on it steps on, as the whole card used to. */
+.plan-wall { display: flex; align-items: center; gap: 2px; padding: 4px; border-radius: var(--r); cursor: pointer; }
+.plan-wall-t { flex: 1; min-width: 0; text-align: center; white-space: nowrap; }
+.plan-wall-step {
+  flex: 0 0 auto; width: 30px; height: 30px; padding: 0;
+  display: grid; place-items: center;
+  border: 0; border-radius: 50%; background: none; color: var(--ink-3); cursor: pointer;
+}
+.plan-wall-step:hover:not(:disabled) { color: var(--ink); background: var(--bg-4); }
+.plan-wall-step.is-next svg { transform: scaleX(-1); }
+.plan-wall-step:disabled { cursor: not-allowed; }
 .plan-wall.is-open { border-color: rgba(63, 190, 139, 0.5); color: var(--ink); }
 
 .plan-tray { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
