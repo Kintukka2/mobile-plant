@@ -3258,6 +3258,9 @@ img { max-width: 100%; display: block; }
 .fact:focus-within .tl-del { opacity: 1; }
 
 .tl-del:hover { color: var(--terra); background: var(--terra-soft); }
+/* The edit control shares the delete's reveal and size, but not its
+   warning colour: changing an entry is not a loss. */
+.tl-edit:hover { color: var(--mint); background: var(--mint-wash); }
 
 /* A touch device has no hover to reveal anything with, so the control would
    be permanently invisible and the entry permanently undeletable. Print it

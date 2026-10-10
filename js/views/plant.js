@@ -436,6 +436,10 @@ window.ViewPlant = (function () {
         '<span class="tl-dot">' + UI.icon(kind.ico) + '</span>' +
         '<div class="tl-head">' +
           '<span class="tl-date">' + UI.esc(UI.fmtDate(l.date)) + ' · ' + UI.esc(kind.label) + '</span>' +
+          '<button class="tl-del tl-edit" data-edit-log="' + UI.attr(l.id) + '" ' +
+                  'aria-label="Edit this entry" title="Edit this entry">' +
+            UI.icon('edit') +
+          '</button>' +
           '<button class="tl-del" data-del-log="' + UI.attr(l.id) + '" ' +
                   'aria-label="Delete this entry" title="Delete this entry">' +
             UI.icon('trash') +
@@ -680,9 +684,15 @@ window.ViewPlant = (function () {
      Entry sheets
      ====================================================================== */
 
-  /* One sheet handles every diary entry kind. */
-  function entrySheet(p, kind) {
+  /* One sheet handles every diary entry kind, and editing one as well.
+     Entries could once only be deleted, so fixing a typo meant losing the
+     note and its photo and writing both again (PrimeTestLab 8220, S-04).
+     Pass the log to edit it: the same fields come back filled in, the kind
+     stays what it was, and the photo can be kept, replaced or removed. */
+  function entrySheet(p, kind, log) {
+    const editing = !!log;
     const k = LOOKUPS.LOG_KINDS[kind] || LOOKUPS.LOG_KINDS.note;
+    const oldPhoto = editing && log.photoId ? Store.getPhoto(log.photoId) : null;
     const isGrowth = kind === 'growth';
     const lastGrowth = Store.growthFor(p.id).slice(-1)[0];
 
@@ -700,13 +710,14 @@ window.ViewPlant = (function () {
     const body =
       '<label class="field"><span class="label">Date</span>' +
         '<input class="input" id="e-date" type="date" max="' + UI.toISO(UI.today()) + '" ' +
-        'value="' + UI.toISO(UI.today()) + '"></label>' +
+        'value="' + UI.attr(editing ? log.date : UI.toISO(UI.today())) + '"></label>' +
 
       (isGrowth
         ? '<div class="grid grid-2" style="gap:12px">' +
             '<label class="field"><span class="label">Measurement</span>' +
               '<input class="input" id="e-value" type="number" step="0.5" min="0" ' +
-              'placeholder="' + (lastGrowth ? lastGrowth.value : 30) + '" inputmode="decimal"></label>' +
+              'placeholder="' + (lastGrowth ? lastGrowth.value : 30) + '" inputmode="decimal"' +
+              (editing && typeof log.value === 'number' ? ' value="' + log.value + '"' : '') + '></label>' +
             '<label class="field"><span class="label">Unit</span>' +
               '<select class="select" id="e-unit">' +
                 '<option value="cm">cm — height</option>' +
@@ -714,7 +725,7 @@ window.ViewPlant = (function () {
                 '<option value="leaves">leaves</option>' +
               '</select></label>' +
           '</div>' +
-          (lastGrowth
+          (editing ? '' : lastGrowth
             ? '<p class="hint" style="margin:-6px 0 14px">Last time you recorded ' + lastGrowth.value + ' ' +
               UI.esc(lastGrowth.unit || 'cm') + ' on ' + UI.esc(UI.fmtDate(lastGrowth.date)) + '.</p>'
             : '<p class="hint" style="margin:-6px 0 14px">Measure soil to the highest growing tip, and try to ' +
@@ -723,24 +734,45 @@ window.ViewPlant = (function () {
 
       '<label class="field"><span class="label">' + (isGrowth ? 'Note (optional)' : 'What happened?') + '</span>' +
         '<textarea class="textarea" id="e-text" maxlength="1200" placeholder="' +
-        UI.attr(placeholders[kind] || '') + '"></textarea></label>' +
+        UI.attr(placeholders[kind] || '') + '">' + (editing ? UI.esc(log.text || '') : '') + '</textarea></label>' +
 
       '<div class="field"><span class="label">Photo (optional)</span>' +
         '<div class="row" style="gap:8px">' +
-          '<button type="button" class="btn btn-ghost btn-sm" id="e-photo">' + UI.icon('camera') + 'Attach a photo</button>' +
+          '<button type="button" class="btn btn-ghost btn-sm" id="e-photo">' + UI.icon('camera') +
+            (oldPhoto ? 'Replace photo' : 'Attach a photo') + '</button>' +
+          (oldPhoto ? '<button type="button" class="btn btn-ghost btn-sm" id="e-photo-del">Remove photo</button>' : '') +
           '<span class="tiny muted" id="e-photo-state"></span>' +
         '</div>' +
-        '<div id="e-photo-prev"></div>' +
+        '<div id="e-photo-prev">' + (oldPhoto
+          ? '<img src="' + UI.attr(oldPhoto) + '" alt="" style="width:100%;max-width:200px;' +
+            'border-radius:12px;margin-top:10px;display:block">'
+          : '') + '</div>' +
       '</div>' +
 
       '<div class="row" style="gap:8px;margin-top:18px">' +
         '<button class="btn btn-ghost" data-act="sheet-cancel" style="flex:1">Cancel</button>' +
-        '<button class="btn" id="e-save" style="flex:2">Save entry</button>' +
+        '<button class="btn" id="e-save" style="flex:2">' + (editing ? 'Save changes' : 'Save entry') + '</button>' +
       '</div>';
 
     /* No glyph: sheet titles are set as textContent and cannot hold markup. */
-    UI.openSheet(k.label, body, function (root) {
+    UI.openSheet(editing ? 'Edit ' + k.label.toLowerCase() : k.label, body, function (root) {
       let photoData = null;
+      /* Whether the entry's existing photo is still wanted. Only cleared by
+         Remove photo; a replacement is decided by photoData instead. */
+      let keepOld = !!oldPhoto;
+
+      /* The unit is a select, which has no value attribute to fill in the
+         markup the way the inputs do. */
+      if (editing && isGrowth && log.unit) root.querySelector('#e-unit').value = log.unit;
+
+      const del = root.querySelector('#e-photo-del');
+      if (del) del.addEventListener('click', function () {
+        keepOld = false;
+        photoData = null;
+        root.querySelector('#e-photo-prev').innerHTML = '';
+        root.querySelector('#e-photo-state').textContent = 'Photo will be removed';
+        del.hidden = true;
+      });
 
       root.querySelector('#e-photo').addEventListener('click', function () {
         Photos.pick(function (dataUrl) {
@@ -764,7 +796,7 @@ window.ViewPlant = (function () {
           unit = root.querySelector('#e-unit').value;
         }
 
-        if (!isGrowth && !text && !photoData && ['note', 'milestone', 'problem'].indexOf(kind) !== -1) {
+        if (!isGrowth && !text && !photoData && !keepOld && ['note', 'milestone', 'problem'].indexOf(kind) !== -1) {
           UI.toast('Write something, or attach a photo', 'warn');
           return;
         }
@@ -773,6 +805,22 @@ window.ViewPlant = (function () {
         if (photoData) {
           photoId = Store.savePhoto(photoData);
           if (!photoId) return;   // storage full — savePhoto has already warned
+        }
+
+        if (editing) {
+          /* The new photo is stored before the old one goes, so a full
+             store refusing the replacement leaves the entry as it was. */
+          const patch = { date: date, text: text, value: value, unit: unit };
+          if (photoId || !keepOld) {
+            if (log.photoId) Store.deletePhoto(log.photoId);
+            patch.photoId = photoId;
+          }
+          Store.updateLog(log.id, patch);
+          UI.closeSheet();
+          UI.toast('Entry updated', 'leaf');
+          if (photoId) warnIfLow();
+          App.refresh();
+          return;
         }
 
         Store.addLog({
@@ -1014,6 +1062,14 @@ window.ViewPlant = (function () {
 
       const inline = e.target.closest('[data-photo]');
       if (inline) { UI.lightbox(inline.getAttribute('src')); return; }
+
+      const ed = e.target.closest('[data-edit-log]');
+      if (ed) {
+        const id = ed.getAttribute('data-edit-log');
+        const l = Store.logsFor(p.id).filter(function (x) { return x.id === id; })[0];
+        if (l) entrySheet(p, l.kind, l);
+        return;
+      }
 
       const del = e.target.closest('[data-del-log]');
       if (del) {

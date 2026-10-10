@@ -13,3 +13,4 @@ Nothing in the app reads this directory.
 | [`android-v1.2/`](android-v1.2/plan.md) | Android 1.2 (versionCode 4) | The rating screen |
 | [`android-v1.3/`](android-v1.3/plan.md) | Android 1.3 (versionCode 6) | Rating ask off for closed testing (PrimeTestLab ticket #3229); minSdk 24 |
 | [`android-v1.4/`](android-v1.4/plan.md) | Android 1.4 (versionCode 7) | PrimeTestLab closed-testing report Nº 8220 |
+| [`android-v1.5/`](android-v1.5/plan.md) | Android 1.5 (versionCode 8) | First production release |
