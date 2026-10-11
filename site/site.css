@@ -337,11 +337,10 @@ h1 em{ font-style:normal; color:var(--glow); }
   .hero-scroll-rule::after{ animation:none; opacity:.55; }
 }
 
-/* ---- The bar, and the mark that flies into it ----
-   One mark, not two. The element in the bar is the same one the hero shows:
-   on the hero it is transformed onto the lockup's slot at the lockup's size,
-   and scrolling interpolates it to its own resting place here. Two marks
-   cross-fading would be simpler and would read as two marks.
+/* ---- The bar ----
+   It fades in, plate first, then its mark and badge, as the hero leaves.
+   The mark no longer flies there from the lockup: with the light falling
+   and following, the logo is the thing on the page that should sit still.
 
    --sb-h is 0 until the script declares itself, because the panels' top
    padding is derived from it and a bar that never appears must not reserve
@@ -354,9 +353,8 @@ h1 em{ font-style:normal; color:var(--glow); }
   display:block; position:fixed; inset:0 0 auto; z-index:40;
   height:var(--sb-h); pointer-events:none;
 }
-/* The plate is a pseudo-element so its opacity can be driven independently
-   of the mark sitting on top of it — the mark is at full strength over the
-   hero, where the plate is not there at all. */
+/* The plate is a pseudo-element so it can arrive ahead of the mark and the
+   badge on it. */
 .sitebar::before{
   content:""; position:absolute; inset:0;
   background:color-mix(in srgb, var(--field) 88%, transparent);
@@ -366,10 +364,7 @@ h1 em{ font-style:normal; color:var(--glow); }
 }
 .sitebar-in{ position:relative; height:100%; display:flex; align-items:center;
              justify-content:space-between; gap:16px; }
-/* transform-origin matters: the travel is computed as a translate and a
-   scale from this corner, so the corner is what lands on the lockup. */
-.sitebar-mark{ display:block; width:22px; height:29px; color:var(--glow);
-               transform-origin:top left; will-change:transform; }
+.sitebar-mark{ display:block; width:22px; height:29px; color:var(--glow); opacity:var(--sb-c, 0); }
 .sitebar-mark svg{ width:100%; height:100%; display:block; }
 .sitebar-cta{ display:flex; align-items:center; gap:10px;
               opacity:var(--sb-c, 0); visibility:hidden; pointer-events:none; }
@@ -379,19 +374,6 @@ h1 em{ font-style:normal; color:var(--glow); }
   .store-sm{ height:34px; border-radius:6px; }
 }
 
-/* The hero's own mark is hidden rather than removed: the row is a flex line
-   and SPROUT would slide left into the gap it left behind. */
-.sb-live .lockup .m{ visibility:hidden; }
-
-/* Reduced motion keeps both marks where they belong and just fades the bar
-   in. A logo flying up the screen is precisely the kind of movement the
-   preference is asking not to see. */
-@media (prefers-reduced-motion: reduce){
-  .sb-live .lockup .m{ visibility:visible; }
-  /* The hero keeps its own mark, so the bar's fades in with the controls
-     rather than sitting over the hero as a second small logo. */
-  .sitebar-mark{ will-change:auto; transform:none !important; opacity:var(--sb-c, 0); }
-}
 
 /* ---- Headings ---- */
 /* Never under 28px, so the 200 weight is always the right one (the brand

@@ -38,7 +38,7 @@
 -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A1410'/%3E%3Cg fill='none' stroke='%233FBE8B' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M50 84V40'/%3E%3Cpath d='M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z'/%3E%3Cpath d='M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="img/touch-icon.png">
-<link rel="stylesheet" href="site.css?v=5">
+<link rel="stylesheet" href="site.css?v=6">
 <!-- The hero's wash pours down from the ceiling on arrival, so it is held
      back before the first paint rather than shown and then hidden, which
      would flash. Not under reduced motion, and never for good: if the
@@ -989,65 +989,32 @@
 })();
 </script>
 
-<!-- The bar's mark, and where it travels from.
+<!-- The bar, arriving as the hero leaves.
 
-     One element does both jobs. It lives in the bar, so its resting place is
-     wherever the bar puts it; on the hero it is transformed onto the
-     lockup's slot at the lockup's size, and the scroll interpolates between
-     the two. The hero's own mark is hidden but still laid out, so SPROUT
-     does not slide left into the space it would leave.
-
-     Measured rather than assumed, and measured again after the fonts land:
-     the lockup's vertical position depends on the height of everything the
-     hero centres, and Cormorant arriving changes that by a few pixels. -->
+     The mark used to fly out of the lockup and into the bar as the reader
+     scrolled. With the light falling and following, that was two things
+     moving at once at the top of the page, and the logo is the one that
+     can sit still. So the hero keeps its own mark, and the bar's fades in
+     with its plate and its badge once the hero is mostly gone: the same
+     arrival reduced motion always had, now for everyone. -->
 <script>
 (function () {
   var bar = document.getElementById("sitebar");
-  var mark = document.getElementById("sb-mark");
   var hero = document.querySelector(".hero");
-  var heroMark = hero && hero.querySelector(".lockup .m");
   var cue = document.getElementById("hero-scroll");
-  if (!bar || !mark || !hero || !heroMark) return;
+  if (!bar || !hero) return;
 
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-  var from = null, to = null, span = 1, ticking = false;
+  var span = 1, ticking = false;
 
   function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
 
-  function measure() {
-    // Park the mark first: `to` has to be where it rests, not where the
-    // last frame left it.
-    mark.style.transform = "none";
-    var h = heroMark.getBoundingClientRect();
-    var b = mark.getBoundingClientRect();
-    if (!b.width || !h.width) { from = to = null; return; }
-    from = { x: h.left + window.scrollX, y: h.top + window.scrollY, w: h.width };
-    to = { x: b.left, y: b.top, w: b.width };
-    // The travel is spent over the hero, so it is complete exactly as the
-    // first section arrives — which is also when the bar is first needed.
-    span = Math.max(1, hero.offsetHeight);
-    apply();
-  }
+  // The arrival is spent over the hero, so the bar is complete exactly as
+  // the first section comes up, which is when it is first needed.
+  function measure() { span = Math.max(1, hero.offsetHeight); apply(); }
 
   function apply() {
     var p = clamp01(window.scrollY / span);
-    if (from && to && !reduce.matches) {
-      // from.y as it sits on an unscrolled hero, not as it scrolls away.
-      // Tracking the live position looks right at both ends and wrong in
-      // between: the lockup leaves the top of the screen faster than the
-      // interpolation pulls the mark back, so it flew off the top and
-      // returned. It should detach and settle, not bounce.
-      var hx = from.x, hy = from.y;
-      var s0 = from.w / to.w;
-      var x = hx + (to.x - hx) * p;
-      var y = hy + (to.y - hy) * p;
-      var s = s0 + (1 - s0) * p;
-      mark.style.transform = "translate(" + (x - to.x).toFixed(2) + "px," +
-        (y - to.y).toFixed(2) + "px) scale(" + s.toFixed(4) + ")";
-    }
-    // The plate and the controls arrive after the mark rather than with it:
-    // a bar fading up around a logo still in flight reads as two things
-    // happening, and it is meant to read as one arriving.
     bar.style.setProperty("--sb-p", clamp01((p - 0.3) / 0.5).toFixed(3));
     bar.style.setProperty("--sb-c", clamp01((p - 0.55) / 0.35).toFixed(3));
     bar.classList.toggle("is-on", p > 0.6);
