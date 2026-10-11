@@ -168,13 +168,13 @@ body{ background:var(--field); color:var(--ink); font-family:var(--serif);
    edge catches it: a thin warm rim and a soft spill round it, in the
    light's own two colours. It comes up slowly as the light settles and
    goes as the light leaves; the script only adds and removes the class. */
-.phone img, .film-thumb, .sp-block{ transition:box-shadow .9s ease, border-color .9s ease; }
+.phone img, .film-thumb, .sp-block, .faq-list{ transition:box-shadow .9s ease, border-color .9s ease; }
 .phone img.is-lit{
   box-shadow:0 0 0 1px color-mix(in srgb, var(--sun) 63%, transparent),
              0 0 16px 1px color-mix(in srgb, var(--sun) 30%, transparent),
              0 0 70px 8px color-mix(in srgb, var(--leaf) 25%, transparent),
              0 50px 90px -40px rgba(0,0,0,.9); }
-.film-thumb.is-lit, .sp-block.is-lit{
+.film-thumb.is-lit, .sp-block.is-lit, .faq-list.is-lit{
   border-color:color-mix(in srgb, var(--sun) 58%, transparent);
   box-shadow:0 0 16px 1px color-mix(in srgb, var(--sun) 25%, transparent),
              0 0 70px 8px color-mix(in srgb, var(--leaf) 21%, transparent),
@@ -183,7 +183,7 @@ body{ background:var(--field); color:var(--ink); font-family:var(--serif);
    back, slowly. It waits out the 0.9s the light takes to come up, so the
    pulse begins from the lit state rather than cutting across the fade. */
 .phone img.is-lit{ animation:lit-pulse-phone 3.2s ease-in-out .9s infinite alternate; }
-.film-thumb.is-lit, .sp-block.is-lit{ animation:lit-pulse-box 3.2s ease-in-out .9s infinite alternate; }
+.film-thumb.is-lit, .sp-block.is-lit, .faq-list.is-lit{ animation:lit-pulse-box 3.2s ease-in-out .9s infinite alternate; }
 @keyframes lit-pulse-phone{
   to{ box-shadow:0 0 0 1px color-mix(in srgb, var(--sun) 76%, transparent),
                  0 0 22px 2px color-mix(in srgb, var(--sun) 38%, transparent),
@@ -355,11 +355,9 @@ html.beam-go .hero::before{ animation:beam-drop 2.1s cubic-bezier(.5,0,.2,1) bot
        margin-right:-.2em; }
 /* The wordmark's "evergreen" set in running copy: the same face and mint,
    scaled up from the line it sits in, because Sacramento at text size is
-   about two thirds the height of the serif around it. Kept on one line:
-   with no line height of its own, a phrase broken across two would set its
-   second half into the line below. */
+   about two thirds the height of the serif around it. */
 .script-word{ font-family:var(--script); font-weight:400; color:var(--mint);
-              font-size:1.45em; line-height:0; letter-spacing:.01em; white-space:nowrap; }
+              font-size:1.45em; line-height:0; letter-spacing:.01em; }
 .script{ font-family:var(--script); font-size:calc(var(--wm)*0.56); color:var(--mint);
          line-height:1; margin-top:calc(var(--wm)*0.12);
          /* Hangs under SPROUT, not under the mark. */
@@ -514,10 +512,26 @@ h1 em{ font-style:normal; color:var(--glow); }
 .sitebar-cta{ display:flex; align-items:center; gap:10px;
               opacity:var(--sb-c, 0); visibility:hidden; pointer-events:none; }
 .sitebar.is-on .sitebar-cta{ visibility:visible; pointer-events:auto; }
+/* The planner, beside the badge: the section's own button, small, so the
+   two read as the same invitation. */
+.sb-try{ display:inline-flex; align-items:center; gap:7px; height:34px; padding:0 12px;
+  border:1px solid color-mix(in srgb, var(--glow) 45%, transparent); border-radius:8px;
+  font-family:var(--sans); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--glow); text-decoration:none; white-space:nowrap;
+  transition:background .2s ease, border-color .2s ease; }
+.sb-try:hover{ background:color-mix(in srgb, var(--glow) 16%, transparent); border-color:var(--glow); }
+.sb-try:focus-visible{ outline:2px solid var(--glow); outline-offset:3px; }
+.sb-try svg{ width:11px; height:11px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; }
 @media (max-width:620px){
   .sb-live{ --sb-h:48px; }
   .sb-word{ --wm:13px; }
   .store-sm{ height:34px; border-radius:6px; }
+  /* No room beside the badge on a phone, so the planner takes the empty
+     left-hand column instead, as one word. Out of the flow there, so the
+     badge's column is the badge's alone. */
+  .sb-try{ position:absolute; left:24px; top:50%; transform:translateY(-50%);
+           height:32px; padding:0 9px; gap:6px; font-size:10px; letter-spacing:.14em; }
+  .sb-try-the{ display:none; }
 }
 
 
@@ -563,16 +577,29 @@ h2.narrow{ max-width:22ch; }
 .quote{ border-left:2px solid var(--leaf); padding-left:26px; margin:34px 0 0; }
 .quote p{ font-size:clamp(21px,2.4vw,26px); color:var(--ink); font-style:italic;
           max-width:30ch; text-wrap:balance; }
-.quote cite{ font-family:var(--sans); font-size:11.5px; letter-spacing:.13em; text-transform:uppercase;
-             color:var(--ink-3); font-style:normal; }
+/* Signed in the quote's own voice, on its line, and never left alone on
+   the next one. */
+.quote-by{ white-space:nowrap; }
 
 /* The light ladder. Five rungs is the app's real scale, not a decoration —
-   every room is placed on it and every species matched to it. */
-.ladder{ list-style:none; margin:28px 0 0; padding:0; display:flex; flex-wrap:wrap; gap:8px; }
-.ladder li{ font-family:var(--sans); font-size:11.5px; letter-spacing:.1em; text-transform:uppercase;
-            padding:7px 13px; border:1px solid var(--hair); border-radius:100px; color:var(--ink-2);
-            display:flex; align-items:center; gap:8px; }
-.ladder i{ width:9px; height:9px; border-radius:50%; display:block; }
+   every room is placed on it and every species matched to it. Drawn as one
+   bar that runs from the sun down to the dark through the five rungs' own
+   colours. Each rung is a slice of the one gradient, so the colour runs on
+   across the breaks between them, and the breaks are real gaps the light
+   behind the page shows through. */
+.ladder{ margin:30px 0 0; max-width:28rem; }
+.ladder-bar{ display:flex; gap:3px; height:10px; }
+.ladder-bar i{ flex:1; border-radius:1px;
+  background:linear-gradient(90deg, #E0C47A, #9FD3BE 27%, #4E7C68 52%, #2C4A3C 76%, #16211C);
+  background-size:500% 100%; }
+.ladder-bar i:nth-child(2){ background-position:25% 0; }
+.ladder-bar i:nth-child(3){ background-position:50% 0; }
+.ladder-bar i:nth-child(4){ background-position:75% 0; }
+.ladder-bar i:nth-child(5){ background-position:100% 0; }
+.ladder-bar i:first-child{ border-radius:100px 1px 1px 100px; }
+.ladder-bar i:last-child{ border-radius:1px 100px 100px 1px; }
+.ladder-ends{ display:flex; justify-content:space-between; margin-top:12px;
+  font-family:var(--sans); font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-2); }
 
 /* The diagnosis knowledge base, counted. Real numbers from
    js/data/problems.js, so they change when it does. */
@@ -667,8 +694,12 @@ html.film-open{ overflow:hidden; }
 .faq-in{ display:grid; gap:10px 72px; }
 @media (min-width:900px){ .faq-in{ grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); align-items:start; }
   .faq-in .faq-list{ margin-top:0; } }
-.faq-list{ max-width:46rem; margin-top:30px; border-bottom:1px solid var(--hair); }
-.faq-list details{ border-top:1px solid var(--hair); }
+/* A box, opaque, so the light can stop behind it and light its edge as it
+   does the species list's. Rules between the questions only: the box is
+   the edge now. */
+.faq-list{ max-width:46rem; margin-top:30px; padding:0 24px; border:1px solid var(--hair);
+           border-radius:14px; background:color-mix(in srgb, var(--ink) 2%, var(--well)); }
+.faq-list details + details{ border-top:1px solid var(--hair); }
 .faq-list summary{ list-style:none; cursor:pointer; display:flex; align-items:center; gap:18px;
   justify-content:space-between; padding:20px 2px; min-height:44px;
   font-family:var(--serif); font-size:clamp(20px,1.6vw,22px); color:var(--ink); }

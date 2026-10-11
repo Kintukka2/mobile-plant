@@ -66,8 +66,10 @@ Two consequences worth knowing before editing anything in there:
   Play is live (`com.sproutevergreen.app`); the App Store tile says coming
   soon and carries no Apple artwork until the app is there. The Play badge
   in `site/img/google-play.png` is Google's own, trimmed of its margin and
-  otherwise unaltered. The one exception is "Try the planner" in the plan
-  section, which opens the planner preview (below) in a new tab. The rest
+  otherwise unaltered. The one exception is "Try the planner", in the plan
+  section and beside the badge in the bar (the left-hand column, as
+  "Planner", on a phone), which opens the planner preview (below) in a new
+  tab. The rest
   of the web app is not linked from the site at all.
 
 - **The site's phone screens are captured, not drawn.**
@@ -91,8 +93,8 @@ Two consequences worth knowing before editing anything in there:
   (`position:relative; z-index:1`) so the light passes over the dark
   section plates and behind everything on them. Its path is found, not
   drawn: a new section with a `.phone` or an `h2` joins it with no edit.
-  The phones, the film and the species list (`.phone img`, `.film-thumb`,
-  `.sp-block`) are stations: the light stops behind one while it is near
+  The phones, the film, the species list and the questions (`.phone img`,
+  `.film-thumb`, `.sp-block`, `.faq-list`) are stations: the light stops behind one while it is near
   the middle of the screen and its edges take `.is-lit`, the list's along
   with its search. Anything the light should go behind rather than show
   through needs an opaque background, which is why `.sp-block` has one.
