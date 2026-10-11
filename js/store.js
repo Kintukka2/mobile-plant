@@ -13,7 +13,11 @@
 
 window.Store = (function () {
 
-  const KEY = 'sprout.state.v1';
+  /* The planner preview (planner.html) sets SPROUT_STATE_KEY before this
+     file loads. It is served from the same origin as the app, so without
+     its own key a visitor sketching a flat there would be writing over the
+     garden of anyone who had ever used the app in that browser. */
+  const KEY = window.SPROUT_STATE_KEY || 'sprout.state.v1';
   const PHOTO_PREFIX = 'sprout.photo.';
 
   /* ---------- Shape ---------- */

@@ -47,8 +47,11 @@
 
    v66: four more of the character's plates, and concerned out of the set.
 
-   v73: the automatic rating ask switched off for closed testing. */
-const CACHE = 'sprout-v90-viridium';
+   v73: the automatic rating ask switched off for closed testing.
+
+   v91: store.js takes its key from the planner preview when it sets one,
+   and the plan's plant step adds a plant in place. */
+const CACHE = 'sprout-v91-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is

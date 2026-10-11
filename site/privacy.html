@@ -21,14 +21,14 @@
   Every claim below is checkable against the code, and native/store-privacy.md
   maps the same facts onto both stores forms. If one changes, all three do.
 -->
-<link rel="stylesheet" href="site.css?v=3">
+<link rel="stylesheet" href="site.css?v=4">
 </head>
 <body>
 <div class="doc">
 
   <p class="sub">Sprout · evergreen</p>
   <h1>Privacy</h1>
-  <p class="note">Last updated 5 October 2026</p>
+  <p class="note">Last updated 11 October 2026</p>
 
   <hr>
 
@@ -75,6 +75,19 @@
   <p>Setting a location is optional. The app works without one; you lose the
   forecast suggestions and nothing else.</p>
 
+  <h2>The planner preview</h2>
+
+  <p>The home planner at <a href="https://sproutevergreen.app/planner">sproutevergreen.app/planner</a>
+  is the app's own planner, running in your browser. The rooms you draw, the
+  floor plan you trace over and the plants you place are kept in that
+  browser's local storage and nowhere else. It sends nothing: no forecast,
+  no location, no analytics.</p>
+
+  <p>Save writes your plan to a file on your own device, for the app to open.
+  It goes no further unless you move it yourself. The planner's Google Play
+  link tells Google Play that you came from the planner, as any campaign
+  link does; it carries nothing about you or your plan.</p>
+
   <h2>Reminders</h2>
 
   <p>Morning reminders are scheduled by your phone's own operating system,
@@ -102,7 +115,8 @@
   <h2>Deleting your data</h2>
 
   <p>Uninstalling the app removes everything, because everything is on the
-  device. In the browser, clearing site data does the same. You can clear a
+  device. In the browser, clearing site data does the same, and so does
+  Start again in the planner preview for a plan drawn there. You can clear a
   saved location on its own from Profile at any time. There is no server
   copy to request the deletion of.</p>
 
