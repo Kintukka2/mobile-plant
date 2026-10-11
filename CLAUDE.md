@@ -54,8 +54,10 @@ Two consequences worth knowing before editing anything in there:
   node .claude/check-species.js
   ```
 
-  It compares the names, the count, and the two figures the copy quotes ("48
-  species", "23 safe for cats and dogs"). Run it after touching `plants.js`.
+  It compares the names and the row count, checks the one figure the copy
+  quotes ("23 safe for cats and dogs"), and fails if the copy states a
+  number of species: the list grows, so the site deliberately never says
+  how many there are. Run it after touching `plants.js`.
   To regenerate the rows, emit one `<li class="sp-row">` per record in
   `PLANT_DATA` order with `common` and `botanical`, plus a `Pet safe` tag when
   `tox.cats` and `tox.dogs` are both `safe`.

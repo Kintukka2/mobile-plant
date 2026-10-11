@@ -362,14 +362,14 @@
   <div class="wrap">
     <p class="eyebrow">The species list</p>
     <h2 style="max-width:16ch">Is yours on it?</h2>
-    <p class="lead" style="margin-top:22px">Forty-eight of the most common houseplants. Each one
+    <p class="lead" style="margin-top:22px">The houseplants most homes have, with more on the way. Each one
     carries its own warm and cool season watering intervals, feeding cycle, ideal light, and a
     toxicity rating scored separately for cats, dogs and humans.</p>
 
     <!-- Hidden until the script runs, so a reader without JavaScript gets the
          full list and no dead input to type into. -->
     <div class="sp-search" id="sp-search" hidden>
-      <input type="search" id="sp-q" class="sp-input" placeholder="Search 48 species"
+      <input type="search" id="sp-q" class="sp-input" placeholder="Search species"
              autocomplete="off" spellcheck="false" aria-controls="sp-list"
              aria-label="Search the species list by common name, botanical name or nickname">
       <span class="sp-icon" aria-hidden="true">
@@ -598,8 +598,8 @@
           <span class="sp-tag">Pet safe</span>
         </li>
       </ul>
-      <p class="sp-none" id="sp-none" hidden>Nothing by that name. Sprout covers 48
-      species — if yours is missing, the diagnosis tool still works without it.</p>
+      <p class="sp-none" id="sp-none" hidden>Nothing by that name yet, and more are added as
+      we go. If yours is missing, the diagnosis tool still works without it.</p>
       <!-- Four stacked layers rather than one. A single blurred bar switches on
            at a hard edge; masking each layer to a progressively lower slice of
            the same box makes the blur ramp instead, which is the whole effect.
@@ -610,7 +610,7 @@
       </div>
     </div>
 
-    <p class="sp-foot" id="sp-count" role="status">Scroll the list · 48 species · 23 safe for cats and dogs</p>
+    <p class="sp-foot" id="sp-count" role="status">Scroll the list · 23 safe for cats and dogs</p>
   </div>
 </section>
 
@@ -636,7 +636,7 @@
      app, answered in a line each. <details> rather than script: it opens
      with a tap, a keyboard and a screen reader, and with script off. Every
      answer is checked against the app, not the brochure — the plant one in
-     particular, because adding a plant does need one of the 48 species. -->
+     particular, because adding a plant does need one of the listed species. -->
 <section class="faq band" id="faq">
   <div class="wrap faq-in">
     <div>
@@ -667,7 +667,8 @@
       </details>
       <details>
         <summary>What if my plant isn't on the list?</summary>
-        <p>Schedules cover the 48 species above, so a plant outside them can't be added yet.
+        <p>Schedules cover the species above, with more added as we go, so a plant outside
+        them can't be added yet.
         Diagnosis still works for any plant, with the advice left general rather than tuned to a
         species.</p>
       </details>
@@ -730,7 +731,7 @@
   var resting = count.textContent;
 
   // Hidden in the markup, revealed here. A reader with JavaScript off gets
-  // all 48 rows and no input that silently does nothing.
+  // every row and no input that silently does nothing.
   box.hidden = false;
 
   function apply() {
