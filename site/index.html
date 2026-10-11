@@ -19,7 +19,7 @@
 <meta property="og:image" content="https://sproutevergreen.com/img/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Sprout Evergreen: Most plant apps ask how often you want reminding. This one works it out. Free on Google Play, iPhone soon. Beside it, the app's Today screen.">
+<meta property="og:image:alt" content="Sprout Evergreen: Most plant apps ask how often you want reminding. This one works it out. Free on Google Play, coming to iPhone soon. Beside it, the app's Today screen.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Sprout Evergreen">
 <meta name="twitter:description" content="Most plant apps ask how often you want reminding. This one works it out.">
@@ -38,7 +38,7 @@
 -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A1410'/%3E%3Cg fill='none' stroke='%233FBE8B' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M50 84V40'/%3E%3Cpath d='M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z'/%3E%3Cpath d='M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="img/touch-icon.png">
-<link rel="stylesheet" href="site.css?v=2">
+<link rel="stylesheet" href="site.css?v=3">
 </head>
 <body>
 
@@ -145,7 +145,7 @@
       </span>
     </div>
     </div>
-    <p class="free">Free on Android now. iPhone soon.</p>
+    <p class="free">Free on Android now. Coming to iPhone soon.</p>
   </div>
 
   <!-- The prompt to keep going. Absolutely positioned, so it does not join
@@ -239,22 +239,50 @@
     <p class="lead">The grid, the rooms, one real measurement, the windows, north, and where a
     plant should stand: the same eleven steps the app offers you on an empty plan.</p>
     <figure class="film">
-      <!-- max-width inline, and no width/height attributes. A reader holding
-           a stylesheet from before this section once got the markup without
-           any of its rules, and the video drew at its own 1920px inside a
-           390px phone; the one inline declaration is the only sizing that
-           cannot arrive later than the element it sizes. -->
-      <video controls playsinline preload="metadata" style="max-width:100%"
-             poster="video/planner-walkthrough-poster.jpg"
+      <!-- A still that opens the film in a dialog, rather than a player in
+           the page. Inline it was 1000px wide at most, which is small for a
+           plan with labels in it, and "best full screen" was asking the
+           reader to do the work. The still is 23KB where the player's
+           metadata request was the first bite of a 13MB file.
+
+           A link, not a button: with script off, or a browser without
+           <dialog>, it simply opens the MP4, so the film is never behind
+           JavaScript.
+
+           Inline max-width on the image. A reader holding a stylesheet from
+           before this section once got the markup without any of its rules,
+           and the video drew at its own 1920px inside a 390px phone; the one
+           inline declaration is the only sizing that cannot arrive later than
+           the element it sizes. -->
+      <a class="film-thumb" id="film-open" href="video/planner-walkthrough.mp4" aria-haspopup="dialog">
+        <img src="img/walkthrough.webp" width="1280" height="720" loading="lazy" decoding="async"
+             style="max-width:100%;height:auto"
+             alt="The finished walkthrough: a five-room flat shaded by light, the living room bright indirect, the balcony in direct sun, the kitchen low. Play the 59-second film.">
+        <span class="film-play" aria-hidden="true"><span class="film-play-in">
+          <svg viewBox="0 0 24 24" focusable="false"><path d="M8 5.6v12.8a1 1 0 0 0 1.5.86l10.4-6.4a1 1 0 0 0 0-1.72L9.5 4.74A1 1 0 0 0 8 5.6z"/></svg>
+        </span></span>
+      </a>
+      <figcaption>Eleven steps, 59 seconds</figcaption>
+    </figure>
+  </div>
+
+  <!-- Outside the wrap so its full-viewport box is never clipped or offset by
+       a parent. preload="none": nothing is fetched until it opens. -->
+  <dialog class="film-dialog" id="film-dialog" aria-label="The planner walkthrough">
+    <div class="film-dialog-in">
+      <button class="film-close" type="button" aria-label="Close the film">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <video controls playsinline preload="none" style="max-width:100%"
+             poster="img/walkthrough.webp"
              aria-label="The Sprout planner walkthrough: a sample flat built in eleven steps, from the half-metre grid through tracing rooms, measuring one of them, marking windows and openings, setting north, to shading the floor by how well each square suits a particular plant.">
         <source src="video/planner-walkthrough.webm" type="video/webm">
         <source src="video/planner-walkthrough.mp4" type="video/mp4">
         <p>Your browser cannot play this video.
           <a href="video/planner-walkthrough.mp4">Download it instead</a>.</p>
       </video>
-      <figcaption>Eleven steps, 59 seconds &middot; best full screen</figcaption>
-    </figure>
-  </div>
+    </div>
+  </dialog>
 </section>
 
 <section class="feature band">
@@ -625,8 +653,8 @@
 <section class="close">
   <div class="wrap close-in">
     <span class="close-mark" aria-hidden="true"><svg viewBox="24 20 52 68" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/></svg></span>
-    <h2>Let it work out the watering.</h2>
-    <p class="lead">Free on Android now. iPhone soon.</p>
+    <h2>Let Sprout do it for you.</h2>
+    <p class="lead">Free on Android now. Coming to iPhone soon.</p>
     <div class="stores stores-center">
       <a class="store store-play" href="https://play.google.com/store/apps/details?id=com.sproutevergreen.app" rel="noopener">
         <img src="img/google-play.png" width="564" height="168" alt="Get it on Google Play">
@@ -702,6 +730,79 @@
     if (e.key === 'Escape' && q.value) { q.value = ''; apply(); }
   });
   apply();
+})();
+</script>
+
+<!-- The walkthrough's dialog.
+
+     showModal() rather than a hand-built overlay, because it brings the
+     focus trap, Escape, the inert page behind and the return of focus to
+     the still for nothing. What it does not bring is a way out that
+     animates, so Escape and the backdrop are intercepted and the dialog is
+     closed only once the zoom back has finished.
+
+     It plays on open, which a browser allows here because the open is a
+     tap, and pauses on close without rewinding: someone who closed it to
+     read a line of copy expects to come back to where they were. -->
+<script>
+(function () {
+  var open = document.getElementById("film-open");
+  var dlg = document.getElementById("film-dialog");
+  // No <dialog>, and the link is left alone to open the MP4 itself.
+  if (!open || !dlg || typeof dlg.showModal !== "function") return;
+  var video = dlg.querySelector("video");
+  var shut = dlg.querySelector(".film-close");
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var root = document.documentElement;
+  var OUT_MS = 280, timer = 0;
+
+  // Locking the page stops a wheel over the backdrop scrolling what is
+  // behind it. The padding stands in for the scrollbar the lock removes,
+  // or everything behind the blur jumps sideways by its width.
+  function lock(on) {
+    if (on) {
+      var bar = window.innerWidth - root.clientWidth;
+      if (bar > 0) root.style.paddingRight = bar + "px";
+      root.classList.add("film-open");
+    } else {
+      root.classList.remove("film-open");
+      root.style.paddingRight = "";
+    }
+  }
+
+  function show(e) {
+    e.preventDefault();
+    clearTimeout(timer);
+    if (!dlg.open) { lock(true); dlg.showModal(); }
+    // Two frames, so the half-size starting state is painted before the
+    // class that grows it lands; one is not always enough to commit it.
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { dlg.classList.add("is-in"); });
+    });
+    var p = video.play();
+    if (p && p.catch) p.catch(function () {});
+  }
+
+  function hide() {
+    if (!dlg.open) return;
+    video.pause();
+    dlg.classList.remove("is-in");
+    clearTimeout(timer);
+    timer = setTimeout(function () { if (dlg.open) dlg.close(); }, reduce.matches ? 0 : OUT_MS);
+  }
+
+  open.addEventListener("click", show);
+  shut.addEventListener("click", hide);
+  dlg.addEventListener("cancel", function (e) { e.preventDefault(); hide(); });
+  // The dialog box is the whole screen, so a click that lands on the box
+  // itself rather than inside the film is a click on the backdrop.
+  dlg.addEventListener("click", function (e) { if (e.target === dlg) hide(); });
+  // However it closed, the page is let go of and the film stopped.
+  dlg.addEventListener("close", function () {
+    dlg.classList.remove("is-in");
+    video.pause();
+    lock(false);
+  });
 })();
 </script>
 

@@ -361,6 +361,11 @@ h2.narrow{ max-width:22ch; }
    deepest ground, a hairline, and a glow behind in the section's colour.
    The glow is the only thing that differs between them, and it means
    something: leaf for care, sun for light, terra for trouble. */
+/* The glow spills 30% past the phone each side, which on a 390px screen is
+   5px past the edge of the page and a sideways scroll. Clipped at the
+   section rather than shrunk: by the edge it has faded to nothing, and clip,
+   unlike hidden, makes no scroll container of the section. */
+.feature{ overflow-x:clip; }
 .phone{ margin:0; position:relative; justify-self:center;
         width:clamp(250px, 25vw, 330px); max-width:78vw; }
 .phone::before{ content:""; position:absolute; inset:-14% -30%; z-index:0; pointer-events:none;
@@ -398,10 +403,71 @@ h2.narrow{ max-width:22ch; }
    16:9 against the screens' portrait, so it takes the wrap rather than a
    column. */
 .film{ margin:40px 0 0; max-width:1000px; }
-.film video{ display:block; width:100%; height:auto; aspect-ratio:16 / 9;
-             background:var(--well); border:1px solid var(--hair); border-radius:16px; }
 .film figcaption{ font-family:var(--sans); font-size:11.5px; letter-spacing:.12em;
                   text-transform:uppercase; color:var(--ink-3); margin-top:14px; }
+
+/* The still, and the button that says it plays. The play mark is the glow
+   green on a frosted disc of itself, with dark ink rather than white in the
+   triangle: white on that green is 2.4:1, and it is the one thing on the
+   still that has to read at a glance. */
+.film-thumb{ position:relative; display:block; overflow:hidden; isolation:isolate;
+  border:1px solid var(--hair); border-radius:16px; background:var(--well);
+  box-shadow:0 50px 90px -50px rgba(0,0,0,.9); -webkit-tap-highlight-color:transparent; }
+.film-thumb img{ display:block; width:100%; height:auto; aspect-ratio:16 / 9;
+  transition:transform .6s cubic-bezier(.2,.7,.2,1), filter .3s ease; }
+.film-thumb::after{ content:""; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(closest-side, rgba(4,9,7,.42), transparent 75%); }
+.film-thumb:hover img{ transform:scale(1.02); filter:brightness(.82); }
+.film-thumb:focus-visible{ outline:2px solid var(--glow); outline-offset:4px; }
+
+.film-play{ position:absolute; inset:0; z-index:1; margin:auto;
+  width:clamp(80px,9vw,112px); height:clamp(80px,9vw,112px); border-radius:50%;
+  display:grid; place-items:center;
+  background:color-mix(in srgb, var(--glow) 14%, transparent);
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--glow) 30%, transparent); }
+/* One slow ring outward, so the still reads as waiting rather than paused. */
+.film-play::before{ content:""; position:absolute; inset:0; border-radius:50%;
+  border:1px solid color-mix(in srgb, var(--glow) 55%, transparent);
+  animation:film-ring 2.8s cubic-bezier(.2,.6,.3,1) infinite; }
+@keyframes film-ring{ 0%{ transform:scale(1); opacity:.9; } 70%,100%{ transform:scale(1.45); opacity:0; } }
+.film-play-in{ width:62%; height:62%; border-radius:50%; display:grid; place-items:center;
+  background:linear-gradient(to bottom, color-mix(in srgb, var(--glow) 55%, var(--mint)), var(--glow));
+  box-shadow:0 10px 26px -8px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.28);
+  transition:transform .35s cubic-bezier(.3,1.4,.5,1); }
+.film-play-in svg{ width:44%; height:44%; fill:#06110C; margin-left:7%; }
+.film-thumb:hover .film-play-in{ transform:scale(1.14); }
+
+/* The dialog. It grows from the centre of the screen at half size, with a
+   little overshoot on the way in and none on the way out: arriving should
+   feel like something opening, leaving should just get out of the way. */
+.film-dialog{ position:fixed; inset:0; width:100%; height:100%; max-width:none; max-height:none;
+  margin:0; padding:16px; border:0; background:transparent; overflow:visible; }
+.film-dialog[open]{ display:grid; place-items:center; }
+.film-dialog::backdrop{ background:rgba(2,6,4,.62);
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  opacity:0; transition:opacity .3s ease; }
+.film-dialog.is-in::backdrop{ opacity:1; }
+/* Wide enough to read the plan's labels, and never taller than the screen
+   minus room for the close button above it. */
+.film-dialog-in{ position:relative; width:min(1180px, 100%, (100svh - 150px) * 16 / 9);
+  transform:scale(.5); opacity:0;
+  transition:transform .28s cubic-bezier(.4,0,1,1), opacity .22s ease; }
+.film-dialog.is-in .film-dialog-in{ transform:none; opacity:1;
+  transition:transform .55s cubic-bezier(.22,1.25,.36,1), opacity .25s ease; }
+.film-dialog video{ display:block; width:100%; height:auto; aspect-ratio:16 / 9; background:#000;
+  border:1px solid color-mix(in srgb, var(--glow) 35%, transparent); border-radius:16px;
+  box-shadow:0 40px 120px -30px rgba(0,0,0,.95), 0 0 80px -20px color-mix(in srgb, var(--leaf) 40%, transparent); }
+.film-close{ position:absolute; right:0; bottom:calc(100% + 14px);
+  width:44px; height:44px; border-radius:50%; display:grid; place-items:center; cursor:pointer;
+  color:var(--ink); background:color-mix(in srgb, var(--raise) 70%, transparent);
+  border:1px solid var(--hair); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+  transition:background .2s ease, border-color .2s ease; }
+.film-close svg{ width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; }
+.film-close:hover{ border-color:color-mix(in srgb, var(--glow) 50%, transparent);
+  background:color-mix(in srgb, var(--raise) 95%, transparent); }
+.film-close:focus-visible{ outline:2px solid var(--glow); outline-offset:3px; }
+html.film-open{ overflow:hidden; }
 
 /* ---- Privacy: the claim on one side, the one exception on the other ---- */
 .privacy-in{ display:grid; gap:12px 72px; }
