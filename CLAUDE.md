@@ -178,8 +178,9 @@ the plan and starts fresh on every arrival, never on a refresh.
 **A drawn room's `light` and `aspect` are derived, never typed.**
 `Plan.sync()` writes them back onto the room before every render, so
 `Schedule`, the greenhouse and the room page read them like any other
-room's and never need to know the plan exists. The room form hides those
-two fields for a drawn room and points at the plan instead. Rooms without
+room's and never need to know the plan exists. The room form leaves those
+two fields out for a drawn room altogether, with no link to the plan, since
+following one mid-form left the form half-filled. Rooms without
 a shape are never touched: their light is whatever the reader said.
 
 **The room form draws too.** "Add a room" no longer asks for an aspect and
