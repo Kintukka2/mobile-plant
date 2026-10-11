@@ -170,19 +170,19 @@ body{ background:var(--field); color:var(--ink); font-family:var(--serif);
    goes as the light leaves; the script only adds and removes the class. */
 .phone img, .film-thumb, .sp-block{ transition:box-shadow .9s ease, border-color .9s ease; }
 .phone img.is-lit{
-  box-shadow:0 0 0 1px color-mix(in srgb, var(--sun) 55%, transparent),
-             0 0 16px 1px color-mix(in srgb, var(--sun) 26%, transparent),
-             0 0 70px 8px color-mix(in srgb, var(--leaf) 22%, transparent),
+  box-shadow:0 0 0 1px color-mix(in srgb, var(--sun) 63%, transparent),
+             0 0 16px 1px color-mix(in srgb, var(--sun) 30%, transparent),
+             0 0 70px 8px color-mix(in srgb, var(--leaf) 25%, transparent),
              0 50px 90px -40px rgba(0,0,0,.9); }
 .film-thumb.is-lit, .sp-block.is-lit{
-  border-color:color-mix(in srgb, var(--sun) 50%, transparent);
-  box-shadow:0 0 16px 1px color-mix(in srgb, var(--sun) 22%, transparent),
-             0 0 70px 8px color-mix(in srgb, var(--leaf) 18%, transparent),
+  border-color:color-mix(in srgb, var(--sun) 58%, transparent);
+  box-shadow:0 0 16px 1px color-mix(in srgb, var(--sun) 25%, transparent),
+             0 0 70px 8px color-mix(in srgb, var(--leaf) 21%, transparent),
              0 50px 90px -50px rgba(0,0,0,.9); }
 /* The search is lit with the list, a little less: it is the way in. */
 .sp-input.is-lit:not(:focus):placeholder-shown{
-  border-color:color-mix(in srgb, var(--sun) 42%, transparent);
-  box-shadow:0 0 12px 1px color-mix(in srgb, var(--sun) 18%, transparent); }
+  border-color:color-mix(in srgb, var(--sun) 48%, transparent);
+  box-shadow:0 0 12px 1px color-mix(in srgb, var(--sun) 21%, transparent); }
 
 /* Dust in the light. Hair-thin streaks that fade up, drift along a slight
    curve the way the light falls, and fade out, each somewhere new after a
