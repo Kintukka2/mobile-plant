@@ -283,8 +283,7 @@ window.ViewProfile = (function () {
       const on = native && !!settings.remind && nState === 'granted';
       const hour = typeof settings.remindHour === 'number' ? settings.remindHour : 8;
       html += '<div class="section">' +
-        '<div class="section-head"><h2 class="section-title">Reminders</h2>' +
-          '<span class="section-note">one a day, at most</span></div>' +
+        '<div class="section-head"><h2 class="section-title">Reminders</h2></div>' +
         '<div class="card">';
 
       if (native) {
@@ -293,9 +292,9 @@ window.ViewProfile = (function () {
             '<input type="checkbox" id="p-remind"' + (on ? ' checked' : '') +
               (nState === 'denied' ? ' disabled' : '') + ' ' +
               'style="width:18px;height:18px;accent-color:var(--leaf)">' +
-            '<span style="flex:1;min-width:0"><span style="font-weight:600;font-size:14px">Remind me in the mornings</span>' +
-              '<span class="tiny muted" style="display:block">Only on the days something is actually due. ' +
-                'Nothing due, nothing from me.</span></span>' +
+            '<span style="flex:1;min-width:0"><span style="font-weight:600;font-size:14px">Care reminders</span>' +
+              '<span class="tiny muted" style="display:block">I\'ll nudge you whenever a plant needs you, ' +
+                'and stay quiet when nothing does.</span></span>' +
           '</label>' +
           (on
             /* The hour and its Set button share a row. Set starts inert and
@@ -303,7 +302,7 @@ window.ViewProfile = (function () {
                is never a live button that would do nothing, and never a
                changed hour sitting unsaved with no way to tell. */
             ? '<hr class="divider">' +
-              '<span class="label">What time</span>' +
+              '<span class="label">When should I remind you?</span>' +
               '<div class="row" style="gap:8px;align-items:center;margin-top:6px">' +
                 '<select class="input select" id="p-remind-hour" style="flex:1;min-width:0">' +
                   [6, 7, 8, 9, 10, 11, 12, 17, 18, 19].map(function (h) {
@@ -342,11 +341,13 @@ window.ViewProfile = (function () {
               '<span class="fact-ico">' + UI.icon(line ? line.ico : 'pin') + '</span>' +
               '<div style="flex:1;min-width:0">' +
                 '<div style="font-weight:600">' + UI.esc(prof.location.label) + '</div>' +
-                '<div class="tiny muted">' +
-                  (line ? line.temp + '°C, ' + UI.esc(line.label.toLowerCase()) + ' · ' : '') +
-                  UI.esc(hemi === 'south' ? 'Southern' : 'Northern') + ' hemisphere · ' +
-                  UI.esc(sum.seasonMeta.label.toLowerCase()) +
-                '</div>' +
+                /* Only the weather. The hemisphere and season used to
+                   sit here too, but a reader with a saved location
+                   already knows where they live; the line was telling
+                   them about themselves. */
+                (line
+                  ? '<div class="tiny muted">' + line.temp + '°C, ' + UI.esc(line.label.toLowerCase()) + '</div>'
+                  : '') +
               '</div>' +
               '<button class="btn btn-sm btn-ghost nowrap" data-loc="1">Change</button>' +
             '</div>' +
@@ -355,8 +356,8 @@ window.ViewProfile = (function () {
               '<input type="checkbox" id="p-wsync"' + (settings.weatherSync ? ' checked' : '') + ' ' +
                 'style="width:18px;height:18px;accent-color:var(--leaf)">' +
               '<span style="flex:1;min-width:0"><span style="font-weight:600;font-size:14px">Weather-aware watering</span>' +
-                '<span class="tiny muted" style="display:block">Let me watch the forecast and suggest ' +
-                  'adjustments before a dry or wet spell.</span></span>' +
+                '<span class="tiny muted" style="display:block">Tick this and I\'ll keep an eye on the weather ' +
+                  'where you are, and adapt the plan to take better care of your plants.</span></span>' +
             '</label>' +
             '<div class="row" style="gap:8px;margin-top:12px">' +
               '<button class="btn btn-sm btn-soft" data-refresh="1">Refresh forecast</button>' +
@@ -572,7 +573,10 @@ window.ViewProfile = (function () {
       }
 
       if (e.target.closest('[data-clear-dismissed]')) {
-        Store.updateSettings({ dismissed: [] });
+        /* The planner's "don't show again" hints come back with the
+           weather tips: one button that brings back everything I was told
+           to stop saying. */
+        Store.updateSettings({ dismissed: [], dragCoachOff: false, nameNudgeOff: false, reshapeTipDone: false, wallTipDone: false });
         UI.toast('Tips will show again', 'leaf');
         return;
       }

@@ -5022,10 +5022,14 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
    .view animates translateY on the way in. Zeroing the transform is not
    enough: an element carrying a transform animation stays a containing
    block whatever the current value is, so the animation itself has to go
-   while the stage is full. Written with :has() rather than a class, so
-   there is nothing to set and nothing to leak on the way out — the entrance
-   simply replays once as the page comes back. */
-#view:has(.plan-stage.is-full) { animation: none !important; transform: none !important; }
+   while the stage is full. This was once #view:has(.plan-stage.is-full),
+   which an Android WebView ignored, leaving the stage pinned to the view
+   under the header. The planner sets html.plan-full instead and clears it
+   on the way out; the entrance simply replays once as the page comes back.
+   The header and tab bar go too: a full-screen plan is the plan alone. */
+html.plan-full #view { animation: none !important; transform: none !important; }
+html.plan-full .topbar,
+html.plan-full .tabbar { visibility: hidden; }
 .plan-stage.is-full {
   position: fixed;
   top: 0;
@@ -5148,6 +5152,11 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
 .plan-notice:not([hidden]) ~ .plan-dock { bottom: 64px; }
 .plan-stage.is-full .plan-dock { bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
 .plan-stage.is-full .plan-notice:not([hidden]) ~ .plan-dock { bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+/* Full screen hands the reshape tip back to the stage, where it shares the
+   bottom-right corner with the dock. It sits above the dock instead of on
+   it, and a step higher again when the notice has lifted the dock. */
+.plan-stage.is-full .plan-overlay { bottom: calc(66px + env(safe-area-inset-bottom, 0px)); }
+.plan-stage.is-full .plan-notice:not([hidden]) + .plan-overlay { bottom: calc(118px + env(safe-area-inset-bottom, 0px)); }
 
 /* Step 2's one action: the stage's Add a room, lit and breathing. */
 .plan-stage-btn.is-cta {
@@ -5207,9 +5216,24 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
   0%, 100% { transform: translate(0, -50%); }
   50%      { transform: translate(4px, -50%); }
 }
+/* A window marked before north is set: the legend's gold, with a "?" that
+   says what it is waiting for. */
+.plan-win-q-halo { fill: var(--gold-wash); }
+.plan-win-q-ring { fill: var(--bg-2); stroke: var(--gold); stroke-width: 1.2; }
+.plan-win-q-t { font-family: var(--serif); font-size: 11.5px; font-weight: 600; fill: var(--gold-lit); pointer-events: none; }
+[data-theme="conservatory"] .plan-win-q-t { fill: var(--gold); }
+.plan-win-q:hover .plan-win-q-ring { stroke-width: 1.6; }
+/* The compass waves once the window's "?" sheet closes: where north is set,
+   shown rather than demanded. */
+.plan-tool.is-rose.is-nudge { animation: roseNudge 0.8s var(--ease) 3; }
+@keyframes roseNudge {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 var(--gold-wash); }
+  40%      { transform: scale(1.14); box-shadow: 0 0 0 8px var(--gold-wash); }
+}
 /* Reduced motion keeps the gold and the tag and stills the rest. */
 @media (prefers-reduced-motion: reduce) {
-  .plan-tool.is-rose.is-unset::after, .plan-seek, .plan-rose-tag, .plan-stage-btn.is-cta::after { animation: none; }
+  .plan-tool.is-rose.is-unset::after, .plan-seek, .plan-rose-tag, .plan-stage-btn.is-cta::after, .plan-tool.is-rose.is-nudge { animation: none; }
+  .plan-tool.is-rose.is-nudge { box-shadow: 0 0 0 6px var(--gold-wash); }
   .plan-tool.is-rose.is-unset::after { transform: scale(1.18); opacity: 0.6; }
   .plan-stage-btn.is-cta::after { opacity: 0; }
 }
@@ -5276,6 +5300,8 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
 .plan-room-lockline svg { flex: 0 0 auto; width: 15px; height: 15px; margin-top: 2px; }
 .plan-room-sub { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
 .plan-room-sub .label { display: inline-flex; align-items: center; gap: 8px; margin: 0; }
+.plan-walls-lede { margin: -2px 0 12px; }
+.plan-room-add { margin: 0 0 16px; }
 .plan-room-sun { margin: 14px 0 0; }
 .plan-room.is-locked .plan-wall { opacity: 0.55; cursor: not-allowed; }
 .plan-room.is-locked .plan-check { opacity: 0.55; }
@@ -5332,6 +5358,134 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
    decorates it, and a plate that pushed them off the grid would be the
    wrong way round. */
 @media (max-height: 719px) { .plan-invite-sprout { display: none; } }
+
+/* ---- The walls tip ----
+   A small callout pinned to side 1's number by placeWallTip(), with an
+   arrow at --arrow-x pointing at it. Transparent to the pointer apart
+   from its close button, so the number under the arrow stays tappable. */
+.plan-walltip {
+  /* Above the stage's corner buttons: on a phone the room sits high and
+     the tip lands over Centre, and half-covered beats half-showing. */
+  position: absolute; z-index: 7;
+  max-width: 230px; padding: 9px 10px 9px 12px;
+  display: flex; align-items: flex-start; gap: 8px;
+  border: 1px solid var(--emerald-glow); border-radius: var(--r);
+  background: var(--bg-2);
+  box-shadow: 0 0 0 4px var(--mint-wash), 0 10px 24px -12px rgba(0, 0, 0, 0.6);
+  color: var(--ink-2); font-size: 12px; line-height: 1.45;
+  pointer-events: none;
+  animation: coachSwap var(--dur-2) var(--ease) both;
+}
+.plan-walltip::after {
+  content: ''; position: absolute; left: var(--arrow-x, 50%); bottom: -6px;
+  width: 10px; height: 10px; margin-left: -5px;
+  background: var(--bg-2);
+  border-right: 1px solid var(--emerald-glow); border-bottom: 1px solid var(--emerald-glow);
+  transform: rotate(45deg);
+}
+.plan-walltip.is-below::after { bottom: auto; top: -6px; transform: rotate(225deg); }
+/* The numbers it is talking about breathe while it is up. */
+.plan-edge-hint { transform-box: fill-box; transform-origin: center; animation: edgeHint 1.8s var(--ease) infinite; }
+@keyframes edgeHint {
+  0%, 100% { stroke: var(--hair-3); stroke-width: 1; }
+  50%      { stroke: var(--emerald-glow); stroke-width: 3; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .plan-walltip { animation: none; }
+  .plan-edge-hint { animation: none; stroke: var(--emerald-glow) !important; stroke-width: 2; }
+}
+
+/* ---- The tracing coach ----
+   Shown on the grid the moment tracing starts, where the reader is already
+   looking: a box drawing itself under a fingertip, and the one sentence it
+   acts out. Transparent to the pointer, so the first drag goes straight
+   through it to the grid, and gone with that first touch. */
+.plan-coach {
+  position: absolute; left: 50%; top: 50%; z-index: 4;
+  width: min(290px, calc(100% - 112px));
+  display: flex; flex-direction: column; align-items: center;
+  padding: 18px 18px 16px; text-align: center;
+  border: 1px solid var(--hair-2); border-radius: var(--r-lg);
+  background: var(--bg-2);
+  box-shadow: 0 12px 32px -14px rgba(0, 0, 0, 0.55);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: coachIn var(--dur-3) var(--ease) both;
+}
+@keyframes coachIn { from { opacity: 0; transform: translate(-50%, calc(-50% + 8px)); } }
+.plan-coach-pick, .plan-coach-drag { display: flex; flex-direction: column; align-items: center; }
+/* The card keeps its size between its two faces, so choosing "myself"
+   swaps what is inside it rather than resizing the thing under the thumb. */
+.plan-coach { min-height: 206px; justify-content: center; }
+.plan-coach-drag { animation: coachSwap var(--dur-2) var(--ease) both; }
+@keyframes coachSwap { from { opacity: 0; transform: translateY(4px); } }
+.plan-coach-ico {
+  width: 44px; height: 44px; margin-bottom: 12px; border-radius: 50%;
+  display: grid; place-items: center;
+  border: 1px solid var(--hair-3); background: var(--mint-wash); color: var(--mint);
+}
+.plan-coach-ico svg { width: 18px; height: 18px; }
+.plan-coach-acts { display: flex; flex-direction: column; align-items: stretch; gap: 8px; width: 100%; margin-top: 14px; }
+.plan-coach-acts .btn { justify-content: center; pointer-events: auto; }
+.plan-coach-demo { position: relative; width: 104px; height: 72px; margin-bottom: 14px; }
+.plan-coach-box {
+  position: absolute; left: 10px; top: 8px; width: 0; height: 0;
+  border: 1.5px dashed var(--emerald-glow); border-radius: 3px;
+  background: var(--mint-wash);
+  animation: coachBox 2.8s var(--ease-io) infinite;
+}
+.plan-coach-dot {
+  position: absolute; left: 2px; top: 0; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--mint); box-shadow: 0 0 0 4px var(--mint-wash);
+  animation: coachDot 2.8s var(--ease-io) infinite;
+}
+.plan-coach-dot::after {
+  content: ''; position: absolute; inset: -1px; border-radius: 50%;
+  border: 1.5px solid var(--mint);
+  animation: coachPulse 2.8s var(--ease) infinite;
+}
+@keyframes coachBox {
+  0%, 14%  { width: 0; height: 0; opacity: 0; }
+  18%      { opacity: 1; }
+  62%, 84% { width: 84px; height: 56px; opacity: 1; }
+  100%     { width: 84px; height: 56px; opacity: 0; }
+}
+@keyframes coachDot {
+  0%       { transform: translate(0, 0) scale(1); opacity: 0; }
+  8%       { transform: translate(0, 0) scale(1); opacity: 1; }
+  14%      { transform: translate(0, 0) scale(0.82); }
+  62%      { transform: translate(84px, 56px) scale(0.82); }
+  70%, 84% { transform: translate(84px, 56px) scale(1); opacity: 1; }
+  100%     { transform: translate(84px, 56px) scale(1); opacity: 0; }
+}
+@keyframes coachPulse {
+  0%, 8%   { transform: scale(1); opacity: 0; }
+  12%      { transform: scale(1); opacity: 0.9; }
+  34%      { transform: scale(2.4); opacity: 0; }
+  100%     { transform: scale(2.4); opacity: 0; }
+}
+.plan-coach-t {
+  font-family: var(--display); font-weight: 500;
+  font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--ink);
+}
+.plan-coach-s { margin: 6px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--ink-3); }
+/* The card is transparent to the pointer; this one line is not. Quiet on
+   purpose: it is for the reader who has drawn a room before. */
+.plan-coach-off {
+  margin-top: 12px; padding: 4px 6px;
+  border: 0; background: none; cursor: pointer; pointer-events: auto;
+  font-family: var(--sans); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--ink-4);
+}
+.plan-coach-off:hover { color: var(--ink-2); }
+/* Still, the finished gesture: the box drawn and the fingertip at its end. */
+@media (prefers-reduced-motion: reduce) {
+  .plan-coach, .plan-coach-drag, .plan-coach-box, .plan-coach-dot, .plan-coach-dot::after { animation: none; }
+  .plan-coach-box { width: 84px; height: 56px; }
+  .plan-coach-dot { transform: translate(84px, 56px); }
+  .plan-coach-dot::after { opacity: 0; }
+}
 
 /* ---- The walkthrough itself ---- */
 .tour {
@@ -5478,8 +5632,19 @@ body::before { animation: drift 48s var(--ease-io) infinite; }
 .plan-row-nm small { font-family: var(--sans); font-size: 10.5px; letter-spacing: 0.08em; color: var(--ink-4); }
 .plan-row.is-undrawn { border-style: dashed; background: none; }
 
-.plan-wall { padding: 9px 10px; justify-content: space-between; border-radius: var(--r); text-align: left; }
-.plan-wall small { color: var(--ink-4); letter-spacing: 0.08em; text-transform: uppercase; font-size: 9.5px; text-align: right; }
+/* A side of the room as a three-way stepper: back, what it is, on. The
+   card is a div so its two chevrons can be real buttons; a tap anywhere
+   else on it steps on, as the whole card used to. */
+.plan-wall { display: flex; align-items: center; gap: 2px; padding: 4px; border-radius: var(--r); cursor: pointer; }
+.plan-wall-t { flex: 1; min-width: 0; text-align: center; white-space: nowrap; }
+.plan-wall-step {
+  flex: 0 0 auto; width: 30px; height: 30px; padding: 0;
+  display: grid; place-items: center;
+  border: 0; border-radius: 50%; background: none; color: var(--ink-3); cursor: pointer;
+}
+.plan-wall-step:hover:not(:disabled) { color: var(--ink); background: var(--bg-4); }
+.plan-wall-step.is-next svg { transform: scaleX(-1); }
+.plan-wall-step:disabled { cursor: not-allowed; }
 .plan-wall.is-open { border-color: rgba(63, 190, 139, 0.5); color: var(--ink); }
 
 .plan-tray { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }

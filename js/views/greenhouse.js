@@ -588,17 +588,11 @@ window.ViewGreenhouse = (function () {
          a label wrapping them would hand every chip tap to the select as
          well. `for` keeps the caption tied to the control without it. */
       (drawnRoom
-        /* The selects stay in the DOM, hidden, so the wiring below finds them
-           and the save reads them; what the reader sees is the derivation and
-           the way to change it. */
-        ? '<div class="field"><span class="label">Light</span>' +
-            '<p class="hint" style="margin:0 0 8px">' + (room.light
-              ? 'From your plan: <b>' + UI.esc(LOOKUPS.LIGHT[room.light].label.toLowerCase()) + '</b>' +
-                (room.aspect && room.aspect !== 'NONE' ? ', through a ' + UI.esc(LOOKUPS.aspectLabel(room.aspect).toLowerCase()) : '') + '. Change its windows there and this follows.'
-              : 'This room is on your plan, so its light is read from its windows once north is confirmed there.') + '</p>' +
-            '<button type="button" class="link-btn" data-go-plan="' + UI.attr(room.id) + '">Open the plan</button>' +
-          '</div>' +
-          '<label class="field"><span class="label">Humidity</span>' +
+        /* No Light field for a drawn room. Its light is worked out from its
+           windows on the plan, so there was nothing here to edit, only a
+           sentence about it and a link that left the form half-filled when a
+           new reader followed it. */
+        ? '<label class="field"><span class="label">Humidity</span>' +
             '<select class="select" id="r-humid">' + humidOpts + '</select>' +
           '</label>'
         /* A div, not a label: the walls, the dial and the hemisphere chips
@@ -700,13 +694,6 @@ window.ViewGreenhouse = (function () {
 
         syncPresetLabel();
       }
-
-      const goPlan = root.querySelector('[data-go-plan]');
-      if (goPlan) goPlan.addEventListener('click', function () {
-        UI.closeSheet();
-        ViewPlan.focusRoom(goPlan.getAttribute('data-go-plan'));
-        App.go('/plan');
-      });
 
       /* ---- The mini plan ----
          win[i] per wall in screen order — top, right, bottom, left — which is
