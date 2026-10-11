@@ -172,7 +172,10 @@ body{ background:var(--field); color:var(--ink); font-family:var(--serif);
 .lumen b{ position:absolute; left:0; top:0; width:var(--mw, 1px); height:var(--mh, 16px);
   margin:calc(var(--mh, 16px) / -2) 0 0 calc(var(--mw, 1px) / -2); border-radius:1px; opacity:0;
   background:linear-gradient(to bottom, transparent,
-    color-mix(in srgb, var(--mc, #F2DFA6) 95%, transparent) 50%, transparent);
+    var(--mc, #FFF0C6) 50%, transparent);
+  /* A halo of its own colour, so a speck glows rather than sits on the
+     page. Painted once; the run itself only moves and fades it. */
+  box-shadow:0 0 4px .5px color-mix(in srgb, var(--mc, #FFF0C6) 55%, transparent);
   will-change:transform, opacity; }
 .lumen b.go{ animation:mote var(--md, 8s) cubic-bezier(.45,.05,.55,.95) both; }
 @keyframes mote{
