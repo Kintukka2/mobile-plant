@@ -38,7 +38,7 @@
 -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A1410'/%3E%3Cg fill='none' stroke='%233FBE8B' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M50 84V40'/%3E%3Cpath d='M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z'/%3E%3Cpath d='M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="img/touch-icon.png">
-<link rel="stylesheet" href="site.css?v=14">
+<link rel="stylesheet" href="site.css?v=15">
 <!-- The hero's wash pours down from the ceiling on arrival, so it is held
      back before the first paint rather than shown and then hidden, which
      would flash. Not under reduced motion, and never for good: if the
@@ -124,7 +124,12 @@
 <div class="lumen" id="lumen" aria-hidden="true"></div>
 <div class="sitebar" id="sitebar">
   <div class="wrap sitebar-in">
-    <span class="sitebar-mark" id="sb-mark" aria-hidden="true"><svg viewBox="24 20 52 68" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/></svg></span>
+    <a class="sb-word" id="sb-word" href="#" aria-label="Sprout, back to the top">
+      <span class="wm-row" aria-hidden="true">
+        <span class="m"><svg viewBox="24 20 52 68" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/></svg></span>
+        <span class="word"><span class="w2">Sprout</span><span class="w5">Sprout</span></span>
+      </span>
+    </a>
     <div class="sitebar-cta" id="sb-cta">
       <a class="store store-play store-sm" href="https://play.google.com/store/apps/details?id=com.sproutevergreen.app" rel="noopener">
         <img src="img/google-play.png" width="564" height="168" alt="Get it on Google Play">
@@ -179,8 +184,8 @@
   <!-- Sprout, leaning in from the corner. The art is cropped off its left
        and bottom edges, so this is the one place it can sit unframed:
        mirrored into the bottom-right, the crop becomes the page's own edge.
-       The right rather than the left because the copy is set left, so the
-       free room on a wide screen is on this side. Hidden
+       The right rather than the left because the art is cut to lean in
+       from that side, and the centred copy leaves room either side. Hidden
        until the script below has found room for it, so a reader without
        script never gets it at a size that covers the call to action.
        Decorative, because the headline already says what the page is. -->
@@ -1114,33 +1119,60 @@
 })();
 </script>
 
-<!-- The bar, arriving as the hero leaves.
+<!-- The bar, and the wordmark that rises into it.
 
-     The mark used to fly out of the lockup and into the bar as the reader
-     scrolled. With the light falling and following, that was two things
-     moving at once at the top of the page, and the logo is the one that
-     can sit still. So the hero keeps its own mark, and the bar's fades in
-     with its plate and its badge once the hero is mostly gone: the same
-     arrival reduced motion always had, now for everyone. -->
+     The hero's SPROUT is the bar's, in two places at once: on the hero the
+     bar's copy is transformed onto the lockup's row at the lockup's size,
+     and the hero's own row is hidden but laid out. As the reader scrolls
+     the copy rises exactly as fast as the page does and shrinks as it goes,
+     so it reads as the wordmark itself being carried up, and it lands in
+     the middle of the bar at the moment the page would have carried it
+     there. Nothing moves that the reader is not moving. "evergreen" is not
+     part of it; it stays in the hero and leaves with it.
+
+     The plate arrives as the wordmark docks, so the headline never scrolls
+     under a bare one; the badge waits until the hero's own badges have
+     gone. Measured rather than assumed, and again once the fonts land. -->
 <script>
 (function () {
   var bar = document.getElementById("sitebar");
+  var word = document.getElementById("sb-word");
   var hero = document.querySelector(".hero");
+  var row = hero && hero.querySelector(".lockup .wm-row");
   var cue = document.getElementById("hero-scroll");
-  if (!bar || !hero) return;
+  if (!bar || !word || !hero || !row) return;
 
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-  var span = 1, ticking = false;
+  var from = null, to = null, dock = 1, span = 1, ticking = false;
 
   function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
 
-  // The arrival is spent over the hero, so the bar is complete exactly as
-  // the first section comes up, which is when it is first needed.
-  function measure() { span = Math.max(1, hero.offsetHeight); apply(); }
+  function measure() {
+    // At rest first: `to` is where it docks, not where the last frame left it.
+    word.style.transform = "none";
+    var h = row.getBoundingClientRect(), b = word.getBoundingClientRect();
+    if (!b.width || !h.width) { from = to = null; apply(); return; }
+    from = { x: h.left, y: h.top + window.scrollY, w: h.width };
+    to = { x: b.left, y: b.top, w: b.width };
+    // The scroll at which the page would carry the row up to the bar.
+    dock = Math.max(1, from.y - to.y);
+    span = Math.max(1, hero.offsetHeight);
+    apply();
+  }
 
   function apply() {
-    var p = clamp01(window.scrollY / span);
-    bar.style.setProperty("--sb-p", clamp01((p - 0.3) / 0.5).toFixed(3));
+    var p = clamp01(window.scrollY / span), d = clamp01(window.scrollY / dock);
+    if (from && to && !reduce.matches) {
+      // Both ends are centred and both terms are linear in d, so the
+      // centre stays on the page's centre all the way up.
+      var s0 = from.w / to.w;
+      var x = from.x + (to.x - from.x) * d, y = from.y + (to.y - from.y) * d, s = s0 + (1 - s0) * d;
+      word.style.transform = "translate(" + (x - to.x).toFixed(2) + "px," + (y - to.y).toFixed(2) + "px) scale(" + s.toFixed(4) + ")";
+    }
+    // 200 while it is the hero's size, 500 by the time it is the bar's:
+    // the brand's weight rule, crossed over in flight.
+    word.style.setProperty("--sb-d", d.toFixed(3));
+    bar.style.setProperty("--sb-p", clamp01((d - 0.65) / 0.35).toFixed(3));
     bar.style.setProperty("--sb-c", clamp01((p - 0.55) / 0.35).toFixed(3));
     bar.classList.toggle("is-on", p > 0.6);
     // Gone within the first quarter, and out of the tab order with it: an
@@ -1151,6 +1183,11 @@
       cue.hidden = c === 0;
     }
   }
+
+  word.addEventListener("click", function (e) {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: reduce.matches ? "auto" : "smooth" });
+  });
 
   function onScroll() {
     if (ticking) return;
@@ -1176,8 +1213,8 @@
 </script>
 
 <!-- How big Sprout can be in the corner, measured rather than set at
-     breakpoints. The corner is empty on a wide screen, where the copy is
-     set left and stops well short of the right edge, and crowded on a phone,
+     breakpoints. The corner is empty on a wide screen, where the centred
+     copy stops well short of the right edge, and crowded on a phone,
      where the copy runs edge to edge and the only free space is under the
      buttons. A fixed size covered the call to action at 1280px and on every
      phone measured. So it takes the larger of the two rooms it could have —
