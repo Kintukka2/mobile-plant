@@ -60,6 +60,11 @@ Two consequences worth knowing before editing anything in there:
   `PLANT_DATA` order with `common` and `botanical`, plus a `Pet safe` tag when
   `tox.cats` and `tox.dogs` are both `safe`.
 
+- **The site opens on the app's splash**, once a session: a copy of the
+  `#splash` markup, its rules and `dismissSplash()`'s timing, at the top of
+  `site/index.html` and the end of `site/site.css`. Change the app's splash
+  and change this one in the same commit.
+
 - **The privacy policy lives at `site/privacy.html`**, not at the root any
   more, and Play has been given `sproutevergreen.com/privacy`. It, this
   file, `README.md` and `native/store-privacy.md` all state the same facts
