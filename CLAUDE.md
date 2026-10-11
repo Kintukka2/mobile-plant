@@ -81,9 +81,11 @@ Two consequences worth knowing before editing anything in there:
   `site/index.html` and the end of `site/site.css`. Change the app's splash
   and change this one in the same commit.
 
-- **The site's light is one layer, measured from the page.** The hero's
-  sun wash falls from the top on arrival (`--drop`, held before first paint
-  by a script in `<head>`), and `#lumen` then carries a soft pool of it
+- **The site's light is one layer, measured from the page.** The hero
+  sits on the close's leaf glow, so the two asks share a ground. Its
+  wash, leaf with a little sun in it, falls from the top on arrival
+  (`--drop`, held before first paint by a script in `<head>`), and
+  `#lumen` then carries a soft pool of it
   down the page, through each section's phone, film, heading or the
   closing sprig, by scroll position. Section content sits on `.wrap`
   (`position:relative; z-index:1`) so the light passes over the dark
