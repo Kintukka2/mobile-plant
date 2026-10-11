@@ -159,15 +159,17 @@ body{ background:var(--field); color:var(--ink); font-family:var(--serif);
 .lumen i{ position:absolute; left:0; top:0; width:var(--s); height:var(--s);
   margin:calc(var(--s) / -2) 0 0 calc(var(--s) / -2); border-radius:50%; opacity:0;
   background:radial-gradient(closest-side,
-    color-mix(in srgb, var(--sun) 24%, transparent),
-    color-mix(in srgb, var(--sun) 9%, transparent) 42%,
-    color-mix(in srgb, var(--leaf) 4%, transparent) 70%, transparent);
+    color-mix(in srgb, var(--sun) 34%, transparent),
+    color-mix(in srgb, var(--sun) 14%, transparent) 40%,
+    color-mix(in srgb, var(--leaf) 6%, transparent) 70%, transparent);
   will-change:transform, opacity; }
 /* The trail is greener than the head: the sun where the light is, the
-   room's own colour where it has been. */
+   room's own colour where it has been. Its pieces are smaller and drawn
+   long along the path, so together they read as a tail behind the light
+   rather than a second, larger circle round it. */
 .lumen i.t{ background:radial-gradient(closest-side,
-    color-mix(in srgb, var(--sun) 12%, transparent),
-    color-mix(in srgb, var(--leaf) 7%, transparent) 50%, transparent); }
+    color-mix(in srgb, var(--sun) 22%, transparent),
+    color-mix(in srgb, var(--leaf) 11%, transparent) 50%, transparent); }
 section{ padding-block:clamp(84px,11vw,150px); }
 /* The bar is fixed, so a #link lands its section below it, not under it. */
 section[id]{ scroll-margin-top:var(--sb-h); }

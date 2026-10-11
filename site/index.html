@@ -38,7 +38,7 @@
 -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A1410'/%3E%3Cg fill='none' stroke='%233FBE8B' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M50 84V40'/%3E%3Cpath d='M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z'/%3E%3Cpath d='M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="img/touch-icon.png">
-<link rel="stylesheet" href="site.css?v=6">
+<link rel="stylesheet" href="site.css?v=7">
 <!-- The hero's wash pours down from the ceiling on arrival, so it is held
      back before the first paint rather than shown and then hidden, which
      would flash. Not under reduced motion, and never for good: if the
@@ -859,7 +859,8 @@
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
   if (!lumen || !hero || reduce.matches || !window.requestAnimationFrame) return;
 
-  var BACK = 9, AHEAD = 4;
+  // A long tail behind and a short lead ahead.
+  var BACK = 16, AHEAD = 3;
   var parts = [], head, pts = [], landY = 0, vw = 0, vh = 0, cur = null, raf = 0, measuring = 0;
 
   function blob(k, cls) {
@@ -929,8 +930,13 @@
     return Math.exp(-Math.pow(d / (vh * 0.2), 2));
   }
 
-  function place(p, y, scale, alpha) {
-    p.el.style.transform = 'translate3d(' + xAt(y).toFixed(1) + 'px,' + (y - window.scrollY).toFixed(1) + 'px,0) scale(' + scale.toFixed(3) + ')';
+  /* Each piece is turned to the path's direction where it sits and drawn
+     long along it, so a run of them is a streak that bends with the path
+     rather than a string of beads. */
+  function place(p, y, scale, alpha, stretch) {
+    var x = xAt(y), ang = Math.atan2(xAt(y + 6) - xAt(y - 6), 12);
+    p.el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + (y - window.scrollY).toFixed(1) + 'px,0) rotate(' +
+      (-ang).toFixed(3) + 'rad) scale(' + (scale / Math.sqrt(stretch)).toFixed(3) + ',' + (scale * Math.sqrt(stretch)).toFixed(3) + ')';
     p.el.style.opacity = alpha.toFixed(3);
   }
 
@@ -943,15 +949,18 @@
     if (Math.abs(target - cur) < 0.4) cur = target;
 
     var b = lift(cur);
-    place(head, cur, 1 + 0.18 * b, 0.6 + 0.4 * b);
-    var step = vh * 0.085;
+    place(head, cur, 0.9 + 0.16 * b, 0.78 + 0.22 * b, 1.25);
+    var step = vh * 0.05;
     for (var i = 0; i < parts.length; i++) {
-      var p = parts[i], y = cur + p.k * step;
-      var fall = p.k < 0 ? Math.exp(-Math.pow(p.k / 5.5, 2)) : 0.7 * Math.exp(-Math.pow(p.k / 2.6, 2));
+      var p = parts[i], n = Math.abs(p.k), y = cur + p.k * step;
+      // The tail tapers in size and fades evenly to its tip; the lead is
+      // a short, faint glance ahead.
+      var fall = p.k < 0 ? 0.95 * (1 - n / (BACK + 1)) : 0.5 * (1 - n / (AHEAD + 1));
       // Above the pool the trail would only retrace the beam it fell
       // down, so it fades into the wash instead.
       if (y < landY) fall *= clamp(1 - (landY - y) / (vh * 0.12), 0, 1);
-      place(p, y, 0.9 - Math.abs(p.k) * 0.035, fall * (0.55 + 0.25 * lift(y)));
+      var size = p.k < 0 ? 0.62 - n * 0.026 : 0.55 - n * 0.06;
+      place(p, y, size, fall * (0.7 + 0.3 * lift(y)), 2.2);
     }
     if (cur !== target) raf = requestAnimationFrame(frame);
   }
