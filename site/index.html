@@ -38,7 +38,7 @@
 -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A1410'/%3E%3Cg fill='none' stroke='%233FBE8B' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M50 84V40'/%3E%3Cpath d='M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z'/%3E%3Cpath d='M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="img/touch-icon.png">
-<link rel="stylesheet" href="site.css?v=18">
+<link rel="stylesheet" href="site.css?v=20">
 <!-- The hero's wash pours down from the ceiling on arrival, so it is held
      back before the first paint rather than shown and then hidden, which
      would flash. Not under reduced motion, and never for good: if the
@@ -155,7 +155,7 @@
       <div class="script">evergreen</div>
     </div>
     <h1>Most plant apps ask how often you want reminding. <em>This one works it out.</em></h1>
-    <p class="lead">Care schedules built from real data, the pot it is actually in,
+    <p class="lead">Plant care schedules built from real data — the pot it is in,
     how bright your rooms are, and the weather where you actually live.</p>
     <div class="cta">
       <div class="stores">
@@ -206,17 +206,17 @@
 <section class="feature" id="how">
   <div class="wrap feature-in">
     <div class="feature-copy">
-      <p class="eyebrow">Every morning</p>
+      <p class="eyebrow">Reminders, when needed</p>
       <h2>A list that is short because it is right.</h2>
       <p>A Monstera in a 24cm terracotta pot by a north window is not on the same cycle as one in
       plastic in a dim corner. Sprout adjusts for pot size and material, drainage, room light,
       window aspect and season, so the list you get is the list that is actually due.</p>
       <p>Set a location and it reads the forecast too. Before a hot dry spell it offers to bring
-      watering forward; before a wet week it offers to hold off. <strong>You approve every
-      change.</strong></p>
+      watering forward; before a wet week it offers to hold off.
+      <span class="script-word">You approve every change.</span></p>
       <blockquote class="quote">
-        <p>Four plants are ready for a drink. Nothing dramatic.</p>
-        <cite>What a morning actually says</cite>
+        <p>“Four plants are ready for a drink. Nothing dramatic.”</p>
+        <cite>— Sprout</cite>
       </blockquote>
     </div>
     <figure class="phone glow-leaf">
@@ -1220,7 +1220,7 @@
      phone measured. So it takes the larger of the two rooms it could have —
      the gutter right of the copy, or the band below the buttons — keeps
      clear of the scroll cue, and then takes
-     four fifths of that, so it reads as leaning into the corner rather than
+     about two thirds of that, so it reads as leaning into the corner rather than
      filling it. Below 80px it is a sliver, and on a short screen the hero
      is no longer a screenful to sit in, so it stays hidden. -->
 <script>
@@ -1233,7 +1233,7 @@
   var cue = document.getElementById("hero-scroll");
   if (!hero || !img || !lead || !cta) return;
 
-  var ASPECT = 557 / 720, CAP = 360, SCALE = 0.8, MIN = 80, GAP = 16, ticking = false;
+  var ASPECT = 557 / 720, CAP = 360, SCALE = 0.68, MIN = 80, GAP = 16, ticking = false;
 
   function size() {
     ticking = false;
