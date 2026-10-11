@@ -243,6 +243,12 @@ h1,h2,h3{ font-family:var(--display); font-weight:200; text-wrap:balance; margin
 /* Cormorant's lowercase is small for its size, so 18px read nearer 15.
    20 at desktop, with a shorter measure, is what it takes to read easily. */
 p{ margin:0 0 1em; max-width:58ch; color:var(--ink-2); font-size:clamp(18px,1.3vw,20px); }
+/* Two paragraph styles and one rule between them. The lead is for the
+   hero's sentence under the headline, and the closing ask; every
+   paragraph in a section is the body style, however many there are. A
+   section's single paragraph set as a lead while its neighbour's two were
+   body read as random, because the rule was about the markup, not about
+   anything the reader can see. */
 p.lead{ font-size:clamp(20px,2.2vw,24px); color:var(--ink); }
 strong{ color:var(--ink); font-weight:400; }
 
