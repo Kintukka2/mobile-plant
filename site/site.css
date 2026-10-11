@@ -179,6 +179,22 @@ body{ background:var(--field); color:var(--ink); font-family:var(--serif);
   box-shadow:0 0 16px 1px color-mix(in srgb, var(--sun) 25%, transparent),
              0 0 70px 8px color-mix(in srgb, var(--leaf) 21%, transparent),
              0 50px 90px -50px rgba(0,0,0,.9); }
+/* Once lit, the glow breathes: a little brighter and a little wider and
+   back, slowly. It waits out the 0.9s the light takes to come up, so the
+   pulse begins from the lit state rather than cutting across the fade. */
+.phone img.is-lit{ animation:lit-pulse-phone 3.2s ease-in-out .9s infinite alternate; }
+.film-thumb.is-lit, .sp-block.is-lit{ animation:lit-pulse-box 3.2s ease-in-out .9s infinite alternate; }
+@keyframes lit-pulse-phone{
+  to{ box-shadow:0 0 0 1px color-mix(in srgb, var(--sun) 76%, transparent),
+                 0 0 22px 2px color-mix(in srgb, var(--sun) 38%, transparent),
+                 0 0 90px 12px color-mix(in srgb, var(--leaf) 31%, transparent),
+                 0 50px 90px -40px rgba(0,0,0,.9); } }
+@keyframes lit-pulse-box{
+  to{ border-color:color-mix(in srgb, var(--sun) 70%, transparent);
+      box-shadow:0 0 22px 2px color-mix(in srgb, var(--sun) 32%, transparent),
+                 0 0 90px 12px color-mix(in srgb, var(--leaf) 27%, transparent),
+                 0 50px 90px -50px rgba(0,0,0,.9); } }
+
 /* The search is lit with the list, a little less: it is the way in. */
 .sp-input.is-lit:not(:focus):placeholder-shown{
   border-color:color-mix(in srgb, var(--sun) 48%, transparent);
