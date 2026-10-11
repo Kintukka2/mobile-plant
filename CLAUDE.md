@@ -116,9 +116,19 @@ garden that lived on this origin before the web app was retired:
 Adding a plant there takes a species and nothing else, through
 `ViewGreenhouse.speciesPicker`, and opening a plant's page opens the
 keep-it sheet instead: plant pages are the app. The file is shaped like a
-backup, so Restore in the app opens it today, replacing what the app holds.
-An "Import a home plan" that merges is the planned next step, and the sheet
-says so. The rule in `_headers` that matters is the
+backup, and the app opens it two ways. **Import a home plan** (Settings,
+and the empty plan's "or import one you drew on the web") merges it:
+`Store.previewPlan()` says what will change and `Store.importPlan()` does
+it. The imported drawing replaces the plan; a room already here with the
+same name takes the new outline and keeps its id, plants, notes and icon;
+an unmatched drawn room keeps everything but its outline; every plant
+already here loses its spot, since a spot is a position in the old drawing.
+The file's plants come in only when the reader ticks the box, which starts
+off whenever the garden already has plants. The hemisphere is taken only
+if this garden has none. Profile, settings and the diary are never touched,
+and a store too full for the result is put back as it was. Restore still
+opens the file too, replacing everything, which is how a phone on 1.4 or
+earlier gets it in, and the planner's sheet names both. The rule in `_headers` that matters is the
 no-cache one on `sw.js`: bumping `CACHE` does nothing
 if the CDN is still handing out the old `sw.js` that names the old cache.
 

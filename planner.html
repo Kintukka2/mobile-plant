@@ -212,7 +212,7 @@
        origin, and on this one those belong to the retired web app's
        garden, not to anything drawn here. The planner never makes a photo,
        so its file has none. The shape is the app's backup, which is what
-       its Restore reads. */
+       its Import a home plan and its Restore both read. */
     var json = JSON.stringify({ state: Store.get(), photos: {}, exportedAt: new Date().toISOString(), from: 'planner' }, null, 2);
     var blob = new Blob([json], { type: 'application/json' });
     var url = URL.createObjectURL(blob);
@@ -232,13 +232,14 @@
       ? 'Watering, feeding and what to do when a leaf turns are in the app, worked out for where ' +
         UI.esc(Store.displayName(plant)) + ' stands. Take your plan with you and it\'ll arrive in place.'
       : n
-        ? 'I\'m keeping your ' + UI.esc(UI.plural(n, 'room')) + ' in this browser, so this device will find them here again. To take them into the app, download the plan.'
+        ? 'I\'m keeping your ' + UI.esc(UI.plural(n, 'room')) + ' in this browser, so this device will find ' + (n === 1 ? 'it' : 'them') +
+          ' here again. To take ' + (n === 1 ? 'it' : 'them') + ' into the app, download the plan.'
         : 'Draw a room or two first. This is the file the app opens, so it carries only what\'s on the plan.';
     var body =
       '<p class="pv-lede">' + lede + '</p>' +
       '<ol class="pv-steps">' +
         '<li><span>Get <b>Sprout</b>. It\'s free on Android, and coming to iPhone soon.</span></li>' +
-        '<li><span>In the app, open <b>Profile</b>, then <b>Settings</b>, and tap <b>Restore</b>.</span></li>' +
+        '<li><span>In the app, open <b>Profile</b>, then <b>Settings</b>, and tap <b>Import a home plan</b>.</span></li>' +
         '<li><span>Choose the file you downloaded. Your rooms, windows and plants arrive as you drew them.</span></li>' +
       '</ol>' +
       '<div class="pv-stores">' +
@@ -248,7 +249,10 @@
           '<img src="site/img/google-play.png" width="564" height="168" alt="Get it on Google Play"></a>' +
         '<span class="pv-soon" aria-label="App Store, coming soon"><small>Coming soon</small><span>App Store</span></span>' +
       '</div>' +
-      '<p class="hint">Restore replaces whatever the app is holding, so it\'s for a new install. An update that adds a plan to a garden you already have is on its way.</p>' +
+      /* Both routes, because this page is live the moment it merges and a
+         phone may be a version behind: Import a home plan arrived in 1.5,
+         and before that Restore opened the same file, replacing everything. */
+      '<p class="hint">Plants and a diary already in the app stay as they are. On a version of Sprout without the button, Restore opens the file too, but it\'s only for a new install: it replaces what the app holds.</p>' +
       // A link, not a button: openSheet() focuses the body's first button,
       // and the one action here that throws work away should not be it.
       (n ? '<a class="link-btn pv-again" id="pv-again" href="#" role="button">Start again with a blank plan</a>' : '') +
