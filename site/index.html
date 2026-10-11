@@ -38,7 +38,7 @@
 -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A1410'/%3E%3Cg fill='none' stroke='%233FBE8B' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M50 84V40'/%3E%3Cpath d='M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z'/%3E%3Cpath d='M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="img/touch-icon.png">
-<link rel="stylesheet" href="site.css?v=7">
+<link rel="stylesheet" href="site.css?v=8">
 <!-- The hero's wash pours down from the ceiling on arrival, so it is held
      back before the first paint rather than shown and then hidden, which
      would flash. Not under reduced motion, and never for good: if the
@@ -873,6 +873,8 @@
   for (var k = BACK; k >= 1; k--) parts.push(blob(-k, 't'));
   for (k = AHEAD; k >= 1; k--) parts.push(blob(k, 't'));
   head = blob(0, '');
+  // Where the head was last drawn, on screen, for the specks born near it.
+  var headAt = null;
 
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
 
@@ -950,6 +952,7 @@
 
     var b = lift(cur);
     place(head, cur, 0.9 + 0.16 * b, 0.78 + 0.22 * b, 1.25);
+    headAt = { x: xAt(cur), y: cur - window.scrollY };
     var step = vh * 0.05;
     for (var i = 0; i < parts.length; i++) {
       var p = parts[i], n = Math.abs(p.k), y = cur + p.k * step;
@@ -975,6 +978,54 @@
   var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
   fonts.then(remeasure);
   measure();
+
+  /* The specks. Each one is a CSS animation from start to end; all the
+     script does is choose where and how when it is born, and again each
+     time it ends. Half are born in and around the light, so the dust is
+     where the light is, and half anywhere on screen. They live in the same
+     fixed layer, so they stay with the reader as the page moves under
+     them. */
+  var MOTES = window.innerWidth < 700 ? 6 : 10;
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+  function seed(m, first) {
+    var w = window.innerWidth, h = window.innerHeight, x, y;
+    if (headAt && Math.random() < 0.5) {
+      x = headAt.x + rnd(-0.22, 0.22) * w;
+      y = headAt.y + rnd(-0.45, 0.2) * h;
+    } else {
+      x = rnd(0.04, 0.96) * w;
+      y = rnd(0.05, 0.95) * h;
+    }
+    // Mostly falling, a little sideways, and bent: the middle of the
+    // drift is pushed off the straight line, so the path is a curve.
+    var dx = rnd(-70, 70), dy = rnd(40, 150), bend = rnd(-30, 30);
+    var ang = Math.atan2(dx, dy) * 180 / Math.PI;
+    var st = m.style;
+    st.setProperty('--x0', x.toFixed(0) + 'px');
+    st.setProperty('--y0', y.toFixed(0) + 'px');
+    st.setProperty('--x1', (x + dx / 2 + bend).toFixed(0) + 'px');
+    st.setProperty('--y1', (y + dy / 2).toFixed(0) + 'px');
+    st.setProperty('--x2', (x + dx).toFixed(0) + 'px');
+    st.setProperty('--y2', (y + dy).toFixed(0) + 'px');
+    st.setProperty('--r0', (-ang - bend * 0.4).toFixed(1) + 'deg');
+    st.setProperty('--r1', (-ang).toFixed(1) + 'deg');
+    st.setProperty('--r2', (-ang + bend * 0.4).toFixed(1) + 'deg');
+    st.setProperty('--mh', rnd(8, 26).toFixed(0) + 'px');
+    st.setProperty('--mw', (Math.random() < 0.3 ? 1.5 : 1) + 'px');
+    st.setProperty('--mo', rnd(0.35, 0.85).toFixed(2));
+    st.setProperty('--mc', Math.random() < 0.25 ? '#B8E6CF' : '#F2DFA6');
+    st.setProperty('--md', rnd(5, 11).toFixed(1) + 's');
+    // A pause before each appearance, longer than the drift itself at
+    // times, so they come and go rather than cycle.
+    m.classList.remove('go');
+    setTimeout(function () { void m.offsetWidth; m.classList.add('go'); }, (first ? rnd(0, 6000) : rnd(800, 7000)));
+  }
+  for (var j = 0; j < MOTES; j++) {
+    var m = document.createElement('b');
+    lumen.appendChild(m);
+    m.addEventListener('animationend', function (e) { seed(e.currentTarget, false); });
+    seed(m, true);
+  }
 
   /* The fall. It plays on every arrival at the top, after the splash when
      there is one. Arriving part-way down (a link to #faq, a restored

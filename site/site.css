@@ -163,6 +163,26 @@ body{ background:var(--field); color:var(--ink); font-family:var(--serif);
     color-mix(in srgb, var(--sun) 14%, transparent) 40%,
     color-mix(in srgb, var(--leaf) 6%, transparent) 70%, transparent);
   will-change:transform, opacity; }
+/* Dust in the light. Hair-thin streaks that fade up, drift along a slight
+   curve the way the light falls, and fade out, each somewhere new after a
+   pause of its own, so there are never many and never a rhythm to them.
+   Every value is set per speck by the script before each run; the
+   animation itself does all the moving, so a speck costs nothing between
+   its births. */
+.lumen b{ position:absolute; left:0; top:0; width:var(--mw, 1px); height:var(--mh, 16px);
+  margin:calc(var(--mh, 16px) / -2) 0 0 calc(var(--mw, 1px) / -2); border-radius:1px; opacity:0;
+  background:linear-gradient(to bottom, transparent,
+    color-mix(in srgb, var(--mc, #F2DFA6) 95%, transparent) 50%, transparent);
+  will-change:transform, opacity; }
+.lumen b.go{ animation:mote var(--md, 8s) cubic-bezier(.45,.05,.55,.95) both; }
+@keyframes mote{
+  0%  { opacity:0; transform:translate3d(var(--x0), var(--y0), 0) rotate(var(--r0)); }
+  22% { opacity:var(--mo, .6); }
+  50% { transform:translate3d(var(--x1), var(--y1), 0) rotate(var(--r1)); }
+  78% { opacity:var(--mo, .6); }
+  100%{ opacity:0; transform:translate3d(var(--x2), var(--y2), 0) rotate(var(--r2)); }
+}
+
 /* The trail is greener than the head: the sun where the light is, the
    room's own colour where it has been. Its pieces are smaller and drawn
    long along the path, so together they read as a tail behind the light
