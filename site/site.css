@@ -233,7 +233,14 @@ body{ background:var(--field); color:var(--ink); font-family:var(--serif);
 section{ padding-block:clamp(84px,11vw,150px); }
 /* The bar is fixed, so a #link lands its section below it, not under it. */
 section[id]{ scroll-margin-top:var(--sb-h); }
-.band{ background:var(--well); border-block:1px solid var(--hair); }
+/* The deeper ground comes in and goes out over the section's own padding
+   rather than at a ruled edge. Once the light began crossing the page, a
+   hairline and a step in the ground at every other section read as seams
+   between separate pages; feathered, the page is one floor that darkens
+   and lifts again, and the content still sits wholly on the deeper ground. */
+.band{ --feather:clamp(84px,11vw,150px);
+  background:linear-gradient(to bottom, transparent, var(--well) var(--feather),
+             var(--well) calc(100% - var(--feather)), transparent); }
 
 /* Display face: 200 at 28px and up, 500 below. Hatton ships two weights and
    the size picks between them, standing in for an optical size axis. */
@@ -272,8 +279,16 @@ strong{ color:var(--ink); font-weight:400; }
      from the ceiling rather than be there already. At rest, and wherever
      @property or script is missing, --drop is past the bottom and the
      whole wash shows, exactly as it did before it moved. */
-  -webkit-mask-image:linear-gradient(to bottom, #000 calc(var(--drop) - 22%), transparent var(--drop));
-          mask-image:linear-gradient(to bottom, #000 calc(var(--drop) - 22%), transparent var(--drop));
+  /* The second layer fades the wash out before the hero's foot: it reaches
+     a fifth of the hero past the bottom, and clipped there by the hero's
+     overflow it ended in a ruled line across the page. The hero's bottom
+     is 86.7% down this box (it starts 30% above and is 150% tall). */
+  -webkit-mask-image:linear-gradient(to bottom, #000 calc(var(--drop) - 22%), transparent var(--drop)),
+                     linear-gradient(to bottom, #000 62%, transparent 86%);
+  -webkit-mask-composite:source-in;
+          mask-image:linear-gradient(to bottom, #000 calc(var(--drop) - 22%), transparent var(--drop)),
+                     linear-gradient(to bottom, #000 62%, transparent 86%);
+          mask-composite:intersect;
   pointer-events:none; }
 @property --drop{ syntax:'<percentage>'; inherits:false; initial-value:140%; }
 .hero::before{ --drop:140%; }
@@ -288,7 +303,12 @@ html.beam-go .hero::before{ animation:beam-drop 2.1s cubic-bezier(.5,0,.2,1) bot
    from 400px of gutter to a band under the buttons; see the note beside the
    script. Above the sun wash, under nothing that takes a click. */
 .hero > .hero-sprout{ position:absolute; right:0; bottom:0; height:var(--sprout-h,0px); width:auto;
-  transform:scaleX(-1); pointer-events:none; user-select:none; }
+  transform:scaleX(-1); pointer-events:none; user-select:none;
+  /* The crop used to land on the hero's ruled foot. With that edge
+     feathered away it would stop dead in the middle of the page once
+     scrolled, so the cut fades into the floor instead. */
+  -webkit-mask-image:linear-gradient(to bottom, #000 72%, transparent);
+          mask-image:linear-gradient(to bottom, #000 72%, transparent); }
 .hero > .hero-sprout[hidden]{ display:none; }
 /* The lockup, sized off one variable so the mark cannot drift from the
    wordmark at any viewport.
