@@ -226,8 +226,13 @@ window.ViewPlan = (function () {
         /* A third of the way along and just inside, clear of the side's
            number outside and the add-a-corner dot at its middle. */
         const qx = (e.a.x + e.dx * 0.3 - e.nx * 0.6) * P, qy = (e.a.y + e.dy * 0.3 - e.ny * 0.6) * P;
-        h += '<g data-win-help="1" style="cursor:pointer"><circle class="plan-win-q" cx="' + qx + '" cy="' + qy + '" r="8"/>' +
-          '<text class="plan-badge" x="' + qx + '" y="' + (qy + 3) + '" text-anchor="middle" style="fill:var(--bg-1)">?</text></g>';
+        /* Drawn like the compass's "Set north" tag, since that is what it
+           is waiting for: a gold hairline ring on the stage's own dark, a
+           soft gold halo, and a serif question mark. */
+        h += '<g data-win-help="1" class="plan-win-q" style="cursor:pointer">' +
+          '<circle class="plan-win-q-halo" cx="' + qx + '" cy="' + qy + '" r="10.5"/>' +
+          '<circle class="plan-win-q-ring" cx="' + qx + '" cy="' + qy + '" r="7.5"/>' +
+          '<text class="plan-win-q-t" x="' + qx + '" y="' + (qy + 3.6) + '" text-anchor="middle">?</text></g>';
       });
     });
 
@@ -862,6 +867,9 @@ window.ViewPlan = (function () {
     /* The first instruction is drawn on the grid by the coach below, so the
        notice only speaks once a corner is down. */
     if (drawing && drawing.pts.length) { n.textContent = 'Tap the next corner. Tap the first one again to close the room.'; n.className = 'plan-notice'; n.hidden = false; }
+    /* With the coach switched off, the one line under the grid is all the
+       guidance left, and it is enough for someone who has done this before. */
+    else if (drawing && Store.get().settings.dragCoachOff) { n.textContent = 'Drag out a room, or tap each corner.'; n.className = 'plan-notice'; n.hidden = false; }
     /* No sentence for an unset north: the compass asks for it itself. */
     else if (tool === 'backdrop') { n.textContent = 'Drag to move the floorplan under the grid.'; n.className = 'plan-notice'; n.hidden = false; }
     else n.hidden = true;
@@ -887,7 +895,7 @@ window.ViewPlan = (function () {
        the first touch, and pointer-events: none lets that touch through. */
     const coaching = mode === 'plan' && drawing && !drawing.pts.length && !(drag && drag.kind === 'draw');
     const picking = coaching && !drawing.picked && !drawing.forRoomId && !list.length && !plan().backdrop;
-    root.querySelector('#pl-coach').hidden = !coaching;
+    root.querySelector('#pl-coach').hidden = !coaching || (!picking && !!Store.get().settings.dragCoachOff);
     root.querySelector('#pl-coach-pick').hidden = !picking;
     root.querySelector('#pl-coach-drag').hidden = picking;
     const addRoom = root.querySelector('#pl-add-room');
@@ -1139,6 +1147,7 @@ window.ViewPlan = (function () {
               '<div class="plan-coach-demo" aria-hidden="true"><span class="plan-coach-box"></span><span class="plan-coach-dot"></span></div>' +
               '<div class="plan-coach-t">Drag out a room</div>' +
               '<p class="plan-coach-s">Or tap each corner, and I\'ll join them up.</p>' +
+              '<button class="plan-coach-off" id="pl-coach-off">Don\'t show this again</button>' +
             '</div>' +
           '</div>' +
           '<div class="plan-invite" id="pl-invite" hidden>' +
@@ -1239,6 +1248,7 @@ window.ViewPlan = (function () {
       if (e.target.closest('#pl-trace')) { startTracing(); return; }
       if (e.target.closest('#pl-coach-load')) { pickBackdrop(); return; }
       if (e.target.closest('#pl-coach-self')) { if (drawing) drawing.picked = true; syncOverlays(); return; }
+      if (e.target.closest('#pl-coach-off')) { Store.updateSettings({ dragCoachOff: true }); syncOverlays(); return; }
     });
 
     /* ---- Canvas: wheel, pinch, pan, drag ---- */
