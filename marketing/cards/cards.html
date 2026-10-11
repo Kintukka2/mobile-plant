@@ -1,0 +1,618 @@
+<title>Sprout Pocket Cards</title>
+<style>
+/* Layout: one lit stage holding the live card (tilt, foil, flip), then every
+   hook laid flat front-and-back like a proof sheet, then the printer's ticket.
+   Single dark world on purpose: the cards are Viridium, so the page is too. */
+:root {
+  --bg-0: #050A08;
+  --bg-1: #0A1410;
+  --bg-2: #0E1B15;
+  --emerald-deep: #0F3A29;
+  --emerald: #1F6B4C;
+  --emerald-lit: #2F9A70;
+  --glow: #3FBE8B;
+  --mint: #9FD3BE;
+  --mint-2: #C9E7D9;
+  --ink: #F3F6F1;
+  --ink-2: rgba(228, 240, 232, 0.74);
+  --ink-3: rgba(206, 226, 214, 0.62);
+  --hair: rgba(214, 237, 226, 0.12);
+  --hair-2: rgba(214, 237, 226, 0.2);
+  --gold: #C8A96B;
+  --gold-lit: #DFC58F;
+  --qr-plate: #DCEFE5;
+  --qr-ink: #08140F;
+
+  --display: 'PP Hatton', 'Cormorant Garamond', Didot, 'Times New Roman', serif;
+  --serif: 'Cormorant Garamond', Didot, Georgia, 'Times New Roman', serif;
+  --sans: 'Jost', 'Futura', 'Century Gothic', system-ui, sans-serif;
+  --script: 'Sacramento', 'Segoe Script', cursive;
+
+  color-scheme: dark;
+}
+
+@font-face { font-family: 'PP Hatton'; src: url(data:font/woff2;base64,{{HATTON200}}) format('woff2'); font-weight: 200; font-display: block; }
+@font-face { font-family: 'PP Hatton'; src: url(data:font/woff2;base64,{{HATTON500}}) format('woff2'); font-weight: 500; font-display: block; }
+@font-face { font-family: 'Cormorant Garamond'; src: url(data:font/woff2;base64,{{CORM}}) format('woff2'); font-weight: 300 400; font-style: normal; font-display: block; }
+@font-face { font-family: 'Cormorant Garamond'; src: url(data:font/woff2;base64,{{CORMI}}) format('woff2'); font-weight: 300 400; font-style: italic; font-display: block; }
+@font-face { font-family: 'Sacramento'; src: url(data:font/woff2;base64,{{SACR}}) format('woff2'); font-weight: 400; font-display: block; }
+@font-face { font-family: 'Jost'; src: url(data:font/woff2;base64,{{JOST}}) format('woff2'); font-weight: 300 600; font-display: block; }
+
+* { box-sizing: border-box; }
+html { background: var(--bg-0); }
+body {
+  margin: 0;
+  background:
+    radial-gradient(1100px 620px at 50% 330px, rgba(47, 154, 112, 0.16), transparent 70%),
+    var(--bg-0);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.6;
+  padding-inline: 20px;
+  padding-block: 0 72px;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+.wrap { max-width: 1080px; margin: 0 auto; }
+
+/* ---------- Masthead ---------- */
+.mast {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding-block: 26px 0; flex-wrap: wrap;
+}
+.lockup { display: flex; align-items: center; gap: 12px; color: var(--ink); }
+.lockup svg { width: 26px; height: 26px; color: var(--glow); }
+.lockup b {
+  font-family: var(--display); font-weight: 500; font-size: 17px;
+  letter-spacing: .2em; text-indent: .2em; text-transform: uppercase;
+}
+.eyebrow {
+  font-family: var(--sans); font-weight: 500; font-size: 11px;
+  letter-spacing: .22em; text-transform: uppercase; color: var(--ink-3);
+}
+.intro { padding-block: 44px 8px; max-width: 760px; }
+.intro h1 {
+  font-family: var(--display); font-weight: 200;
+  font-size: clamp(38px, 7vw, 72px); line-height: 1.02;
+  letter-spacing: .01em; text-transform: uppercase; margin: 0 0 18px;
+  text-wrap: balance;
+}
+.intro h1 em {
+  font-family: var(--serif); font-style: italic; font-weight: 300;
+  text-transform: none; color: var(--mint); letter-spacing: 0;
+}
+.intro p {
+  font-family: var(--serif); font-size: 21px; line-height: 1.45;
+  color: var(--ink-2); margin: 0; max-width: 62ch;
+}
+
+/* ---------- Stage ---------- */
+.stage {
+  display: grid; justify-items: center; gap: 28px;
+  padding-block: 56px 24px;
+}
+.live {
+  width: min(660px, 100%);
+  perspective: 1800px;
+  cursor: pointer;
+  border: 0; padding: 0; background: none; color: inherit; font: inherit;
+  display: block; border-radius: 14px; text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+.live:focus-visible { outline: 2px solid var(--glow); outline-offset: 10px; }
+.tilt {
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform .5s cubic-bezier(.16, 1, .3, 1);
+}
+.flip {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform .9s cubic-bezier(.16, 1, .3, 1);
+}
+.live.is-over .flip { transform: rotateY(180deg); }
+.live .face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.live .back { transform: rotateY(180deg); }
+.live .card { transform-style: preserve-3d; }
+.live .face {
+  box-shadow:
+    inset 0 0 0 calc(var(--mm) * .18) rgba(223, 197, 143, .28),
+    inset 0 calc(var(--mm) * .3) 0 rgba(255, 255, 255, .06),
+    0 40px 60px rgba(0, 0, 0, .5), 0 8px 14px rgba(0, 0, 0, .3);
+}
+
+.controls { display: grid; justify-items: center; gap: 16px; width: 100%; }
+.hooks { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.hooks button {
+  font-family: var(--sans); font-size: 13px; font-weight: 400; letter-spacing: .02em;
+  color: var(--ink-2); background: rgba(255, 255, 255, .03);
+  border: 1px solid var(--hair-2); border-radius: 999px;
+  padding: 8px 16px; cursor: pointer;
+  transition: color .3s, background .3s, border-color .3s;
+}
+.hooks button:hover { color: var(--ink); border-color: rgba(214, 237, 226, .34); }
+.hooks button[aria-pressed="true"] {
+  color: var(--bg-1); background: var(--mint-2); border-color: var(--mint-2);
+}
+.hooks button:focus-visible, .turn:focus-visible { outline: 2px solid var(--glow); outline-offset: 3px; }
+.turn {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--sans); font-weight: 500; font-size: 11.5px;
+  letter-spacing: .22em; text-transform: uppercase;
+  color: var(--gold-lit); background: none;
+  border: 1px solid rgba(200, 169, 107, .45); border-radius: 4px;
+  padding: 11px 20px; cursor: pointer; transition: background .3s, color .3s;
+}
+.turn:hover { background: rgba(200, 169, 107, .12); }
+.turn svg { width: 16px; height: 16px; }
+.hint { font-size: 12.5px; color: var(--ink-3); margin: 0; }
+
+/* ---------- Section heads ---------- */
+.sec { padding-block: 72px 0; }
+.sec-head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+  flex-wrap: wrap; border-top: 1px solid var(--hair); padding-top: 22px; margin-bottom: 30px;
+}
+.sec-head h2 {
+  font-family: var(--display); font-weight: 500; font-size: 15px;
+  letter-spacing: .2em; text-transform: uppercase; margin: 0;
+}
+
+/* ---------- Proof sheet ---------- */
+.sheet { display: grid; gap: 40px; }
+.pair { display: grid; gap: 12px; }
+.pair-lab { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+.pair-lab b {
+  font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 21px; color: var(--ink);
+}
+.pair-lab span { font-size: 12.5px; color: var(--ink-3); }
+.pair-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.pair-cards > figure { margin: 0; display: grid; gap: 8px; min-width: 0; }
+.pair-cards figcaption { font-size: 10.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-3); }
+.pair .card { filter: drop-shadow(0 14px 20px rgba(0, 0, 0, .5)); }
+@media (max-width: 640px) { .pair-cards { grid-template-columns: 1fr; } }
+
+/* ---------- Ticket ---------- */
+.ticket {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  border: 1px solid var(--hair-2); border-radius: 6px; overflow: hidden;
+  background: rgba(255, 255, 255, .02);
+}
+.ticket div { padding: 18px 20px 20px; border-right: 1px solid var(--hair); border-bottom: 1px solid var(--hair); min-width: 0; }
+.ticket dt { font-size: 10.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold-lit); margin-bottom: 6px; }
+.ticket dd { margin: 0; font-family: var(--serif); font-size: 18px; line-height: 1.4; color: var(--ink); }
+.ticket dd small { display: block; font-family: var(--sans); font-size: 12.5px; line-height: 1.55; color: var(--ink-3); margin-top: 6px; }
+.num { font-variant-numeric: tabular-nums lining-nums; }
+
+/* ==========================================================================
+   The card. Everything inside is set in millimetres of a 90 × 55 trim:
+   --mm is one millimetre of card at whatever size it is drawn, so the live
+   card and the proof-sheet copies are the same artwork at two scales.
+   ========================================================================== */
+.card { position: relative; aspect-ratio: 90 / 55; container-type: inline-size; max-width: 100%; }
+.face {
+  --mm: calc(100cqi / 90);
+  position: absolute; inset: 0; overflow: hidden;
+  border-radius: calc(var(--mm) * 2.2);
+  background:
+    radial-gradient(calc(var(--mm) * 70) calc(var(--mm) * 52) at 18% 12%, rgba(63, 190, 139, .30), transparent 70%),
+    radial-gradient(calc(var(--mm) * 80) calc(var(--mm) * 60) at 96% 108%, rgba(5, 10, 8, .75), transparent 70%),
+    linear-gradient(155deg, #17573D 0%, var(--emerald-deep) 46%, #0B2B1F 100%);
+  box-shadow:
+    inset 0 0 0 calc(var(--mm) * .18) rgba(223, 197, 143, .28),
+    inset 0 calc(var(--mm) * .3) 0 rgba(255, 255, 255, .06);
+  color: var(--ink);
+}
+.back {
+  background:
+    radial-gradient(calc(var(--mm) * 60) calc(var(--mm) * 50) at 88% 92%, rgba(63, 190, 139, .30), transparent 70%),
+    radial-gradient(calc(var(--mm) * 70) calc(var(--mm) * 50) at 0% 0%, rgba(5, 10, 8, .6), transparent 70%),
+    linear-gradient(205deg, #155037 0%, var(--emerald-deep) 50%, #0B2B1F 100%);
+}
+/* Soft-touch laminate is not flat colour on screen; a little tooth stops the
+   green reading as a UI panel. */
+.face::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: .07; mix-blend-mode: overlay;
+}
+.sheen {
+  position: absolute; inset: 0; pointer-events: none; z-index: 5;
+  background: radial-gradient(calc(var(--mm) * 60) calc(var(--mm) * 40) at var(--px, 30%) var(--py, 20%), rgba(255, 255, 255, .10), transparent 70%);
+  mix-blend-mode: screen; opacity: 0; transition: opacity .5s;
+}
+.live:hover .sheen, .live.is-tilting .sheen { opacity: 1; }
+
+/* --- Front --- */
+.hook {
+  position: absolute; inset: calc(var(--mm) * 5); margin: 0;
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  font-family: var(--display); font-weight: 200;
+  font-size: calc(var(--mm) * 6.3); line-height: 1.08;
+  letter-spacing: .015em; text-transform: uppercase; color: var(--ink);
+}
+/* Hatton 200, chosen over 500 for the hook. The hairlines are what make the
+   ultralight beautiful and what fails first on press, so it is set a size up
+   from the medium's 5.5 mm to give them room. Proof it on the real stock. */
+.hook em {
+  font-family: var(--serif); font-style: italic; font-weight: 300;
+  font-size: 1.42em; line-height: .8; letter-spacing: 0;
+  text-transform: none; color: var(--mint-2);
+}
+.hook .q {
+  font-family: var(--serif); font-style: italic; font-weight: 300;
+  font-size: 1.42em; line-height: .8; color: var(--gold-lit); margin-left: .04em;
+}
+
+/* --- Back --- */
+/* The mark is the front's only signature, blind debossed: no ink, just the
+   press. The back carries a larger deboss of the same mark. */
+.corner {
+  position: absolute; left: calc(var(--mm) * 6); top: calc(var(--mm) * 5.5); z-index: 2;
+  width: calc(var(--mm) * 7.5); height: calc(var(--mm) * 7.5); color: var(--glow);
+}
+.answer {
+  margin: 0; max-width: calc(var(--mm) * 42); font-family: var(--serif); font-weight: 400;
+  font-size: calc(var(--mm) * 5); line-height: 1.02; letter-spacing: -.005em;
+  text-wrap: balance; color: var(--ink);
+}
+.answer em { font-style: italic; font-weight: 300; color: var(--mint-2); }
+.qr {
+  position: absolute; z-index: 2;
+  right: calc(var(--mm) * 6.5); top: 50%; transform: translateY(-50%);
+  display: grid; justify-items: center; gap: calc(var(--mm) * 1.3);
+}
+.qr .plate {
+  width: calc(var(--mm) * 19); height: calc(var(--mm) * 19);
+  padding: calc(var(--mm) * 1.5); border-radius: calc(var(--mm) * 1.6);
+  background: var(--qr-plate);
+  box-shadow: 0 calc(var(--mm) * .6) calc(var(--mm) * 1.6) rgba(0, 0, 0, .35);
+}
+.qr .plate > svg { display: block; width: 100%; height: 100%; }
+/* ---------- Back ----------
+   Two rows meeting on the card's centre line: the answer sits above it, the
+   gold line starts on it, so the arrow lands on the middle of the QR. */
+.colB {
+  position: absolute; left: calc(var(--mm) * 6); top: calc(var(--mm) * 8); bottom: calc(var(--mm) * 8);
+  width: calc(var(--mm) * 50);
+  display: grid; grid-template-rows: 1fr 1fr;
+}
+.colB .answer { align-self: end; padding-bottom: calc(var(--mm) * 3.4); }
+/* 7pt, the smallest a foil block holds on tracked caps. */
+.ctaB {
+  align-self: start; margin: calc(var(--mm) * -.6) 0 0; max-width: calc(var(--mm) * 50);
+  font-family: var(--sans); font-weight: 500; font-size: calc(var(--mm) * 2.47);
+  line-height: 1.55; letter-spacing: .1em; text-transform: uppercase; color: var(--gold-lit);
+  text-wrap: balance;
+}
+.ctaB .tail { white-space: nowrap; }
+/* Drawn, not typed: the Jost subset has no U+2192 and the glyph would fall back. */
+.ctaB .arrow {
+  display: inline-block; vertical-align: middle;
+  width: 1.7em; height: .85em; margin-left: .45em; transform: translateY(-.06em);
+}
+/* The name, small and steady, so a card found in a pocket next week still
+   says what to search for. */
+.sign {
+  position: absolute; left: calc(var(--mm) * 6); bottom: calc(var(--mm) * 5.5);
+  display: flex; align-items: center; gap: calc(var(--mm) * 1.4);
+}
+.sign b {
+  font-family: var(--display); font-weight: 500; font-size: calc(var(--mm) * 2.4);
+  letter-spacing: .2em; line-height: 1; text-transform: uppercase; color: var(--ink);
+}
+/* The splash lockup in miniature: the card is an introduction, which is the
+   one place the brand lets "evergreen" appear in the script face. */
+.sign span {
+  font-family: var(--script); font-size: calc(var(--mm) * 3.6); line-height: 1;
+  color: var(--mint); margin-left: calc(var(--mm) * -.8); transform: translateY(calc(var(--mm) * .55));
+}
+.backB .qr { z-index: 3; }
+/* Sprout looks over the top of the QR plate from behind it, so the plate
+   hides the cut-out's flat bottom and the character is handing over the code. */
+.peek {
+  position: absolute; z-index: 2;
+  right: calc(var(--mm) * 7.6); top: calc(var(--mm) * 3.4);
+  height: calc(var(--mm) * 16); width: auto; max-width: none;
+  transform: scaleX(-1);
+  filter: drop-shadow(0 calc(var(--mm) * .4) calc(var(--mm) * 1) rgba(0, 0, 0, .3));
+}
+/* The debossed leaf grows up from the bottom edge, out of the plate's way. */
+.backB .ghost { top: auto; bottom: calc(var(--mm) * -9); right: calc(var(--mm) * -13); width: calc(var(--mm) * 36); height: calc(var(--mm) * 36); }
+.ghost {
+  position: absolute; right: calc(var(--mm) * -6); top: calc(var(--mm) * -4);
+  width: calc(var(--mm) * 40); height: calc(var(--mm) * 40);
+  color: rgba(159, 211, 190, .08);
+}
+
+/* ==========================================================================
+   Print files. Only the print build sets window.SPROUT_PRINT, so none of this
+   reaches the artifact. One page per face, cropped to 96 x 61 mm: 90 x 55
+   trim plus 3 mm bleed, with the card artwork at true size (--mm is 1mm here).
+   ========================================================================== */
+/* Drawn with 2 mm to spare on every side: Chrome rounds the page size, and
+   not always upwards, so the print build crops back to exactly 96 x 61 mm. */
+@page { size: 100mm 65mm; margin: 0; }
+body.print { margin: 0; padding: 0; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.print .page { position: relative; width: 100mm; height: 65mm; overflow: hidden; break-after: page; }
+.print .page:last-child { break-after: auto; }
+.print .card { position: absolute; left: 5mm; top: 5mm; width: 90mm; filter: none; }
+.print .face { overflow: visible; border-radius: 0; box-shadow: none; background: none; }
+.print .face::before, .print .sheen { display: none; }
+/* The ground runs out to the bleed edge. Its glows are placed in millimetres
+   so they land where they sit on the 90 x 55 face. */
+.print .bleed { position: absolute; inset: 0; }
+.print .bleed.front {
+  background:
+    radial-gradient(70mm 52mm at 21.2mm 11.6mm, rgba(63, 190, 139, .30), transparent 70%),
+    radial-gradient(80mm 60mm at 91.4mm 64.4mm, rgba(5, 10, 8, .75), transparent 70%),
+    linear-gradient(155deg, #17573D 0%, #0F3A29 46%, #0B2B1F 100%);
+}
+.print .bleed.back {
+  background:
+    radial-gradient(60mm 50mm at 84.2mm 55.6mm, rgba(63, 190, 139, .30), transparent 70%),
+    radial-gradient(70mm 50mm at 5mm 5mm, rgba(5, 10, 8, .6), transparent 70%),
+    linear-gradient(205deg, #155037 0%, #0F3A29 50%, #0B2B1F 100%);
+}
+.print .trimline { display: none; }
+/* Proof: the finished look, with the trim drawn in. Not for press. */
+.print-proof .trimline {
+  display: block; position: absolute; left: 5mm; top: 5mm; width: 90mm; height: 55mm;
+  outline: .15mm dashed rgba(255, 70, 160, .95);
+}
+/* Artwork: ink only. The deboss is blind, so it carries no ink, and the foil
+   goes on over the laminate, so nothing gold is printed under it. The QR goes
+   to pure black so the modules stay sharp. */
+.print-art .corner, .print-art .ghost { display: none; }
+.print-art .q, .print-art .ctaB { visibility: hidden; }
+.print-art .qr .plate > svg { color: #000 !important; }
+/* Foil and deboss plates: the shape alone, solid black on white. */
+.print-foil .bleed, .print-deboss .bleed { display: none; }
+.print-foil .page *, .print-deboss .page * { visibility: hidden; }
+.print-foil .q, .print-foil .ctaB, .print-foil .ctaB * { visibility: visible; color: #000; }
+.print-deboss .corner, .print-deboss .corner *, .print-deboss .ghost, .print-deboss .ghost * { visibility: visible; }
+.print-deboss .corner g, .print-deboss .ghost g { filter: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tilt, .flip { transition: none; }
+}
+</style>
+
+<div class="wrap">
+  <header class="mast">
+    <div class="lockup">
+      <svg viewBox="24 20 52 68" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/></svg>
+      <b>Sprout</b>
+    </div>
+    <span class="eyebrow">Pocket cards &middot; first pass</span>
+  </header>
+
+  <section class="intro">
+    <h1>A card that asks <em>first.</em></h1>
+    <p>The front asks a question every plant owner has felt, and says nothing else. Turn the card over for the answer, the way in, and Sprout.</p>
+  </section>
+
+  <section class="stage" aria-label="Live card">
+    <button class="live" id="live" type="button" aria-label="Turn the card over">
+      <div class="tilt" id="tilt"><div class="flip" id="flip"></div></div>
+    </button>
+    <div class="controls">
+      <div class="hooks" id="hooks" role="group" aria-label="Choose a hook"></div>
+      <button class="turn" id="turn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 0 1 15-5.5"/><path d="M19 2.5v4.5h-4.5"/><path d="M20.5 12a8.5 8.5 0 0 1-15 5.5"/><path d="M5 21.5V17h4.5"/></svg>
+        <span id="turn-label">Turn it over</span>
+      </button>
+      <p class="hint">Or tap the card.</p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><h2>Seven hooks, both sides</h2><span class="eyebrow">Trim 90 &times; 55 mm &middot; shown at screen scale</span></div>
+    <div class="sheet" id="sheet"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><h2>Print ticket</h2><span class="eyebrow">For the printer</span></div>
+    <dl class="ticket">
+      <div><dt>Trim</dt><dd class="num">90 &times; 55 mm, 2.2 mm corner radius<small>Australian standard size. Supply with 3 mm bleed all round and keep type 4 mm inside the trim.</small></dd></div>
+      <div><dt>Stock</dt><dd class="num">600 gsm triplex, jade centre ply<small>The coloured middle sheet shows as a fine green line on the card edge, so a stack of them in a pocket still reads as Sprout.</small></dd></div>
+      <div><dt>Ground</dt><dd>Viridium emerald, both sides<small>Closest spot match is Pantone 3435 C. Proof a rich CMYK build against it before the run; deep greens drift warm on press.</small></dd></div>
+      <div><dt>Finish</dt><dd>Soft-touch matt laminate<small>Velvet to the hand, which is what makes someone keep holding it long enough to turn it over.</small></dd></div>
+      <div><dt>Deboss</dt><dd>Blind, both sides<small>No ink. The front logo and the large leaf on the back are pressed into the card. One die per side, shared by all seven cards. 600 gsm triplex is thick enough that neither press shows through on the other face; confirm on the printer's sample.</small></dd></div>
+      <div><dt>Foil</dt><dd>Champagne gold, both sides<small>Front: the question mark at the end of the hook. Back: the &ldquo;Scan to&rdquo; line, set at 7pt so the foil holds on tracked caps.</small></dd></div>
+      <div><dt>QR</dt><dd class="num">19 mm, version 4, error correction H<small>Dark on a pale mint plate with a 3-module quiet zone, square finders and rounded data dots; it decodes cleanly at every scale I tested. The 7 &times; 7 module centre carries the mark; level H recovers 30%, the knockout takes under 5%. Opens sproutevergreen.com.</small></dd></div>
+      <div><dt>Type</dt><dd>Hatton, Cormorant, Jost<small>The hook is Hatton Ultralight at 6.3 mm, a size up from the medium so its hairlines survive the press; proof it on the actual stock before the run. The SPROUT wordmark on the back stays Hatton Medium. The call to action is Jost in champagne, the same ink as the question mark on the front.</small></dd></div>
+      <div><dt>Character</dt><dd>Looking over the QR plate<small>The site's own corner cut-out at 16 mm, mirrored, set behind the plate so the plate hides its flat cropped edge and Sprout is holding up the code.</small></dd></div>
+    </dl>
+  </section>
+</div>
+
+<template id="qr-src">{{QR}}</template>
+
+<script>
+(function () {
+  var BUDDY = 'data:image/webp;base64,{{BUDDY}}';
+  var QR = document.getElementById('qr-src').innerHTML;
+  var MARK = '<path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/>';
+
+  // One italic word per side. The front's is the word that stings; the
+  // back's is the word that answers it, so the pair reads across the flip.
+  var HOOKS = [
+    {
+      key: 'killing', chip: 'Keep on killing your plants?',
+      front: 'Keep on<br><em>killing</em> your<br>plants',
+      answer: 'Let’s keep them <em>alive.</em>',
+      cta: 'know exactly when to water!',
+      why: 'The one you started with. Names the pain without a word of blame.'
+    },
+    {
+      key: 'forget', chip: 'Keep forgetting to water your plants?',
+      front: 'Keep<br><em>forgetting</em> to water<br>your plants',
+      answer: 'I’ll <em>remember</em> for you.',
+      cta: 'never miss a watering again!',
+      why: 'The most common confession at the counter. Sells the reminders.'
+    },
+    {
+      key: 'pet', chip: 'A plant could be poisonous to your fur baby.',
+      front: 'A plant could be<br><em>poisonous</em> to<br>your fur baby', mark: '.',
+      answer: 'Know it’s <em>safe</em> before it comes home.',
+      cta: 'check what\u2019s safe for your pets!',
+      why: 'A statement, not a question, so it ends on a gold full stop. For the pet owners at the counter.'
+    },
+    {
+      key: 'yellow', chip: 'Does your plant have yellow leaves again?',
+      front: 'Does your plant<br>have yellow<br>leaves <em>again</em>',
+      answer: 'There’s always a <em>reason.</em> Sometimes two.',
+      cta: 'find out why!',
+      why: 'Sells Diagnose. Hand it to whoever is holding a sad-looking plant.'
+    },
+    {
+      key: 'love', chip: 'Loving your plants to death?',
+      front: 'Loving<br>your plants<br>to <em>death</em>',
+      answer: 'Sometimes the answer is <em>wait.</em>',
+      cta: 'know when to hold off!',
+      why: 'New. Overwatering is the classic mistake, and this one flatters the reader while naming it.'
+    },
+    {
+      key: 'dark', chip: 'Is that corner too dark for your plant?',
+      front: 'Is that corner<br>too <em>dark</em> for<br>your plant',
+      answer: 'Let’s find it some <em>light.</em>',
+      cta: 'find the best spot in your home!',
+      why: 'New. For the shade-plant aisle. Sells the room planner and its light reading.'
+    },
+    {
+      key: 'winter', chip: 'Same watering routine all winter?',
+      front: 'Same watering<br>routine all<br><em>winter</em>',
+      answer: 'Your plants drink <em>less</em> when it’s cold.',
+      cta: 'water right all year round!',
+      why: 'New. A seasonal run for autumn and winter. Sells the season-aware schedule.'
+    }
+  ];
+
+  // Blind deboss: the mark pressed into the card with no ink. An inner shadow
+  // with light from the top left, so the groove's upper-left wall falls into
+  // shadow and its lower-right wall catches the light.
+  var uid = 0;
+  function debossFilter(id, o) {
+    return '<filter id="' + id + '" x="-10%" y="-10%" width="120%" height="120%">' +
+      '<feFlood flood-color="#000" flood-opacity=".16"/><feComposite in2="SourceAlpha" operator="in" result="base"/>' +
+      '<feOffset in="SourceAlpha" dx="' + o + '" dy="' + o + '" result="b"/><feComposite in="SourceAlpha" in2="b" operator="out" result="loE"/>' +
+      '<feFlood flood-color="#000" flood-opacity=".6"/><feComposite in2="loE" operator="in"/><feGaussianBlur stdDeviation="' + (o * .35) + '" result="lo"/>' +
+      '<feOffset in="SourceAlpha" dx="' + (-o) + '" dy="' + (-o) + '" result="a"/><feComposite in="SourceAlpha" in2="a" operator="out" result="hiE"/>' +
+      '<feFlood flood-color="#D8FBEA" flood-opacity=".2"/><feComposite in2="hiE" operator="in"/><feGaussianBlur stdDeviation="' + (o * .35) + '" result="hi"/>' +
+      '<feMerge><feMergeNode in="base"/><feMergeNode in="lo"/><feMergeNode in="hi"/></feMerge></filter>';
+  }
+  function deboss(cls, o, width) {
+    var id = 'd' + (uid++);
+    return '<svg class="' + cls + '" viewBox="24 20 52 68" fill="none" stroke="#000" stroke-width="' + width + '" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<defs>' + debossFilter(id, o) + '</defs><g filter="url(#' + id + ')">' + MARK + '</g></svg>';
+  }
+
+  function front(h) {
+    return '<div class="face front">' +
+      deboss('corner', 1.6, 5.5) +
+      '<p class="hook"><span>' + h.front + '<span class="q">' + (h.mark || '?') + '</span></span></p>' +
+      '<div class="sheen"></div></div>';
+  }
+
+  // Endings read after "Scan to": verb first, no exclamation marks.
+  function back(h) {
+    var words = ('Scan to ' + h.cta.replace(/!$/, '')).split(' ');
+    var last = words.pop();
+    return '<div class="face back backB">' +
+      deboss('ghost', .55, 3) +
+      '<div class="colB">' +
+        '<p class="answer">' + h.answer + '</p>' +
+        '<p class="ctaB">' + words.join(' ') + ' <span class="tail">' + last +
+          '<svg class="arrow" viewBox="0 0 20 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 5h17M14 1.5 18 5l-4 3.5"/></svg></span></p>' +
+      '</div>' +
+      '<div class="sign"><b>Sprout</b><span>evergreen</span></div>' +
+      '<img class="peek" src="' + BUDDY + '" alt="">' +
+      '<div class="qr"><div class="plate">' + QR + '</div></div>' +
+      '<div class="sheen"></div></div>';
+  }
+
+  // ---------- Print files ----------
+  // The print build sets window.SPROUT_PRINT to proof, art, foil or deboss and
+  // gets one page per face, card by card, front then back.
+  if (window.SPROUT_PRINT) {
+    // The page's stylesheet lives in the body; keep it before the body is replaced.
+    document.querySelectorAll('body style').forEach(function (st) { document.head.appendChild(st); });
+    document.body.className = 'print print-' + window.SPROUT_PRINT;
+    document.body.innerHTML = HOOKS.map(function (h) {
+      return ['front', 'back'].map(function (side) {
+        return '<section class="page"><div class="bleed ' + side + '"></div><div class="card">' +
+          (side === 'front' ? front(h) : back(h)) + '</div><div class="trimline"></div></section>';
+      }).join('');
+    }).join('');
+    return;
+  }
+
+  // ---------- Proof sheet ----------
+  var sheet = document.getElementById('sheet');
+  sheet.innerHTML = HOOKS.map(function (h) {
+    return '<article class="pair">' +
+      '<div class="pair-lab"><b>' + h.chip + '</b><span>' + h.why + '</span></div>' +
+      '<div class="pair-cards">' +
+        '<figure><div class="card" role="img" aria-label="Front: ' + h.chip + '">' + front(h) + '</div><figcaption>Front</figcaption></figure>' +
+        '<figure><div class="card" role="img" aria-label="Back of the ' + h.key + ' card">' + back(h) + '</div><figcaption>Back</figcaption></figure>' +
+      '</div></article>';
+  }).join('');
+
+  // ---------- Live card ----------
+  var live = document.getElementById('live');
+  var tilt = document.getElementById('tilt');
+  var flip = document.getElementById('flip');
+  var hooks = document.getElementById('hooks');
+  var turnLabel = document.getElementById('turn-label');
+  var current = 0;
+
+  function mount() {
+    var h = HOOKS[current];
+    flip.innerHTML = '<div class="card">' + front(h) + back(h) + '</div>';
+    hooks.querySelectorAll('button').forEach(function (b, i) {
+      b.setAttribute('aria-pressed', i === current ? 'true' : 'false');
+    });
+  }
+  hooks.innerHTML = HOOKS.map(function (h, i) {
+    return '<button type="button" data-i="' + i + '">' + h.chip + '</button>';
+  }).join('');
+  hooks.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    current = +b.dataset.i;
+    live.classList.remove('is-over'); syncTurn();
+    mount();
+  });
+
+  function syncTurn() {
+    var over = live.classList.contains('is-over');
+    turnLabel.textContent = over ? 'Back to the front' : 'Turn it over';
+    live.setAttribute('aria-label', over ? 'Turn the card back to the front' : 'Turn the card over');
+  }
+  function toggle() { live.classList.toggle('is-over'); syncTurn(); }
+  live.addEventListener('click', toggle);
+  document.getElementById('turn').addEventListener('click', toggle);
+
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  live.addEventListener('pointermove', function (e) {
+    if (reduce || e.pointerType === 'touch') return;
+    var r = live.getBoundingClientRect();
+    var x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    tilt.style.setProperty('--ry', ((x - .5) * 14).toFixed(2) + 'deg');
+    tilt.style.setProperty('--rx', ((.5 - y) * 10).toFixed(2) + 'deg');
+    var over = live.classList.contains('is-over');
+    flip.querySelectorAll('.sheen').forEach(function (s) {
+      s.style.setProperty('--px', ((over ? 1 - x : x) * 100).toFixed(1) + '%');
+      s.style.setProperty('--py', (y * 100).toFixed(1) + '%');
+    });
+    live.classList.add('is-tilting');
+  });
+  live.addEventListener('pointerleave', function () {
+    tilt.style.setProperty('--ry', '0deg'); tilt.style.setProperty('--rx', '0deg');
+    live.classList.remove('is-tilting');
+  });
+
+  mount();
+})();
+</script>
