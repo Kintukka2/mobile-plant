@@ -302,7 +302,13 @@ html.beam-go .hero::before{ animation:beam-drop 2.1s cubic-bezier(.5,0,.2,1) bot
    cancel the trailing gap that tracking leaves after the last letter, which
    pulls a *centred* wordmark left. Left-aligned there is nothing to cancel,
    and the indent was pushing SPROUT out of line with the script beneath. */
-.lockup{ margin-bottom:38px; --wm:clamp(36px,7vw,58px); --mk:calc(var(--wm)*0.96);
+.lockup{ --lift:clamp(24px,5vh,56px);
+         /* Raised by --lift without moving anything else: what it gives up
+            above it takes back below, so the headline and the buttons stay
+            where the hero's centring put them and only the name climbs
+            away from them. */
+         margin-top:calc(-1 * var(--lift)); margin-bottom:calc(38px + var(--lift));
+         --wm:clamp(36px,7vw,58px); --mk:calc(var(--wm)*0.96);
          /* 52/68, the cropped viewBox's own aspect. Declared once so the
             mark's width and the script's indent cannot disagree. */
          --mkw:calc(var(--mk)*0.7647); }
@@ -376,11 +382,14 @@ h1 em{ font-style:normal; color:var(--glow); }
 /* ---- Scroll cue ----
    A bead of light running down a hairline, which on a plant app is water
    down a stem rather than a chevron bouncing. Centred at the foot of the
-   hero because that is where the eye lands last; the hero's own copy stays
-   left-aligned and this reads as chrome rather than as another line of it. */
+   hero because that is where the eye lands last. Small, tracked and dim,
+   so it reads as chrome rather than as another line of the copy. */
+/* The stem runs to the hero's foot, the first screen's edge, so it reads
+   as a line leading on into the page rather than one stopped short in the
+   middle of nothing. */
 .hero-scroll{
-  position:absolute; left:0; right:0; bottom:30px; margin-inline:auto;
-  width:max-content; background:none; border:0; padding:6px 14px;
+  position:absolute; left:0; right:0; bottom:0; margin-inline:auto;
+  width:max-content; background:none; border:0; padding:6px 14px 0;
   cursor:pointer; color:var(--ink-3);
   display:flex; flex-direction:column; align-items:center;
   transition:color .2s ease;
@@ -390,7 +399,7 @@ h1 em{ font-style:normal; color:var(--glow); }
                 text-transform:uppercase; }
 /* The travel distance is read from the height rather than repeated, so the
    short-screen rule below only has to change one number. */
-.hero-scroll-rule{ --rule-h:34px;
+.hero-scroll-rule{ --rule-h:64px;
                    display:block; width:1px; height:var(--rule-h); margin-top:12px;
                    background:var(--hair); position:relative; overflow:hidden; }
 .hero-scroll-rule::after{
@@ -403,11 +412,11 @@ h1 em{ font-style:normal; color:var(--glow); }
   22%  { opacity:1; }
   100% { transform:translateY(var(--rule-h)); opacity:0; }
 }
-/* On a 360x780 the cue came within 13px of the call to action. Smaller, and
-   sitting lower, puts thirty-odd back between them. */
+/* On a 360x780 the cue came within 13px of the call to action. A shorter
+   stem, still meeting the foot, puts thirty-odd back between them. */
 @media (max-height:800px){
-  .hero-scroll{ bottom:22px; padding-block:4px; }
-  .hero-scroll-rule{ --rule-h:24px; margin-top:9px; }
+  .hero-scroll{ padding-top:4px; }
+  .hero-scroll-rule{ --rule-h:46px; margin-top:9px; }
 }
 /* Below this the hero is taller than the screen, so the cue at its foot is
    not on the first view anyway, and on a 360x740 it landed on the Free line. */
