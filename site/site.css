@@ -652,3 +652,44 @@ footer{ padding-block:26px; }
   [data-ui-snap-panel] .film{ max-width:none; }
   [data-ui-snap-panel] .sp-list{ max-height:420px; }
 }
+
+/* ---- Splash. The app's opening screen, copied from css/styles.css (A4) so
+   the site opens the way the app does; the script that shows and lifts it
+   sits at the top of index.html's body. The values are the app's own, not
+   this page's tokens, because it has to look the same screen. Under reduced
+   motion the rule near the top of this file stops every animation, and with
+   fill-mode both each part rests in its finished state. */
+.splash{ position:fixed; inset:0; z-index:1000; display:grid; place-items:center;
+  background:radial-gradient(760px 520px at 50% 42%, rgba(47,154,112,.22), transparent 70%), #050A08;
+  transition:opacity 760ms cubic-bezier(.16,1,.3,1), visibility 760ms; }
+.splash[hidden]{ display:none; }
+.splash.is-out{ opacity:0; visibility:hidden; }
+.splash-inner{ text-align:center; padding:0 28px; }
+.splash-mark{ font-family:var(--display); font-weight:200; font-size:clamp(40px,12vw,78px);
+  letter-spacing:.22em; text-transform:uppercase; color:var(--ink);
+  /* The app's body line-height, which its splash inherits; normal set the
+     script a few pixels too close. */
+  line-height:1.6;
+  /* Optical centring: tracking adds a trailing gap after the last letter. */
+  text-indent:.22em; }
+.splash-mark span{ display:inline-block; animation:letterIn 900ms cubic-bezier(.16,1,.3,1) both; }
+.splash-mark span:nth-child(1){ animation-delay:60ms; }
+.splash-mark span:nth-child(2){ animation-delay:130ms; }
+.splash-mark span:nth-child(3){ animation-delay:200ms; }
+.splash-mark span:nth-child(4){ animation-delay:270ms; }
+.splash-mark span:nth-child(5){ animation-delay:340ms; }
+.splash-mark span:nth-child(6){ animation-delay:410ms; }
+.splash-script{ font-family:var(--script); font-size:clamp(26px,7vw,40px); color:var(--mint);
+  line-height:1.6; margin-top:-2px; padding-bottom:.12em;
+  animation:scriptIn 1000ms cubic-bezier(.65,0,.35,1) 780ms both; }
+.splash-rule{ margin:20px auto 0; width:132px; height:1px; background:rgba(214,237,226,.10);
+  position:relative; overflow:hidden; animation:ruleIn 700ms cubic-bezier(.16,1,.3,1) 1360ms both; }
+.splash-rule i{ position:absolute; inset:0; transform:translateX(-100%);
+  background:linear-gradient(90deg, transparent, var(--mint), transparent);
+  animation:sweep 1700ms cubic-bezier(.65,0,.35,1) 1900ms infinite; }
+@keyframes letterIn{ from{ opacity:0; transform:translateY(20px); filter:blur(7px); } to{ opacity:1; transform:none; filter:blur(0); } }
+@keyframes scriptIn{ from{ opacity:0; clip-path:inset(0 100% 0 0); } to{ opacity:1; clip-path:inset(0 0 0 0); } }
+@keyframes ruleIn{ from{ transform:scaleX(0); opacity:0; } to{ transform:scaleX(1); opacity:1; } }
+@keyframes sweep{ to{ transform:translateX(100%); } }
+/* Landscape phones, as in the app. */
+@media (max-height:520px){ .splash-mark{ font-size:34px; } }

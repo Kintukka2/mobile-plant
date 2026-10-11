@@ -29,6 +29,64 @@
 </head>
 <body>
 
+<!-- The app's splash, the same screen sproutevergreen.app opens on: SPROUT a
+     letter at a time, "evergreen" written in, the hairline drawn with its
+     sweep. A copy rather than a link, because site/ cannot reach ../; the
+     markup here, the rules in site.css under "Splash" and the timing below
+     follow index.html, css/styles.css and dismissSplash() in js/app.js.
+     Change one and change the other.
+
+     hidden in the markup and shown by the script straight after it, so a
+     reader without script is never left behind an overlay nothing will
+     lift. Once a session, and not for an arrival on a #section link, which
+     came for that section; ?splash shows it again. -->
+<div class="splash" id="splash" hidden>
+  <div class="splash-inner">
+    <div class="splash-mark" role="img" aria-label="Sprout"><span aria-hidden="true">S</span><span aria-hidden="true">P</span><span aria-hidden="true">R</span><span aria-hidden="true">O</span><span aria-hidden="true">U</span><span aria-hidden="true">T</span></div>
+    <div class="splash-script">evergreen</div>
+    <div class="splash-rule"><i></i></div>
+  </div>
+</div>
+<script>
+(function () {
+  var el = document.getElementById('splash');
+  if (!el) return;
+  var again = /[?&]splash(?:&|=|$)/.test(location.search);
+  var seen = false;
+  try { seen = !!sessionStorage.getItem('sprout.splash'); } catch (e) {}
+  if (!again && (seen || location.hash)) { el.parentNode.removeChild(el); return; }
+  try { sessionStorage.setItem('sprout.splash', '1'); } catch (e) {}
+
+  el.hidden = false;
+  var root = document.documentElement;
+  // Snap scrolling stands down while it is up; see the snap script below.
+  root.classList.add('ui-snap-paused');
+
+  var done = false;
+  function lift() {
+    if (done) return;
+    done = true;
+    el.classList.add('is-out');
+    root.classList.remove('ui-snap-paused');
+    // Removed outright once faded: it is fixed and would trap clicks.
+    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 800);
+  }
+
+  // The app's two clocks. The entrance runs to about 2.1s, so it holds for
+  // 2.3s whatever the fonts do, and never longer than 3.6s if they hang.
+  var MIN_MS = 2300, MAX_MS = 3600, started = Date.now();
+  var ready = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+  ready.then(function () { setTimeout(lift, Math.max(0, MIN_MS - (Date.now() - started))); });
+  setTimeout(lift, MAX_MS);
+
+  // A page, unlike the app, can be read the moment it arrives: a reader who
+  // reaches for it is given it.
+  ['wheel', 'touchmove', 'keydown', 'pointerdown'].forEach(function (type) {
+    window.addEventListener(type, lift, { passive: true, once: true });
+  });
+})();
+</script>
+
 <!-- The bar the hero's mark flies into. It is present from the first paint
      but shows nothing except that mark until the reader leaves the hero,
      because on the hero the mark is not the bar's — it is the lockup's, and
