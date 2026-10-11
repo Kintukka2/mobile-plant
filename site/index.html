@@ -38,7 +38,19 @@
 -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A1410'/%3E%3Cg fill='none' stroke='%233FBE8B' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M50 84V40'/%3E%3Cpath d='M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z'/%3E%3Cpath d='M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="img/touch-icon.png">
-<link rel="stylesheet" href="site.css?v=4">
+<link rel="stylesheet" href="site.css?v=5">
+<!-- The hero's wash pours down from the ceiling on arrival, so it is held
+     back before the first paint rather than shown and then hidden, which
+     would flash. Not under reduced motion, and never for good: if the
+     script that lets it fall does not run, the timer lets it show. -->
+<script>
+(function () {
+  var r = document.documentElement;
+  try { if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; } catch (e) { return; }
+  r.classList.add('beam-wait');
+  setTimeout(function () { if (!r.classList.contains('beam-go')) r.classList.remove('beam-wait'); }, 6000);
+})();
+</script>
 </head>
 <body>
 
@@ -71,12 +83,17 @@
   try { sessionStorage.setItem('sprout.splash', '1'); } catch (e) {}
 
   el.hidden = false;
+  // The light waits for this: it should fall once the page is revealed,
+  // not behind the splash where nobody sees it.
+  document.documentElement.classList.add('splash-on');
 
   var done = false;
   function lift() {
     if (done) return;
     done = true;
     el.classList.add('is-out');
+    document.documentElement.classList.remove('splash-on');
+    window.dispatchEvent(new Event('sprout:splash'));
     // Removed outright once faded: it is fixed and would trap clicks.
     setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 800);
   }
@@ -104,6 +121,7 @@
 
      display:none until the script adds .sb-live, so without JS the hero
      keeps its own mark and no bar appears half-built. -->
+<div class="lumen" id="lumen" aria-hidden="true"></div>
 <div class="sitebar" id="sitebar">
   <div class="wrap sitebar-in">
     <span class="sitebar-mark" id="sb-mark" aria-hidden="true"><svg viewBox="24 20 52 68" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/></svg></span>
@@ -815,6 +833,159 @@
     video.pause();
     lock(false);
   });
+})();
+</script>
+
+<!-- The guiding light.
+
+     It falls with the hero's wash, pools where the wash meets the floor,
+     and from there follows the reader down: its head sits a little above
+     the middle of the screen and slides across to whatever each section is
+     about, the phone, the film, a heading, the closing sprig, so it is
+     behind the focal point exactly when the focal point is in the middle of
+     the view. Between two of them it swims rather than cuts: an eased S,
+     with a slow sway that dies away at each point so it settles there.
+
+     The path is measured from the page, not drawn by hand, so it follows
+     the layout at every width and after anything changes height (a question
+     opened, the species list filtered). It is a pure function of the scroll
+     position plus a little lag for the swim, so scrolling back up retraces
+     it. Nothing here runs when the reader has asked for less motion. -->
+<script>
+(function () {
+  var root = document.documentElement;
+  var lumen = document.getElementById('lumen');
+  var hero = document.querySelector('.hero');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (!lumen || !hero || reduce.matches || !window.requestAnimationFrame) return;
+
+  var BACK = 9, AHEAD = 4;
+  var parts = [], head, pts = [], landY = 0, vw = 0, vh = 0, cur = null, raf = 0, measuring = 0;
+
+  function blob(k, cls) {
+    var el = document.createElement('i');
+    if (cls) el.className = cls;
+    lumen.appendChild(el);
+    return { k: k, el: el };
+  }
+  // Trail first and the head last, so the head draws on top.
+  for (var k = BACK; k >= 1; k--) parts.push(blob(-k, 't'));
+  for (k = AHEAD; k >= 1; k--) parts.push(blob(k, 't'));
+  head = blob(0, '');
+
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+
+  /* Where the wash meets the hero's floor. The wash is a 107deg gradient
+     on a box 120% of the hero wide and 150% tall, brightest at 38%; solving
+     that line at the hero's foot puts the pool under the beam rather than
+     somewhere near it. */
+  function landing() {
+    var hr = hero.getBoundingClientRect();
+    var W = hr.width * 1.2, H = hr.height * 1.5;
+    var cx = -0.1 * hr.width + W / 2, cy = -0.3 * hr.height + H / 2;
+    var a = 107 * Math.PI / 180, dx = Math.sin(a), dy = -Math.cos(a);
+    var L = Math.abs(W * dx) + Math.abs(H * dy);
+    var yb = hr.height * 0.94;
+    var x = cx + ((0.40 - 0.5) * L - (yb - cy) * dy) / dx;
+    return { x: clamp(hr.left + x, vw * 0.2, vw * 0.8), y: hr.top + window.scrollY + yb };
+  }
+
+  function measure() {
+    measuring = 0;
+    vw = window.innerWidth; vh = window.innerHeight;
+    var l = landing();
+    landY = l.y;
+    pts = [l];
+    for (var el = hero.nextElementSibling; el; el = el.nextElementSibling) {
+      if (el.tagName !== 'SECTION') continue;
+      var f = el.querySelector('.phone img, .film-thumb, .close-mark') || el.querySelector('h2');
+      if (!f) continue;
+      var r = f.getBoundingClientRect();
+      var y = r.top + window.scrollY + r.height / 2;
+      if (y > pts[pts.length - 1].y + 40) pts.push({ x: r.left + r.width / 2, y: y, focal: true });
+    }
+    // One size for the whole walk, set once: a size changed per frame
+    // would be a style change per frame, and scale() is free.
+    lumen.style.setProperty('--s', Math.round(clamp(vw * 0.62, 380, 720)) + 'px');
+    kick();
+  }
+
+  function xAt(y) {
+    if (y <= pts[0].y) return pts[0].x;
+    for (var i = 1; i < pts.length; i++) {
+      if (y < pts[i].y) {
+        var a = pts[i - 1], b = pts[i], t = (y - a.y) / (b.y - a.y), s = t * t * (3 - 2 * t);
+        var sway = Math.sin(t * Math.PI) * Math.sin(y / 340) * Math.min(vw * 0.09, 90);
+        return a.x + (b.x - a.x) * s + sway;
+      }
+    }
+    return pts[pts.length - 1].x;
+  }
+
+  // 1 when the light is level with a focal point, falling to 0 between.
+  function lift(y) {
+    var d = 1e9;
+    for (var i = 1; i < pts.length; i++) d = Math.min(d, Math.abs(y - pts[i].y));
+    return Math.exp(-Math.pow(d / (vh * 0.2), 2));
+  }
+
+  function place(p, y, scale, alpha) {
+    p.el.style.transform = 'translate3d(' + xAt(y).toFixed(1) + 'px,' + (y - window.scrollY).toFixed(1) + 'px,0) scale(' + scale.toFixed(3) + ')';
+    p.el.style.opacity = alpha.toFixed(3);
+  }
+
+  function frame() {
+    raf = 0;
+    if (!pts.length) return;
+    var target = Math.max(landY, window.scrollY + vh * 0.52);
+    if (cur === null) cur = target;
+    cur += (target - cur) * 0.14;
+    if (Math.abs(target - cur) < 0.4) cur = target;
+
+    var b = lift(cur);
+    place(head, cur, 1 + 0.18 * b, 0.6 + 0.4 * b);
+    var step = vh * 0.085;
+    for (var i = 0; i < parts.length; i++) {
+      var p = parts[i], y = cur + p.k * step;
+      var fall = p.k < 0 ? Math.exp(-Math.pow(p.k / 5.5, 2)) : 0.7 * Math.exp(-Math.pow(p.k / 2.6, 2));
+      // Above the pool the trail would only retrace the beam it fell
+      // down, so it fades into the wash instead.
+      if (y < landY) fall *= clamp(1 - (landY - y) / (vh * 0.12), 0, 1);
+      place(p, y, 0.9 - Math.abs(p.k) * 0.035, fall * (0.55 + 0.25 * lift(y)));
+    }
+    if (cur !== target) raf = requestAnimationFrame(frame);
+  }
+
+  function kick() { if (!raf) raf = requestAnimationFrame(frame); }
+  function remeasure() { if (!measuring) measuring = requestAnimationFrame(measure); }
+
+  window.addEventListener('scroll', kick, { passive: true });
+  window.addEventListener('resize', remeasure);
+  // Anything that changes the page's height moves every point below it.
+  if (window.ResizeObserver) new ResizeObserver(remeasure).observe(document.body);
+  var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+  fonts.then(remeasure);
+  measure();
+
+  /* The fall. It plays on every arrival at the top, after the splash when
+     there is one. Arriving part-way down (a link to #faq, a restored
+     scroll) skips it: a beam falling through a hero that is off screen is
+     a light the reader never sees land. */
+  function show() { lumen.classList.add('is-on'); }
+  function drop() {
+    root.classList.remove('beam-wait');
+    root.classList.add('beam-go');
+    // The pool comes up as the wash reaches the floor, not before.
+    setTimeout(show, 1500);
+  }
+  if (window.scrollY > hero.offsetHeight * 0.4 || location.hash) {
+    root.classList.remove('beam-wait');
+    show();
+  } else if (root.classList.contains('splash-on')) {
+    window.addEventListener('sprout:splash', drop, { once: true });
+  } else {
+    fonts.then(function () { setTimeout(drop, 150); });
+  }
 })();
 </script>
 
