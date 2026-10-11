@@ -38,7 +38,7 @@
 -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A1410'/%3E%3Cg fill='none' stroke='%233FBE8B' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M50 84V40'/%3E%3Cpath d='M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z'/%3E%3Cpath d='M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="img/touch-icon.png">
-<link rel="stylesheet" href="site.css?v=7">
+<link rel="stylesheet" href="site.css?v=14">
 <!-- The hero's wash pours down from the ceiling on arrival, so it is held
      back before the first paint rather than shown and then hidden, which
      would flash. Not under reduced motion, and never for good: if the
@@ -265,9 +265,10 @@
 <section class="film-sec" id="walkthrough">
   <div class="wrap">
     <p class="eyebrow">See it built</p>
-    <h2 class="narrow">A flat drawn, and read for light, in under a minute.</h2>
-    <p class="lead">The grid, the rooms, one real measurement, the windows, north, and where a
-    plant should stand: the same eleven steps the app offers you on an empty plan.</p>
+    <h2 class="narrow">A home mapped, then calculated for the right light.</h2>
+    <p>Watch a home go from a blank grid to a finished plan in under a minute. Draw
+    the rooms, mark the windows and point north, and Sprout works out how much light reaches
+    every corner, then shows where each plant will do best.</p>
     <figure class="film">
       <!-- A still that opens the film in a dialog, rather than a player in
            the page. Inline it was 1000px wide at most, which is small for a
@@ -342,12 +343,12 @@
 <section class="feature">
   <div class="wrap feature-in flip">
     <div class="feature-copy">
-      <p class="eyebrow">Worth keeping</p>
+      <p class="eyebrow">Something worth keeping</p>
       <h2>A record of the plant, not just a reminder to water it.</h2>
       <p>Every plant gets a diary and a growth chart: photos, measurements, milestones, repottings,
       problems. Watch a cutting become a plant.</p>
-      <p>Toxicity is rated separately for cats, dogs and humans, because the same plant is not
-      equally risky to each. Tell Sprout what lives with you and it flags what matters.</p>
+      <p>Toxicity is rated separately for cats, dogs and humans.<br>
+      Tell Sprout what lives with you and it flags what matters.</p>
     </div>
     <figure class="phone glow-leaf">
       <img src="img/screens/plant.webp" width="720" height="1558" loading="lazy" decoding="async"
@@ -362,14 +363,14 @@
   <div class="wrap">
     <p class="eyebrow">The species list</p>
     <h2 style="max-width:16ch">Is yours on it?</h2>
-    <p class="lead" style="margin-top:22px">Forty-eight of the most common houseplants. Each one
-    carries its own warm and cool season watering intervals, feeding cycle, ideal light, and a
-    toxicity rating scored separately for cats, dogs and humans.</p>
+    <p style="margin-top:22px">The plant list on <span class="script-word">evergreen</span> is ever growing. Each profile
+    carries information on watering intervals, feeding cycle, ideal light, and a toxicity rating
+    scored separately for cats, dogs and humans.</p>
 
     <!-- Hidden until the script runs, so a reader without JavaScript gets the
          full list and no dead input to type into. -->
     <div class="sp-search" id="sp-search" hidden>
-      <input type="search" id="sp-q" class="sp-input" placeholder="Search 48 species"
+      <input type="search" id="sp-q" class="sp-input" placeholder="Search species"
              autocomplete="off" spellcheck="false" aria-controls="sp-list"
              aria-label="Search the species list by common name, botanical name or nickname">
       <span class="sp-icon" aria-hidden="true">
@@ -598,8 +599,8 @@
           <span class="sp-tag">Pet safe</span>
         </li>
       </ul>
-      <p class="sp-none" id="sp-none" hidden>Nothing by that name. Sprout covers 48
-      species — if yours is missing, the diagnosis tool still works without it.</p>
+      <p class="sp-none" id="sp-none" hidden>Nothing by that name yet, and more are added as
+      we go. If yours is missing, the diagnosis tool still works without it.</p>
       <!-- Four stacked layers rather than one. A single blurred bar switches on
            at a hard edge; masking each layer to a progressively lower slice of
            the same box makes the blur ramp instead, which is the whole effect.
@@ -610,7 +611,7 @@
       </div>
     </div>
 
-    <p class="sp-foot" id="sp-count" role="status">Scroll the list · 48 species · 23 safe for cats and dogs</p>
+    <p class="sp-foot" id="sp-count" role="status">Scroll the list · 23 safe for cats and dogs</p>
   </div>
 </section>
 
@@ -621,7 +622,7 @@
       <h2>No account. No ads. Nothing to sign up for.</h2>
     </div>
     <div>
-      <p class="lead">Your plants, photos, diary and schedule live on your phone and are never
+      <p>Your plants, photos, diary and schedule live on your phone and are never
       uploaded. There is no server, no analytics and no profile of you anywhere.</p>
       <p>One thing leaves, and it is worth saying plainly rather than rounding up to "everything is
       local": if you set a location, its coordinates go to the weather service to fetch your
@@ -636,7 +637,7 @@
      app, answered in a line each. <details> rather than script: it opens
      with a tap, a keyboard and a screen reader, and with script off. Every
      answer is checked against the app, not the brochure — the plant one in
-     particular, because adding a plant does need one of the 48 species. -->
+     particular, because adding a plant does need one of the listed species. -->
 <section class="faq band" id="faq">
   <div class="wrap faq-in">
     <div>
@@ -667,7 +668,8 @@
       </details>
       <details>
         <summary>What if my plant isn't on the list?</summary>
-        <p>Schedules cover the 48 species above, so a plant outside them can't be added yet.
+        <p>Schedules cover the species above, with more added as we go, so a plant outside
+        them can't be added yet.
         Diagnosis still works for any plant, with the advice left general rather than tuned to a
         species.</p>
       </details>
@@ -730,7 +732,7 @@
   var resting = count.textContent;
 
   // Hidden in the markup, revealed here. A reader with JavaScript off gets
-  // all 48 rows and no input that silently does nothing.
+  // every row and no input that silently does nothing.
   box.hidden = false;
 
   function apply() {
@@ -862,6 +864,13 @@
   // A long tail behind and a short lead ahead.
   var BACK = 16, AHEAD = 3;
   var parts = [], head, pts = [], landY = 0, vw = 0, vh = 0, cur = null, raf = 0, measuring = 0;
+  // The station the light is resting at, how far it has settled into it
+  // (0 to 1), and the one whose edges are lit.
+  var held = null, hold = 0, lit = null;
+  // The page's copy, as boxes in page coordinates: the light dims as it
+  // nears them, so it lights the space between the words, not the words.
+  var copy = [];
+  var TEXT = '.wrap h1, .wrap h2, .wrap p, .wrap .eyebrow, .wrap .ladder, .wrap .quote, .wrap .figs, .faq-list, .wrap .try';
 
   function blob(k, cls) {
     var el = document.createElement('i');
@@ -873,6 +882,8 @@
   for (var k = BACK; k >= 1; k--) parts.push(blob(-k, 't'));
   for (k = AHEAD; k >= 1; k--) parts.push(blob(k, 't'));
   head = blob(0, '');
+  // Where the head was last drawn, on screen, for the specks born near it.
+  var headAt = null;
 
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
 
@@ -899,12 +910,26 @@
     pts = [l];
     for (var el = hero.nextElementSibling; el; el = el.nextElementSibling) {
       if (el.tagName !== 'SECTION') continue;
-      var f = el.querySelector('.phone img, .film-thumb, .close-mark') || el.querySelector('h2');
+      /* Stations: the objects the light stops behind and lights the edges
+         of. Everything else is a point it passes through. */
+      var station = el.querySelector('.phone img, .film-thumb, .sp-block');
+      var f = station || el.querySelector('.close-mark') || el.querySelector('h2');
       if (!f) continue;
       var r = f.getBoundingClientRect();
       var y = r.top + window.scrollY + r.height / 2;
-      if (y > pts[pts.length - 1].y + 40) pts.push({ x: r.left + r.width / 2, y: y, focal: true });
+      if (y <= pts[pts.length - 1].y + 40) continue;
+      var edges = null;
+      if (station) {
+        edges = [station];
+        // The list is lit with the search that leads into it.
+        if (station.classList.contains('sp-block')) { var q = el.querySelector('.sp-input'); if (q) edges.push(q); }
+      }
+      pts.push({ x: r.left + r.width / 2, y: y, focal: true, edges: edges });
     }
+    copy = [].map.call(document.querySelectorAll(TEXT), function (e) {
+      var r = e.getBoundingClientRect();
+      return { l: r.left, r: r.right, t: r.top + window.scrollY, b: r.bottom + window.scrollY };
+    }).filter(function (c) { return c.r > c.l && c.b > c.t; });
     // One size for the whole walk, set once: a size changed per frame
     // would be a style change per frame, and scale() is free.
     lumen.style.setProperty('--s', Math.round(clamp(vw * 0.62, 380, 720)) + 'px');
@@ -923,6 +948,25 @@
     return pts[pts.length - 1].x;
   }
 
+  /* How far to hold the light down at a point: 1 on or near the copy,
+     falling to 0 a little way clear of it, so it eases off as it
+     approaches a paragraph and comes back once it has passed. Never
+     below half: the light is still there, it just stops competing with
+     the reading. */
+  var NEAR = 150;
+  function hush(x, y) {
+    var f = 0;
+    for (var i = 0; i < copy.length; i++) {
+      var c = copy[i];
+      var dx = x < c.l ? c.l - x : x > c.r ? x - c.r : 0;
+      var dy = y < c.t ? c.t - y : y > c.b ? y - c.b : 0;
+      if (dx > NEAR || dy > NEAR) continue;
+      var g = 1 - Math.sqrt(dx * dx + dy * dy) / NEAR;
+      if (g > f) { f = g; if (f >= 1) break; }
+    }
+    return 1 - 0.5 * f;
+  }
+
   // 1 when the light is level with a focal point, falling to 0 between.
   function lift(y) {
     var d = 1e9;
@@ -935,6 +979,7 @@
      rather than a string of beads. */
   function place(p, y, scale, alpha, stretch) {
     var x = xAt(y), ang = Math.atan2(xAt(y + 6) - xAt(y - 6), 12);
+    alpha *= hush(x, y);
     p.el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + (y - window.scrollY).toFixed(1) + 'px,0) rotate(' +
       (-ang).toFixed(3) + 'rad) scale(' + (scale / Math.sqrt(stretch)).toFixed(3) + ',' + (scale * Math.sqrt(stretch)).toFixed(3) + ')';
     p.el.style.opacity = alpha.toFixed(3);
@@ -943,13 +988,35 @@
   function frame() {
     raf = 0;
     if (!pts.length) return;
-    var target = Math.max(landY, window.scrollY + vh * 0.52);
+    /* The reading line, a little above the middle of the screen, is where
+       the light rides. When a station's middle comes within a quarter of a
+       screen of it, the light leaves the line and settles behind the
+       station instead, scrolling with it, until the station has gone by;
+       then it swims back to the line. */
+    var line = window.scrollY + vh * 0.52, target = Math.max(landY, line);
+    held = null;
+    for (var s = 1; s < pts.length; s++) {
+      if (pts[s].edges && Math.abs(line - pts[s].y) < vh * 0.26) { held = pts[s]; target = held.y; break; }
+    }
     if (cur === null) cur = target;
     cur += (target - cur) * 0.14;
     if (Math.abs(target - cur) < 0.4) cur = target;
+    // Settled: the light has arrived, so the edges may catch it.
+    var settled = held && Math.abs(cur - held.y) < 28;
+    hold += ((settled ? 1 : 0) - hold) * 0.12;
+    if (Math.abs((settled ? 1 : 0) - hold) < 0.01) hold = settled ? 1 : 0;
+    var want = settled ? held : null;
+    if (want !== lit) {
+      if (lit) lit.edges.forEach(function (e) { e.classList.remove('is-lit'); });
+      if (want) want.edges.forEach(function (e) { e.classList.add('is-lit'); });
+      lit = want;
+    }
 
     var b = lift(cur);
-    place(head, cur, 0.9 + 0.16 * b, 0.78 + 0.22 * b, 1.25);
+    // At rest behind a station the head swells a little and rounds out,
+    // radiating rather than travelling.
+    place(head, cur, (0.9 + 0.16 * b) * (1 + 0.14 * hold), 0.78 + 0.22 * b, 1.25 - 0.2 * hold);
+    headAt = { x: xAt(cur), y: cur - window.scrollY };
     var step = vh * 0.05;
     for (var i = 0; i < parts.length; i++) {
       var p = parts[i], n = Math.abs(p.k), y = cur + p.k * step;
@@ -960,9 +1027,10 @@
       // down, so it fades into the wash instead.
       if (y < landY) fall *= clamp(1 - (landY - y) / (vh * 0.12), 0, 1);
       var size = p.k < 0 ? 0.62 - n * 0.026 : 0.55 - n * 0.06;
-      place(p, y, size, fall * (0.7 + 0.3 * lift(y)), 2.2);
+      // The tail draws in while the light rests, so it reads as stopped.
+      place(p, y, size, fall * (0.7 + 0.3 * lift(y)) * (1 - 0.6 * hold), 2.2);
     }
-    if (cur !== target) raf = requestAnimationFrame(frame);
+    if (cur !== target || (hold !== 0 && hold !== 1)) raf = requestAnimationFrame(frame);
   }
 
   function kick() { if (!raf) raf = requestAnimationFrame(frame); }
@@ -975,6 +1043,54 @@
   var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
   fonts.then(remeasure);
   measure();
+
+  /* The specks. Each one is a CSS animation from start to end; all the
+     script does is choose where and how when it is born, and again each
+     time it ends. Half are born in and around the light, so the dust is
+     where the light is, and half anywhere on screen. They live in the same
+     fixed layer, so they stay with the reader as the page moves under
+     them. */
+  var MOTES = window.innerWidth < 700 ? 6 : 10;
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+  function seed(m, first) {
+    var w = window.innerWidth, h = window.innerHeight, x, y;
+    if (headAt && Math.random() < 0.5) {
+      x = headAt.x + rnd(-0.22, 0.22) * w;
+      y = headAt.y + rnd(-0.45, 0.2) * h;
+    } else {
+      x = rnd(0.04, 0.96) * w;
+      y = rnd(0.05, 0.95) * h;
+    }
+    // Mostly falling, a little sideways, and bent: the middle of the
+    // drift is pushed off the straight line, so the path is a curve.
+    var dx = rnd(-70, 70), dy = rnd(40, 150), bend = rnd(-30, 30);
+    var ang = Math.atan2(dx, dy) * 180 / Math.PI;
+    var st = m.style;
+    st.setProperty('--x0', x.toFixed(0) + 'px');
+    st.setProperty('--y0', y.toFixed(0) + 'px');
+    st.setProperty('--x1', (x + dx / 2 + bend).toFixed(0) + 'px');
+    st.setProperty('--y1', (y + dy / 2).toFixed(0) + 'px');
+    st.setProperty('--x2', (x + dx).toFixed(0) + 'px');
+    st.setProperty('--y2', (y + dy).toFixed(0) + 'px');
+    st.setProperty('--r0', (-ang - bend * 0.4).toFixed(1) + 'deg');
+    st.setProperty('--r1', (-ang).toFixed(1) + 'deg');
+    st.setProperty('--r2', (-ang + bend * 0.4).toFixed(1) + 'deg');
+    st.setProperty('--mh', rnd(8, 26).toFixed(0) + 'px');
+    st.setProperty('--mw', (Math.random() < 0.3 ? 1.5 : 1) + 'px');
+    st.setProperty('--mo', rnd(0.6, 1).toFixed(2));
+    st.setProperty('--mc', Math.random() < 0.25 ? '#CDF2DF' : '#FFF0C6');
+    st.setProperty('--md', rnd(5, 11).toFixed(1) + 's');
+    // A pause before each appearance, longer than the drift itself at
+    // times, so they come and go rather than cycle.
+    m.classList.remove('go');
+    setTimeout(function () { void m.offsetWidth; m.classList.add('go'); }, (first ? rnd(0, 6000) : rnd(800, 7000)));
+  }
+  for (var j = 0; j < MOTES; j++) {
+    var m = document.createElement('b');
+    lumen.appendChild(m);
+    m.addEventListener('animationend', function (e) { seed(e.currentTarget, false); });
+    seed(m, true);
+  }
 
   /* The fall. It plays on every arrival at the top, after the splash when
      there is one. Arriving part-way down (a link to #faq, a restored

@@ -54,8 +54,10 @@ Two consequences worth knowing before editing anything in there:
   node .claude/check-species.js
   ```
 
-  It compares the names, the count, and the two figures the copy quotes ("48
-  species", "23 safe for cats and dogs"). Run it after touching `plants.js`.
+  It compares the names and the row count, checks the one figure the copy
+  quotes ("23 safe for cats and dogs"), and fails if the copy states a
+  number of species: the list grows, so the site deliberately never says
+  how many there are. Run it after touching `plants.js`.
   To regenerate the rows, emit one `<li class="sp-row">` per record in
   `PLANT_DATA` order with `common` and `botanical`, plus a `Pet safe` tag when
   `tox.cats` and `tox.dogs` are both `safe`.
@@ -87,6 +89,11 @@ Two consequences worth knowing before editing anything in there:
   (`position:relative; z-index:1`) so the light passes over the dark
   section plates and behind everything on them. Its path is found, not
   drawn: a new section with a `.phone` or an `h2` joins it with no edit.
+  The phones, the film and the species list (`.phone img`, `.film-thumb`,
+  `.sp-block`) are stations: the light stops behind one while it is near
+  the middle of the screen and its edges take `.is-lit`, the list's along
+  with its search. Anything the light should go behind rather than show
+  through needs an opaque background, which is why `.sp-block` has one.
   Off under reduced motion; the still wash is what no-JS readers see.
 
 - **The privacy policy lives at `site/privacy.html`**, not at the root any
