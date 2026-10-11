@@ -247,19 +247,20 @@ scaled. At 24dp it is half the launcher's size, and the brand rule already
 says the stroke thickens below 32px; 8.5 against the usual 5 is that rule
 applied, chosen with all four candidate weights side by side at true size.
 
-`store-assets/` holds the two images Play needs in the console rather than in
-the build. The feature graphic is a page, not a drawing, so the wordmark is
-set in the app's own faces — see the comment at the top of
-`feature-graphic.html` for the one command that regenerates it.
+`store-assets/` holds what the stores need in the console rather than in
+the build: the Play icon, the feature graphic, and the listing screenshots
+in `store-assets/listing/`. The graphic and the screenshots are pages, not
+drawings, so every word is set in the app's own faces over real screens,
+and `marketing/store-shots/` regenerates all of them.
 
 ## Still to do before a first submission
 
 - **Signing.** An upload key for Play and a distribution certificate for
   Apple. Neither belongs in the repository; Play App Signing holds the
   release key for you.
-- **Store listing copy and screenshots.** Play wants at least two phone
-  screenshots; both stores want a description. The app's own splash and
-  Today screen are the obvious first two.
+- **App Store listing.** The copy and the Play screenshots are done
+  (`store-listing.md`, `store-assets/listing/`); the 6.9" iPhone set is
+  rendered alongside and waits for the App Store.
 
 ## Things worth knowing
 

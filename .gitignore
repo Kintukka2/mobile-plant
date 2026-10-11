@@ -50,3 +50,8 @@ native/android/keystore.properties
 # regenerated on demand; the web-weight copies in site/img/screens/ are the
 # ones that ship.
 marketing/site-shots/*.png
+
+# Raw phone captures from marketing/store-shots/capture.js, the inputs to
+# its frames. Rebuilt on demand; the finished frames are in
+# native/store-assets/listing/.
+marketing/store-shots/raw/

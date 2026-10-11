@@ -9,7 +9,8 @@ Nothing in the app or the site reads this folder.
 | `capture.js` | Today, the plan, a plant page, a diagnosis and the greenhouse, at 390×844 ×3 |
 | `og.html`, `og.js` | `site/img/og.jpg`, the 1200×630 card a shared link unfurls into |
 
-The greenhouse is the reels' (`marketing/reels/build/seed.js`), so every
+The greenhouse is the reels' (`marketing/reels/build/seed.js`), housed by
+`state.js`, which `marketing/store-shots/` shares, so every
 marketing surface shows the same Daniel and the same six plants, with the
 tour's sample flat drawn in as the plan. Its windows are placed so the plan
 shows the light ladder rather than five rooms of direct sun, and the clock is
