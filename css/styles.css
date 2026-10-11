@@ -5358,6 +5358,42 @@ html.plan-full .tabbar { visibility: hidden; }
    wrong way round. */
 @media (max-height: 719px) { .plan-invite-sprout { display: none; } }
 
+/* ---- The walls tip ----
+   A small callout pinned to side 1's number by placeWallTip(), with an
+   arrow at --arrow-x pointing at it. Transparent to the pointer apart
+   from its close button, so the number under the arrow stays tappable. */
+.plan-walltip {
+  /* Above the stage's corner buttons: on a phone the room sits high and
+     the tip lands over Centre, and half-covered beats half-showing. */
+  position: absolute; z-index: 7;
+  max-width: 230px; padding: 9px 10px 9px 12px;
+  display: flex; align-items: flex-start; gap: 8px;
+  border: 1px solid var(--emerald-glow); border-radius: var(--r);
+  background: var(--bg-2);
+  box-shadow: 0 0 0 4px var(--mint-wash), 0 10px 24px -12px rgba(0, 0, 0, 0.6);
+  color: var(--ink-2); font-size: 12px; line-height: 1.45;
+  pointer-events: none;
+  animation: coachSwap var(--dur-2) var(--ease) both;
+}
+.plan-walltip::after {
+  content: ''; position: absolute; left: var(--arrow-x, 50%); bottom: -6px;
+  width: 10px; height: 10px; margin-left: -5px;
+  background: var(--bg-2);
+  border-right: 1px solid var(--emerald-glow); border-bottom: 1px solid var(--emerald-glow);
+  transform: rotate(45deg);
+}
+.plan-walltip.is-below::after { bottom: auto; top: -6px; transform: rotate(225deg); }
+/* The numbers it is talking about breathe while it is up. */
+.plan-edge-hint { transform-box: fill-box; transform-origin: center; animation: edgeHint 1.8s var(--ease) infinite; }
+@keyframes edgeHint {
+  0%, 100% { stroke: var(--hair-3); stroke-width: 1; }
+  50%      { stroke: var(--emerald-glow); stroke-width: 3; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .plan-walltip { animation: none; }
+  .plan-edge-hint { animation: none; stroke: var(--emerald-glow) !important; stroke-width: 2; }
+}
+
 /* ---- The tracing coach ----
    Shown on the grid the moment tracing starts, where the reader is already
    looking: a box drawing itself under a fingertip, and the one sentence it

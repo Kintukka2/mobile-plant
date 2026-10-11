@@ -576,7 +576,7 @@ window.ViewProfile = (function () {
         /* The planner's "don't show again" hints come back with the
            weather tips: one button that brings back everything I was told
            to stop saying. */
-        Store.updateSettings({ dismissed: [], dragCoachOff: false, nameNudgeOff: false, reshapeTipDone: false });
+        Store.updateSettings({ dismissed: [], dragCoachOff: false, nameNudgeOff: false, reshapeTipDone: false, wallTipDone: false });
         UI.toast('Tips will show again', 'leaf');
         return;
       }
