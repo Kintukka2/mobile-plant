@@ -179,6 +179,7 @@ nothing on its own.
 | `sprout.state.v1` | Plants, rooms, diary entries, preferences |
 | `sprout.theme` | Selected theme |
 | `sprout.photo.*` | One resized JPEG data URL per photo |
+| `sprout-planner.v1` | The planner preview's plan, on its page only (`planner.html`) |
 
 **One piece of it does leave, and it is worth saying plainly rather than
 rounding up to "everything is local".** If a location is set, its
@@ -192,6 +193,15 @@ Those two requests are the only traffic the app ever makes. Apart from a
 backup the reader sends somewhere themselves, nothing else leaves the device,
 and nothing is fetched from a second origin. `native/store-privacy.md` turns the same facts into the answers
 both app stores' privacy forms ask for.
+
+**The planner preview** at sproutevergreen.app/planner is the app's planner
+alone, for people who have not installed it. It keeps what is drawn there
+in that browser, under its own key so it can never touch a garden on the
+same origin, and sends nothing to anyone: no forecast, no location. Its
+Save downloads a backup-shaped file to the reader's device for the app's
+Restore to open, and its Google Play link carries a campaign referrer
+naming the planner, which tells Play where the visit came from and nothing
+about the reader.
 
 ---
 
@@ -231,7 +241,7 @@ every push to `main`:
 
 | Project | Root directory | Domain |
 | --- | --- | --- |
-| `sprout-app` | `/` | [sproutevergreen.app](https://sproutevergreen.app) — the web app is retired: `/` redirects to sproutevergreen.com (`_redirects`), and the app's files stay published, for the store build and the planned planner preview |
+| `sprout-app` | `/` | [sproutevergreen.app](https://sproutevergreen.app) — the web app is retired: `/` redirects to sproutevergreen.com (`_redirects`), and the app's files stay published, for the store build and the planner preview at [/planner](https://sproutevergreen.app/planner) (`planner.html`) |
 | `sprout-site` | `site` | [sproutevergreen.com](https://sproutevergreen.com) — landing page and privacy policy |
 
 The app is served from the repository root because that is where it runs from

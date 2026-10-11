@@ -448,7 +448,10 @@ window.ViewPlan = (function () {
       const plants = Store.activePlants();
       const loose = plants.filter(function (p) { return !(p.pos && Plan.roomAt(p.pos.x, p.pos.y)); });
       if (!plants.length) {
-        h += '<p class="hint">No plants yet. Add one in the greenhouse and it will appear here to place.</p>';
+        /* A button rather than "add one in the greenhouse": the planner
+           preview has no greenhouse to send anyone to, and in the app the
+           walk there and back lost the step the reader was on. */
+        h += '<p class="hint">No plants yet. Add one and I\'ll show you where it should stand.</p>';
       } else if (loose.length) {
         /* The instruction comes first: it is read before the chips it is
            about, and it sits nearer the plan they are dragged onto. */
@@ -460,6 +463,8 @@ window.ViewPlan = (function () {
       } else {
         h += '<p class="hint">Every plant is on the plan. Tap one to see how it is doing there.</p>';
       }
+      h += '<button class="btn btn-sm btn-ghost" id="pl-add-plant" style="margin-top:12px">' + UI.icon('plus') +
+        (plants.length ? 'Add another' : 'Add a plant') + '</button>';
     }
     return h;
   }
@@ -736,7 +741,10 @@ window.ViewPlan = (function () {
   }
 
   function placeIn(p, r) {
-    const spot = bestSpotIn(r, Store.species(p)), moved = p.roomId !== r.id;
+    /* Moved only if it was standing somewhere: a plant with no place yet,
+       or one just added, is being placed, and "Moved to" a room it was
+       never out of read as a mistake. */
+    const spot = bestSpotIn(r, Store.species(p)), moved = !!p.pos && p.roomId !== r.id;
     Store.updatePlant(p.id, { roomId: r.id, pos: spot });
     UI.toast((moved ? 'Moved to ' : 'Placed in ') + r.name, 'leaf');
     redraw();
@@ -1296,6 +1304,7 @@ window.ViewPlan = (function () {
       if (e.target.closest('#pl-view-reset')) { centreView(); drawCanvas(); syncOverlays(); return; }
       if (e.target.closest('.plan-tools [data-open-compass]')) { openCompass(); return; }
       if (e.target.closest('[data-open-dims]')) { openDims(sel && sel.type === 'room' ? sel.id : null); return; }
+      if (e.target.closest('#pl-add-plant')) { ViewGreenhouse.addPlantSheet(null); return; }
       if (e.target.closest('#pl-quick-add')) { if (sel && sel.type === 'room') quickAdd(room(sel.id)); return; }
       if (e.target.closest('[data-tip-done]')) { Store.updateSettings({ reshapeTipDone: true }); syncOverlays(); return; }
       if (e.target.closest('[data-walltip-done]')) { wallTipDone(); return; }
@@ -1565,8 +1574,19 @@ window.ViewPlan = (function () {
     }
   }
 
+  /* Stand a plant at its best spot in a room and select it, so the floor
+     shades for it straight away. The planner preview calls this once a
+     plant it has just added exists; placeIn() alone leaves nothing
+     selected, and the shading is the point of adding one there. */
+  function place(plantId, roomId) {
+    const p = Store.getPlant(plantId), r = room(roomId);
+    if (!p || !r || !r.shape) return;
+    sel = { type: 'plant', id: p.id }; mode = 'plan'; tool = 'select'; drawing = null;
+    placeIn(p, r);
+  }
+
   /* Arrive with a room already selected — from its sheet or its page. */
   function focusRoom(id) { sel = { type: 'room', id: id }; mode = 'plan'; tool = 'select'; drawing = null; }
 
-  return { title: title, sub: sub, actions: actions, back: true, render: render, mount: mount, stagger: false, focusRoom: focusRoom };
+  return { title: title, sub: sub, actions: actions, back: true, render: render, mount: mount, stagger: false, focusRoom: focusRoom, place: place };
 })();

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-theme="viridium">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A1410">
+<title>Sprout · Home planner</title>
+<meta name="description" content="Draw your home, mark the windows and see where each plant should stand. A preview of the planner in Sprout, the houseplant app.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Sprout Evergreen">
+<meta property="og:title" content="Sprout · Home planner">
+<meta property="og:description" content="Draw your home, mark the windows and see where each plant should stand.">
+<meta property="og:url" content="https://sproutevergreen.app/planner">
+<meta property="og:image" content="https://sproutevergreen.com/img/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%230A1410'/><g fill='none' stroke='%233FBE8B' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'><path d='M50 84V40'/><path d='M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z'/><path d='M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z'/></g></svg>">
+<!-- ==========================================================================
+     The home planner, on its own: a preview of the app's best feature for
+     people arriving from sproutevergreen.com, whose Save hands them a file
+     and the store badges.
+
+     It is not a second planner. It loads the app's own scripts and
+     stylesheet, so it can never drift from what the app does, and it is
+     not part of the app either: it is not in sw.js ASSETS, not in the
+     manifest, and native/copy-web.js does not copy it, so the store builds
+     never carry it. Like brand.html, it sits beside the app rather than in
+     it.
+
+     Three things keep it from touching a real garden on this origin, which
+     is the one that served the web app until it was retired:
+
+     - Its own storage key, set below before store.js reads it. The key does
+       not start "sprout." on purpose: an open app tab reloads on any
+       storage event under that prefix, and would on every stroke here.
+     - No app.js. That is the file that boots the app, registers the
+       service worker, redirects to Today and opens the welcome sheet; the
+       little shell at the bottom of this page does the planner's share.
+     - No notify.js. It writes the reminder digest to IndexedDB on every
+       save, and this origin's digest is the app's.
+
+     Nothing here is sent anywhere. What is drawn stays in this browser
+     until Save writes it to a file on the reader's own device.
+     ========================================================================== -->
+<link rel="stylesheet" href="css/styles.css">
+<style>
+  /* The app's shell, minus the sidebar and the tab bar it makes room for. */
+  .planner-page .main { padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px)); }
+  @media (min-width: 900px) { .planner-page .main { margin-left: 0; } }
+
+  /* The sprig stands where the app's back button would, and goes home to
+     the site rather than back into an app this page is not. */
+  .pv-mark { flex: none; display: block; align-self: center; width: 26px; height: 34px; color: var(--emerald-glow); }
+  .pv-mark svg { width: 100%; height: 100%; display: block; }
+  .pv-mark:focus-visible { outline: 2px solid var(--emerald-glow); outline-offset: 4px; border-radius: 4px; }
+  .planner-page .topbar-title { font-size: clamp(22px, 5vw, 34px); }
+  /* "Save" is the one thing in the bar that is not about the plan, and it
+     is the reason the page exists, so it is the filled button. */
+  .pv-save { white-space: nowrap; }
+  @media (max-width: 420px) {
+    .planner-page .topbar { gap: 10px; flex-wrap: wrap; }
+    .planner-page .topbar-titles { flex-basis: calc(100% - 40px); }
+    .planner-page .topbar-actions { width: 100%; justify-content: space-between; }
+  }
+
+  /* The keep-it sheet. */
+  .pv-lede { font-family: var(--serif); font-size: 17px; line-height: 1.55; color: var(--ink-2); margin: 0 0 18px; }
+  .pv-steps { list-style: none; counter-reset: pv; margin: 0 0 20px; padding: 0; display: grid; gap: 12px; }
+  .pv-steps li { counter-increment: pv; display: grid; grid-template-columns: 26px 1fr; gap: 12px; align-items: baseline;
+                 font-size: 14px; line-height: 1.55; color: var(--ink-2); }
+  .pv-steps li::before { content: counter(pv); font-family: var(--display); font-weight: 500; font-size: 15px; color: var(--emerald-glow); }
+  .pv-steps b { font-weight: 500; color: var(--ink); }
+  .pv-stores { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 16px; }
+  .pv-badge { display: inline-flex; border-radius: 9px; }
+  .pv-badge img { display: block; height: 46px; width: auto; }
+  .pv-badge:focus-visible { outline: 2px solid var(--emerald-glow); outline-offset: 3px; }
+  /* Ours, not Apple's artwork, for the same reason as on the site: the app
+     is not on the App Store yet. Sized off the Play badge beside it. */
+  .pv-soon { height: 46px; width: calc(46px * 564 / 168); box-sizing: border-box; border: 1px solid var(--hair-2); border-radius: 9px;
+             display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+             font-family: var(--sans); color: var(--ink-3); }
+  .pv-soon small { font-size: 9px; letter-spacing: .16em; text-transform: uppercase; }
+  .pv-soon span { font-size: 15px; color: var(--ink-2); }
+  .pv-again { display: inline-block; margin-top: 14px; }
+</style>
+<script>
+  window.SPROUT_STATE_KEY = 'sprout-planner.v1';
+</script>
+</head>
+<body class="planner-page">
+
+<div class="grain" aria-hidden="true"></div>
+
+<div class="app">
+  <main class="main" id="main">
+    <header class="topbar">
+      <a class="pv-mark" href="https://sproutevergreen.com/" aria-label="Sprout, the houseplant app">
+        <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/>
+        </svg>
+      </a>
+      <div class="topbar-titles">
+        <h1 class="topbar-title" id="view-title">Home planner</h1>
+        <p class="topbar-sub" id="view-sub">A preview of Sprout</p>
+      </div>
+      <div class="topbar-actions" id="topbar-actions"></div>
+    </header>
+
+    <div class="view" id="view" role="region" aria-label="Your plan"></div>
+    <noscript><p class="hint" style="padding:40px 0">The planner draws with JavaScript, which is switched off in this browser.
+      <a class="link-btn" href="https://sproutevergreen.com/">Back to Sprout</a></p></noscript>
+  </main>
+</div>
+
+<div class="sheet-backdrop" id="sheet-backdrop" hidden>
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true">
+    <div class="sheet-grip"></div>
+    <div class="sheet-head">
+      <h2 class="sheet-title" id="sheet-title"></h2>
+      <button class="icon-btn" id="sheet-close" aria-label="Close"></button>
+    </div>
+    <div class="sheet-body" id="sheet-body"></div>
+    <div class="sheet-foot" id="sheet-foot"></div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toast-wrap" aria-live="polite"></div>
+
+<!-- The planner's half of index.html's list, in the same order. Schedule is
+     here for the plant sheets (room suggestions, pet warnings), not for any
+     reminders. -->
+<script src="js/data/lookups.js"></script>
+<script src="js/data/plants.js"></script>
+<script src="js/data/problems.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/store.js"></script>
+<script src="js/schedule.js"></script>
+<script src="js/plan.js"></script>
+<script src="js/tour.js"></script>
+<script src="js/views/greenhouse.js"></script>
+<script src="js/views/plan.js"></script>
+
+<!-- The shell: App's job for one screen.
+
+     ViewPlan expects a router around it, and asks one for three things: to
+     re-render after a sheet saves (refresh), to open a plant's page (go),
+     and to re-render from scratch (render). Only the first means the same
+     thing here. A plant page is the app, so asking for one opens the
+     keep-it sheet instead, which is the honest answer to "show me more".
+
+     Adding a plant is the one place the greenhouse's own flow would lead
+     away: its form asks for pot, drainage and the last watering, then
+     opens the plant's page. Here a species is enough, because all the plan
+     needs to shade the floor is what the plant likes, so the species picker
+     is reused and the form is skipped. -->
+<script>
+(function () {
+  'use strict';
+
+  var PLAY = 'https://play.google.com/store/apps/details?id=com.sproutevergreen.app' +
+             '&referrer=utm_source%3Dsproutevergreen.app%26utm_medium%3Dplanner';
+
+  function render(keep) {
+    Plan.sync();
+    // A fresh element each time, as App does: mount() binds its listeners
+    // to the root, and a reused one would collect a set per render.
+    var old = document.getElementById('view');
+    var view = old.cloneNode(false);
+    old.parentNode.replaceChild(view, old);
+    document.getElementById('topbar-actions').innerHTML = ViewPlan.actions() +
+      '<button class="btn btn-sm pv-save" id="pv-save">' + UI.icon('download') + 'Save</button>';
+    view.innerHTML = ViewPlan.render();
+    ViewPlan.mount(view, { refresh: !!keep });
+  }
+
+  window.App = {
+    refresh: function () { render(true); },
+    render: function () { render(false); },
+    go: function (path) {
+      var m = /^\/plant\/(.+)$/.exec(path || '');
+      var p = m && Store.getPlant(m[1]);
+      if (p) keep('plant', p); else render(true);
+    }
+  };
+
+  /* The best drawn room for a species, if the light is known well enough
+     to say. While north is unconfirmed every room ranks the same, and
+     choosing one would be a claim with nothing behind it. */
+  function bestRoom(speciesId) {
+    if (!Plan.known()) return null;
+    var ranked = Schedule.bestRoomsFor(speciesId).filter(function (x) { return x.room.shape; });
+    return ranked.length ? ranked[0].room : null;
+  }
+
+  ViewGreenhouse.addPlantSheet = function (roomId) {
+    ViewGreenhouse.speciesPicker(function (speciesId) {
+      var r = roomId ? Store.getRoom(roomId) : bestRoom(speciesId);
+      var p = Store.addPlant({ speciesId: speciesId, potPending: true });
+      UI.closeSheet();
+      if (r && r.shape) {
+        ViewPlan.place(p.id, r.id);
+      } else {
+        render(true);
+        UI.toast('Drag ' + Store.displayName(p) + ' into a room', 'leaf');
+      }
+    }, 'Which plant?');
+  };
+
+  /* ---------- Keep it: the file, and the app it opens in ---------- */
+
+  function download() {
+    /* Not Store.exportAll(). That gathers every sprout.photo.* key on the
+       origin, and on this one those belong to the retired web app's
+       garden, not to anything drawn here. The planner never makes a photo,
+       so its file has none. The shape is the app's backup, which is what
+       its Restore reads. */
+    var json = JSON.stringify({ state: Store.get(), photos: {}, exportedAt: new Date().toISOString(), from: 'planner' }, null, 2);
+    var blob = new Blob([json], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'sprout-plan-' + UI.toISO(new Date()) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    UI.toast('Plan downloaded', 'leaf');
+  }
+
+  function keep(why, plant) {
+    var n = Plan.shaped().length;
+    var lede = why === 'plant'
+      ? 'Watering, feeding and what to do when a leaf turns are in the app, worked out for where ' +
+        UI.esc(Store.displayName(plant)) + ' stands. Take your plan with you and it\'ll arrive in place.'
+      : n
+        ? 'I\'m keeping your ' + UI.esc(UI.plural(n, 'room')) + ' in this browser, so this device will find them here again. To take them into the app, download the plan.'
+        : 'Draw a room or two first. This is the file the app opens, so it carries only what\'s on the plan.';
+    var body =
+      '<p class="pv-lede">' + lede + '</p>' +
+      '<ol class="pv-steps">' +
+        '<li><span>Get <b>Sprout</b>. It\'s free on Android, and coming to iPhone soon.</span></li>' +
+        '<li><span>In the app, open <b>Profile</b>, then <b>Settings</b>, and tap <b>Restore</b>.</span></li>' +
+        '<li><span>Choose the file you downloaded. Your rooms, windows and plants arrive as you drew them.</span></li>' +
+      '</ol>' +
+      '<div class="pv-stores">' +
+        // The site's copy of Google's badge. This deploy redirects /site/*
+        // to sproutevergreen.com, which serves the same file.
+        '<a class="pv-badge" href="' + UI.attr(PLAY) + '" target="_blank" rel="noopener">' +
+          '<img src="site/img/google-play.png" width="564" height="168" alt="Get it on Google Play"></a>' +
+        '<span class="pv-soon" aria-label="App Store, coming soon"><small>Coming soon</small><span>App Store</span></span>' +
+      '</div>' +
+      '<p class="hint">Restore replaces whatever the app is holding, so it\'s for a new install. An update that adds a plan to a garden you already have is on its way.</p>' +
+      // A link, not a button: openSheet() focuses the body's first button,
+      // and the one action here that throws work away should not be it.
+      (n ? '<a class="link-btn pv-again" id="pv-again" href="#" role="button">Start again with a blank plan</a>' : '') +
+      '<div class="row" style="gap:8px">' +
+        '<button class="btn btn-ghost" data-act="sheet-cancel" style="flex:1">Keep drawing</button>' +
+        (n ? '<button class="btn" id="pv-download" style="flex:1">' + UI.icon('download') + 'Download plan</button>' : '') +
+      '</div>';
+
+    UI.openSheet(why === 'plant' ? 'More in the app' : 'Keep your plan', body, function (sheet) {
+      var d = sheet.querySelector('#pv-download');
+      if (d) d.addEventListener('click', download);
+      var again = sheet.querySelector('#pv-again');
+      if (again) again.addEventListener('click', function (e) {
+        e.preventDefault();
+        UI.closeSheet();
+        setTimeout(function () {
+          UI.confirmSheet('Start again?', 'Everything on this plan will be cleared from this browser. A plan you\'ve already downloaded stays as it is.',
+            'Clear the plan', function () {
+              try { localStorage.removeItem(window.SPROUT_STATE_KEY); } catch (e) { /* private mode */ }
+              location.reload();
+            }, true);
+        }, 230);
+      });
+    });
+  }
+
+  /* ---------- Chrome App wires for every screen ---------- */
+
+  var closeBtn = document.getElementById('sheet-close');
+  closeBtn.innerHTML = UI.icon('x');
+  closeBtn.addEventListener('click', UI.closeSheet);
+  document.getElementById('sheet-backdrop').addEventListener('click', function (e) {
+    if (e.target.id === 'sheet-backdrop') UI.closeSheet();
+  });
+  // The plate rather than the body, as in app.js: openSheet() lifts a
+  // trailing button row into the footer, outside #sheet-body.
+  document.getElementById('sheet').addEventListener('click', function (e) {
+    if (e.target.closest && e.target.closest('[data-act="sheet-cancel"]')) UI.closeSheet();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && UI.sheetIsOpen()) UI.closeSheet();
+  });
+  document.addEventListener('click', function (e) {
+    if (e.target.closest && e.target.closest('#pv-save')) keep('save');
+  });
+
+  render(false);
+})();
+</script>
+</body>
+</html>

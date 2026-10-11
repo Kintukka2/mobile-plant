@@ -41,6 +41,18 @@ stores' definitions turn on the developer or a third party receiving the
 data, which never happens here. Re-check that against each store's current
 wording before relying on it.
 
+**The planner preview is not the app, and changes neither form.**
+`planner.html` on sproutevergreen.app runs the app's planner in a browser
+for people who have not installed it. It sends nothing to anyone: no
+forecast, no location, no analytics; it loads only its own files and the
+Play badge from sproutevergreen.com. What is drawn stays in that browser's
+`localStorage` under `sprout-planner.v1`, and its Save downloads a file to
+the reader's device, the same reader-started transfer as a backup. Its
+Google Play link carries a `referrer` naming the planner as the campaign;
+that tells Play which page sent the visit and carries nothing about the
+reader. It is in neither store build (`native/copy-web.js` does not copy
+it).
+
 **There is no second origin any more.** The three typefaces that used to
 load from Google Fonts — which handed Google an IP address and a user agent
 on every cold start, for nothing — are self-hosted alongside PP Hatton as of

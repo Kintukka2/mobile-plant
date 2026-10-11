@@ -60,11 +60,13 @@ Two consequences worth knowing before editing anything in there:
   `PLANT_DATA` order with `common` and `botanical`, plus a `Pet safe` tag when
   `tox.cats` and `tox.dogs` are both `safe`.
 
-- **Every call to action on the site is a store badge.** Google Play is
-  live (`com.sproutevergreen.app`); the App Store tile says coming soon and
-  carries no Apple artwork until the app is there. The web app is not linked
-  from the site at all. The Play badge in `site/img/google-play.png` is
-  Google's own, trimmed of its margin and otherwise unaltered.
+- **Every call to action on the site is a store badge, bar one.** Google
+  Play is live (`com.sproutevergreen.app`); the App Store tile says coming
+  soon and carries no Apple artwork until the app is there. The Play badge
+  in `site/img/google-play.png` is Google's own, trimmed of its margin and
+  otherwise unaltered. The one exception is "Try the planner" in the plan
+  section, which opens the planner preview (below) in a new tab. The rest
+  of the web app is not linked from the site at all.
 
 - **The site's phone screens are captured, not drawn.**
   `marketing/site-shots/capture.js` renders them from the app with the reels'
@@ -91,9 +93,32 @@ reads it.
 `_headers` and `_redirects` at the root belong to the app deploy. **The web
 app is retired:** `_redirects` sends `sproutevergreen.app/` to
 sproutevergreen.com, and the app's files stay published beneath it: the
-store apps are built from the same tree, and the planner preview is planned
-to be served from them. Locally `.claude/serve.js` ignores `_redirects`, so the app still
-runs at `/` for development. The rule in `_headers` that matters is the
+store apps are built from the same tree, and the planner preview is served
+from them. Locally `.claude/serve.js` ignores `_redirects`, so the app still
+runs at `/` for development.
+
+**The planner preview is `planner.html`**, at sproutevergreen.app/planner:
+the app's own planner and nothing else, for readers who have not installed
+it. It loads the app's scripts and stylesheet, so it cannot drift from the
+app, but it is not part of the app: not in `sw.js` ASSETS, not in the
+manifest, not copied by `native/copy-web.js`. Three rules keep it off the
+garden that lived on this origin before the web app was retired:
+
+- It sets `window.SPROUT_STATE_KEY = 'sprout-planner.v1'` before
+  `store.js` loads. Not under `sprout.`, because an open app tab reloads on
+  any storage event with that prefix.
+- It loads no `app.js` (which boots the app and registers the service
+  worker) and no `notify.js` (which writes the reminder digest to
+  IndexedDB on every save). A small inline shell stands in for `App`.
+- Its Save builds its own file rather than calling `Store.exportAll()`,
+  which would sweep up every `sprout.photo.*` key on the origin.
+
+Adding a plant there takes a species and nothing else, through
+`ViewGreenhouse.speciesPicker`, and opening a plant's page opens the
+keep-it sheet instead: plant pages are the app. The file is shaped like a
+backup, so Restore in the app opens it today, replacing what the app holds.
+An "Import a home plan" that merges is the planned next step, and the sheet
+says so. The rule in `_headers` that matters is the
 no-cache one on `sw.js`: bumping `CACHE` does nothing
 if the CDN is still handing out the old `sw.js` that names the old cache.
 
@@ -423,6 +448,7 @@ Claims about this are load-bearing — see the note at the end of this section.
 | `sprout.state.v1` | Plants, rooms, diary entries, preferences |
 | `sprout.theme` | Selected theme |
 | `sprout.photo.*` | One resized JPEG data URL per photo |
+| `sprout-planner.v1` | The planner preview's plan (`planner.html` only) |
 
 One thing is **not** in localStorage, and cannot be. `js/notify.js` writes a
 reminder digest to IndexedDB (`sprout` → `kv` → `digest.v1`) on every save:
@@ -450,7 +476,9 @@ localStorage is ~5MB, which is the entire budget. Photos are downscaled to a
 throws on access rather than returning null.
 
 The Open-Meteo forecast (no API key) is the only outbound request the app
-makes. The typefaces used to be a second one and are not any more.
+makes. The typefaces used to be a second one and are not any more. The
+planner preview sends nothing to anyone; its Play link carries a referrer naming
+the planner, which tells Play where the visit came from and nothing else.
 
 **Do not write that the location stays on the device.** It did not, and the
 claim shipped for a while before anyone checked it against `js/weather.js`,
