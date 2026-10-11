@@ -355,9 +355,11 @@ html.beam-go .hero::before{ animation:beam-drop 2.1s cubic-bezier(.5,0,.2,1) bot
        margin-right:-.2em; }
 /* The wordmark's "evergreen" set in running copy: the same face and mint,
    scaled up from the line it sits in, because Sacramento at text size is
-   about two thirds the height of the serif around it. */
+   about two thirds the height of the serif around it. Kept on one line:
+   with no line height of its own, a phrase broken across two would set its
+   second half into the line below. */
 .script-word{ font-family:var(--script); font-weight:400; color:var(--mint);
-              font-size:1.45em; line-height:0; letter-spacing:.01em; }
+              font-size:1.45em; line-height:0; letter-spacing:.01em; white-space:nowrap; }
 .script{ font-family:var(--script); font-size:calc(var(--wm)*0.56); color:var(--mint);
          line-height:1; margin-top:calc(var(--wm)*0.12);
          /* Hangs under SPROUT, not under the mark. */
