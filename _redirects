@@ -2,3 +2,13 @@
 # reachable at sproutevergreen.app/site/ as well as at its own domain. One
 # page on two URLs is a page that gets indexed twice and updated once.
 /site/*  https://sproutevergreen.com/:splat  301
+
+# The web app is retired: sproutevergreen.app's front door goes to the
+# marketing site, which hands the reader to the stores. Only "/" moves. The
+# app's files stay published under it: native/copy-web.js builds the store
+# apps from this same tree (it copies css, js, img and three files, never
+# this one), the planner preview is planned to be served from them, and
+# every old link to sproutevergreen.app, the reels' outro among them, still
+# lands somewhere. 302 rather than 301, so no browser remembers it for good
+# if the front door is ever given back to something.
+/  https://sproutevergreen.com/  302

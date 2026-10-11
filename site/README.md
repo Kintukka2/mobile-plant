@@ -9,7 +9,9 @@ site/
   privacy.html   the policy both stores require; Play has this URL
   site.css       shared by both, so they cannot drift apart
   fonts/         a copy of css/fonts/, see below
-  img/           screenshots, and Sprout's cut-out for the hero corner
+  img/           screens/ (the phone screens, captured from the app by
+                 marketing/site-shots), the Play badge, the share card
+                 (og.jpg), the touch icon, and Sprout's corner cut-out
   _headers       security headers and cache policy
 ```
 
@@ -56,7 +58,7 @@ command** — they publish the directory as it stands.
 
 | Project | Root directory | Domain |
 | --- | --- | --- |
-| `sprout-app` | `/` | `sproutevergreen.app` |
+| `sprout-app` | `/` | `sproutevergreen.app`, whose `/` now redirects here |
 | `sprout-site` | `site` | `sproutevergreen.com` |
 
 Every push to `main` redeploys both. A push to any other branch gets a preview

@@ -45,3 +45,8 @@ Desktop.ini
 native/android/keystore.properties
 *.jks
 *.keystore
+
+# Full-size phone captures from marketing/site-shots/capture.js. 11MB and
+# regenerated on demand; the web-weight copies in site/img/screens/ are the
+# ones that ship.
+marketing/site-shots/*.png

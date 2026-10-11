@@ -11,11 +11,23 @@
 <meta property="og:title" content="Sprout Evergreen">
 <meta property="og:description" content="Most plant apps ask how often you want reminding. This one works it out.">
 <meta property="og:url" content="https://sproutevergreen.com/">
+<meta property="og:site_name" content="Sprout Evergreen">
+<!-- The share card. It was summary_large_image with no image, which every
+     app that unfurls a link reads as "show nothing". Rendered from
+     marketing/site-shots/og.html, absolute because scrapers do not resolve
+     a relative og:image. -->
+<meta property="og:image" content="https://sproutevergreen.com/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Sprout Evergreen: Most plant apps ask how often you want reminding. This one works it out. Free on Google Play, coming to iPhone soon. Beside it, the app's Today screen.">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sprout Evergreen">
+<meta name="twitter:description" content="Most plant apps ask how often you want reminding. This one works it out.">
+<meta name="twitter:image" content="https://sproutevergreen.com/img/og.jpg">
 <!--
-  The landing page for sproutevergreen.com. The web app itself lives at
-  sproutevergreen.app, served from this repositorys root by a second
-  Cloudflare Pages project; see site/README.md.
+  The landing page for sproutevergreen.com. The app is on Google Play, with
+  the App Store to follow; the web app at sproutevergreen.app is retired and
+  its front door redirects here. See site/README.md.
 
   Its styles are in site.css rather than inline so privacy.html can share
   them, and the ?v= on that link is a one-off: it is what reached the readers
@@ -25,11 +37,12 @@
   alone unless a cached stylesheet breaks a page again.
 -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A1410'/%3E%3Cg fill='none' stroke='%233FBE8B' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M50 84V40'/%3E%3Cpath d='M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z'/%3E%3Cpath d='M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z'/%3E%3C/g%3E%3C/svg%3E">
-<link rel="stylesheet" href="site.css?v=2">
+<link rel="apple-touch-icon" href="img/touch-icon.png">
+<link rel="stylesheet" href="site.css?v=3">
 </head>
 <body>
 
-<!-- The app's splash, the same screen sproutevergreen.app opens on: SPROUT a
+<!-- The app's splash, the same screen the app opens on: SPROUT a
      letter at a time, "evergreen" written in, the hairline drawn with its
      sweep. A copy rather than a link, because site/ cannot reach ../; the
      markup here, the rules in site.css under "Splash" and the timing below
@@ -58,16 +71,12 @@
   try { sessionStorage.setItem('sprout.splash', '1'); } catch (e) {}
 
   el.hidden = false;
-  var root = document.documentElement;
-  // Snap scrolling stands down while it is up; see the snap script below.
-  root.classList.add('ui-snap-paused');
 
   var done = false;
   function lift() {
     if (done) return;
     done = true;
     el.classList.add('is-out');
-    root.classList.remove('ui-snap-paused');
     // Removed outright once faded: it is fixed and would trap clicks.
     setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 800);
   }
@@ -90,10 +99,8 @@
 <!-- The bar the hero's mark flies into. It is present from the first paint
      but shows nothing except that mark until the reader leaves the hero,
      because on the hero the mark is not the bar's — it is the lockup's, and
-     the two are the same element. index 0 of the panels is the hero, so
-     every panel after it reserves the bar's height rather than being
-     covered by it; at 360x780 the diagnosis panel had ten spare pixels, so
-     there was never a version of this that could just float on top.
+     the two are the same element. Its one control is the download: by the
+     time the bar appears the reader has left the hero's badges behind.
 
      display:none until the script adds .sb-live, so without JS the hero
      keeps its own mark and no bar appears half-built. -->
@@ -101,17 +108,21 @@
   <div class="wrap sitebar-in">
     <span class="sitebar-mark" id="sb-mark" aria-hidden="true"><svg viewBox="24 20 52 68" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/></svg></span>
     <div class="sitebar-cta" id="sb-cta">
-      <button type="button" class="btn btn-2 btn-sm" id="sb-top">
-        <span class="sb-long">Back to the top</span><span class="sb-short">Top</span>
-      </button>
-      <a class="btn btn-1 btn-sm" href="https://sproutevergreen.app">
-        <span class="sb-long">Open the web app</span><span class="sb-short">Open app</span>
+      <a class="store store-play store-sm" href="https://play.google.com/store/apps/details?id=com.sproutevergreen.app" rel="noopener">
+        <img src="img/google-play.png" width="564" height="168" alt="Get it on Google Play">
       </a>
     </div>
   </div>
 </div>
 
-<header class="hero" data-ui-snap-panel>
+<!-- The page has one job: say what Sprout does, then hand the reader to a
+     store. So every call to action is a store badge — Google Play live, the
+     App Store marked as coming — and the web app is not linked from here at
+     all. The Play badge is Google's own artwork, trimmed of its transparent
+     margin and otherwise untouched, as their badge guidelines ask. The App
+     Store one is ours and deliberately carries no Apple artwork: Apple's
+     badge is for apps that are on the store, and this one is not yet. -->
+<header class="hero">
   <div class="wrap">
     <div class="lockup">
       <div class="wm-row">
@@ -124,10 +135,17 @@
     <p class="lead">Care schedules built from real species data, the pot it is actually in,
     how bright the room actually is, and the weather where you actually live.</p>
     <div class="cta">
-      <a class="btn btn-1" href="https://sproutevergreen.app">Open the web app</a>
-      <a class="btn btn-2" href="#how">See how it works</a>
-      <span class="soon">Coming to Google Play and the App Store</span>
+      <div class="stores">
+      <a class="store store-play" href="https://play.google.com/store/apps/details?id=com.sproutevergreen.app" rel="noopener">
+        <img src="img/google-play.png" width="564" height="168" alt="Get it on Google Play">
+      </a>
+      <span class="store store-soon" aria-label="App Store, coming soon">
+        <span class="store-soon-k">App Store</span>
+        <span class="store-soon-v">Coming soon</span>
+      </span>
     </div>
+    </div>
+    <p class="free">Free on Android now. Coming to iPhone soon.</p>
   </div>
 
   <!-- The prompt to keep going. Absolutely positioned, so it does not join
@@ -152,14 +170,47 @@
        width="557" height="720" alt="" aria-hidden="true" decoding="async" hidden>
 </header>
 
-<section data-ui-snap-panel class="band" id="how">
-  <div class="wrap split">
-    <div>
+<!-- The sections run in the order the case is made: what you get every
+     morning, why it is right, what happens when something goes wrong, what
+     you keep, whether your plant is covered, what it costs you in privacy,
+     the questions left over, and then the stores.
+
+     The screens are the app as it is now, captured by
+     marketing/site-shots/capture.js from the same greenhouse the reels use,
+     and shown at the size of a phone rather than as thumbnails: they are the
+     evidence, and evidence nobody can read is decoration. -->
+
+<section class="feature" id="how">
+  <div class="wrap feature-in">
+    <div class="feature-copy">
+      <p class="eyebrow">Every morning</p>
+      <h2>A list that is short because it is right.</h2>
+      <p>A Monstera in a 24cm terracotta pot by a north window is not on the same cycle as one in
+      plastic in a dim corner. Sprout adjusts for pot size and material, drainage, room light,
+      window aspect and season, so the list you get is the list that is actually due.</p>
+      <p>Set a location and it reads the forecast too. Before a hot dry spell it offers to bring
+      watering forward; before a wet week it offers to hold off. <strong>You approve every
+      change.</strong></p>
+      <blockquote class="quote">
+        <p>Four plants are ready for a drink. Nothing dramatic.</p>
+        <cite>What a morning actually says</cite>
+      </blockquote>
+    </div>
+    <figure class="phone glow-leaf">
+      <img src="img/screens/today.webp" width="720" height="1558" loading="lazy" decoding="async"
+           alt="Sprout's Today screen. A card reads &quot;Good morning, Daniel — 4 plants are ready for a drink. Nothing dramatic.&quot; Below it: 4 due today, 5 rooms, 6 plants, then a list headed &quot;Needs you today&quot;: water the Golden Pothos, the Peace Lily and Monny the Monstera.">
+    </figure>
+  </div>
+</section>
+
+<section class="feature band">
+  <div class="wrap feature-in flip">
+    <div class="feature-copy">
       <p class="eyebrow">Draw your home</p>
       <h2>It knows which of your rooms is bright, because you showed it.</h2>
-      <p>Trace your floor plan once. Mark where the windows are, point north, and Sprout works out
-      how much light each room gets and which way it faces — then places every room on the same
-      five-rung scale it matches species against.</p>
+      <p>Trace your floor plan once. Mark the windows, point north, and Sprout works out how much
+      light each room gets and which way it faces, then places every room on the same five-rung
+      scale it matches species against.</p>
       <p>Light crosses one doorway and no further, one step dimmer. A plant two rooms from a window
       is not in a bright room, and Sprout will not pretend it is.</p>
       <ul class="ladder">
@@ -170,118 +221,114 @@
         <li><i style="background:#16211C;border:1px solid var(--hair)"></i>No window</li>
       </ul>
     </div>
-    <figure class="shot">
-      <img src="img/plan.webp" width="1080" height="1240" loading="lazy" decoding="async"
-           alt="Sprout's isometric view of a home. Five rooms are shaded by how much light each one gets — the bathroom and balcony in warm ochre for direct sun, the living room in green for bright indirect, the hallway almost black for no natural light. Four plants sit as lettered markers in the rooms they live in.">
-      <figcaption>Your plan, shaded by light</figcaption>
+    <figure class="phone glow-sun">
+      <img src="img/screens/plan.webp" width="720" height="1558" loading="lazy" decoding="async"
+           alt="Sprout's plan of a five-room flat, drawn in three dimensions and shaded by light: the balcony and living room glowing warm, the kitchen dimmer, the hallway dark. Six plants sit as markers in the rooms they live in.">
     </figure>
   </div>
 </section>
 
-<!-- The walkthrough gets a panel to itself rather than the 460px figure
-     column the screenshots sit in. The step copy inside the frame is about
-     30px at 1920, which is 16px rendered at the wrap's full width and under
-     8px in that column — a demo nobody can read is a decoration. It is the
-     app's own onboarding animation recorded, not a made-for-marketing one,
-     which is the thing worth saying about it. -->
-<section data-ui-snap-panel id="walkthrough">
+<!-- The walkthrough is landscape against the screens' portrait, so it takes
+     the wrap rather than a column, and comes straight after the plan it
+     demonstrates. It is the app's own onboarding animation recorded, not a
+     made-for-marketing one, which is the thing worth saying about it. -->
+<section class="film-sec" id="walkthrough">
   <div class="wrap">
     <p class="eyebrow">See it built</p>
-    <h2 style="max-width:24ch">A flat drawn, and read for light, in under a minute.</h2>
+    <h2 class="narrow">A flat drawn, and read for light, in under a minute.</h2>
     <p class="lead">The grid, the rooms, one real measurement, the windows, north, and where a
-    plant should stand — the same eleven steps the app offers you on an empty plan.</p>
+    plant should stand: the same eleven steps the app offers you on an empty plan.</p>
     <figure class="film">
-      <!-- max-width inline, and no width/height attributes. Both are about
-           the same few minutes this shipped wrong: a reader holding a
-           stylesheet from before this section got the markup without any of
-           its rules, and the video drew at its own 1920px inside a 390px
-           phone. The attributes made that worse and reserve nothing the CSS
-           aspect-ratio does not; the one inline declaration is the only
-           sizing that cannot arrive later than the element it sizes. -->
-      <video controls playsinline preload="metadata" style="max-width:100%"
-             poster="video/planner-walkthrough-poster.jpg"
+      <!-- A still that opens the film in a dialog, rather than a player in
+           the page. Inline it was 1000px wide at most, which is small for a
+           plan with labels in it, and "best full screen" was asking the
+           reader to do the work. The still is 23KB where the player's
+           metadata request was the first bite of a 13MB file.
+
+           A link, not a button: with script off, or a browser without
+           <dialog>, it simply opens the MP4, so the film is never behind
+           JavaScript.
+
+           Inline max-width on the image. A reader holding a stylesheet from
+           before this section once got the markup without any of its rules,
+           and the video drew at its own 1920px inside a 390px phone; the one
+           inline declaration is the only sizing that cannot arrive later than
+           the element it sizes. -->
+      <a class="film-thumb" id="film-open" href="video/planner-walkthrough.mp4" aria-haspopup="dialog">
+        <img src="img/walkthrough.webp" width="1280" height="720" loading="lazy" decoding="async"
+             style="max-width:100%;height:auto"
+             alt="The finished walkthrough: a five-room flat shaded by light, the living room bright indirect, the balcony in direct sun, the kitchen low. Play the 59-second film.">
+        <span class="film-play" aria-hidden="true"><span class="film-play-in">
+          <svg viewBox="0 0 24 24" focusable="false"><path d="M8 5.6v12.8a1 1 0 0 0 1.5.86l10.4-6.4a1 1 0 0 0 0-1.72L9.5 4.74A1 1 0 0 0 8 5.6z"/></svg>
+        </span></span>
+      </a>
+      <figcaption>Eleven steps, 59 seconds</figcaption>
+    </figure>
+  </div>
+
+  <!-- Outside the wrap so its full-viewport box is never clipped or offset by
+       a parent. preload="none": nothing is fetched until it opens. -->
+  <dialog class="film-dialog" id="film-dialog" aria-label="The planner walkthrough">
+    <div class="film-dialog-in">
+      <button class="film-close" type="button" aria-label="Close the film">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <video controls playsinline preload="none" style="max-width:100%"
+             poster="img/walkthrough.webp"
              aria-label="The Sprout planner walkthrough: a sample flat built in eleven steps, from the half-metre grid through tracing rooms, measuring one of them, marking windows and openings, setting north, to shading the floor by how well each square suits a particular plant.">
         <source src="video/planner-walkthrough.webm" type="video/webm">
         <source src="video/planner-walkthrough.mp4" type="video/mp4">
         <p>Your browser cannot play this video.
           <a href="video/planner-walkthrough.mp4">Download it instead</a>.</p>
       </video>
-      <figcaption>Eleven steps, 59 seconds &middot; best full screen</figcaption>
+    </div>
+  </dialog>
+</section>
+
+<section class="feature band">
+  <div class="wrap feature-in">
+    <div class="feature-copy">
+      <p class="eyebrow">When something looks wrong</p>
+      <h2>A clinic, not a search box.</h2>
+      <p>Start from what you can see: yellow leaves, brown tips, sudden drop, fungus gnats. Answer
+      what else is true and the ranking shifts, because a supporting clue lifts a cause and a
+      contradicting one pushes it down.</p>
+      <p>Every cause is weighted by what your species is prone to. A fern with crispy edges is a
+      different problem from a cactus with crispy edges, and the answer comes with what to do
+      about it.</p>
+      <dl class="figs">
+        <div><dt>26</dt><dd>symptoms</dd></div>
+        <div><dt>42</dt><dd>clues</dd></div>
+        <div><dt>40</dt><dd>causes</dd></div>
+      </dl>
+    </div>
+    <figure class="phone glow-terra">
+      <img src="img/screens/diagnose.webp" width="720" height="1558" loading="lazy" decoding="async"
+           alt="Sprout diagnosing yellowing leaves on Monny the Monstera. The most likely cause is overwatering, marked worth sorting soon, with a plain explanation of why waterlogged roots yellow a plant and numbered steps for what to do.">
     </figure>
   </div>
 </section>
 
-<section data-ui-snap-panel>
-  <div class="wrap split flip">
-    <figure class="shot">
-      <img src="img/today.webp" width="1080" height="1340" loading="lazy" decoding="async"
-           alt="Sprout's Today screen. A card reads &quot;Good morning — Spring is just starting. Expect thirstier plants, and it's time to start mixing plant food into the water again.&quot; Below it: 4 due today, 5 rooms, 4 plants, then a list headed &quot;Needs you today&quot; beginning with Fertilise lily.">
-      <figcaption>One reminder a day, at most</figcaption>
-    </figure>
-    <div>
-      <p class="eyebrow">Every morning</p>
-      <h2>A list that is short because it is right.</h2>
-      <p>A Monstera in a 24cm terracotta pot by a north window is not on the same cycle as one in
-      plastic in a dim corner. Sprout adjusts for pot size and material, drainage, room light,
-      window aspect and season — so the list you get is the list that is actually due.</p>
-      <p>Set a location and it reads the forecast too. Before a hot dry spell it offers to bring
-      watering forward; before a wet week it offers to hold off. <strong>You approve every
-      change.</strong></p>
-      <blockquote class="quote" style="margin-top:30px">
-        <p>Two of your plants are thirsty</p>
-        <cite>What a reminder actually says</cite>
-      </blockquote>
-    </div>
-  </div>
-</section>
-
-<section data-ui-snap-panel class="band">
-  <div class="wrap">
-    <p class="eyebrow">When something looks wrong</p>
-    <h2 style="max-width:20ch">A clinic, not a search box.</h2>
-    <div class="grid" style="margin-top:52px">
-      <div>
-        <span class="fig">26</span>
-        <h3>Symptoms</h3>
-        <p>Yellow leaves, brown tips, sudden drop, fungus gnats. Start from what you can see.</p>
-      </div>
-      <div>
-        <span class="fig">42</span>
-        <h3>Clues</h3>
-        <p>Answer what else is true and the ranking shifts. A supporting clue lifts a cause; a
-        contradicting one pushes it down.</p>
-      </div>
-      <div>
-        <span class="fig">40</span>
-        <h3>Causes</h3>
-        <p>Weighted by what your particular species is prone to — a fern with crispy edges is a
-        different problem from a cactus with crispy edges.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section data-ui-snap-panel>
-  <div class="wrap split">
-    <div>
+<section class="feature">
+  <div class="wrap feature-in flip">
+    <div class="feature-copy">
       <p class="eyebrow">Worth keeping</p>
       <h2>A record of the plant, not just a reminder to water it.</h2>
-      <p>Every plant gets a diary and a growth chart. Photos, measurements, milestones, repottings,
+      <p>Every plant gets a diary and a growth chart: photos, measurements, milestones, repottings,
       problems. Watch a cutting become a plant.</p>
       <p>Toxicity is rated separately for cats, dogs and humans, because the same plant is not
       equally risky to each. Tell Sprout what lives with you and it flags what matters.</p>
     </div>
-    <figure class="shot">
-      <img src="img/plant.webp" width="1080" height="1180" loading="lazy" decoding="async"
-           alt="A Peace Lily's care sheet in Sprout, headed &quot;What it wants&quot;. Light: medium light, coping with low or bright. Humidity: average, around 40 to 50 per cent. Each entry carries a sentence of plain explanation rather than a bare value.">
-      <figcaption>48 species, with real care data</figcaption>
+    <figure class="phone glow-leaf">
+      <img src="img/screens/plant.webp" width="720" height="1558" loading="lazy" decoding="async"
+           alt="Monny the Monstera's page in Sprout: a photograph of the plant, its botanical name, tags reading Forgiving, Toxic, Living Room and Perfect light, and tabs for care, diary, photos, growth and propagation.">
     </figure>
   </div>
 </section>
 
 <!-- The species list. Generated from js/data/plants.js — see the note in
      CLAUDE.md about site/ being unable to reach ../, and the drift check. -->
-<section data-ui-snap-panel id="species">
+<section class="band" id="species">
   <div class="wrap">
     <p class="eyebrow">The species list</p>
     <h2 style="max-width:16ch">Is yours on it?</h2>
@@ -537,32 +584,103 @@
   </div>
 </section>
 
-<section data-ui-snap-panel class="band">
-  <div class="wrap">
-    <p class="eyebrow">The part most apps skip</p>
-    <h2 style="max-width:24ch">No account. No ads. Nothing to sign up for.</h2>
-    <p class="lead" style="margin-top:22px">Your plants, photos, diary and schedule live on your
-    phone and are never uploaded. There is no server, no analytics and no profile of you anywhere.</p>
-    <p>One thing leaves, and it is worth saying plainly rather than rounding up to "everything is
-    local": if you set a location, its coordinates go to the weather service to fetch your
-    forecast. They are rounded to about a kilometre first, so what travels is a neighbourhood
-    rather than an address. Nothing accompanies them and nothing else is ever sent.</p>
-    <p style="margin-bottom:0"><a class="btn btn-2" style="margin-top:14px" href="privacy">Read the privacy policy</a></p>
+<section class="privacy" id="privacy">
+  <div class="wrap privacy-in">
+    <div>
+      <p class="eyebrow">The part most apps skip</p>
+      <h2>No account. No ads. Nothing to sign up for.</h2>
+    </div>
+    <div>
+      <p class="lead">Your plants, photos, diary and schedule live on your phone and are never
+      uploaded. There is no server, no analytics and no profile of you anywhere.</p>
+      <p>One thing leaves, and it is worth saying plainly rather than rounding up to "everything is
+      local": if you set a location, its coordinates go to the weather service to fetch your
+      forecast. They are rounded to about a kilometre first, so what travels is a neighbourhood
+      rather than an address. Nothing accompanies them and nothing else is ever sent.</p>
+      <p><a class="link" href="privacy">Read the privacy policy</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- The questions that stand between reading this page and installing the
+     app, answered in a line each. <details> rather than script: it opens
+     with a tap, a keyboard and a screen reader, and with script off. Every
+     answer is checked against the app, not the brochure — the plant one in
+     particular, because adding a plant does need one of the 48 species. -->
+<section class="faq band" id="faq">
+  <div class="wrap faq-in">
+    <div>
+      <p class="eyebrow">Questions</p>
+      <h2>Before you download.</h2>
+    </div>
+    <div class="faq-list">
+      <details>
+        <summary>Is it free?</summary>
+        <p>Yes. Sprout is free on Google Play while we gather its first reviews.</p>
+      </details>
+      <details>
+        <summary>Is it on iPhone?</summary>
+        <p>Not yet. The App Store release is on its way; Android is available now.</p>
+      </details>
+      <details>
+        <summary>Do I need an account?</summary>
+        <p>No. There is nothing to sign up for, and everything you add stays on your phone.</p>
+      </details>
+      <details>
+        <summary>Do reminders need the app open?</summary>
+        <p>No. Reminders are scheduled by your phone itself, so they arrive when Sprout is closed.</p>
+      </details>
+      <details>
+        <summary>Does it work offline?</summary>
+        <p>Yes. Schedules, the planner, diagnosis and your diary all work without a connection.
+        Only the weather forecast needs one.</p>
+      </details>
+      <details>
+        <summary>What if my plant isn't on the list?</summary>
+        <p>Schedules cover the 48 species above, so a plant outside them can't be added yet.
+        Diagnosis still works for any plant, with the advice left general rather than tuned to a
+        species.</p>
+      </details>
+      <details>
+        <summary>Can I move my plants to a new phone?</summary>
+        <p>Yes. Save a backup from Settings and restore it on the new phone. The file goes wherever
+        you send it, and nowhere else.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="close">
+  <div class="wrap close-in">
+    <span class="close-mark" aria-hidden="true"><svg viewBox="24 20 52 68" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/></svg></span>
+    <h2>Let Sprout do it for you.</h2>
+    <p class="lead">Free on Android now. Coming to iPhone soon.</p>
+    <div class="stores stores-center">
+      <a class="store store-play" href="https://play.google.com/store/apps/details?id=com.sproutevergreen.app" rel="noopener">
+        <img src="img/google-play.png" width="564" height="168" alt="Get it on Google Play">
+      </a>
+      <span class="store store-soon" aria-label="App Store, coming soon">
+        <span class="store-soon-k">App Store</span>
+        <span class="store-soon-v">Coming soon</span>
+      </span>
+    </div>
   </div>
 </section>
 
 <footer>
   <div class="wrap foot">
-    <a href="https://sproutevergreen.app">sproutevergreen.app</a>
-    <a href="privacy">Privacy</a>
-    <a href="mailto:kintukka.developer@gmail.com">Contact</a>
+    <nav class="foot-links" aria-label="Footer">
+      <a href="https://play.google.com/store/apps/details?id=com.sproutevergreen.app" rel="noopener">Google Play</a>
+      <a href="privacy">Privacy</a>
+      <a href="mailto:kintukka.developer@gmail.com">Contact</a>
+    </nav>
     <small>Sprout · evergreen</small>
   </div>
 </footer>
 
 <!-- =========================================================================
-     The only script on this site, and it stays that way: no framework, no
-     build step, no dependency. It filters a list that is already in the page.
+     The species search. No framework, no build step, no dependency: it
+     filters a list that is already in the page.
 
      Everything it needs is in the markup — each row carries a data-find of
      its common name, botanical name and nicknames, lowercased when the page
@@ -615,194 +733,76 @@
 })();
 </script>
 
-<!-- =========================================================================
-     Snap scrolling. One wheel, swipe or arrow key moves exactly one panel.
-     Adapted from a Shopify snippet: the Liquid wrapper is gone and the style
-     block moved into site.css, but the behaviour is the supplied logic.
+<!-- The walkthrough's dialog.
 
-     It declines to take over whenever a panel does not nearly fill the screen,
-     and defers to inner scrollers — which is what lets the species list scroll
-     inside its own panel before the page moves on.
-     ====================================================================== -->
+     showModal() rather than a hand-built overlay, because it brings the
+     focus trap, Escape, the inert page behind and the return of focus to
+     the still for nothing. What it does not bring is a way out that
+     animates, so Escape and the backdrop are intercepted and the dialog is
+     closed only once the zoom back has finished.
+
+     It plays on open, which a browser allows here because the open is a
+     tap, and pauses on close without rewinding: someone who closed it to
+     read a line of copy expects to come back to where they were. -->
 <script>
 (function () {
-  var SELECTOR = "[data-ui-snap-panel]";
-  var DURATION = 1000;
-  var SWIPE_MIN = 40;
+  var open = document.getElementById("film-open");
+  var dlg = document.getElementById("film-dialog");
+  // No <dialog>, and the link is left alone to open the MP4 itself.
+  if (!open || !dlg || typeof dlg.showModal !== "function") return;
+  var video = dlg.querySelector("video");
+  var shut = dlg.querySelector(".film-close");
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var root = document.documentElement;
+  var OUT_MS = 280, timer = 0;
 
-  function init() {
-    if (window.uiSnap) return;
-    var panels = Array.prototype.slice.call(document.querySelectorAll(SELECTOR));
-    if (!panels.length) return;
-
-    // Below this the panels are not full-screen (see the max-height media
-    // query), so hijacking the scroll would fight the layout.
-    var shortScreen = window.matchMedia("(max-height: 479px)");
-
-    var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    var animating = false;
-    var animEnd = 0;
-    var current = -1;
-
-    function tops() {
-      return panels.map(function (p) { return p.getBoundingClientRect().top + window.scrollY; });
+  // Locking the page stops a wheel over the backdrop scrolling what is
+  // behind it. The padding stands in for the scrollbar the lock removes,
+  // or everything behind the blur jumps sideways by its width.
+  function lock(on) {
+    if (on) {
+      var bar = window.innerWidth - root.clientWidth;
+      if (bar > 0) root.style.paddingRight = bar + "px";
+      root.classList.add("film-open");
+    } else {
+      root.classList.remove("film-open");
+      root.style.paddingRight = "";
     }
-    function ease(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2; }
-
-    function scrollToY(y) {
-      var start = window.scrollY, dist = y - start;
-      if (Math.abs(dist) < 1) return;
-      var dur = reduceMotion.matches ? 1 : DURATION;
-      var html = document.documentElement;
-      var prev = html.style.scrollBehavior;
-      html.style.scrollBehavior = "auto";
-      animating = true;
-      var t0 = performance.now();
-      function step(now) {
-        var t = Math.min(1, (now - t0) / dur);
-        window.scrollTo(0, start + dist * ease(t));
-        if (t < 1) requestAnimationFrame(step);
-        else { animating = false; animEnd = performance.now(); html.style.scrollBehavior = prev; }
-      }
-      requestAnimationFrame(step);
-    }
-
-    function nearest(t, y) {
-      var i = 0;
-      for (var k = 1; k < t.length; k++) if (Math.abs(t[k]-y) < Math.abs(t[i]-y)) i = k;
-      return i;
-    }
-
-    function target(dir) {
-      if (shortScreen.matches) return null;
-      var t = tops(), y = window.scrollY, vh = window.innerHeight;
-      var i = nearest(t, y), off = y - t[i];
-      if (Math.abs(off) > vh * 0.5) {
-        for (var k = 0; k < t.length; k++) {
-          if (dir > 0 && t[k] > y && t[k]-y < vh*0.5) return t[k];
-          if (dir < 0 && t[k] < y && y-t[k] < panels[k].offsetHeight - vh*0.5 && y-t[k] > 2) return t[k];
-        }
-        return null;
-      }
-      var j = dir > 0 ? (t[i] > y+2 ? i : i+1) : (t[i] < y-2 ? i : i-1);
-      if (j < 0 || j >= t.length) return null;
-      var edge = dir > 0 ? t[i] + panels[i].offsetHeight : t[i];
-      var next = dir > 0 ? t[j] : t[j] + panels[j].offsetHeight;
-      if (j !== i && Math.abs(edge - next) > vh * 0.25) return null;
-      return t[j];
-    }
-
-    function locked() {
-      var h = getComputedStyle(document.documentElement).overflowY;
-      var b = getComputedStyle(document.body).overflowY;
-      return h === "hidden" || b === "hidden" ||
-             document.documentElement.classList.contains("ui-snap-paused");
-    }
-
-    // A long list inside a panel scrolls to its own end before the page moves.
-    function innerScroller(el, dir) {
-      while (el && el !== document.body && el.nodeType === 1) {
-        var s = getComputedStyle(el);
-        if (/(auto|scroll)/.test(s.overflowY) && el.scrollHeight > el.clientHeight + 1) {
-          if (dir > 0 && el.scrollTop + el.clientHeight < el.scrollHeight - 1) return true;
-          if (dir < 0 && el.scrollTop > 0) return true;
-        }
-        el = el.parentElement;
-      }
-      return false;
-    }
-
-    var lastWheel = 0, lastMag = 0;
-    window.addEventListener("wheel", function (e) {
-      if (e.ctrlKey || locked()) return;
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-      var dir = e.deltaY > 0 ? 1 : e.deltaY < 0 ? -1 : 0;
-      if (!dir || innerScroller(e.target, dir)) return;
-      var now = performance.now(), mag = Math.abs(e.deltaY);
-      var fresh = now - lastWheel > 220 || mag > lastMag * 1.5 + 4;
-      lastWheel = now; lastMag = mag;
-      if (animating) { e.preventDefault(); return; }
-      var y = target(dir);
-      if (y === null) return;
-      e.preventDefault();
-      if (!fresh && now - animEnd < 1200) return;
-      scrollToY(y);
-    }, { passive: false });
-
-    var touchY = null, touchTarget = null;
-    window.addEventListener("touchstart", function (e) {
-      touchY = e.touches.length === 1 ? e.touches[0].clientY : null;
-      touchTarget = e.target;
-    }, { passive: true });
-    window.addEventListener("touchmove", function (e) {
-      if (touchY === null || locked()) return;
-      var dy = touchY - e.touches[0].clientY;
-      if (Math.abs(dy) < 2) return;
-      var dir = dy > 0 ? 1 : -1;
-      if (innerScroller(touchTarget, dir)) { touchY = null; return; }
-      if (animating || target(dir) !== null) e.preventDefault();
-    }, { passive: false });
-    window.addEventListener("touchend", function (e) {
-      if (touchY === null) return;
-      var dy = touchY - e.changedTouches[0].clientY;
-      touchY = null;
-      if (Math.abs(dy) < SWIPE_MIN || animating || locked()) return;
-      var y = target(dy > 0 ? 1 : -1);
-      if (y !== null) scrollToY(y);
-    });
-
-    window.addEventListener("keydown", function (e) {
-      if (e.defaultPrevented || e.altKey || e.metaKey || e.ctrlKey || locked()) return;
-      var el = e.target;
-      if (el.closest && el.closest("input, textarea, select, [contenteditable]")) return;
-      var dir = 0;
-      if (e.key === "ArrowDown" || e.key === "PageDown") dir = 1;
-      else if (e.key === "ArrowUp" || e.key === "PageUp") dir = -1;
-      else if (e.key === " " && !(el.closest && el.closest("button, a, summary"))) dir = e.shiftKey ? -1 : 1;
-      if (!dir) return;
-      if (animating) { e.preventDefault(); return; }
-      var y = target(dir);
-      if (y === null) return;
-      e.preventDefault();
-      scrollToY(y);
-    });
-
-    var ticking = false;
-    function sync() {
-      ticking = false;
-      var t = tops(), y = window.scrollY, vh = window.innerHeight, active = -1;
-      for (var k = 0; k < t.length; k++) if (Math.abs(t[k]-y) < vh*0.5) active = k;
-      panels.forEach(function (p, k) { p.classList.toggle("is-active", k === active); });
-      if (active !== current) {
-        current = active;
-        window.dispatchEvent(new CustomEvent("ui-snap:change", {
-          detail: { index: active, panel: active >= 0 ? panels[active] : null, total: panels.length }
-        }));
-      }
-    }
-    function requestSync() { if (!ticking) { ticking = true; requestAnimationFrame(sync); } }
-
-    window.addEventListener("scroll", requestSync, { passive: true });
-    window.addEventListener("resize", function () {
-      requestSync();
-      if (animating || shortScreen.matches) return;
-      var t = tops(), y = window.scrollY, i = nearest(t, y);
-      if (Math.abs(t[i]-y) < window.innerHeight * 0.5) window.scrollTo(0, t[i]);
-    });
-
-    window.uiSnap = {
-      next: function () { var y = target(1);  if (y !== null && !animating) scrollToY(y); },
-      prev: function () { var y = target(-1); if (y !== null && !animating) scrollToY(y); },
-      goTo: function (i) { var t = tops(); if (t[i] !== undefined && !animating) scrollToY(t[i]); },
-      panels: panels
-    };
-
-    document.documentElement.classList.add("ui-snap-ready");
-    sync();
   }
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
-  else init();
+  function show(e) {
+    e.preventDefault();
+    clearTimeout(timer);
+    if (!dlg.open) { lock(true); dlg.showModal(); }
+    // Two frames, so the half-size starting state is painted before the
+    // class that grows it lands; one is not always enough to commit it.
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { dlg.classList.add("is-in"); });
+    });
+    var p = video.play();
+    if (p && p.catch) p.catch(function () {});
+  }
+
+  function hide() {
+    if (!dlg.open) return;
+    video.pause();
+    dlg.classList.remove("is-in");
+    clearTimeout(timer);
+    timer = setTimeout(function () { if (dlg.open) dlg.close(); }, reduce.matches ? 0 : OUT_MS);
+  }
+
+  open.addEventListener("click", show);
+  shut.addEventListener("click", hide);
+  dlg.addEventListener("cancel", function (e) { e.preventDefault(); hide(); });
+  // The dialog box is the whole screen, so a click that lands on the box
+  // itself rather than inside the film is a click on the backdrop.
+  dlg.addEventListener("click", function (e) { if (e.target === dlg) hide(); });
+  // However it closed, the page is let go of and the film stopped.
+  dlg.addEventListener("close", function () {
+    dlg.classList.remove("is-in");
+    video.pause();
+    lock(false);
+  });
 })();
 </script>
 
@@ -816,14 +816,13 @@
 
      Measured rather than assumed, and measured again after the fonts land:
      the lockup's vertical position depends on the height of everything the
-     panel centres, and Cormorant arriving changes that by a few pixels. -->
+     hero centres, and Cormorant arriving changes that by a few pixels. -->
 <script>
 (function () {
   var bar = document.getElementById("sitebar");
   var mark = document.getElementById("sb-mark");
   var hero = document.querySelector(".hero");
   var heroMark = hero && hero.querySelector(".lockup .m");
-  var toTop = document.getElementById("sb-top");
   var cue = document.getElementById("hero-scroll");
   if (!bar || !mark || !hero || !heroMark) return;
 
@@ -841,8 +840,8 @@
     if (!b.width || !h.width) { from = to = null; return; }
     from = { x: h.left + window.scrollX, y: h.top + window.scrollY, w: h.width };
     to = { x: b.left, y: b.top, w: b.width };
-    // The travel is spent over the hero panel, so it is complete exactly as
-    // the second panel arrives — which is also when the bar is first needed.
+    // The travel is spent over the hero, so it is complete exactly as the
+    // first section arrives — which is also when the bar is first needed.
     span = Math.max(1, hero.offsetHeight);
     apply();
   }
@@ -886,17 +885,10 @@
 
   if (cue) {
     cue.addEventListener("click", function () {
-      if (window.uiSnap && window.uiSnap.next) window.uiSnap.next();
-      else window.scrollTo({ top: hero.offsetHeight, behavior: "smooth" });
-    });
-  }
-
-  if (toTop) {
-    toTop.addEventListener("click", function () {
-      // uiSnap animates with the same easing every other move on this page
-      // uses; the fallback is for the short-screen mode where it stands down.
-      if (window.uiSnap && window.uiSnap.goTo) window.uiSnap.goTo(0);
-      else window.scrollTo({ top: 0, behavior: "smooth" });
+      var next = hero.nextElementSibling;
+      while (next && next.tagName !== "SECTION") next = next.nextElementSibling;
+      window.scrollTo({ top: next ? next.offsetTop - (bar.offsetHeight || 0) : hero.offsetHeight,
+                        behavior: reduce.matches ? "auto" : "smooth" });
     });
   }
 
@@ -924,7 +916,8 @@
   var hero = document.querySelector(".hero");
   var img = document.getElementById("hero-sprout");
   var lead = hero && hero.querySelector(".lead");
-  var cta = hero && hero.querySelector(".cta");
+  // The last line of the copy, which is the "Free" note under the badges.
+  var cta = hero && (hero.querySelector(".free") || hero.querySelector(".cta"));
   var cue = document.getElementById("hero-scroll");
   if (!hero || !img || !lead || !cta) return;
 
@@ -934,11 +927,12 @@
     ticking = false;
     var hr = hero.getBoundingClientRect();
     // The copy's right edge, from the elements that are as wide as what they
-    // hold. Not the lockup row, the button row or the script line under the
-    // wordmark: those are blocks as wide as the column, so measuring them
-    // put the copy's edge at the far side of the page.
+    // hold: the badges themselves, not the row they sit in. The lockup row,
+    // the badge row and the script line under the wordmark are blocks as wide
+    // as the column, so measuring them put the copy's edge at the far side
+    // of the page.
     var right = 0;
-    [].forEach.call(hero.querySelectorAll(".word, h1, .lead, .cta > *"), function (el) {
+    [].forEach.call(hero.querySelectorAll(".word, h1, .lead, .cta .store"), function (el) {
       right = Math.max(right, el.getBoundingClientRect().right);
     });
     var fromGutter = (hr.right - right - 24) / ASPECT;

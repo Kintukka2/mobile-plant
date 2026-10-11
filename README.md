@@ -231,7 +231,7 @@ every push to `main`:
 
 | Project | Root directory | Domain |
 | --- | --- | --- |
-| `sprout-app` | `/` | [sproutevergreen.app](https://sproutevergreen.app) — the app itself |
+| `sprout-app` | `/` | [sproutevergreen.app](https://sproutevergreen.app) — the web app is retired: `/` redirects to sproutevergreen.com (`_redirects`), and the app's files stay published, for the store build and the planned planner preview |
 | `sprout-site` | `site` | [sproutevergreen.com](https://sproutevergreen.com) — landing page and privacy policy |
 
 The app is served from the repository root because that is where it runs from
