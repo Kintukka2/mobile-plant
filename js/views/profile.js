@@ -573,10 +573,10 @@ window.ViewProfile = (function () {
       }
 
       if (e.target.closest('[data-clear-dismissed]')) {
-        /* The planner's two "don't show again" hints come back with the
+        /* The planner's "don't show again" hints come back with the
            weather tips: one button that brings back everything I was told
            to stop saying. */
-        Store.updateSettings({ dismissed: [], dragCoachOff: false, reshapeTipDone: false });
+        Store.updateSettings({ dismissed: [], dragCoachOff: false, nameNudgeOff: false, reshapeTipDone: false });
         UI.toast('Tips will show again', 'leaf');
         return;
       }

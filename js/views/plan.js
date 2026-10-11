@@ -895,9 +895,15 @@ window.ViewPlan = (function () {
        the first touch, and pointer-events: none lets that touch through. */
     const coaching = mode === 'plan' && drawing && !drawing.pts.length && !(drag && drag.kind === 'draw');
     const picking = coaching && !drawing.picked && !drawing.forRoomId && !list.length && !plan().backdrop;
-    root.querySelector('#pl-coach').hidden = !coaching || (!picking && !!Store.get().settings.dragCoachOff);
+    const unnamed = coaching && list.length && !drawing.nameChecked && !drawing.forRoomId && !Store.get().settings.nameNudgeOff ? unnamedRoom() : null;
+    root.querySelector('#pl-coach').hidden = !coaching || (!picking && !unnamed && !!Store.get().settings.dragCoachOff);
     root.querySelector('#pl-coach-pick').hidden = !picking;
-    root.querySelector('#pl-coach-drag').hidden = picking;
+    root.querySelector('#pl-coach-name').hidden = !unnamed;
+    root.querySelector('#pl-coach-drag').hidden = picking || !!unnamed;
+    if (unnamed) {
+      root.querySelector('#pl-coach-name-t').textContent = 'Name ' + unnamed.name + ' first?';
+      root.querySelector('#pl-coach-name-s').textContent = 'Before you add another, give ' + unnamed.name + ' a proper name. It\'ll be much easier to keep track of which plant lives where.';
+    }
     const addRoom = root.querySelector('#pl-add-room');
     addRoom.hidden = !(mode === 'plan' && !drawing && !sel && list.length);
     /* On step 2 it is the step's one action, so it wears the primary green
@@ -1047,6 +1053,12 @@ window.ViewPlan = (function () {
 
   /* Where both the invitation's quiet link and the walkthrough's last
      button land: Step 2 open, the add tool armed, nothing drawn for them. */
+  /* The latest drawn room still wearing the name finishRoom() gave it. */
+  function unnamedRoom() {
+    const list = drawn().filter(function (r) { return /^Room \d+$/.test(r.name || ''); });
+    return list.length ? list[list.length - 1] : null;
+  }
+
   function startTracing() {
     tool = 'add'; drawing = { pts: [] }; mode = 'plan'; sel = null;
     redraw();
@@ -1142,6 +1154,20 @@ window.ViewPlan = (function () {
                 '<button class="btn btn-sm" id="pl-coach-load">' + UI.icon('upload') + 'Load a floorplan</button>' +
                 '<button class="btn btn-sm btn-ghost" id="pl-coach-self">I\'ll do it myself</button>' +
               '</div>' +
+            '</div>' +
+            /* Asked only on the way to a second room, never as the first
+               one closes: a name is easiest to give once there are two
+               rooms to tell apart, and asking sooner threw a keyboard over
+               the plan at the worst moment. */
+            '<div class="plan-coach-pick" id="pl-coach-name">' +
+              '<span class="plan-coach-ico" aria-hidden="true">' + UI.icon('edit') + '</span>' +
+              '<div class="plan-coach-t" id="pl-coach-name-t"></div>' +
+              '<p class="plan-coach-s" id="pl-coach-name-s"></p>' +
+              '<div class="plan-coach-acts">' +
+                '<button class="btn btn-sm" id="pl-coach-name-go">' + UI.icon('edit') + 'Name it</button>' +
+                '<button class="btn btn-sm btn-ghost" id="pl-coach-name-skip">Add a room anyway</button>' +
+              '</div>' +
+              '<button class="plan-coach-off" id="pl-coach-name-off">Don\'t show this again</button>' +
             '</div>' +
             '<div class="plan-coach-drag" id="pl-coach-drag">' +
               '<div class="plan-coach-demo" aria-hidden="true"><span class="plan-coach-box"></span><span class="plan-coach-dot"></span></div>' +
@@ -1249,6 +1275,19 @@ window.ViewPlan = (function () {
       if (e.target.closest('#pl-coach-load')) { pickBackdrop(); return; }
       if (e.target.closest('#pl-coach-self')) { if (drawing) drawing.picked = true; syncOverlays(); return; }
       if (e.target.closest('#pl-coach-off')) { Store.updateSettings({ dragCoachOff: true }); syncOverlays(); return; }
+      /* Naming goes through the room's own form, with the name field ready.
+         The trace stays open underneath, so saving lands straight on the
+         drag card for the next room. */
+      if (e.target.closest('#pl-coach-name-go')) {
+        const r = unnamedRoom(); if (drawing) drawing.nameChecked = true; syncOverlays();
+        if (r) {
+          ViewGreenhouse.roomSheet(r);
+          setTimeout(function () { const f = document.getElementById('r-name'); if (f) { f.focus(); f.select(); } }, 320);
+        }
+        return;
+      }
+      if (e.target.closest('#pl-coach-name-skip')) { if (drawing) drawing.nameChecked = true; syncOverlays(); return; }
+      if (e.target.closest('#pl-coach-name-off')) { Store.updateSettings({ nameNudgeOff: true }); if (drawing) drawing.nameChecked = true; syncOverlays(); return; }
     });
 
     /* ---- Canvas: wheel, pinch, pan, drag ---- */
