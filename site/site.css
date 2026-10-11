@@ -301,6 +301,11 @@ html.beam-go .hero::before{ animation:beam-drop 2.1s cubic-bezier(.5,0,.2,1) bot
 .lockup .m svg{ width:100%; height:100%; display:block; }
 .word{ font-family:var(--display); font-weight:200; font-size:var(--wm);
        letter-spacing:.2em; text-transform:uppercase; line-height:1; }
+/* The wordmark's "evergreen" set in running copy: the same face and mint,
+   scaled up from the line it sits in, because Sacramento at text size is
+   about two thirds the height of the serif around it. */
+.script-word{ font-family:var(--script); font-weight:400; color:var(--mint);
+              font-size:1.45em; line-height:0; letter-spacing:.01em; }
 .script{ font-family:var(--script); font-size:calc(var(--wm)*0.56); color:var(--mint);
          line-height:1; margin-top:calc(var(--wm)*0.12);
          /* Hangs under SPROUT, not under the mark. */
