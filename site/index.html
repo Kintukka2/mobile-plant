@@ -38,7 +38,7 @@
 -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A1410'/%3E%3Cg fill='none' stroke='%233FBE8B' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M50 84V40'/%3E%3Cpath d='M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z'/%3E%3Cpath d='M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="img/touch-icon.png">
-<link rel="stylesheet" href="site.css?v=9">
+<link rel="stylesheet" href="site.css?v=10">
 <!-- The hero's wash pours down from the ceiling on arrival, so it is held
      back before the first paint rather than shown and then hidden, which
      would flash. Not under reduced motion, and never for good: if the
@@ -862,6 +862,9 @@
   // A long tail behind and a short lead ahead.
   var BACK = 16, AHEAD = 3;
   var parts = [], head, pts = [], landY = 0, vw = 0, vh = 0, cur = null, raf = 0, measuring = 0;
+  // The station the light is resting at, how far it has settled into it
+  // (0 to 1), and the one whose edges are lit.
+  var held = null, hold = 0, lit = null;
 
   function blob(k, cls) {
     var el = document.createElement('i');
@@ -901,11 +904,21 @@
     pts = [l];
     for (var el = hero.nextElementSibling; el; el = el.nextElementSibling) {
       if (el.tagName !== 'SECTION') continue;
-      var f = el.querySelector('.phone img, .film-thumb, .close-mark') || el.querySelector('h2');
+      /* Stations: the objects the light stops behind and lights the edges
+         of. Everything else is a point it passes through. */
+      var station = el.querySelector('.phone img, .film-thumb, .sp-block');
+      var f = station || el.querySelector('.close-mark') || el.querySelector('h2');
       if (!f) continue;
       var r = f.getBoundingClientRect();
       var y = r.top + window.scrollY + r.height / 2;
-      if (y > pts[pts.length - 1].y + 40) pts.push({ x: r.left + r.width / 2, y: y, focal: true });
+      if (y <= pts[pts.length - 1].y + 40) continue;
+      var edges = null;
+      if (station) {
+        edges = [station];
+        // The list is lit with the search that leads into it.
+        if (station.classList.contains('sp-block')) { var q = el.querySelector('.sp-input'); if (q) edges.push(q); }
+      }
+      pts.push({ x: r.left + r.width / 2, y: y, focal: true, edges: edges });
     }
     // One size for the whole walk, set once: a size changed per frame
     // would be a style change per frame, and scale() is free.
@@ -945,13 +958,34 @@
   function frame() {
     raf = 0;
     if (!pts.length) return;
-    var target = Math.max(landY, window.scrollY + vh * 0.52);
+    /* The reading line, a little above the middle of the screen, is where
+       the light rides. When a station's middle comes within a quarter of a
+       screen of it, the light leaves the line and settles behind the
+       station instead, scrolling with it, until the station has gone by;
+       then it swims back to the line. */
+    var line = window.scrollY + vh * 0.52, target = Math.max(landY, line);
+    held = null;
+    for (var s = 1; s < pts.length; s++) {
+      if (pts[s].edges && Math.abs(line - pts[s].y) < vh * 0.26) { held = pts[s]; target = held.y; break; }
+    }
     if (cur === null) cur = target;
     cur += (target - cur) * 0.14;
     if (Math.abs(target - cur) < 0.4) cur = target;
+    // Settled: the light has arrived, so the edges may catch it.
+    var settled = held && Math.abs(cur - held.y) < 28;
+    hold += ((settled ? 1 : 0) - hold) * 0.12;
+    if (Math.abs((settled ? 1 : 0) - hold) < 0.01) hold = settled ? 1 : 0;
+    var want = settled ? held : null;
+    if (want !== lit) {
+      if (lit) lit.edges.forEach(function (e) { e.classList.remove('is-lit'); });
+      if (want) want.edges.forEach(function (e) { e.classList.add('is-lit'); });
+      lit = want;
+    }
 
     var b = lift(cur);
-    place(head, cur, 0.9 + 0.16 * b, 0.78 + 0.22 * b, 1.25);
+    // At rest behind a station the head swells a little and rounds out,
+    // radiating rather than travelling.
+    place(head, cur, (0.9 + 0.16 * b) * (1 + 0.14 * hold), 0.78 + 0.22 * b, 1.25 - 0.2 * hold);
     headAt = { x: xAt(cur), y: cur - window.scrollY };
     var step = vh * 0.05;
     for (var i = 0; i < parts.length; i++) {
@@ -963,9 +997,10 @@
       // down, so it fades into the wash instead.
       if (y < landY) fall *= clamp(1 - (landY - y) / (vh * 0.12), 0, 1);
       var size = p.k < 0 ? 0.62 - n * 0.026 : 0.55 - n * 0.06;
-      place(p, y, size, fall * (0.7 + 0.3 * lift(y)), 2.2);
+      // The tail draws in while the light rests, so it reads as stopped.
+      place(p, y, size, fall * (0.7 + 0.3 * lift(y)) * (1 - 0.6 * hold), 2.2);
     }
-    if (cur !== target) raf = requestAnimationFrame(frame);
+    if (cur !== target || (hold !== 0 && hold !== 1)) raf = requestAnimationFrame(frame);
   }
 
   function kick() { if (!raf) raf = requestAnimationFrame(frame); }

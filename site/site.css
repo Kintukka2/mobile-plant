@@ -163,6 +163,27 @@ body{ background:var(--field); color:var(--ink); font-family:var(--serif);
     color-mix(in srgb, var(--sun) 14%, transparent) 40%,
     color-mix(in srgb, var(--leaf) 6%, transparent) 70%, transparent);
   will-change:transform, opacity; }
+/* Lit. When the light has come to rest behind one of the page's objects,
+   the phones, the film, the species list and its search, the object's
+   edge catches it: a thin warm rim and a soft spill round it, in the
+   light's own two colours. It comes up slowly as the light settles and
+   goes as the light leaves; the script only adds and removes the class. */
+.phone img, .film-thumb, .sp-block{ transition:box-shadow .9s ease, border-color .9s ease; }
+.phone img.is-lit{
+  box-shadow:0 0 0 1px color-mix(in srgb, var(--sun) 55%, transparent),
+             0 0 16px 1px color-mix(in srgb, var(--sun) 26%, transparent),
+             0 0 70px 8px color-mix(in srgb, var(--leaf) 22%, transparent),
+             0 50px 90px -40px rgba(0,0,0,.9); }
+.film-thumb.is-lit, .sp-block.is-lit{
+  border-color:color-mix(in srgb, var(--sun) 50%, transparent);
+  box-shadow:0 0 16px 1px color-mix(in srgb, var(--sun) 22%, transparent),
+             0 0 70px 8px color-mix(in srgb, var(--leaf) 18%, transparent),
+             0 50px 90px -50px rgba(0,0,0,.9); }
+/* The search is lit with the list, a little less: it is the way in. */
+.sp-input.is-lit:not(:focus):placeholder-shown{
+  border-color:color-mix(in srgb, var(--sun) 42%, transparent);
+  box-shadow:0 0 12px 1px color-mix(in srgb, var(--sun) 18%, transparent); }
+
 /* Dust in the light. Hair-thin streaks that fade up, drift along a slight
    curve the way the light falls, and fade out, each somewhere new after a
    pause of its own, so there are never many and never a rhythm to them.
@@ -618,9 +639,13 @@ a:focus-visible{ outline:2px solid var(--glow); outline-offset:3px; }
    site has neither and no build step, and the effect needs neither. The rows
    are static HTML generated from js/data/plants.js, so the block also works
    with JavaScript disabled — the site still ships zero script tags. -------- */
+/* Opaque, the same 2% lift as before but over the ground rather than
+   through it: the guiding light passes behind this box, and through a
+   translucent one it lit the list itself, rows and all. The fade at the
+   bottom lands on the same ground, so the two still meet. */
 .sp-block{ position:relative; margin-top:34px; border:1px solid var(--hair);
-           border-radius:14px; background:color-mix(in srgb, var(--ink) 2%, transparent);
-           overflow:hidden; }
+           border-radius:14px; --sp-ground:color-mix(in srgb, var(--ink) 2%, var(--well));
+           background:var(--sp-ground); overflow:hidden; }
 
 .sp-list{ list-style:none; margin:0; padding:8px; max-height:420px; overflow-y:auto;
           overscroll-behavior:contain; scrollbar-width:thin;
@@ -666,7 +691,7 @@ a:focus-visible{ outline:2px solid var(--glow); outline-offset:3px; }
    what the effect degrades to where backdrop-filter is unsupported. */
 .sp-fade > div:nth-child(4){
   background:linear-gradient(to bottom,transparent 0%,
-             color-mix(in srgb, var(--field) 55%, transparent) 55%, var(--field) 100%); }
+             color-mix(in srgb, var(--sp-ground) 55%, transparent) 55%, var(--sp-ground) 100%); }
 
 .sp-foot{ font-family:var(--sans); font-size:12px; letter-spacing:.11em;
           text-transform:uppercase; color:var(--ink-3); margin-top:16px; }
@@ -693,8 +718,8 @@ a:focus-visible{ outline:2px solid var(--glow); outline-offset:3px; }
            font-family:var(--sans); font-size:14px; letter-spacing:.02em;
            color:var(--ink); background:var(--well);
            border:1px solid var(--hair); border-radius:99px;
-           outline:none; transition:width .28s ease, border-color .28s ease,
-                                    box-shadow .28s ease, background .28s ease; }
+           outline:none; transition:width .28s ease, border-color .6s ease,
+                                    box-shadow .6s ease, background .28s ease; }
 .sp-input::placeholder{ color:var(--ink-3); }
 .sp-input::-webkit-search-cancel-button{ -webkit-appearance:none; appearance:none; }
 

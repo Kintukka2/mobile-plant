@@ -87,6 +87,11 @@ Two consequences worth knowing before editing anything in there:
   (`position:relative; z-index:1`) so the light passes over the dark
   section plates and behind everything on them. Its path is found, not
   drawn: a new section with a `.phone` or an `h2` joins it with no edit.
+  The phones, the film and the species list (`.phone img`, `.film-thumb`,
+  `.sp-block`) are stations: the light stops behind one while it is near
+  the middle of the screen and its edges take `.is-lit`, the list's along
+  with its search. Anything the light should go behind rather than show
+  through needs an opaque background, which is why `.sp-block` has one.
   Off under reduced motion; the still wash is what no-JS readers see.
 
 - **The privacy policy lives at `site/privacy.html`**, not at the root any
