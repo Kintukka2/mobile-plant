@@ -60,6 +60,18 @@ Two consequences worth knowing before editing anything in there:
   `PLANT_DATA` order with `common` and `botanical`, plus a `Pet safe` tag when
   `tox.cats` and `tox.dogs` are both `safe`.
 
+- **Every call to action on the site is a store badge.** Google Play is
+  live (`com.sproutevergreen.app`); the App Store tile says coming soon and
+  carries no Apple artwork until the app is there. The web app is not linked
+  from the site at all. The Play badge in `site/img/google-play.png` is
+  Google's own, trimmed of its margin and otherwise unaltered.
+
+- **The site's phone screens are captured, not drawn.**
+  `marketing/site-shots/capture.js` renders them from the app with the reels'
+  greenhouse; `site/img/screens/` carries the web copies and
+  `site/img/og.jpg` is the share card. Change a screen in the app that the
+  site shows, and recapture: its README has the three commands.
+
 - **The site opens on the app's splash**, once a session: a copy of the
   `#splash` markup, its rules and `dismissSplash()`'s timing, at the top of
   `site/index.html` and the end of `site/site.css`. Change the app's splash

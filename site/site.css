@@ -123,7 +123,11 @@
    product. Everything is painted explicitly so it holds on either host. */
 :root{
   --field:#0A1410; --well:#060E0B; --raise:#0E1B15;
-  --ink:#F3F6F1; --ink-2:#A6B4AC; --ink-3:#6F7E76;
+  --ink:#F3F6F1;
+  /* A step brighter than the app's, measured on --field: the old ink-3 was
+     4.3:1, under AA for the small labels it sets, and ink-2 read dim in
+     Cormorant at body size even at 9:1. */
+  --ink-2:#B9C6BF; --ink-3:#8A9991;
   --glow:#3FBE8B; --mint:#9FD3BE; --leaf:#2F9A70;
   --hair:rgba(243,246,241,.11);
   --sun:#E0C47A;
@@ -136,7 +140,9 @@
 body{ background:var(--field); color:var(--ink); font-family:var(--serif);
       font-size:18px; line-height:1.62; margin:0; -webkit-font-smoothing:antialiased; }
 .wrap{ max-width:1080px; margin-inline:auto; padding-inline:24px; }
-section{ padding-block:clamp(64px,10vw,120px); }
+section{ padding-block:clamp(84px,11vw,150px); }
+/* The bar is fixed, so a #link lands its section below it, not under it. */
+section[id]{ scroll-margin-top:var(--sb-h); }
 .band{ background:var(--well); border-block:1px solid var(--hair); }
 
 /* Display face: 200 at 28px and up, 500 below. Hatton ships two weights and
@@ -144,13 +150,21 @@ section{ padding-block:clamp(64px,10vw,120px); }
 h1,h2,h3{ font-family:var(--display); font-weight:200; text-wrap:balance; margin:0; }
 .eyebrow{ font-family:var(--sans); font-weight:500; font-size:11px; letter-spacing:.2em;
           text-transform:uppercase; color:var(--glow); margin:0 0 14px; }
-p{ margin:0 0 1em; max-width:62ch; color:var(--ink-2); }
-p.lead{ font-size:clamp(19px,2.2vw,23px); color:var(--ink); }
+/* Cormorant's lowercase is small for its size, so 18px read nearer 15.
+   20 at desktop, with a shorter measure, is what it takes to read easily. */
+p{ margin:0 0 1em; max-width:58ch; color:var(--ink-2); font-size:clamp(18px,1.3vw,20px); }
+p.lead{ font-size:clamp(20px,2.2vw,24px); color:var(--ink); }
 strong{ color:var(--ink); font-weight:400; }
 
 /* ---- Hero. The wash is sun raking across a floor, which is the one idea
    the whole app is built on. It appears here and nowhere else. ---- */
-.hero{ position:relative; overflow:hidden; padding-block:clamp(72px,13vw,150px); }
+/* A screen tall, so the badges and the corner Sprout are the first view
+   and the cue sits at its foot. */
+/* Padding from the height, not the width: at 13vw a 1280x720 laptop lost
+   the Free line below the first screen. */
+.hero{ position:relative; overflow:hidden; padding-block:clamp(56px,10vh,120px);
+       min-height:100vh; min-height:100svh; display:flex; align-items:center; }
+.hero > .wrap{ width:100%; }
 .hero::before{ content:''; position:absolute; inset:-30% -10% auto -10%; height:150%;
   background:linear-gradient(107deg, transparent 22%, color-mix(in srgb, var(--sun) 13%, transparent) 38%,
              color-mix(in srgb, var(--sun) 4%, transparent) 55%, transparent 70%);
@@ -194,21 +208,35 @@ h1{ font-size:clamp(34px,6.4vw,62px); line-height:1.08; letter-spacing:.005em; m
 h1 em{ font-style:normal; color:var(--glow); }
 .hero p.lead{ margin-top:22px; }
 
-.cta{ display:flex; flex-wrap:wrap; gap:14px; align-items:center; margin-top:38px; }
-/* background:none and the rest of the reset are for the bar's Back to the
-   top, which is the first <button> to wear this class — every other .btn on
-   the page is an <a>, so the UA's ButtonFace went unnoticed and rendered it
-   as a near-white plate. */
-.btn{ font-family:var(--sans); font-weight:400; font-size:14px; letter-spacing:.09em;
-      text-transform:uppercase; text-decoration:none; padding:15px 28px; border-radius:2px;
-      display:inline-block; background:none; border:0; cursor:pointer; line-height:1.2;
-      transition:background .18s ease, border-color .18s ease; }
-.btn-1{ background:var(--leaf); color:#04100A; border:1px solid var(--leaf); }
-.btn-1:hover{ background:var(--glow); border-color:var(--glow); }
-.btn-2{ border:1px solid var(--hair); color:var(--ink-2); }
-.btn-2:hover{ border-color:var(--mint); color:var(--ink); }
-.soon{ font-family:var(--sans); font-size:12px; letter-spacing:.13em; text-transform:uppercase;
-       color:var(--ink-3); }
+/* ---- Store badges ----
+   The two calls to action, the same pair wherever they appear. Both sit at
+   one height so they read as a pair. The Play badge is Google's artwork,
+   trimmed of its transparent margin and otherwise untouched; the App Store
+   tile is ours, carries no Apple artwork because the app is not on the
+   store yet, and is a span rather than a link because there is nowhere for
+   it to go. Its width matches the Play badge's, 564:168. */
+.cta{ margin-top:40px; }
+.stores{ --badge-h:56px; display:flex; flex-wrap:wrap; gap:14px; align-items:center; }
+.store{ display:inline-flex; height:var(--badge-h); border-radius:10px; text-decoration:none; }
+.store-play img{ height:100%; width:auto; display:block; }
+.store-play{ transition:transform .18s ease, filter .18s ease; }
+.store-play:hover{ transform:translateY(-1px); filter:brightness(1.12); }
+.store-soon{ width:calc(var(--badge-h) * 564 / 168); flex-direction:column; justify-content:center;
+  padding:0 18px; border:1px solid var(--hair); background:color-mix(in srgb, var(--ink) 3%, transparent);
+  font-family:var(--sans); cursor:default; user-select:none; }
+.store-soon-v{ font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-3); order:-1; }
+.store-soon-k{ font-size:19px; letter-spacing:.02em; color:var(--ink-2); line-height:1.15; }
+.store:focus-visible{ outline:2px solid var(--glow); outline-offset:3px; }
+.store-sm{ height:38px; border-radius:7px; }
+.free{ font-family:var(--sans); font-size:13px; letter-spacing:.14em; text-transform:uppercase;
+       color:var(--mint); margin:18px 0 0; }
+.stores-center{ justify-content:center; }
+/* 46 on a phone, so the pair fits a 390px screen side by side: two at 50
+   came to 346px against 342 of column, and the second wrapped under. */
+@media (max-width:420px){ .stores{ --badge-h:46px; gap:10px; } .store-soon{ padding:0 13px; }
+  .store-soon-k{ font-size:16.5px; } .store-soon-v{ font-size:9.5px; } }
+/* And 44 on a 360px Android, for the same reason. */
+@media (max-width:380px){ .stores{ --badge-h:44px; gap:8px; } }
 
 /* ---- Scroll cue ----
    A bead of light running down a hairline, which on a plant app is water
@@ -246,6 +274,9 @@ h1 em{ font-style:normal; color:var(--glow); }
   .hero-scroll{ bottom:22px; padding-block:4px; }
   .hero-scroll-rule{ --rule-h:24px; margin-top:9px; }
 }
+/* Below this the hero is taller than the screen, so the cue at its foot is
+   not on the first view anyway, and on a 360x740 it landed on the Free line. */
+@media (max-height:760px){ .hero-scroll{ display:none; } }
 @media (prefers-reduced-motion: reduce){
   /* The line stays, the bead stops. The cue is the line's presence at the
      foot of a full-screen panel; the movement is only the invitation. */
@@ -289,14 +320,9 @@ h1 em{ font-style:normal; color:var(--glow); }
 .sitebar-cta{ display:flex; align-items:center; gap:10px;
               opacity:var(--sb-c, 0); visibility:hidden; pointer-events:none; }
 .sitebar.is-on .sitebar-cta{ visibility:visible; pointer-events:auto; }
-.btn-sm{ padding:10px 18px; font-size:12px; letter-spacing:.1em; }
-.sb-short{ display:none; }
 @media (max-width:620px){
   .sb-live{ --sb-h:48px; }
-  .btn-sm{ padding:9px 13px; font-size:11.5px; letter-spacing:.07em; }
-  .sitebar-cta{ gap:8px; }
-  .sb-long{ display:none; }
-  .sb-short{ display:inline; }
+  .store-sm{ height:34px; border-radius:6px; }
 }
 
 /* The hero's own mark is hidden rather than removed: the row is a flex line
@@ -313,65 +339,117 @@ h1 em{ font-style:normal; color:var(--glow); }
   .sitebar-mark{ will-change:auto; transform:none !important; opacity:var(--sb-c, 0); }
 }
 
-/* ---- Two-column feature ---- */
-.split{ display:grid; grid-template-columns:1fr; gap:clamp(34px,6vw,70px); align-items:center; }
-@media (min-width:860px){ .split{ grid-template-columns:1fr 460px; } .split.flip > .shot{ order:-1; } }
-.shot{ margin:0; }
-/* height:auto is load-bearing. The width/height attributes on the <img> are
-   there so the browser reserves the right box before the file arrives, but
-   without this the height attribute wins over width:100% and the shot is
-   stretched to its full pixel height at whatever width the column is. */
-.shot img{ width:100%; max-width:100%; height:auto; display:block;
-           border:1px solid var(--hair); border-radius:12px; }
-.shot figcaption, .film figcaption{
-  font-family:var(--sans); font-size:11.5px; letter-spacing:.12em;
-  text-transform:uppercase; color:var(--ink-3); margin-top:14px; }
+/* ---- Headings ---- */
+/* Never under 28px, so the 200 weight is always the right one (the brand
+   rule is 200 at 28px and up, 500 below). */
+h2{ font-size:clamp(28px,4vw,44px); line-height:1.14; margin-bottom:20px; }
+h2.narrow{ max-width:22ch; }
 
-/* ---- The walkthrough ----
-   16:9 against the screenshots' portrait, so it takes the whole wrap rather
-   than a column.
-
-   No margin-inline:auto, deliberately. Once the height cap below narrows the
-   frame under the wrap, centring would put the video's left edge 95px inside
-   the headline's on a laptop — and two left edges that nearly agree read as a
-   mistake, where one obviously different edge would not. */
-.film{ margin:0; }
-.film video{
-  display:block; width:100%; height:auto; aspect-ratio:16 / 9;
-  background:var(--well); border:1px solid var(--hair); border-radius:14px;
+/* ---- Feature: copy beside a phone ----
+   The screens are the evidence, so they are shown at the size of a phone
+   rather than in a thumbnail column, and alternate sides so eight sections
+   do not read as one repeated. Stacked below 900px, copy first. */
+.feature-in{ display:grid; grid-template-columns:1fr; gap:56px; align-items:center; }
+.feature-copy{ max-width:34rem; }
+@media (min-width:900px){
+  .feature-in{ grid-template-columns:minmax(0,1fr) auto; gap:clamp(56px,7vw,120px); }
+  .feature-in.flip{ grid-template-columns:auto minmax(0,1fr); }
+  .feature-in.flip > .phone{ order:-1; }
 }
-h2{ font-size:clamp(27px,4.2vw,40px); line-height:1.16; margin-bottom:18px; }
 
-/* ---- The light ladder. Five rungs is the app's real scale, not a
-   decoration — every room is placed on it and every species matched to it. ---- */
-.ladder{ list-style:none; margin:26px 0 0; padding:0; display:flex; flex-wrap:wrap; gap:8px; }
+/* A phone, drawn rather than photographed: the screen, a bezel in the
+   deepest ground, a hairline, and a glow behind in the section's colour.
+   The glow is the only thing that differs between them, and it means
+   something: leaf for care, sun for light, terra for trouble. */
+.phone{ margin:0; position:relative; justify-self:center;
+        width:clamp(250px, 25vw, 330px); max-width:78vw; }
+.phone::before{ content:""; position:absolute; inset:-14% -30%; z-index:0; pointer-events:none;
+  background:radial-gradient(closest-side, var(--phone-glow), transparent); opacity:.55; }
+.glow-leaf{ --phone-glow:color-mix(in srgb, var(--leaf) 45%, transparent); }
+.glow-sun{ --phone-glow:color-mix(in srgb, var(--sun) 32%, transparent); }
+.glow-terra{ --phone-glow:color-mix(in srgb, #D08A62 34%, transparent); }
+.phone img{ position:relative; z-index:1; display:block; width:100%; height:auto;
+  border-radius:38px; border:9px solid #040907;
+  box-shadow:0 0 0 1px var(--hair), 0 50px 90px -40px rgba(0,0,0,.9); }
+
+/* The app's own voice, quoted rather than described */
+.quote{ border-left:2px solid var(--leaf); padding-left:26px; margin:34px 0 0; }
+.quote p{ font-size:clamp(21px,2.4vw,26px); color:var(--ink); font-style:italic;
+          max-width:30ch; text-wrap:balance; }
+.quote cite{ font-family:var(--sans); font-size:11.5px; letter-spacing:.13em; text-transform:uppercase;
+             color:var(--ink-3); font-style:normal; }
+
+/* The light ladder. Five rungs is the app's real scale, not a decoration —
+   every room is placed on it and every species matched to it. */
+.ladder{ list-style:none; margin:28px 0 0; padding:0; display:flex; flex-wrap:wrap; gap:8px; }
 .ladder li{ font-family:var(--sans); font-size:11.5px; letter-spacing:.1em; text-transform:uppercase;
             padding:7px 13px; border:1px solid var(--hair); border-radius:100px; color:var(--ink-2);
             display:flex; align-items:center; gap:8px; }
 .ladder i{ width:9px; height:9px; border-radius:50%; display:block; }
 
-/* ---- Feature grid ---- */
-.grid{ display:grid; grid-template-columns:1fr; gap:clamp(30px,4vw,52px); }
-@media (min-width:760px){ .grid{ grid-template-columns:repeat(3,1fr); } }
-.grid h3{ font-weight:500; font-size:20px; letter-spacing:.02em; margin-bottom:10px; }
-.grid p{ font-size:16.5px; margin:0; }
-.fig{ font-family:var(--display); font-weight:200; font-size:52px; line-height:1;
-      color:var(--glow); display:block; margin-bottom:12px; }
+/* The diagnosis knowledge base, counted. Real numbers from
+   js/data/problems.js, so they change when it does. */
+.figs{ display:flex; gap:clamp(28px,4vw,48px); margin:30px 0 0; }
+.figs dt{ font-family:var(--display); font-weight:200; font-size:46px; line-height:1; color:var(--glow); }
+.figs dd{ margin:8px 0 0; font-family:var(--sans); font-size:11.5px; letter-spacing:.14em;
+          text-transform:uppercase; color:var(--ink-3); }
 
-/* ---- The app's own voice, quoted rather than described ---- */
-.quote{ border-left:2px solid var(--leaf); padding-left:26px; margin:0; }
-.quote p{ font-size:clamp(20px,2.6vw,26px); color:var(--ink); font-style:italic;
-         max-width:34ch; text-wrap:balance; }
-.quote cite{ font-family:var(--sans); font-size:11.5px; letter-spacing:.13em; text-transform:uppercase;
-             color:var(--ink-3); font-style:normal; }
+/* ---- The walkthrough ----
+   16:9 against the screens' portrait, so it takes the wrap rather than a
+   column. */
+.film{ margin:40px 0 0; max-width:1000px; }
+.film video{ display:block; width:100%; height:auto; aspect-ratio:16 / 9;
+             background:var(--well); border:1px solid var(--hair); border-radius:16px; }
+.film figcaption{ font-family:var(--sans); font-size:11.5px; letter-spacing:.12em;
+                  text-transform:uppercase; color:var(--ink-3); margin-top:14px; }
+
+/* ---- Privacy: the claim on one side, the one exception on the other ---- */
+.privacy-in{ display:grid; gap:12px 72px; }
+@media (min-width:900px){ .privacy-in{ grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); } }
+.privacy-in h2{ max-width:16ch; }
+.link{ font-family:var(--sans); font-size:13px; letter-spacing:.12em; text-transform:uppercase;
+       color:var(--glow); text-decoration:underline; text-underline-offset:6px;
+       display:inline-flex; align-items:center; min-height:44px; }
+.link:hover{ color:var(--mint); }
+
+/* ---- Questions ----
+   <details>, so it opens with a tap, a key or a screen reader and needs no
+   script. The marker is drawn, because the native triangle differs by
+   browser and carries no weight next to Cormorant. */
+.faq-in{ display:grid; gap:10px 72px; }
+@media (min-width:900px){ .faq-in{ grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); align-items:start; }
+  .faq-in .faq-list{ margin-top:0; } }
+.faq-list{ max-width:46rem; margin-top:30px; border-bottom:1px solid var(--hair); }
+.faq-list details{ border-top:1px solid var(--hair); }
+.faq-list summary{ list-style:none; cursor:pointer; display:flex; align-items:center; gap:18px;
+  justify-content:space-between; padding:20px 2px; min-height:44px;
+  font-family:var(--serif); font-size:clamp(20px,1.6vw,22px); color:var(--ink); }
+.faq-list summary::-webkit-details-marker{ display:none; }
+.faq-list summary::after{ content:"+"; font-family:var(--sans); font-weight:300; font-size:24px;
+  color:var(--glow); line-height:1; transition:transform .2s ease; }
+.faq-list details[open] summary::after{ transform:rotate(45deg); }
+.faq-list summary:focus-visible{ outline:2px solid var(--glow); outline-offset:2px; }
+.faq-list details p{ margin:0 0 22px; padding-right:40px; }
+
+/* ---- The close: the ask, once more, with nothing else beside it ---- */
+.close{ position:relative; overflow:hidden; text-align:center; }
+.close::before{ content:""; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(700px 420px at 50% 55%, color-mix(in srgb, var(--leaf) 16%, transparent), transparent 70%); }
+.close-in{ position:relative; display:flex; flex-direction:column; align-items:center; }
+.close-mark{ display:block; width:34px; height:45px; color:var(--glow); margin-bottom:26px; }
+.close-mark svg{ width:100%; height:100%; display:block; }
+.close h2{ font-size:clamp(32px,5vw,54px); max-width:18ch; margin-bottom:14px; }
+.close .lead{ color:var(--mint); margin-bottom:34px; }
 
 footer{ border-top:1px solid var(--hair); padding-block:46px; }
 .foot{ display:flex; flex-wrap:wrap; gap:18px 34px; align-items:center; justify-content:space-between; }
+.foot-links{ display:flex; flex-wrap:wrap; gap:4px 26px; }
+/* 44px tall, the tap target a footer link is owed; they were 21. */
 .foot a{ font-family:var(--sans); font-size:13px; letter-spacing:.06em; color:var(--ink-2);
-         text-decoration:none; }
+         text-decoration:none; display:inline-flex; align-items:center; min-height:44px; }
 .foot a:hover{ color:var(--glow); }
 .foot small{ font-family:var(--sans); font-size:12px; color:var(--ink-3); letter-spacing:.04em; }
-a:focus-visible,.btn:focus-visible{ outline:2px solid var(--glow); outline-offset:3px; }
+a:focus-visible{ outline:2px solid var(--glow); outline-offset:3px; }
 @media (prefers-reduced-motion:reduce){ *{ transition:none !important; animation:none !important; } }
 
 /* ==========================================================================
@@ -518,140 +596,6 @@ a:focus-visible,.btn:focus-visible{ outline:2px solid var(--glow); outline-offse
 
 .sp-none{ font-family:var(--serif); font-size:17px; color:var(--ink-2);
           padding:26px 18px 90px; margin:0; max-width:46ch; }
-
-/* ==== Snap scrolling =====================================================
-   One wheel, swipe or arrow key moves exactly one full-screen panel.
-
-   The panel rule is height:100svh with overflow:hidden, which means anything
-   taller than the screen is not merely awkward — it is clipped and no longer
-   reachable. Measured before this was written, four of six sections overflowed
-   a 1280x800 laptop and five of six overflowed a 390x844 phone, the worst by
-   423px. So the rest of this block is the compression that makes each section
-   fit, and it is not optional decoration: without it the page loses content.
-
-   The load-bearing trick is sizing the screenshots in svh rather than by
-   aspect ratio. A fixed ratio makes an image as tall as the column is wide,
-   which on a phone is most of the screen; svh makes it as tall as the screen
-   allows, on every device, with no breakpoint to maintain. ---------------- */
-[data-ui-snap-panel]{
-  position:relative; box-sizing:border-box;
-  height:100vh; height:100svh; min-height:480px;
-  overflow:hidden;
-  display:flex; align-items:center;
-  /* Replaces the section rhythm entirely. clamp(64px,10vw,120px) top and
-     bottom is 240px of a 713px laptop viewport — a third of the screen. */
-  padding-block:0;
-}
-[data-ui-snap-panel] > .wrap{ width:100%; }
-
-/* Every panel after the hero gives the bar its height back. The hero does
-   not, because up there the bar is only the lockup's own mark. Adjacent
-   sibling rather than :not(.hero) so it stays true if a panel is ever added
-   before this one. */
-[data-ui-snap-panel] + [data-ui-snap-panel]{ padding-top:var(--sb-h); }
-
-/* Screenshots scale to the screen instead of to the column. */
-.shot img{ max-height:54svh; width:auto; max-width:100%; margin-inline:auto; }
-.shot figcaption, .film figcaption{ margin-top:10px; }
-
-/* And so does the walkthrough — but by max-width, not max-height. With
-   width:100% and aspect-ratio set, a max-height clamps the box and not the
-   width, so the video would letterbox inside its own frame. Deriving the
-   width from the height it is allowed keeps the two in step.
-
-   On the figure rather than the video, because the video carries an inline
-   max-width as its guard against a stylesheet that never arrives, and an
-   inline declaration beats this one. Capping the box the video fills lets
-   both hold at once. */
-[data-ui-snap-panel] .film{ max-width:calc(56svh * 16 / 9); }
-
-/* The type scale gives back roughly 90px per panel at laptop size. */
-[data-ui-snap-panel] h1{ font-size:clamp(34px,5.2vw,58px); }
-[data-ui-snap-panel] h2{ font-size:clamp(24px,3.4vw,34px); margin-bottom:14px; }
-[data-ui-snap-panel] .lead{ font-size:clamp(16px,1.5vw,19px); }
-[data-ui-snap-panel] p{ margin-bottom:12px; }
-[data-ui-snap-panel] .split{ gap:clamp(20px,4vw,52px); }
-[data-ui-snap-panel] .ladder{ margin-top:16px; }
-
-/* The species block is the tallest thing on the page; it follows the screen. */
-[data-ui-snap-panel] .sp-list{ max-height:min(420px,34svh); padding-bottom:78px; }
-[data-ui-snap-panel] .sp-search{ margin-top:16px; }
-[data-ui-snap-panel] .sp-block{ margin-top:18px; }
-[data-ui-snap-panel] .sp-foot{ margin-top:12px; }
-
-/* The script animates the scroll itself; native smooth scrolling fights it. */
-html.ui-snap-ready{ scroll-behavior:auto !important; }
-
-/* Below 860px .split collapses to one column, so the screenshot and its text
-   stack instead of sitting side by side and the image is competing with the
-   copy for the same screen rather than the space beside it. Measured: at
-   54svh two panels overflowed a 390x844 phone by 111px and 121px. */
-@media (max-width:860px){
-  /* 33, not 36: at 36svh the pot-and-forecast panel still ran 10px past a
-     390x844 iPhone, which clipped the top of the screenshot and the bottom
-     line of the pull quote. Found by rendering the panel, not by measuring
-     the column — the numbers said it fitted. */
-  [data-ui-snap-panel] .shot img{ max-height:29svh; }
-  [data-ui-snap-panel] .shot figcaption{ margin-top:8px; }
-  [data-ui-snap-panel] .lead{ font-size:16px; }
-  [data-ui-snap-panel] p{ margin-bottom:10px; }
-  /* The bar took 48px off every panel below the hero, and the diagnosis
-     panel stacks three figures with nothing else to give. 44 rather than
-     52 across three blocks buys back thirty, which is twice what it was
-     short by — the numerals are display type and read the same. */
-  [data-ui-snap-panel] .fig{ font-size:44px; margin-bottom:10px; }
-}
-
-/* Stacked and short. A 360x780 Android still ran the two screenshot panels
-   23px and 41px past the screen with only the width rules applied, which is
-   the difference between a page and a page with the bottom of two sections
-   missing. The constraint here is height, not width, so it keys off height —
-   and 800px rather than the phone's 780 so the band has somewhere to start
-   before the escape hatch below takes over at 770. */
-@media (max-width:860px) and (max-height:800px){
-  [data-ui-snap-panel] .shot img{ max-height:19svh; }
-  [data-ui-snap-panel] h2{ font-size:clamp(21px,5.4vw,27px); margin-bottom:10px; }
-  [data-ui-snap-panel] .ladder{ margin-top:12px; gap:6px; }
-  [data-ui-snap-panel] .ladder li{ padding:5px 10px; }
-  [data-ui-snap-panel] .lead{ font-size:15.5px; margin-bottom:8px; }
-  [data-ui-snap-panel] p{ margin-bottom:8px; }
-  [data-ui-snap-panel] .eyebrow{ margin-bottom:8px; }
-  [data-ui-snap-panel] .quote p{ font-size:18px; }
-  [data-ui-snap-panel] .shot figcaption{ margin-top:6px; font-size:11px; }
-  /* Shorter again on a 360x780 Android, where the same two panels were the
-     only ones still over after the bar. */
-  [data-ui-snap-panel] .fig{ font-size:40px; margin-bottom:8px; }
-  [data-ui-snap-panel] .grid{ gap:22px; }
-  [data-ui-snap-panel] .split{ gap:16px; }
-}
-
-/* A panel is a screen, so the footer cannot sit inside one. It follows the
-   last panel and is reached by scrolling past it. */
-footer{ padding-block:26px; }
-
-/* The escape hatch, and where it sits is measured rather than guessed. Below
-   about 770px of usable height the two screenshot panels still ran 10-27px
-   past the screen fully compressed, because a heading, three paragraphs and a
-   screenshot do not go into that at a legible size — and shrinking the type
-   until they do is the worse trade. Below this the panels stop being
-   full-screen and the page scrolls the ordinary way, which beats a page with
-   its lower edge cut off. A 360x780 Android and everything above it snaps. */
-@media (max-height:770px){
-  [data-ui-snap-panel]{ height:auto; min-height:0; overflow:visible;
-                        display:block; padding-block:48px; }
-  /* After the shorthand above, which would otherwise reset it to 48. */
-  [data-ui-snap-panel] + [data-ui-snap-panel]{ padding-top:calc(48px + var(--sb-h)); }
-  /* No panel is a screen here, so there is no screenful to scroll past and
-     nothing for the cue to mean — and pinned to the foot of a hero that is
-     now only as tall as its content, it landed on the call to action. */
-  .hero-scroll{ display:none; }
-  /* Every compression above exists to fit a panel into one screen. Once the
-     page scrolls the ordinary way there is no screen to fit, and 24svh of a
-     667px phone is a 160px screenshot nobody can read. */
-  [data-ui-snap-panel] .shot img{ max-height:none; }
-  [data-ui-snap-panel] .film{ max-width:none; }
-  [data-ui-snap-panel] .sp-list{ max-height:420px; }
-}
 
 /* ---- Splash. The app's opening screen, copied from css/styles.css (A4) so
    the site opens the way the app does; the script that shows and lifts it
