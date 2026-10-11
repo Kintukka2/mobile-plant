@@ -44,13 +44,49 @@ stays what it was. The photo can be kept, replaced or removed.
 | Move the latest watering from 8 to 5 October | Schedule anchor moves to 5 October |
 | Edit an older watering while "Last watered" says 9 October | Stays 9 October |
 
+### Import a home plan
+
+**From:** the owner, step 3 of the planner funnel. The planner preview at
+sproutevergreen.app/planner (PR #111) saves a backup-shaped file, and
+until now Restore was the only way in, replacing everything the app held.
+
+**Done.** Settings has a **Home plan** card with **Import a home plan**,
+and the empty plan offers "or import one you drew on the web". Both open
+a file, then a sheet that says what will change before anything does
+(`Store.previewPlan` / `Store.importPlan`):
+
+- The imported drawing replaces the plan: rooms, windows, north, scale
+  and any tracing image.
+- A room already here with the same name takes the new outline and keeps
+  its id, plants, notes and icon. An unmatched drawn room keeps
+  everything but its outline. Plants already here keep their rooms and
+  lose their spots on the plan.
+- The file's plants come in only when "Bring the plant(s) on it too" is
+  ticked; it starts off when the garden already has plants.
+- Profile, settings and the diary are never touched. The hemisphere is
+  taken only if this garden has none.
+- A store too full for the result is put back as it was.
+
+**Checked in headless Chromium:**
+
+| Case | Result |
+| --- | --- |
+| New garden, planner file | 5 rooms with derived light, the Monstera placed, name kept |
+| Garden with Living Room, Kitchen, Study and 6 plants | Living Room and Kitchen keep their ids and plants; 3 rooms added; 6 plants unplaced, none added; 5 diary entries kept |
+| Same, with Study drawn | Study loses its outline only; the sheet says so first |
+| A file that isn't a plan | "That file isn't a Sprout plan." and nothing changes |
+| Store full | "Storage is full" and the garden is as it was |
+| From the empty plan's link | Same as from Settings, arriving on the plan |
+
 ## Production switches
 
 - [ ] `js/rate.js`: `LIVE = true`. Closed testers are paid, so it stayed
       off until now (`../android-v1.3/plan.md`).
 - [ ] `native/android/app/build.gradle`: `versionCode 8`, `versionName "1.5"`.
 - [ ] Device check: the 1.4 items (Back closing the diary sheet, the room
-      name coming back, Remove this plant) and editing a diary entry.
+      name coming back, Remove this plant), editing a diary entry, and
+      Import a home plan from a file saved on the phone (the system file
+      picker opens, the sheet reads it, the plan arrives).
 - [ ] Play Console before the first production release: store listing,
       Data safety (including whether the In-App Review library needs
       declaring), content rating, countries.
@@ -58,4 +94,5 @@ stays what it was. The photo can be kept, replaced or removed.
 
 ## Release housekeeping
 
-- [x] `CACHE` in `sw.js`: `sprout-v81-viridium` for S-04.
+- [x] `CACHE` in `sw.js`: `sprout-v81-viridium` for S-04,
+      `sprout-v92-viridium` for Import a home plan.

@@ -523,6 +523,132 @@ window.Store = (function () {
     return { saved: save(), photosDropped: dropped };
   }
 
+  /* ---------- Import a home plan ----------
+     A plan drawn somewhere else, usually the planner preview on the web,
+     brought into the garden already here. Restore can open the same file,
+     but Restore replaces everything, which is right for a backup and wrong
+     for a reader with plants, a diary and a name already in the app.
+
+     So this takes the drawing and nothing else of the reader's: the drawn
+     rooms, north, the scale and any tracing image, and, only when asked,
+     the plants that were placed on it. Profile, settings, the diary and
+     every plant already here are left as they are.
+
+     A home has one plan, so the imported one replaces whatever is drawn.
+     A room already here with the same name as an imported one takes its
+     shape and keeps its own id, plants, notes and icon, which is what
+     makes this a merge rather than a second house laid over the first.
+     A drawn room with no match keeps everything but its outline and
+     waits off the plan to be drawn again. Every plant already here loses
+     its spot, because the spot was a position in the old drawing. */
+  function readPlan(json) {
+    let parsed;
+    try { parsed = JSON.parse(json); } catch (e) { throw new Error('That file isn\'t a Sprout plan.'); }
+    const st = parsed && parsed.state;
+    if (!st || !Array.isArray(st.rooms)) throw new Error('That file isn\'t a Sprout plan.');
+    const rooms = st.rooms.filter(function (r) {
+      return r && r.shape && Array.isArray(r.shape.pts) && r.shape.pts.length >= 3 && Array.isArray(r.shape.win);
+    });
+    if (!rooms.length) throw new Error('There\'s no drawn plan in that file.');
+    const ids = {};
+    rooms.forEach(function (r) { ids[r.id] = true; });
+    const known = {};
+    window.PLANT_DATA.forEach(function (sp) { known[sp.id] = true; });
+    const plants = (Array.isArray(st.plants) ? st.plants : []).filter(function (p) {
+      return p && !p.archived && known[p.speciesId] && ids[p.roomId];
+    });
+    return { rooms: rooms, plants: plants, plan: st.plan || {}, profile: st.profile || {} };
+  }
+
+  function nameKey(name) { return String(name || '').trim().toLowerCase(); }
+
+  /* What importPlan() would do, without doing it, for the sheet that asks. */
+  function previewPlan(json) {
+    const f = readPlan(json);
+    const here = get().rooms;
+    const byName = {};
+    here.forEach(function (r) { if (nameKey(r.name)) byName[nameKey(r.name)] = r; });
+    const matched = f.rooms.filter(function (r) { return byName[nameKey(r.name)]; }).map(function (r) { return r.name; });
+    const matchedKeys = matched.map(nameKey);
+    const unshaped = here.filter(function (r) { return r.shape && matchedKeys.indexOf(nameKey(r.name)) === -1; }).length;
+    return {
+      rooms: f.rooms.length, plants: f.plants.length, matched: matched, unshaped: unshaped,
+      drawnHere: here.filter(function (r) { return r.shape; }).length,
+      plantsHere: activePlants().length
+    };
+  }
+
+  function importPlan(json, opts) {
+    const f = readPlan(json);
+    const s = get();
+    // Taken whole, so a store too full to hold the result can be put back
+    // exactly as it was rather than half merged.
+    const before = JSON.stringify(s);
+    const clone = function (o) { return JSON.parse(JSON.stringify(o)); };
+
+    const byName = {};
+    s.rooms.forEach(function (r) { if (nameKey(r.name) && !byName[nameKey(r.name)]) byName[nameKey(r.name)] = r; });
+    const idMap = {}, used = [];
+    f.rooms.forEach(function (ir) {
+      const mine = byName[nameKey(ir.name)];
+      if (mine && used.indexOf(mine) === -1) {
+        mine.shape = clone(ir.shape);
+        if (ir.locked) mine.locked = true; else delete mine.locked;
+        used.push(mine);
+        idMap[ir.id] = mine.id;
+      } else {
+        const room = {
+          id: uid('room'), name: ir.name || '', icon: ir.icon || null,
+          light: null, aspect: null, humid: ir.humid || null, notes: ir.notes || '',
+          shape: clone(ir.shape)
+        };
+        if (ir.locked) room.locked = true;
+        s.rooms.push(room);
+        used.push(room);
+        idMap[ir.id] = room.id;
+      }
+    });
+    s.rooms.forEach(function (r) { if (r.shape && used.indexOf(r) === -1) { r.shape = null; delete r.locked; } });
+    s.plants.forEach(function (p) { p.pos = null; });
+
+    const fp = f.plan;
+    s.plan = Object.assign({}, s.plan, {
+      north: typeof fp.north === 'number' ? fp.north : s.plan.north,
+      northConfirmed: !!fp.northConfirmed,
+      cell: fp.cell || s.plan.cell,
+      scaleFrom: fp.scaleFrom ? (idMap[fp.scaleFrom] || null) : null,
+      backdrop: fp.backdrop ? clone(fp.backdrop) : null,
+      done: !!fp.done
+    });
+    /* North was confirmed against the hemisphere the planner was told, and
+       the plan's light is only shown once the hemisphere is known. Taken
+       only when this garden has never been told one, so an answer the
+       reader gave here always wins. */
+    if (!s.profile.hemisphere && (f.profile.hemisphere === 'north' || f.profile.hemisphere === 'south')) {
+      s.profile.hemisphere = f.profile.hemisphere;
+    }
+
+    let added = 0;
+    if (opts && opts.plants) {
+      f.plants.forEach(function (ip) {
+        s.plants.push({
+          id: uid('plant'), speciesId: ip.speciesId, nickname: ip.nickname || '',
+          roomId: idMap[ip.roomId], pos: ip.pos ? { x: ip.pos.x, y: ip.pos.y } : null,
+          acquired: ip.acquired || UI.toISO(new Date()),
+          potCm: ip.potCm || 15, potMaterial: ip.potMaterial || 'plastic', drainage: ip.drainage || 'good',
+          potPending: ip.potPending !== false,
+          coverPhotoId: null, lastWatered: ip.lastWatered || null, lastFertilised: null, lastRepotted: null,
+          waterOffset: 0, archived: false, createdAt: UI.toISO(new Date())
+        });
+        added++;
+      });
+    }
+    nameBlankRooms(s.rooms);
+
+    if (!save()) { state = JSON.parse(before); return { saved: false }; }
+    return { saved: true, rooms: f.rooms.length, plants: added };
+  }
+
   function resetAll() {
     try {
       const keys = [];
@@ -552,6 +678,7 @@ window.Store = (function () {
     setWeather: setWeather, getWeather: getWeather,
     updateSettings: updateSettings, storageUsage: storageUsage,
     snoozeLocationAsk: snoozeLocationAsk, locationAskDue: locationAskDue,
-    exportAll: exportAll, importAll: importAll, resetAll: resetAll
+    exportAll: exportAll, importAll: importAll, resetAll: resetAll,
+    previewPlan: previewPlan, importPlan: importPlan
   };
 })();

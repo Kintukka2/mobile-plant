@@ -1228,6 +1228,9 @@ window.ViewPlan = (function () {
             '<div class="stack" style="gap:9px;align-items:center">' +
               '<button class="btn btn-sm" data-tour="1">' + UI.icon('sparkle') + 'Watch me build one</button>' +
               '<button class="link-btn" id="pl-trace">or trace one yourself</button>' +
+              /* Only where Settings is loaded, which is the app: the planner
+                 preview is where these files come from, not where they go. */
+              (window.ViewSettings ? '<button class="link-btn" id="pl-import">or import one you drew on the web</button>' : '') +
             '</div>' +
           '</div>' +
         '</div>' +
@@ -1305,6 +1308,7 @@ window.ViewPlan = (function () {
       if (e.target.closest('.plan-tools [data-open-compass]')) { openCompass(); return; }
       if (e.target.closest('[data-open-dims]')) { openDims(sel && sel.type === 'room' ? sel.id : null); return; }
       if (e.target.closest('#pl-add-plant')) { ViewGreenhouse.addPlantSheet(null); return; }
+      if (e.target.closest('#pl-import')) { ViewSettings.importPlan(); return; }
       if (e.target.closest('#pl-quick-add')) { if (sel && sel.type === 'room') quickAdd(room(sel.id)); return; }
       if (e.target.closest('[data-tip-done]')) { Store.updateSettings({ reshapeTipDone: true }); syncOverlays(); return; }
       if (e.target.closest('[data-walltip-done]')) { wallTipDone(); return; }

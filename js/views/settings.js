@@ -138,6 +138,90 @@ window.ViewSettings = (function () {
   }
 
   /* ======================================================================
+     Import a home plan
+     ====================================================================== */
+
+  /* A plan drawn in the planner preview on the web, or taken from any
+     backup, merged into the garden that is already here. Store.importPlan
+     has the rules; this asks first, in terms of what will change, because
+     an imported plan replaces the drawing and that is the one thing about
+     it that cannot be read off the button. */
+  function importPlan() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json,.json';
+    input.style.display = 'none';
+
+    input.addEventListener('change', function () {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function () { askPlan(reader.result); };
+      reader.onerror = function () { UI.toast('Could not read that file', 'warn'); };
+      reader.readAsText(file);
+      if (input.parentNode) input.parentNode.removeChild(input);
+    });
+
+    document.body.appendChild(input);
+    input.click();
+  }
+
+  // "Living Room, Kitchen and Study", for the rooms that keep their plants.
+  function listOf(names) {
+    return names.length < 2 ? names.join('') : names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
+  }
+
+  function askPlan(json) {
+    let p;
+    try { p = Store.previewPlan(json); } catch (e) { UI.toast(e.message || 'That file could not be read', 'warn'); return; }
+
+    let body = '<p class="small muted" style="margin:0 0 12px;line-height:1.65">It has ' + UI.plural(p.rooms, 'room') +
+      ' drawn, with their windows and north.</p>';
+    if (p.drawnHere) {
+      body += '<p class="small muted" style="margin:0 0 12px;line-height:1.65">It replaces the plan you have now.' +
+        (p.matched.length ? ' ' + UI.esc(listOf(p.matched)) + (p.matched.length === 1
+          ? ' keeps its plants, notes and icon, and takes the new outline.'
+          : ' keep their plants, notes and icons, and take the new outlines.') : '') +
+        (p.unshaped ? ' ' + UI.plural(p.unshaped, 'drawn room') + ' with no match ' + (p.unshaped === 1 ? 'stays' : 'stay') +
+          ' in your greenhouse, off the plan.' : '') + '</p>';
+    }
+    if (p.plantsHere) {
+      body += '<p class="small muted" style="margin:0 0 12px;line-height:1.65">Your plants keep their rooms. Drag them onto the new plan and I\'ll show you where each should stand.</p>';
+    }
+    if (p.plants) {
+      /* Off when the garden already has plants: the planner's plants are
+         usually the reader's own, sketched in before they installed, and
+         bringing them in beside the real ones would be every plant twice. */
+      body += '<label class="row pot-pending" style="gap:10px;cursor:pointer;margin:4px 0 0">' +
+          '<input type="checkbox" id="ip-plants"' + (p.plantsHere ? '' : ' checked') + '>' +
+          '<span>' + (p.plants === 1 ? 'Bring the plant on it too' : 'Bring the ' + p.plants + ' plants on it too') + '</span>' +
+        '</label>' +
+        (p.plantsHere ? '<p class="hint">You have ' + UI.plural(p.plantsHere, 'plant') + ' here already, so I\'ve left this off in case they\'re the same ones.</p>' : '');
+    }
+    body += '<div class="row" style="gap:8px;margin-top:18px">' +
+      '<button class="btn btn-ghost" data-act="sheet-cancel" style="flex:1">Cancel</button>' +
+      '<button class="btn" data-act="ip-go" style="flex:1">Import</button>' +
+    '</div>';
+
+    UI.openSheet('Import this plan?', body, function (sheet) {
+      sheet.querySelector('[data-act="ip-go"]').addEventListener('click', function () {
+        const box = sheet.querySelector('#ip-plants');
+        let r;
+        try { r = Store.importPlan(json, { plants: !!(box && box.checked) }); }
+        catch (e) { UI.toast(e.message || 'That file could not be read', 'warn'); return; }
+        UI.closeSheet();
+        // A failed save has already said so, in Store.save.
+        if (!r.saved) return;
+        UI.toast('Your home plan is in' + (r.plants ? ', with ' + UI.plural(r.plants, 'plant') : ''), 'leaf');
+        /* A fresh arrival even from the plan's own link, where go() would
+           be a no-op: arriving resets the plan's undo history, which
+           should not reach back across a whole plan being replaced. */
+        if (location.hash === '#/plan') App.render(); else App.go('/plan');
+      });
+    });
+  }
+
+  /* ======================================================================
      The view
      ====================================================================== */
 
@@ -198,6 +282,19 @@ window.ViewSettings = (function () {
       '</div>' +
     '</div>';
 
+    /* --- Home plan ---
+       Its own card rather than a third button under Backup: Restore and
+       this both open a file, and the one that replaces everything should
+       not sit beside the one that does not. */
+    html += '<div class="section">' +
+      '<div class="section-head"><h2 class="section-title">Home plan</h2></div>' +
+      '<div class="card">' +
+        '<p class="small muted" style="margin:0 0 12px;line-height:1.6">Drew your home in the planner at ' +
+          'sproutevergreen.app? I\'ll bring in the rooms, windows and north, and leave your plants and diary as they are.</p>' +
+        '<button class="btn btn-soft btn-block" data-import-plan="1">' + UI.icon('download') + 'Import a home plan</button>' +
+      '</div>' +
+    '</div>';
+
     /* --- About / reset --- */
     html += '<div class="section">' +
       '<div class="card">' +
@@ -223,6 +320,7 @@ window.ViewSettings = (function () {
       if (e.target.closest('[data-theme-toggle]')) { App.toggleTheme(e); return; }
       if (e.target.closest('[data-export]')) { exportData(); return; }
       if (e.target.closest('[data-import]')) { importData(); return; }
+      if (e.target.closest('[data-import-plan]')) { importPlan(); return; }
 
       if (e.target.closest('[data-reset]')) {
         UI.confirmSheet('Delete everything?',
@@ -239,6 +337,8 @@ window.ViewSettings = (function () {
   }
 
   return {
-    title: title, sub: sub, back: true, render: render, mount: mount
+    title: title, sub: sub, back: true, render: render, mount: mount,
+    /* shared: the plan's empty state offers the same import */
+    importPlan: importPlan
   };
 })();

@@ -198,8 +198,11 @@ both app stores' privacy forms ask for.
 alone, for people who have not installed it. It keeps what is drawn there
 in that browser, under its own key so it can never touch a garden on the
 same origin, and sends nothing to anyone: no forecast, no location. Its
-Save downloads a backup-shaped file to the reader's device for the app's
-Restore to open, and its Google Play link carries a campaign referrer
+Save downloads a backup-shaped file to the reader's device, which the app's
+**Import a home plan** (Settings) merges into the garden already there:
+the drawing replaces the plan, rooms with matching names keep their
+plants, and the reader's profile, diary and plants are left alone. Its
+Google Play link carries a campaign referrer
 naming the planner, which tells Play where the visit came from and nothing
 about the reader.
 
