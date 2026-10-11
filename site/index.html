@@ -38,7 +38,7 @@
 -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A1410'/%3E%3Cg fill='none' stroke='%233FBE8B' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M50 84V40'/%3E%3Cpath d='M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z'/%3E%3Cpath d='M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="img/touch-icon.png">
-<link rel="stylesheet" href="site.css?v=20">
+<link rel="stylesheet" href="site.css?v=21">
 <!-- The hero's wash pours down from the ceiling on arrival, so it is held
      back before the first paint rather than shown and then hidden, which
      would flash. Not under reduced motion, and never for good: if the
@@ -118,6 +118,9 @@
      because on the hero the mark is not the bar's — it is the lockup's, and
      the two are the same element. Its one control is the download: by the
      time the bar appears the reader has left the hero's badges behind.
+     Beside it, the planner, the one thing a reader can try before they
+     install, so it is a tap away from anywhere on the page rather than
+     only from its own section.
 
      display:none until the script adds .sb-live, so without JS the hero
      keeps its own mark and no bar appears half-built. -->
@@ -131,6 +134,9 @@
       </span>
     </a>
     <div class="sitebar-cta" id="sb-cta">
+      <a class="sb-try" href="https://sproutevergreen.app/planner" target="_blank" rel="noopener"><span class="sb-try-the">Try the </span>planner
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 6h9v9M18 6 6 18"/></svg>
+        <span class="visually-hidden"> (opens in a new tab)</span></a>
       <a class="store store-play store-sm" href="https://play.google.com/store/apps/details?id=com.sproutevergreen.app" rel="noopener">
         <img src="img/google-play.png" width="564" height="168" alt="Get it on Google Play">
       </a>
@@ -212,11 +218,10 @@
       plastic in a dim corner. Sprout adjusts for pot size and material, drainage, room light,
       window aspect and season, so the list you get is the list that is actually due.</p>
       <p>Set a location and it reads the forecast too. Before a hot dry spell it offers to bring
-      watering forward; before a wet week it offers to hold off.
-      <span class="script-word">You approve every change.</span></p>
+      watering forward; before a wet week it offers to hold off. <strong>You approve every
+      change.</strong></p>
       <blockquote class="quote">
-        <p>“Four plants are ready for a drink. Nothing dramatic.”</p>
-        <cite>— Sprout</cite>
+        <p>“Four plants are ready for a drink. Nothing dramatic.” <span class="quote-by">— Sprout</span></p>
       </blockquote>
     </div>
     <figure class="phone glow-leaf">
@@ -243,7 +248,8 @@
         <li><i style="background:#2C4A3C"></i>Low</li>
         <li><i style="background:#16211C;border:1px solid var(--hair)"></i>No window</li>
       </ul>
-      <!-- The one call to action on the site that is not a store badge. It
+      <!-- The one call to action on the site that is not a store badge, and
+           the bar carries it too. It
            is the app's own planner, alone, at sproutevergreen.app/planner,
            and its Save is where it asks for the download: the feature that
            sells the app most is the one a reader can use before installing
@@ -875,7 +881,7 @@
   // The page's copy, as boxes in page coordinates: the light dims as it
   // nears them, so it lights the space between the words, not the words.
   var copy = [];
-  var TEXT = '.wrap h1, .wrap h2, .wrap p, .wrap .eyebrow, .wrap .ladder, .wrap .quote, .wrap .figs, .faq-list, .wrap .try';
+  var TEXT = '.wrap h1, .wrap h2, .wrap p, .wrap .eyebrow, .wrap .ladder, .wrap .quote, .wrap .figs, .wrap .try';
 
   function blob(k, cls) {
     var el = document.createElement('i');
@@ -917,7 +923,7 @@
       if (el.tagName !== 'SECTION') continue;
       /* Stations: the objects the light stops behind and lights the edges
          of. Everything else is a point it passes through. */
-      var station = el.querySelector('.phone img, .film-thumb, .sp-block');
+      var station = el.querySelector('.phone img, .film-thumb, .sp-block, .faq-list');
       var f = station || el.querySelector('.close-mark') || el.querySelector('h2');
       if (!f) continue;
       var r = f.getBoundingClientRect();
