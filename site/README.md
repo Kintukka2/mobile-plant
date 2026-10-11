@@ -58,7 +58,7 @@ command** — they publish the directory as it stands.
 
 | Project | Root directory | Domain |
 | --- | --- | --- |
-| `sprout-app` | `/` | `sproutevergreen.app` |
+| `sprout-app` | `/` | `sproutevergreen.app`, whose `/` now redirects here |
 | `sprout-site` | `site` | `sproutevergreen.com` |
 
 Every push to `main` redeploys both. A push to any other branch gets a preview

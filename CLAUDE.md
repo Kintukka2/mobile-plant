@@ -88,8 +88,13 @@ the voice vector itself, speed and processing. Any voiceover uses
 sounds like the same Sprout. Like the rest of `marketing/`, nothing in the app
 reads it.
 
-`_headers` and `_redirects` at the root belong to the app deploy. The one
-that matters is the no-cache rule on `sw.js`: bumping `CACHE` does nothing
+`_headers` and `_redirects` at the root belong to the app deploy. **The web
+app is retired:** `_redirects` sends `sproutevergreen.app/` to
+sproutevergreen.com, and the app's files stay published beneath it: the
+store apps are built from the same tree, and the planner preview is planned
+to be served from them. Locally `.claude/serve.js` ignores `_redirects`, so the app still
+runs at `/` for development. The rule in `_headers` that matters is the
+no-cache one on `sw.js`: bumping `CACHE` does nothing
 if the CDN is still handing out the old `sw.js` that names the old cache.
 
 ## Running it
