@@ -5301,6 +5301,7 @@ html.plan-full .tabbar { visibility: hidden; }
 .plan-room-sub { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
 .plan-room-sub .label { display: inline-flex; align-items: center; gap: 8px; margin: 0; }
 .plan-walls-lede { margin: -2px 0 12px; }
+.plan-room-add { margin: 0 0 16px; }
 .plan-room-sun { margin: 14px 0 0; }
 .plan-room.is-locked .plan-wall { opacity: 0.55; cursor: not-allowed; }
 .plan-room.is-locked .plan-check { opacity: 0.55; }

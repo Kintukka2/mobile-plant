@@ -559,6 +559,11 @@ window.ViewPlan = (function () {
         '<button class="plan-room-ico' + (lk ? ' is-on' : '') + '" id="pl-room-lock" aria-pressed="' + lk + '" aria-label="' + (lk ? 'Unlock this room' : 'Lock this room') + '">' + (lk ? LOCK_SVG : UNLOCK_SVG) + '</button>' +
         '<button class="plan-room-ico" id="pl-room-more" aria-label="Icon, humidity and notes">' + UI.icon('sliders') + '</button>' +
       '</div>';
+    /* Right under the room's name, where the room's own actions are, and
+       the full width of the panel: at the foot beside Done it read as an
+       afterthought, and on the stage it was mistaken for Add a room. A
+       locked room still takes plants, so the lock does not touch it. */
+    h += '<button class="btn btn-sm btn-ghost btn-block plan-room-add" id="pl-quick-add">' + UI.icon('plus') + 'Add a plant</button>';
     if (lk) h += '<p class="plan-room-lockline">' + LOCK_SVG + '<span>Locked, so its shape, walls and name stay put. Tap the lock to change them.</span></p>';
     h += '<div class="plan-room-sub"><span class="label">Walls <button class="plan-help" id="pl-walls-help" aria-label="What do these mean?">?</button></span>' +
         '<label class="plan-check"><input type="checkbox" id="pl-room-outdoor"' + (sh.outdoor ? ' checked' : '') + (lk ? ' disabled' : '') + '> Outdoors</label></div>';
@@ -585,12 +590,7 @@ window.ViewPlan = (function () {
         return '<button class="plan-row" data-sel-plant="' + UI.attr(p.id) + '"><span class="plan-row-nm">' + UI.esc(Store.displayName(p)) + '</span>' + verdictPill(Plan.verdict(Store.species(p), Plan.pointRank(r, p.pos.x, p.pos.y))) + '</button>';
       }).join('') + '</div></div>';
     }
-    /* Add a plant lives here, with the room it adds to, rather than on the
-       stage: down in the stage's corner it sat where Add a room sits when
-       nothing is selected, and kept being tapped for it. A locked room
-       still takes plants, so the lock does not touch it. */
-    h += '<div class="plan-room-foot"><div class="row" style="gap:8px"><button class="btn btn-sm" id="pl-done-sel">Done</button>' +
-        '<button class="btn btn-sm btn-ghost" id="pl-quick-add">' + UI.icon('plus') + 'Add a plant</button></div>' +
+    h += '<div class="plan-room-foot"><button class="btn btn-sm" id="pl-done-sel">Done</button>' +
       '<button class="link-btn plan-room-remove" id="pl-room-delete"' + (lk ? ' disabled' : '') + '>' + UI.icon('trash') + '<span>Remove room</span></button></div>';
     panel.innerHTML = h;
   }
@@ -765,7 +765,7 @@ window.ViewPlan = (function () {
       if (elsewhere.length) body += '<span class="label">In another room</span><div class="stack" style="gap:6px">' + elsewhere.map(row).join('') + '</div>';
       body += '<p class="hint">Tap one and I\'ll stand it where the light in this room suits it best. You can drag it from there.</p>';
     }
-    body += '<div class="row" style="gap:8px;margin-top:18px"><button class="btn btn-ghost" data-act="sheet-cancel" style="flex:1">Close</button><button class="btn" data-act="pl-quick-new" style="flex:1">New plant here</button></div>';
+    body += '<div class="row" style="gap:8px;margin-top:18px"><button class="btn btn-ghost" data-act="sheet-cancel" style="flex:1">Close</button><button class="btn" data-act="pl-quick-new" style="flex:1">' + UI.icon('plus') + 'Add new plant</button></div>';
     UI.openSheet('Add to ' + r.name, body, function (sheet) {
       sheet.querySelectorAll('[data-quick-plant]').forEach(function (b) {
         b.addEventListener('click', function () { const p = Store.getPlant(b.getAttribute('data-quick-plant')); UI.closeSheet(); if (p) placeIn(p, r); });
