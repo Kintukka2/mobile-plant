@@ -24,15 +24,16 @@ const [onlySet, onlySize] = process.argv.slice(2);
   const written = [];
   for (const [set, def] of Object.entries(SETS)) {
     if (onlySet && onlySet !== set) continue;
-    for (const [size, { w, h }] of Object.entries(SIZES)) {
+    for (const [size, { w, h, device, sets }] of Object.entries(SIZES)) {
       if (onlySize && onlySize !== size) continue;
+      if (sets && !sets.includes(set)) continue;
       const dir = path.join(OUT, set, size);
       fs.rmSync(dir, { recursive: true, force: true });
       fs.mkdirSync(dir, { recursive: true });
       const p = await b.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
       for (let i = 0; i < def.frames.length; i++) {
         const f = def.frames[i];
-        await p.goto(APP + 'marketing/store-shots/frame.html?set=' + set + '&n=' + (i + 1) + '&w=' + w + '&h=' + h, { waitUntil: 'load' });
+        await p.goto(APP + 'marketing/store-shots/frame.html?set=' + set + '&n=' + (i + 1) + '&w=' + w + '&h=' + h + (device ? '&device=' + device : ''), { waitUntil: 'load' });
         await p.waitForFunction(() => document.body.dataset.ready === '1', null, { timeout: 10000 });
         const file = path.join(dir, String(i + 1).padStart(2, '0') + '-' + f.screen + '.png');
         await p.screenshot({ path: file, clip: { x: 0, y: 0, width: w, height: h } });
