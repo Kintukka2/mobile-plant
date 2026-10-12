@@ -390,7 +390,9 @@ window.ViewSpecies = (function () {
       s.fert.never
         ? ['wheat', 'Feeding', 'Never', s.fert.note || '']
         : ['wheat', 'Feeding', 'Every ' + s.fert.everyDays + ' days at ' + s.fert.strength + ' strength',
-           s.fert.type + '. Growing season only — feeding a dormant plant simply builds up salt in the soil.'],
+           s.fert.type + '. ' + (s.fert.seasons
+             ? 'In ' + s.fert.seasons.join(' and ') + ' only, while it grows'
+             : 'Growing season only') + ' — feeding a dormant plant simply builds up salt in the soil.'],
       hum ? [hum.ico, 'Humidity', hum.label, hum.desc] : null,
       ['thermo', 'Temperature', s.idealC[0] + '–' + s.idealC[1] + '°C', 'Never below ' + s.minC + '°C.'],
       ['pot', 'Soil', s.soil, ''],

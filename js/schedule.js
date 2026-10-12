@@ -269,12 +269,26 @@ window.Schedule = (function () {
        Living Stones split on it. `dormant` stays true so every caller that
        already skips a paused feed skips this one too. */
     if (sp.fert.never) return { noFeed: true, dormant: true, interval: 0, reason: sp.fert.note || '' };
-    if (!isGrowingSeason()) {
+    /* A plant that flowers in autumn and winter (Cyclamen) is fed then and
+       not in summer, the reverse of the usual pause; fert.seasons names the
+       seasons it is fed in. Without it, feeding follows the growing season. */
+    const season = currentSeason();
+    const own = sp.fert.seasons;
+    if (own ? own.indexOf(season) === -1 : !isGrowingSeason()) {
+      let next = 'spring';
+      if (own) {
+        const at = SEASON_ORDER.indexOf(season);
+        for (let i = 1; i <= 4; i++) {
+          const k = SEASON_ORDER[(at + i) % 4];
+          if (own.indexOf(k) !== -1) { next = k; break; }
+        }
+      }
       return {
         dormant: true,
         interval: sp.fert.everyDays,
-        reason: LOOKUPS.SEASON_META[currentSeason()].label +
-                ' — hold off feeding until growth restarts in spring.'
+        reason: LOOKUPS.SEASON_META[season].label +
+                (own ? ' — it is not growing now, so no feed until ' + next + '.'
+                     : ' — hold off feeding until growth restarts in spring.')
       };
     }
     const interval = sp.fert.everyDays;

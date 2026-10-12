@@ -184,6 +184,7 @@ can be empty: Echeveria wants direct sun and avoids everything else.
 |---|---|---|
 | `fert.everyDays` | `28` | Days between feeds in the growing season only; nothing is due in dormancy. Catalogue spans 14–84. |
 | `fert.never` | | `true` for a plant that must never be fed (carnivorous plants, Living Stones), with `fert.note` saying why: the feeding card shows that note and no feed is ever due. Give it as the whole `fert`: `{ never: true, note: '…' }`. The species check fails on `never` without a note. |
+| `fert.seasons` | | Only for a plant that grows outside spring and summer: the seasons it is fed in, such as `['autumn', 'winter']` for Cyclamen. Left out, feeding follows the growing season. |
 | `fert.strength` | `'half'` | `full`, `half` or `quarter`. Shown as Full, ½ or ¼ strength. |
 | `fert.type` | `'Balanced liquid houseplant feed'` | Say how to give it if it is unusual ("added to the soaking water", "never left in the cup"). |
 | `soil` | a standard mix with perlite | State it unless the standard mix really is right. "None" for a plant with no pot. |
@@ -198,7 +199,8 @@ can be empty: Echeveria wants direct sun and avoids everything else.
 | `tox.note` | yes | The compound and the effect, plainly, or the source of a safe rating. Reference voice: no reassurance and no jokes. |
 
 Keep `very-toxic` for genuinely dangerous plants: it is the oxblood chip and
-exactly one species carries it (Kalanchoe, for cardiac glycosides). A plant is
+two species carry it: Kalanchoe, for cardiac glycosides, and Sago Palm, for
+liver failure. A plant is
 pet safe only when `cats` and `dogs` are both `safe`; `mild` is not pet safe.
 
 ### Propagation

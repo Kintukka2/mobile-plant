@@ -72,9 +72,9 @@ const badSeasons=c.window.PLANT_DATA.filter(p=>p.water.seasons).filter(p=>{const
   return k.some(x=>!SEASONS.includes(x))||k.some(x=>typeof o[x]!=='number'||o[x]<0)||!SEASONS.some(x=>(typeof o[x]==='number'?o[x]:(x==='spring'||x==='summer'?p.water.warm:p.water.cool))>0);}).map(p=>p.id);
 if(badSeasons.length){console.error('water.seasons malformed or never waters:', badSeasons.join(', '));process.exit(1);}
 // A feed is either never, with the reason the feeding card shows, or a
-// positive number of days.
-const badFeed=c.window.PLANT_DATA.filter(p=>p.fert.never?!p.fert.note:!(p.fert.everyDays>0)).map(p=>p.id);
-if(badFeed.length){console.error('fert needs everyDays > 0, or never with a note:', badFeed.join(', '));process.exit(1);}
+// positive number of days, with any seasons of its own among the four.
+const badFeed=c.window.PLANT_DATA.filter(p=>p.fert.never?!p.fert.note:!(p.fert.everyDays>0)||(p.fert.seasons&&(!Array.isArray(p.fert.seasons)||!p.fert.seasons.length||p.fert.seasons.some(x=>!SEASONS.includes(x))))).map(p=>p.id);
+if(badFeed.length){console.error('fert needs everyDays > 0 and valid seasons, or never with a note:', badFeed.join(', '));process.exit(1);}
 const badMethod=c.window.PLANT_DATA.filter(p=>p.water.method&&!c.window.LOOKUPS.WATER_METHODS[p.water.method]).map(p=>p.id+' ('+p.water.method+')');
 if(badMethod.length){console.error('water.method not in LOOKUPS.WATER_METHODS:', badMethod.join(', '));process.exit(1);}
 // Last, so a species written ahead of its photograph still gets every

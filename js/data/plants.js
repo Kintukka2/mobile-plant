@@ -17,6 +17,8 @@
                   falls back to warm or cool.
    fert.never   = true for a plant that must never be fertilised, with
                   fert.note saying why. It is given no feeding task.
+   fert.seasons = optional list of the seasons it is fed in, for a plant
+                  that grows outside spring and summer (Cyclamen).
    fert.everyDays = days between feeds, growing season only
    prop[].roots   = a bare duration ('3–5 weeks') or a phrase that reads on
                     its own ('Already rooted'). The plant page puts
@@ -550,6 +552,127 @@ window.PLANT_DATA = (function () {
       tags: ['pet-safe', 'beginner', 'low-light', 'compact', 'patterned']
     },
 
+    {
+      id: 'peperomia-argyreia',
+      common: 'Watermelon Peperomia',
+      aka: ['Watermelon Begonia', 'Peperomia argyreia'],
+      botanical: 'Peperomia argyreia',
+      family: 'Piperaceae',
+      origin: 'Rainforest floor of northern South America, chiefly Brazil',
+      difficulty: 'easy',
+      growthRate: 'slow',
+      matureCm: 20,
+      water: {
+        warm: 9, cool: 16, soakPct: 0.2, dryBetween: true,
+        note: 'The thick leaves and red stalks hold water, so let the top half of the mix dry before watering. Wet soil rots the stalks at the base, where they all meet.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
+        note: 'Bright indirect light keeps the silver stripes sharp. In low light the stalks stretch and the pattern fades; direct sun scorches the leaves.'
+      },
+      humidity: 'medium', minC: 13, idealC: [18, 26],
+      fert: { everyDays: 42, strength: 'half', type: 'Balanced liquid feed' },
+      soil: 'Chunky and quick-draining: potting mix with equal parts perlite and orchid bark.',
+      repot: 'Every 2–3 years in spring. Its root system is small and it does best in a small pot.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'Listed by the ASPCA as non-toxic to cats and dogs.' },
+      prop: [
+        { m: 'Leaf cutting', diff: 'easy', season: 'Spring or summer', roots: '4–6 weeks',
+          steps: [
+            'Cut a healthy leaf with 2–3cm of its stalk.',
+            'Push the stalk into damp perlite or seed compost. A leaf cut across in half roots too, each half stood cut edge down.',
+            'Cover it to hold humidity, and keep it warm and bright, out of sun.',
+            'Small plants appear at the base in six to eight weeks.'
+          ] },
+        { m: 'Division', diff: 'easy', season: 'Spring', roots: 'Already rooted',
+          steps: [
+            'An older plant grows into several crowns.',
+            'Unpot it and gently pull the crowns apart, each with its own roots.',
+            'Pot each into a small pot of fresh chunky mix.'
+          ] }
+      ],
+      likes: ['Drying out between drinks', 'A small pot', 'Bright indirect light'],
+      dislikes: ['Wet soil', 'Direct sun', 'Cold draughts'],
+      problems: ['overwatering', 'root-rot', 'mushy-base', 'drooping', 'leggy-stretching', 'variegation-loss', 'mealybugs'],
+      tags: ['pet-safe', 'beginner', 'compact', 'patterned', 'office']
+    },
+
+    {
+      id: 'pilea-cadierei',
+      common: 'Aluminium Plant',
+      aka: ['Watermelon Pilea', 'Pilea cadierei'],
+      botanical: 'Pilea cadierei',
+      family: 'Urticaceae',
+      origin: 'Limestone hills of southern China and northern Vietnam',
+      difficulty: 'easy',
+      growthRate: 'fast',
+      matureCm: 30,
+      water: {
+        warm: 7, cool: 12, soakPct: 0.25, dryBetween: true,
+        note: 'Water once the top 2cm are dry. It wilts quickly when dry and picks up within hours of a drink, but repeated wilting costs it the lower leaves.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
+        note: 'Bright indirect light keeps it bushy and the silver markings bright. In shade it grows tall and gappy.'
+      },
+      humidity: 'medium', minC: 12, idealC: [18, 26],
+      fert: { everyDays: 28, strength: 'half', type: 'Balanced liquid feed' },
+      repot: 'Every spring. Old plants turn woody and bare at the base, so it is best started again from cuttings every two or three years.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'Listed by the ASPCA as non-toxic to cats and dogs.' },
+      prop: [{
+        m: 'Stem cutting', diff: 'easy', season: 'Spring or summer', roots: '2–3 weeks',
+        steps: [
+          'Cut an 8cm shoot tip just below a leaf joint.',
+          'Strip the lowest pair of leaves.',
+          'Root it in water or push it straight into damp potting mix.',
+          'Pot several cuttings together for a bushy plant, and pinch the tips once they grow.'
+        ]
+      }],
+      likes: ['Regular pinching out', 'Bright indirect light', 'Even moisture'],
+      dislikes: ['Drying out completely', 'Direct sun', 'Cold'],
+      problems: ['leggy-stretching', 'needs-pruning', 'underwatering', 'drooping', 'yellow-lower-leaves', 'spider-mites', 'mealybugs'],
+      tags: ['pet-safe', 'beginner', 'compact', 'fast-growing', 'patterned', 'easy-propagation']
+    },
+
+    {
+      id: 'asparagus-densiflorus',
+      common: 'Asparagus Fern',
+      aka: ['Sprengeri Fern', 'Emerald Fern', 'Asparagus aethiopicus'],
+      botanical: 'Asparagus densiflorus',
+      family: 'Asparagaceae',
+      origin: 'Coastal scrub and forest margins of South Africa',
+      difficulty: 'easy',
+      growthRate: 'fast',
+      matureCm: 90,
+      water: {
+        warm: 6, cool: 12, soakPct: 0.3, dryBetween: true,
+        note: 'Water when the top few centimetres are dry. Its thick, tuberous roots store water, so it survives a dry spell, but kept bone dry for long it yellows and sheds its needles.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['medium', 'direct'], avoid: ['low'],
+        note: 'Bright light keeps it dense. A little morning sun suits it; hot midday sun yellows the needles.'
+      },
+      humidity: 'medium', minC: 7, idealC: [13, 24],
+      fert: { everyDays: 21, strength: 'half', type: 'Balanced liquid feed' },
+      repot: 'Every spring. The tuberous roots fill a pot fast, and can split a plastic one.',
+      tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
+        note: 'Listed by the ASPCA as toxic to cats and dogs, as Asparagus densiflorus \'Sprengeri\'. The berries cause vomiting, abdominal pain and diarrhoea, and repeated contact with the stems can inflame the skin. It is not a fern.' },
+      prop: [{
+        m: 'Division', diff: 'easy', season: 'Spring', roots: 'Already rooted',
+        steps: [
+          'Wear gloves: the stems carry small hooked spines.',
+          'Unpot it and cut the root mass into two or three pieces with a sharp knife, each with stems and tubers.',
+          'Pot each piece into fresh mix at the same depth.',
+          'Water well and keep it out of sun for a week.'
+        ]
+      }],
+      likes: ['Bright light', 'A roomy pot', 'Regular feeding'],
+      dislikes: ['Drying out for weeks', 'Hot midday sun', 'Deep shade'],
+      problems: ['yellow-lower-leaves', 'leaves-falling-off', 'underwatering', 'pot-bound', 'low-humidity', 'spider-mites', 'mealybugs'],
+      tags: ['beginner', 'trailing', 'fast-growing', 'cool-tolerant']
+    },
+
     /* ====================== STATEMENT FOLIAGE ====================== */
     {
       id: 'ficus-lyrata',
@@ -1036,6 +1159,248 @@ window.PLANT_DATA = (function () {
       dislikes: ['Direct sun', 'Dry air', 'Hard tap water'],
       problems: ['low-humidity', 'spider-mites', 'tap-water-minerals', 'brown-tips-only', 'yellow-lower-leaves', 'frond-dieback'],
       tags: ['pet-safe', 'palm', 'statement', 'large']
+    },
+
+    {
+      id: 'pachira-aquatica',
+      common: 'Money Tree',
+      aka: ['Pachira', 'Guiana Chestnut', 'Malabar Chestnut'],
+      botanical: 'Pachira aquatica',
+      family: 'Malvaceae',
+      origin: 'Freshwater swamps and riverbanks from southern Mexico to northern Brazil',
+      difficulty: 'easy',
+      growthRate: 'moderate',
+      matureCm: 180,
+      water: {
+        warm: 9, cool: 16, soakPct: 0.25, dryBetween: true,
+        note: 'Water thoroughly once the top half of the mix is dry, then empty the saucer. The swollen base of the trunk stores water, so it forgives a missed week far better than a pot that never dries.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['medium', 'direct'], avoid: ['low'],
+        note: 'Bright indirect light, with a little morning sun if you have it. Turn it a quarter every few weeks: it leans hard towards the window.'
+      },
+      humidity: 'medium', minC: 12, idealC: [18, 27],
+      fert: { everyDays: 28, strength: 'half', type: 'Balanced liquid feed' },
+      soil: 'Free-draining potting mix with a third part perlite or fine bark.',
+      repot: 'Every 2–3 years in spring. A snug pot keeps it compact and the braided trunks steady.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'Listed by the ASPCA as non-toxic to cats and dogs.' },
+      prop: [{
+        m: 'Stem cutting', diff: 'medium', season: 'Spring or summer', roots: '4–8 weeks',
+        steps: [
+          'Cut a 15cm green shoot just below a leaf joint.',
+          'Remove the lower leaves and dip the cut end in rooting powder.',
+          'Push it into damp perlite and potting mix, and cover it with a clear bag.',
+          'Keep it warm and bright, out of direct sun. A cutting grows a plain stem; the braided trunk is several young plants twisted together.'
+        ]
+      }],
+      likes: ['Drying out between drinks', 'Bright light', 'Being turned now and then'],
+      dislikes: ['A wet pot', 'Being moved about', 'Cold draughts'],
+      problems: ['overwatering', 'root-rot', 'yellow-lower-leaves', 'leaf-drop-sudden', 'leaning', 'needs-rotation', 'spider-mites'],
+      tags: ['pet-safe', 'beginner', 'tree', 'statement']
+    },
+
+    {
+      id: 'yucca-elephantipes',
+      common: 'Spineless Yucca',
+      aka: ['Yucca', 'Yucca elephantipes', 'Giant Yucca'],
+      botanical: 'Yucca gigantea',
+      family: 'Asparagaceae',
+      origin: 'Dry hillsides and scrub of southern Mexico and Central America',
+      difficulty: 'easy',
+      growthRate: 'slow',
+      matureCm: 200,
+      water: {
+        warm: 12, cool: 24, soakPct: 0.25, dryBetween: true,
+        note: 'Let the top half of the pot dry before watering, and in winter let it dry almost completely. Too much water rots the cane from the base long before the leaves show it.'
+      },
+      light: {
+        ideal: 'direct', tolerates: ['bright-indirect', 'medium'], avoid: ['low'],
+        note: 'Full sun or the brightest window you have. It survives medium light, but grows thin, pale and floppy and leans hard towards the glass.'
+      },
+      humidity: 'low', minC: 7, idealC: [15, 28],
+      fert: { everyDays: 28, strength: 'half', type: 'Balanced liquid feed' },
+      soil: 'Free-draining: two parts potting mix to one part grit or perlite.',
+      repot: 'Every 2–3 years in spring, into a heavy pot only one size larger, so the tall canes cannot tip it over.',
+      tox: { cats: 'toxic', dogs: 'toxic', humans: 'safe',
+        note: 'Listed by the ASPCA as toxic to cats and dogs (Yucca species). It contains saponins, which cause vomiting. The leaf tips are stiff and sharp, which matters more around a small child than the chemistry does.' },
+      prop: [{
+        m: 'Cane cutting', diff: 'medium', season: 'Spring or summer', roots: '4–8 weeks',
+        steps: [
+          'Saw a length of cane at least 20cm long from a tall plant. The stump left behind sprouts again.',
+          'Mark which end is the top: a cane potted upside down never roots.',
+          'Let the cut ends dry for a day, then push the bottom end 5cm into gritty mix.',
+          'Keep it barely damp and bright. New shoots break from the sides of the cane once it has rooted.'
+        ]
+      }],
+      likes: ['Full sun', 'Drying out', 'A heavy pot'],
+      dislikes: ['A wet pot in winter', 'Shade', 'Being overpotted'],
+      problems: ['overwatering', 'root-rot', 'mushy-base', 'brown-tips-only', 'yellow-lower-leaves', 'leaning', 'too-little-light', 'scale'],
+      tags: ['sun-lover', 'beginner', 'tree', 'statement', 'architectural', 'drought-tolerant']
+    },
+
+    {
+      id: 'philodendron-bipinnatifidum',
+      common: 'Tree Philodendron',
+      aka: ['Philodendron selloum', 'Lacy Tree Philodendron', 'Split-leaf Philodendron', 'Hope Philodendron'],
+      botanical: 'Thaumatophyllum bipinnatifidum',
+      family: 'Araceae',
+      origin: 'Forests and swamps of south-eastern Brazil, Paraguay and northern Argentina',
+      difficulty: 'easy',
+      growthRate: 'moderate',
+      matureCm: 150,
+      water: {
+        warm: 7, cool: 14, soakPct: 0.25, dryBetween: true,
+        note: 'Water thoroughly once the top 3–5cm are dry, and let the pot drain. The thick aerial roots it sends over the rim can be tucked into the soil or left to hang.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['medium', 'direct'], avoid: ['low'],
+        note: 'Bright indirect light grows the deeply cut leaves. It takes some direct morning sun; in medium light new leaves come smaller and less divided.'
+      },
+      humidity: 'medium', minC: 10, idealC: [18, 28],
+      fert: { everyDays: 28, strength: 'half', type: 'Balanced liquid feed' },
+      soil: 'Chunky and free-draining: potting mix with orchid bark and perlite.',
+      repot: 'Every 2 years in spring. It grows wider than it grows tall, so give it floor space as well as a bigger pot.',
+      tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
+        note: 'Listed by the ASPCA as toxic to cats and dogs, under the name Philodendron selloum. Insoluble calcium oxalates cause oral pain, drooling, vomiting and difficulty swallowing.' },
+      prop: [{
+        m: 'Stem cutting', diff: 'medium', season: 'Spring or summer', roots: '4–8 weeks',
+        steps: [
+          'An older plant often grows a side shoot from its trunk. Cut it away with a length of trunk and any aerial roots.',
+          'Let the cut dry for a few hours.',
+          'Pot it into damp chunky mix, burying the aerial roots.',
+          'Keep it warm and bright, out of direct sun, and stake it until it stands by itself.'
+        ]
+      }],
+      likes: ['Room to spread', 'Bright light', 'Drying out a little between drinks'],
+      dislikes: ['Low light', 'Cold below 10°C', 'A soggy pot'],
+      problems: ['yellow-lower-leaves', 'overwatering', 'root-rot', 'too-little-light', 'brown-crispy-edges', 'leaning', 'spider-mites', 'mealybugs'],
+      tags: ['beginner', 'statement', 'large', 'architectural']
+    },
+
+    {
+      id: 'cycas-revoluta',
+      common: 'Sago Palm',
+      aka: ['King Sago', 'Japanese Sago Palm', 'Cycad'],
+      botanical: 'Cycas revoluta',
+      family: 'Cycadaceae',
+      origin: 'Coastal scrub and cliffs of southern Japan and the Ryukyu Islands',
+      difficulty: 'easy',
+      growthRate: 'slow',
+      matureCm: 120,
+      water: {
+        warm: 14, cool: 28, soakPct: 0.25, dryBetween: true,
+        note: 'Let the pot dry halfway down before watering, and keep water out of the crown at the centre, where it rots. In winter it barely drinks.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['direct', 'medium'], avoid: ['low'],
+        note: 'Bright light, with some direct sun. It puts out one flush of new fronds a year, all at once: turn it then, because fronds that grow towards the window stay lopsided for years.'
+      },
+      humidity: 'medium', minC: 7, idealC: [15, 27],
+      fert: { everyDays: 42, strength: 'half', type: 'Palm feed with magnesium and manganese, only while new fronds are growing' },
+      soil: 'Gritty and fast-draining: cactus mix with extra bark.',
+      repot: 'Every 3–4 years in spring. It grows very slowly and dislikes having its roots disturbed.',
+      tox: { cats: 'very-toxic', dogs: 'very-toxic', humans: 'toxic',
+        note: 'Listed by the ASPCA as toxic to cats and dogs. Every part contains cycasin, and the seeds the most: a few seeds can be fatal. It causes vomiting, black tarry stools, jaundice, bruising and liver failure, and is one of the most dangerous plants a dog can chew. It is not a palm, despite the name. Keep it entirely out of reach, or choose another plant.' },
+      prop: [{
+        m: 'Offsets (pups)', diff: 'medium', season: 'Spring', roots: '3–6 months',
+        steps: [
+          'Older plants grow small offsets, called pups, around the base of the trunk.',
+          'Wear gloves. Twist or cut a pup away and pull off its leaves.',
+          'Let the wound dry for a week, then set it half-buried in gritty mix.',
+          'Water sparingly. Roots take months to form, and the first fronds longer still.'
+        ]
+      }],
+      likes: ['Bright light', 'Drying out between drinks', 'Being left alone'],
+      dislikes: ['Water in the crown', 'A wet pot in winter', 'Root disturbance'],
+      problems: ['yellow-lower-leaves', 'overwatering', 'root-rot', 'crown-rot', 'nutrient-deficiency', 'scale', 'mealybugs'],
+      tags: ['beginner', 'statement', 'architectural', 'drought-tolerant']
+    },
+
+    {
+      id: 'begonia-rex',
+      common: 'Rex Begonia',
+      aka: ['Painted-leaf Begonia', 'King Begonia', 'Begonia rex-cultorum'],
+      botanical: 'Begonia rex hybrids',
+      family: 'Begoniaceae',
+      origin: 'Hybrids of Begonia rex, from the forest floor of north-east India and the eastern Himalaya',
+      difficulty: 'medium',
+      growthRate: 'moderate',
+      matureCm: 40,
+      water: {
+        warm: 6, cool: 10, soakPct: 0.25, dryBetween: true,
+        note: 'Let the top 2cm dry, then water at the soil, never over the leaves. It sits on a shallow rhizome that rots in a wet pot, so err on the dry side.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
+        note: 'Bright indirect light keeps the colours deep. Direct sun burns the thin leaves within an afternoon.'
+      },
+      humidity: 'high', minC: 15, idealC: [18, 24],
+      fert: { everyDays: 14, strength: 'quarter', type: 'Balanced liquid feed' },
+      soil: 'Light and open: peat-free compost with perlite and a little bark.',
+      repot: 'Every spring, into a wide, shallow pot. The rhizome creeps sideways rather than down.',
+      tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
+        note: 'Listed by the ASPCA as toxic to cats and dogs (Begonia species). Soluble calcium oxalates cause vomiting and drooling; the underground rhizome is the most toxic part.' },
+      prop: [
+        { m: 'Leaf vein cutting', diff: 'medium', season: 'Spring or summer', roots: '4–6 weeks',
+          steps: [
+            'Take a healthy mature leaf and turn it face down.',
+            'With a clean blade, make short cuts across several of the main veins.',
+            'Lay it face up on damp seed compost and pin it down so the cuts touch the surface.',
+            'Cover the tray and keep it warm and bright, out of sun. Small plants form where the veins were cut.'
+          ] },
+        { m: 'Rhizome division', diff: 'easy', season: 'Spring', roots: 'Already rooted',
+          steps: [
+            'Unpot the plant and find where the rhizome branches.',
+            'Cut it into pieces, each with leaves and roots of its own.',
+            'Pot each piece at the same depth it was growing.',
+            'Water lightly until new leaves appear.'
+          ] }
+      ],
+      likes: ['Humid, moving air', 'Bright indirect light', 'Water at the soil'],
+      dislikes: ['Wet leaves', 'Direct sun', 'Cold draughts', 'A soggy pot'],
+      problems: ['powdery-mildew', 'low-humidity', 'brown-crispy-edges', 'leaves-curling', 'overwatering', 'root-rot', 'mealybugs'],
+      tags: ['colourful', 'patterned', 'humidity-lover', 'dramatic']
+    },
+
+    {
+      id: 'caladium-bicolor',
+      common: 'Caladium',
+      aka: ['Angel Wings', 'Heart of Jesus', 'Fancy-leaf Caladium', 'Caladium hortulanum'],
+      botanical: 'Caladium bicolor',
+      family: 'Araceae',
+      origin: 'Forest edges and riverbanks of tropical South America',
+      difficulty: 'medium',
+      growthRate: 'fast',
+      matureCm: 45,
+      water: {
+        warm: 5, cool: 12, soakPct: 0.25, dryBetween: false,
+        seasons: { spring: 7, summer: 5, autumn: 12, winter: 0 },
+        note: 'It grows from a tuber and keeps its own calendar. In spring, water lightly to wake it, then more as the leaves unfurl, keeping the mix evenly moist through summer but never soggy. In autumn the leaves yellow and flop: water less as they go. Through winter it rests and gets none, the dry tuber left in its pot somewhere warm, at 15°C or more.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
+        note: 'Bright indirect light. The thin, papery leaves scorch in direct sun and turn mostly green in shade.'
+      },
+      humidity: 'high', minC: 15, idealC: [21, 30],
+      fert: { everyDays: 14, strength: 'half', type: 'Balanced liquid feed while it is in leaf' },
+      soil: 'Rich, light and moisture-holding: peat-free compost with a little perlite.',
+      repot: 'Each spring, when the rested tuber goes into fresh mix, knobbly side up and about 5cm deep.',
+      tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
+        note: 'Listed by the ASPCA as toxic to cats and dogs, under the name Caladium hortulanum. Insoluble calcium oxalates cause pain and swelling of the mouth, tongue and lips, drooling, vomiting and difficulty swallowing.' },
+      prop: [{
+        m: 'Tuber division', diff: 'medium', season: 'Spring', roots: '3–6 weeks',
+        steps: [
+          'In spring, before replanting, look for a large tuber with several growing eyes.',
+          'Cut it into pieces with a clean knife, each with at least one eye.',
+          'Leave the cut faces to dry for a day or two.',
+          'Plant each knobbly side up in warm, barely damp mix and keep it at 21°C or more until shoots appear.'
+        ]
+      }],
+      likes: ['Warmth', 'Humid air', 'A dry winter rest'],
+      dislikes: ['Cold below 15°C', 'Direct sun', 'Water while it rests'],
+      problems: ['dormancy', 'dormancy-dieback', 'too-much-light', 'low-humidity', 'brown-crispy-edges', 'root-rot'],
+      tags: ['colourful', 'patterned', 'humidity-lover', 'dramatic']
     },
 
     /* ====================== FERNS & HUMIDITY LOVERS ====================== */
@@ -1540,6 +1905,84 @@ window.PLANT_DATA = (function () {
       tags: ['pet-safe', 'palm', 'low-light', 'beginner', 'cool-tolerant', 'architectural']
     },
 
+    {
+      id: 'platycerium-bifurcatum',
+      common: 'Staghorn Fern',
+      aka: ['Elkhorn Fern', 'Platycerium'],
+      botanical: 'Platycerium bifurcatum',
+      family: 'Polypodiaceae',
+      origin: 'High on tree trunks in the rainforests of eastern Australia, New Guinea and Java',
+      difficulty: 'medium',
+      growthRate: 'slow',
+      matureCm: 90,
+      water: {
+        warm: 7, cool: 14, dryBetween: true, method: 'soak',
+        note: 'It grows on a board or in a basket rather than a pot, and drinks through its roots and the flat shield fronds at the back. Soak the whole mount, face down, in tepid water for 10–20 minutes, then let it drip dry before hanging it back up. The mount should feel light before the next soak. Leave the soft grey felt on the antler fronds alone: wiping it off strips their protection.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
+        note: 'Bright indirect light, as it gets high in a rainforest tree. Direct sun bleaches and burns the fronds.'
+      },
+      humidity: 'high', minC: 10, idealC: [16, 27],
+      fert: { everyDays: 28, strength: 'quarter', type: 'Balanced liquid feed added to the soaking water' },
+      soil: 'None in a pot: it is mounted on a board over a pad of sphagnum moss, or grown in a slatted basket of bark and moss.',
+      repot: 'Never repotted. When the shield fronds outgrow the board, mount it, board and all, on a larger one.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'Listed by the ASPCA as non-toxic to cats and dogs.' },
+      prop: [{
+        m: 'Offsets (pups)', diff: 'medium', season: 'Spring', roots: '4–8 weeks',
+        steps: [
+          'A mature plant sends up small plants, called pups, beside the main one.',
+          'Cut a pup away with its roots and a piece of the shield frond behind it.',
+          'Tie it with fishing line, not wire, onto a small board over a pad of damp sphagnum moss.',
+          'Keep it humid and soak it lightly until it grips the board by itself.'
+        ]
+      }],
+      likes: ['A thorough soak, then drying off', 'Humid air', 'Bright, filtered light'],
+      dislikes: ['A pot of soil', 'Direct sun', 'Its felt being wiped'],
+      problems: ['low-humidity', 'frond-dieback', 'brown-crispy-edges', 'natural-ageing', 'too-much-light', 'scale'],
+      tags: ['pet-safe', 'epiphyte', 'no-soil', 'humidity-lover', 'statement', 'unusual']
+    },
+
+    {
+      id: 'davallia-fejeensis',
+      common: 'Rabbit\'s Foot Fern',
+      aka: ['Davallia', 'Deer\'s Foot Fern'],
+      botanical: 'Davallia fejeensis',
+      family: 'Davalliaceae',
+      origin: 'Rainforests of Fiji, growing on trees and rocks',
+      difficulty: 'easy',
+      growthRate: 'moderate',
+      matureCm: 45,
+      water: {
+        warm: 5, cool: 9, soakPct: 0.25, dryBetween: false,
+        note: 'Keep the mix lightly moist, letting only the surface dry between drinks. Water the mix rather than the furry rhizomes creeping over the rim: they take moisture from the air and rot if kept wet.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
+        note: 'Bright indirect light. It takes more light and drier air than most ferns, but direct sun crisps the fronds.'
+      },
+      humidity: 'medium', minC: 10, idealC: [16, 24],
+      fert: { everyDays: 28, strength: 'quarter', type: 'Balanced liquid feed' },
+      soil: 'Open and airy: potting mix with orchid bark and perlite.',
+      repot: 'Every 2–3 years in spring, into a wide, shallow pot or hanging basket. Never bury the rhizomes.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'Listed by the ASPCA as non-toxic to cats and dogs.' },
+      prop: [{
+        m: 'Rhizome cutting', diff: 'easy', season: 'Spring or summer', roots: '4–6 weeks',
+        steps: [
+          'Cut a 5–8cm length of furry rhizome with at least one frond.',
+          'Pin it onto the surface of damp mix with a bent wire. Do not bury it.',
+          'Cover it with a clear bag and keep it warm and bright, out of sun.',
+          'New fronds show once it has rooted.'
+        ]
+      }],
+      likes: ['Lightly moist mix', 'A shallow pot or basket', 'Bright, filtered light'],
+      dislikes: ['Buried rhizomes', 'Direct sun', 'Drying out completely'],
+      problems: ['brown-crispy-edges', 'frond-dieback', 'underwatering', 'low-humidity', 'overwatering', 'scale', 'mealybugs'],
+      tags: ['pet-safe', 'beginner', 'trailing', 'epiphyte', 'unusual']
+    },
+
     /* ====================== SUCCULENTS & CACTI ====================== */
     {
       id: 'aloe-vera',
@@ -1977,6 +2420,51 @@ window.PLANT_DATA = (function () {
       dislikes: ['Water in winter or high summer', 'Shade', 'Fertiliser'],
       problems: ['leaf-pair-change', 'overwatering', 'root-rot', 'shrivelled-segments', 'mushy-base', 'leggy-stretching'],
       tags: ['pet-safe', 'succulent', 'sun-lover', 'compact', 'drought-tolerant', 'unusual']
+    },
+
+    {
+      id: 'sedum-morganianum',
+      common: 'Burro\'s Tail',
+      aka: ['Donkey\'s Tail', 'Lamb\'s Tail', 'Sedum'],
+      botanical: 'Sedum morganianum',
+      family: 'Crassulaceae',
+      origin: 'Southern Mexico, where it is known only in cultivation',
+      difficulty: 'easy',
+      growthRate: 'slow',
+      matureCm: 60,
+      water: {
+        warm: 14, cool: 30, soakPct: 0.2, dryBetween: true,
+        note: 'Water thoroughly once the mix is dry all the way through, then let it drain. The fat leaves drop at a touch, so water at the soil with a narrow spout rather than over the stems.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['direct'], avoid: ['low', 'medium'],
+        note: 'Bright light with a few hours of gentle sun keeps the tails tight and blue-grey. In weaker light the leaves space out along the stems.'
+      },
+      humidity: 'low', minC: 7, idealC: [15, 28],
+      fert: { everyDays: 42, strength: 'half', type: 'Cactus and succulent feed' },
+      soil: 'Gritty cactus mix with extra perlite.',
+      repot: 'Rarely, every 3–4 years, into a pot it can hang from. Every move costs it leaves, so choose its spot once.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'Listed by the ASPCA as non-toxic to cats and dogs.' },
+      prop: [
+        { m: 'Leaf cutting', diff: 'easy', season: 'Spring or summer', roots: '2–4 weeks',
+          steps: [
+            'Gather leaves that have fallen off: every one can grow a plant.',
+            'Leave them for a few days until the broken end has sealed.',
+            'Lay them on top of dry gritty mix in bright light, out of direct sun.',
+            'Mist lightly once roots and a tiny rosette appear.'
+          ] },
+        { m: 'Stem cutting', diff: 'easy', season: 'Spring or summer', roots: '2–3 weeks',
+          steps: [
+            'Cut a 10cm tail and strip the leaves from the bottom 3cm.',
+            'Let the cut dry for a few days.',
+            'Push it into dry gritty mix and water lightly a week later.'
+          ] }
+      ],
+      likes: ['Bright light with some sun', 'Drying out completely', 'Being left where it is'],
+      dislikes: ['Being handled', 'A wet pot', 'Low light'],
+      problems: ['shrivelled-pearls', 'leaves-falling-off', 'overwatering', 'root-rot', 'mushy-base', 'leggy-stretching', 'mealybugs'],
+      tags: ['pet-safe', 'beginner', 'succulent', 'trailing', 'drought-tolerant']
     },
 
     /* ====================== VINES & TRAILERS ====================== */
@@ -2444,6 +2932,168 @@ window.PLANT_DATA = (function () {
       tags: ['pet-safe', 'flowering', 'epiphyte', 'cool-tolerant']
     },
 
+    {
+      id: 'streptocarpus-hybrids',
+      common: 'Cape Primrose',
+      aka: ['Streptocarpus', 'Strep'],
+      botanical: 'Streptocarpus hybrids',
+      family: 'Gesneriaceae',
+      origin: 'Hybrids of species from the forests and shaded gorges of South Africa',
+      difficulty: 'easy',
+      growthRate: 'moderate',
+      matureCm: 30,
+      water: {
+        warm: 6, cool: 10, soakPct: 0.2, dryBetween: true,
+        note: 'Let the top of the mix dry, then water at the soil, under the leaves. It has fine, shallow roots and takes a slightly dry pot far better than a wet one.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
+        note: 'Bright light without sun, such as an east window, keeps it flowering from spring into autumn.'
+      },
+      humidity: 'medium', minC: 10, idealC: [16, 24],
+      fert: { everyDays: 14, strength: 'quarter', type: 'High-potassium feed, such as tomato feed, while flowering' },
+      soil: 'Light and open: peat-free compost with plenty of perlite. African violet mix suits it.',
+      repot: 'Every spring into a wide, shallow pot only a little larger. It flowers best slightly cramped.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'Listed by the ASPCA as non-toxic to cats and dogs (Streptocarpus species).' },
+      prop: [
+        { m: 'Leaf cutting', diff: 'medium', season: 'Spring or summer', roots: '4–8 weeks',
+          steps: [
+            'Take a healthy leaf and cut out the midrib down its length, leaving two halves.',
+            'Push each half, cut edge down, 1cm into damp seed compost.',
+            'Cover the tray and keep it warm and bright, out of sun.',
+            'Small plants appear along the cut veins in about two months.'
+          ] },
+        { m: 'Division', diff: 'easy', season: 'Spring', roots: 'Already rooted',
+          steps: [
+            'An older plant grows into several crowns.',
+            'Unpot it and gently pull the crowns apart, each with its own roots.',
+            'Pot each into fresh mix and keep it out of sun for a week.'
+          ] }
+      ],
+      likes: ['Bright light without sun', 'Drying a little between drinks', 'Spent flower stalks cut off'],
+      dislikes: ['A wet pot', 'Direct sun', 'Water on the leaves'],
+      problems: ['no-flowers', 'overwatering', 'root-rot', 'drooping', 'brown-tips-only', 'mealybugs', 'thrips'],
+      tags: ['pet-safe', 'beginner', 'flowering', 'compact', 'colourful']
+    },
+
+    {
+      id: 'episcia-reptans',
+      common: 'Flame Violet',
+      aka: ['Flame African Violet', 'Episcia', 'Carpet Plant'],
+      botanical: 'Episcia reptans',
+      family: 'Gesneriaceae',
+      origin: 'Rainforest floor of northern South America',
+      difficulty: 'medium',
+      growthRate: 'moderate',
+      matureCm: 15,
+      water: {
+        warm: 5, cool: 9, soakPct: 0.2, dryBetween: false,
+        note: 'Keep the mix lightly moist, watering at the soil with tepid water once the surface feels dry. Cold water on the leaves leaves pale marks.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
+        note: 'Bright indirect light brings out the metallic sheen on the leaves and the red flowers. Direct sun scorches it.'
+      },
+      humidity: 'high', minC: 15, idealC: [20, 28],
+      fert: { everyDays: 14, strength: 'quarter', type: 'African violet feed' },
+      soil: 'Light, airy African violet mix.',
+      repot: 'Every spring into a wide, shallow pot or a hanging basket.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'Listed by the ASPCA as non-toxic to cats and dogs, as the Flame African Violet.' },
+      prop: [{
+        m: 'Runners', diff: 'easy', season: 'Spring or summer', roots: '2–3 weeks',
+        steps: [
+          'It sends out runners with a small plant at each tip, like a strawberry.',
+          'Pin a plantlet onto a small pot of damp mix beside the parent, still attached.',
+          'Cut the runner once the plantlet has rooted and is growing by itself.'
+        ]
+      }],
+      likes: ['Humid air', 'Warmth', 'Tepid water'],
+      dislikes: ['Cold water', 'Dry air', 'Direct sun'],
+      problems: ['low-humidity', 'brown-crispy-edges', 'cold-damage', 'no-flowers', 'overwatering', 'mealybugs'],
+      tags: ['pet-safe', 'flowering', 'humidity-lover', 'compact', 'trailing', 'colourful', 'terrarium']
+    },
+
+    {
+      id: 'jasminum-polyanthum',
+      common: 'Pink Jasmine',
+      aka: ['Jasmine', 'Many-flowered Jasmine', 'Chinese Jasmine'],
+      botanical: 'Jasminum polyanthum',
+      family: 'Oleaceae',
+      origin: 'Hillsides and forest edges of south-west China and Myanmar',
+      difficulty: 'medium',
+      growthRate: 'fast',
+      matureCm: 200,
+      water: {
+        warm: 4, cool: 8, soakPct: 0.3, dryBetween: false,
+        note: 'Keep the mix evenly moist while it grows and flowers, letting only the surface dry. It drinks hard in bud, and dry roots drop the buds before they open.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['direct'], avoid: ['low', 'medium'],
+        note: 'As much bright light as you can give it, with some direct sun. In medium light it grows long bare stems and few flowers.'
+      },
+      humidity: 'medium', minC: 3, idealC: [10, 22],
+      fert: { everyDays: 14, strength: 'half', type: 'High-potassium feed from spring until the buds form' },
+      soil: 'Loam-based compost with a little grit.',
+      repot: 'Every 1–2 years, straight after flowering. Prune it hard then too, or it becomes a tangle.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'Listed by the ASPCA as non-toxic to cats and dogs (Jasminum species). Not to be confused with Star Jasmine, which is a different genus, or Carolina Jasmine, which is poisonous.' },
+      prop: [{
+        m: 'Stem cutting', diff: 'easy', season: 'Summer', roots: '4–6 weeks',
+        steps: [
+          'Cut a 10cm length of this year\'s growth, just below a leaf joint.',
+          'Strip the lower leaves and dip the cut end in rooting powder.',
+          'Push it into damp gritty compost and cover it with a clear bag.',
+          'Keep it bright, out of direct sun, until new leaves show.'
+        ]
+      }],
+      likes: ['A cool autumn to set buds', 'Bright light', 'Something to climb'],
+      dislikes: ['A warm room all year', 'Drying out in bud', 'Low light'],
+      problems: ['needs-rest-period', 'no-flowers', 'bud-drop', 'underwatering', 'needs-pruning', 'needs-support', 'spider-mites', 'aphids'],
+      tags: ['pet-safe', 'flowering', 'climbing', 'scented', 'fast-growing', 'cool-tolerant']
+    },
+
+    {
+      id: 'cyclamen-persicum',
+      common: 'Cyclamen',
+      aka: ['Florist\'s Cyclamen', 'Sowbread'],
+      botanical: 'Cyclamen persicum',
+      family: 'Primulaceae',
+      origin: 'Rocky woodland and scrub of the eastern Mediterranean, from Turkey to Israel',
+      difficulty: 'medium',
+      growthRate: 'moderate',
+      matureCm: 25,
+      water: {
+        warm: 7, cool: 5, dryBetween: true, method: 'bottom',
+        seasons: { spring: 7, summer: 0, autumn: 5, winter: 5 },
+        note: 'Water from below: stand the pot in water for 15–20 minutes, then let it drain. Water on the tuber at the centre rots it. It grows and flowers from autumn through winter. As the leaves yellow in spring, water less, and through summer give it none while it rests, the dry tuber kept somewhere cool and shaded.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
+        note: 'Bright light and cool air. A warm living room ends the flowering in a few weeks; a cool, bright sill keeps it going for months.'
+      },
+      humidity: 'medium', minC: 5, idealC: [10, 18],
+      fert: { everyDays: 14, strength: 'half', type: 'High-potassium feed while it is in leaf and flower', seasons: ['autumn', 'winter'] },
+      soil: 'Loam-based compost with a little grit.',
+      repot: 'In late summer, as it wakes, into fresh mix with the top half of the tuber above the surface.',
+      tox: { cats: 'toxic', dogs: 'toxic', humans: 'toxic',
+        note: 'Listed by the ASPCA as toxic to cats and dogs (Cyclamen species). Terpenoid saponins cause drooling, vomiting and diarrhoea. The tuber is the most toxic part: eating a large amount of it can cause heart rhythm problems, seizures and death.' },
+      prop: [{
+        m: 'Seed', diff: 'hard', season: 'Late summer or autumn', roots: 'Germinates in 4–8 weeks',
+        steps: [
+          'A cyclamen tuber cannot be divided, so new plants come only from seed.',
+          'Soak the seed overnight and sow it 5mm deep in damp seed compost.',
+          'Keep it dark and cool, at 15–18°C, until the seedlings come up: light and warmth slow germination.',
+          'Grow the seedlings on somewhere bright and cool. They flower in their second autumn.'
+        ]
+      }],
+      likes: ['Cool, bright rooms', 'Water from below', 'A dry summer rest'],
+      dislikes: ['Central heating', 'Water on the tuber', 'Water while it rests'],
+      problems: ['dormancy', 'dormancy-dieback', 'yellow-lower-leaves', 'crown-rot', 'bud-drop', 'overwatering', 'spider-mites'],
+      tags: ['flowering', 'colourful', 'compact', 'cool-tolerant']
+    },
+
     /* ====================== EDIBLE & HERBS ====================== */
     {
       id: 'ocimum-basilicum',
@@ -2642,11 +3292,99 @@ window.PLANT_DATA = (function () {
       tags: ['pet-safe', 'edible', 'herb', 'kitchen', 'sun-lover', 'compact', 'drought-tolerant', 'cool-tolerant']
     },
 
+    {
+      id: 'fragaria-vesca',
+      common: 'Alpine Strawberry',
+      aka: ['Woodland Strawberry', 'Wild Strawberry', 'Fraise des Bois'],
+      botanical: 'Fragaria vesca',
+      family: 'Rosaceae',
+      origin: 'Woodland edges and clearings across Europe, northern Asia and North America',
+      difficulty: 'easy',
+      growthRate: 'moderate',
+      matureCm: 20,
+      water: {
+        warm: 3, cool: 7, soakPct: 0.3, dryBetween: false,
+        note: 'Keep the compost evenly moist while it flowers and fruits, watering at the soil rather than over the leaves and fruit, which rot when kept wet. A small pot in sun dries out fast.'
+      },
+      light: {
+        ideal: 'direct', tolerates: ['bright-indirect'], avoid: ['low', 'medium'],
+        note: 'A sunny sill, with four hours of sun or more, for fruit. In bright shade it stays leafy and fruits sparingly.'
+      },
+      humidity: 'medium', minC: 0, idealC: [12, 24],
+      fert: { everyDays: 14, strength: 'half', type: 'High-potassium feed, such as tomato feed, once flowering starts' },
+      soil: 'Loam-based compost with a little grit.',
+      repot: 'Each spring into fresh compost. Replace plants every three years or so, as they crop less with age.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'Listed by the ASPCA as non-toxic to cats and dogs (Fragaria species). The fruit is edible.' },
+      prop: [{
+        m: 'Division', diff: 'easy', season: 'Early spring', roots: 'Already rooted',
+        steps: [
+          'Alpine strawberries make few runners or none, so they are divided instead.',
+          'Lift the plant and pull the crowns apart, each with its own roots.',
+          'Pot each with the top of the crown level with the surface; buried crowns rot.',
+          'Water it in and keep it out of strong sun for a week.'
+        ]
+      }],
+      seed: {
+        viable: true, sowSeason: 'Late winter or early spring, indoors', germDays: '2–4 weeks', depthMm: 1,
+        steps: [
+          'Sow the tiny seed on the surface of damp seed compost and barely cover it.',
+          'Cover the tray and keep it at 18–21°C in bright light, out of direct sun.',
+          'Prick the seedlings out into their own pots once they have three leaves.',
+          'They usually fruit in their first summer.'
+        ]
+      },
+      likes: ['Sun', 'Even moisture', 'Feeding once it flowers'],
+      dislikes: ['Drying out', 'Wet leaves and fruit', 'Buried crowns'],
+      problems: ['no-flowers', 'underwatering', 'aphids', 'powdery-mildew', 'spider-mites', 'leaf-spot-fungal'],
+      tags: ['pet-safe', 'beginner', 'edible', 'kitchen', 'sun-lover', 'compact', 'cool-tolerant']
+    },
+
+    {
+      id: 'petroselinum-crispum',
+      common: 'Parsley',
+      aka: ['Curly Parsley', 'Flat-leaf Parsley'],
+      botanical: 'Petroselinum crispum',
+      family: 'Apiaceae',
+      origin: 'The central and eastern Mediterranean',
+      difficulty: 'easy',
+      growthRate: 'moderate',
+      matureCm: 30,
+      water: {
+        warm: 3, cool: 6, soakPct: 0.3, dryBetween: false,
+        note: 'Keep the compost evenly moist. It grows a long taproot and sulks if it dries out, then runs to seed.'
+      },
+      light: {
+        ideal: 'direct', tolerates: ['bright-indirect'], avoid: ['low', 'medium'],
+        note: 'A sunny sill, ideally with morning sun. It takes a little more shade than basil, but in medium light it grows thin and pale.'
+      },
+      humidity: 'medium', minC: 5, idealC: [12, 24],
+      fert: { everyDays: 21, strength: 'half', type: 'Balanced liquid feed' },
+      soil: 'Rich, moisture-holding compost in a deep pot, for the taproot.',
+      repot: 'A biennial that runs to seed in its second spring. Sow fresh each year rather than repotting.',
+      tox: { cats: 'mild', dogs: 'mild', humans: 'safe',
+        note: 'Listed by the ASPCA as toxic to cats and dogs. It contains furanocoumarins, which can make the skin sensitive to sunlight, but only after a large amount is eaten. Edible for people.' },
+      prop: [{
+        m: 'Seed', diff: 'medium', season: 'Spring to late summer', roots: 'Germinates in 3–4 weeks',
+        steps: [
+          'Parsley grows from a taproot and cannot be divided or grown from cuttings.',
+          'Soak the seed overnight to speed up its slow germination.',
+          'Sow it thinly, 5mm deep, straight into its final pot: the taproot resents being moved.',
+          'Keep the surface damp, and thin the seedlings to three or four a pot.'
+        ]
+      }],
+      likes: ['Even moisture', 'A deep pot', 'Harvesting from the outside'],
+      dislikes: ['Drying out', 'Being transplanted', 'Hot, dry rooms'],
+      problems: ['bolting', 'bolting-heat-stress', 'underwatering', 'yellow-lower-leaves', 'leggy-stretching', 'aphids'],
+      tags: ['beginner', 'edible', 'herb', 'kitchen', 'sun-lover', 'compact', 'cool-tolerant']
+    },
+
     /* ====================== AIR PLANTS & BROMELIADS ======================
-       Every one of these is watered by a method other than pouring, which
-       is why `water.method` exists (LOOKUPS.WATER_METHODS), and every one
-       flowers once per rosette and then hands over to its pups, which is
-       why they list 'flowered-out'. The air plants list their own rot and
+       All but the last are watered by a method other than pouring, which
+       is why `water.method` exists (LOOKUPS.WATER_METHODS). The Earth Star
+       is a ground bromeliad with no cup, rooted in soil and poured on like
+       any other. Every one flowers once per rosette and then hands over to
+       its pups, which is why they list 'flowered-out'. The air plants list their own rot and
        thirst in place of the general causes, whose treatments are about
        soil; the bromeliads list cup rot in place of crown rot, whose
        treatment is never to water the crown. */
@@ -3036,6 +3774,45 @@ window.PLANT_DATA = (function () {
       dislikes: ['Stale urn water', 'Soggy mix', 'Cold draughts'],
       problems: ['cup-rot', 'flowered-out', 'brown-tips-only', 'sunburn', 'scale'],
       tags: ['pet-safe', 'flowering', 'colourful', 'statement', 'beginner', 'epiphyte']
+    },
+
+    {
+      id: 'cryptanthus-bivittatus',
+      common: 'Earth Star',
+      aka: ['Starfish Plant', 'Cryptanthus'],
+      botanical: 'Cryptanthus bivittatus',
+      family: 'Bromeliaceae',
+      origin: 'Forest floor of eastern Brazil',
+      difficulty: 'easy',
+      growthRate: 'slow',
+      matureCm: 15,
+      water: {
+        warm: 7, cool: 12, soakPct: 0.2, dryBetween: true,
+        note: 'Unlike the cup bromeliads it grows in soil and has no central cup to fill, so water the mix once the top 2cm are dry. Its roots are shallow and rot in a wet pot.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
+        note: 'Bright indirect light brings out the pink and cream stripes; in medium light they fade towards green.'
+      },
+      humidity: 'medium', minC: 13, idealC: [18, 27],
+      fert: { everyDays: 42, strength: 'quarter', type: 'Bromeliad feed, or a balanced feed' },
+      soil: 'Light and free-draining: potting mix with orchid bark and perlite.',
+      repot: 'Rarely. A small, shallow pot suits its tiny root system.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'Listed by the ASPCA as non-toxic to cats and dogs, as Cryptanthus bivattus minor.' },
+      prop: [{
+        m: 'Offsets (pups)', diff: 'easy', season: 'After flowering', roots: '3–6 weeks',
+        steps: [
+          'Each rosette flowers once, with small white flowers hidden in the centre, then grows pups between its leaves and slowly fades.',
+          'Pups often come away at a touch. Take them once they are about a third of the parent\'s size.',
+          'Press the base of each into the surface of damp mix.',
+          'Keep it warm and lightly moist until it roots.'
+        ]
+      }],
+      likes: ['Bright indirect light', 'A small pot', 'Drying a little between drinks'],
+      dislikes: ['A wet pot', 'Direct sun', 'Cold'],
+      problems: ['flowered-out', 'overwatering', 'root-rot', 'crown-rot', 'variegation-loss', 'mealybugs'],
+      tags: ['pet-safe', 'beginner', 'compact', 'colourful', 'patterned', 'terrarium']
     },
 
     /* ====================== CARNIVOROUS ======================
