@@ -272,7 +272,7 @@ weather-dependent parts rather than failing.
 ## Roadmap
 
 Propagation tracking and seed-starting are the natural next features. The
-groundwork is already unevenly laid: every one of the 57 species carries a
+groundwork is already unevenly laid: every one of the 73 species carries a
 populated `prop` field describing how it is propagated, so propagation is
 mostly a matter of surfacing data that exists. `seed` is set on only four
 species (Basil, Mint, Rosemary and Bird of Paradise) and would need filling

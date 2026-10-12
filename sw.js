@@ -61,8 +61,11 @@
    methods, and no pot for a plant that has none.
 
    v95: every light rung rated on every species, tags that agree with the
-   care data, five second propagation methods and two seed blocks. */
-const CACHE = 'sprout-v95-viridium';
+   care data, five second propagation methods and two seed blocks.
+
+   v96: sixteen more species, among them the first desert cacti, a
+   second orchid and a third herb. */
+const CACHE = 'sprout-v96-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is

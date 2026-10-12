@@ -454,6 +454,96 @@ window.PLANT_DATA = (function () {
       tags: ['beginner', 'pet-safe', 'compact', 'office', 'low-light']
     },
 
+    {
+      id: 'dracaena-fragrans',
+      common: 'Corn Plant',
+      aka: ['Mass Cane', 'Happy Plant', 'Dracaena Massangeana'],
+      botanical: 'Dracaena fragrans',
+      family: 'Asparagaceae',
+      origin: 'Forest understorey of tropical Africa',
+      difficulty: 'easy',
+      growthRate: 'slow',
+      matureCm: 180,
+      water: {
+        warm: 10, cool: 18, soakPct: 0.25, dryBetween: true,
+        note: 'Let the top half of the pot dry before watering, then water thoroughly and let it drain. Brown leaf tips usually mean hard or fluoridated tap water; rainwater or filtered water stops them spreading.'
+      },
+      light: {
+        ideal: 'medium', tolerates: ['low', 'bright-indirect'], avoid: ['direct'],
+        note: 'It grows wild in the shade of taller trees, so it copes with a dim corner better than almost any tree-sized plant. In low light the yellow stripe fades; direct sun bleaches and scorches the leaves.'
+      },
+      humidity: 'medium', minC: 13, idealC: [18, 27],
+      fert: { everyDays: 42, strength: 'half', type: 'Balanced liquid feed' },
+      soil: 'A standard indoor potting mix with a couple of handfuls of perlite for drainage, in a heavy pot so the canes stay upright.',
+      repot: 'Every 2–3 years in spring. It grows slowly and is happy a little snug.',
+      tox: { cats: 'toxic', dogs: 'toxic', humans: 'safe',
+        note: 'Listed by the ASPCA as toxic to cats and dogs. Contains saponins, which cause vomiting, drooling and loss of appetite; cats may also show dilated pupils.' },
+      prop: [
+        { m: 'Cane cutting', diff: 'easy', season: 'Spring or summer', roots: '4–8 weeks',
+          steps: [
+            'Cut a length of bare cane 10–20cm long, noting which end was uppermost.',
+            'Push the lower end 3–4cm into damp potting mix, or stand it in water.',
+            'Keep it warm and bright. New shoots break from the side of the cane once it has rooted.',
+            'The cut stump on the parent usually sprouts again just below the cut.'
+          ] },
+        { m: 'Tip cutting', diff: 'easy', season: 'Spring or summer', roots: '3–5 weeks',
+          steps: [
+            'Cut off the leafy top with 5–10cm of stem below the leaves.',
+            'Strip the lowest two or three leaves and stand the stem in water.',
+            'Pot it once the roots are 3–5cm long.'
+          ] }
+      ],
+      likes: ['A shady spot', 'Rainwater or filtered water', 'Being left to dry between drinks'],
+      dislikes: ['Fluoridated tap water', 'Direct sun', 'Cold draughts'],
+      problems: ['tap-water-minerals', 'overwatering', 'brown-tips-only', 'yellow-lower-leaves', 'variegation-loss', 'spider-mites'],
+      tags: ['beginner', 'low-light', 'office', 'tree', 'architectural']
+    },
+
+    {
+      id: 'peperomia-caperata',
+      common: 'Ripple Peperomia',
+      aka: ['Emerald Ripple', 'Radiator Plant'],
+      botanical: 'Peperomia caperata',
+      family: 'Piperaceae',
+      origin: 'Rainforests of Brazil',
+      difficulty: 'easy',
+      growthRate: 'slow',
+      matureCm: 20,
+      water: {
+        warm: 9, cool: 16, soakPct: 0.2, dryBetween: true,
+        note: 'The thick, crinkled leaves hold water, so let the top half of the pot dry before watering. Water at the soil rather than over the leaves: water caught in the ripples rots them.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['medium', 'low'], avoid: ['direct'],
+        note: 'Bright filtered light keeps the plant compact and the leaves deeply rippled. It copes with less, growing slowly and a little looser; direct sun scorches the leaves.'
+      },
+      humidity: 'medium', minC: 13, idealC: [18, 26],
+      fert: { everyDays: 42, strength: 'half', type: 'Balanced liquid feed' },
+      soil: 'Light and very free-draining: two parts potting mix to one part perlite or orchid bark.',
+      repot: 'Every 2–3 years. Its roots are small, so move it up only one pot size, into something shallow.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'Listed by the ASPCA as non-toxic to cats and dogs.' },
+      prop: [
+        { m: 'Leaf cutting', diff: 'easy', season: 'Spring or summer', roots: '3–5 weeks',
+          steps: [
+            'Cut a healthy leaf with 2–3cm of its stalk.',
+            'Push the stalk into damp, gritty mix so the leaf stands upright.',
+            'Cover loosely with a clear bag and keep it warm and out of direct sun.',
+            'New plantlets grow from the base of the stalk in a month or two.'
+          ] },
+        { m: 'Division', diff: 'easy', season: 'Spring', roots: 'Already rooted',
+          steps: [
+            'Ease a mature plant from its pot and look for separate crowns.',
+            'Tease them apart, keeping roots with each crown.',
+            'Pot each into a small pot of the same gritty mix and water lightly.'
+          ] }
+      ],
+      likes: ['A small, shallow pot', 'Drying out between drinks', 'Bright filtered light'],
+      dislikes: ['Wet soil', 'Water sitting in the leaf ripples', 'Cold windowsills'],
+      problems: ['overwatering', 'root-rot', 'drooping', 'limp-leaves', 'mushy-base'],
+      tags: ['pet-safe', 'beginner', 'low-light', 'compact', 'patterned']
+    },
+
     /* ====================== STATEMENT FOLIAGE ====================== */
     {
       id: 'ficus-lyrata',
@@ -772,6 +862,174 @@ window.PLANT_DATA = (function () {
       dislikes: ['Being moved — it drops leaves', 'Cold draughts', 'Dry air', 'Drying out'],
       problems: ['leaves-falling-off', 'variegation-loss', 'spider-mites', 'brown-crispy-edges', 'leaf-drop-sudden'],
       tags: ['colourful', 'tricky', 'sun-lover', 'dramatic', 'humidity-lover']
+    },
+
+    {
+      id: 'dieffenbachia-seguine',
+      common: 'Dumb Cane',
+      aka: ['Dieffenbachia', 'Leopard Lily'],
+      botanical: 'Dieffenbachia seguine',
+      family: 'Araceae',
+      origin: 'Rainforests of the Caribbean and tropical Central and South America',
+      difficulty: 'easy',
+      growthRate: 'moderate',
+      matureCm: 120,
+      water: {
+        warm: 7, cool: 12, soakPct: 0.25, dryBetween: true,
+        note: 'Water when the top 3cm of soil is dry, thoroughly, then let it drain. Lower leaves yellow and drop when it is kept too wet or too cold.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['medium', 'low'], avoid: ['direct'],
+        note: 'Bright indirect light keeps the cream markings strong. It copes with medium and low light, growing more slowly and greener; direct sun scorches the leaves.'
+      },
+      humidity: 'medium', minC: 15, idealC: [18, 27],
+      fert: { everyDays: 28, strength: 'half', type: 'Balanced liquid feed' },
+      soil: 'A standard indoor potting mix with a couple of handfuls of perlite for drainage.',
+      repot: 'Every 2 years in spring, moving up one pot size. Wear gloves: the sap is an irritant.',
+      tox: { cats: 'toxic', dogs: 'toxic', humans: 'toxic',
+        note: 'Listed by the ASPCA as toxic to cats and dogs. Insoluble calcium oxalate crystals cause intense burning and swelling of the mouth, tongue and throat; the common name comes from the swelling that stops speech. In people, swelling of the throat needs medical attention. Wear gloves when cutting it.' },
+      prop: [
+        { m: 'Cane cutting', diff: 'easy', season: 'Spring or summer', roots: '4–6 weeks',
+          steps: [
+            'Wearing gloves, cut a bare length of stem into pieces 5–8cm long, each with at least one node.',
+            'Lay them on their sides half buried in damp potting mix, buds facing up.',
+            'Keep them warm and bright. Roots and a new shoot grow from the nodes.',
+            'Wash the knife afterwards; the sap irritates skin and eyes.'
+          ] },
+        { m: 'Tip cutting', diff: 'easy', season: 'Spring or summer', roots: '3–5 weeks',
+          steps: [
+            'Cut the top 15cm off a leggy plant, below a node.',
+            'Remove the lowest leaves and stand the stem in water.',
+            'Pot it once the roots are 3–5cm long. The stump left behind usually resprouts.'
+          ] }
+      ],
+      likes: ['Warmth', 'Bright indirect light', 'Drying a little between drinks'],
+      dislikes: ['Cold below 15°C', 'Wet soil', 'Direct sun'],
+      problems: ['overwatering', 'cold-damage', 'yellow-lower-leaves', 'leaves-falling-off', 'root-rot', 'spider-mites'],
+      tags: ['beginner', 'low-light', 'statement', 'patterned']
+    },
+
+    {
+      id: 'ficus-benjamina',
+      common: 'Weeping Fig',
+      aka: ['Benjamin Fig', 'Ficus Tree', 'Weeping Ficus'],
+      botanical: 'Ficus benjamina',
+      family: 'Moraceae',
+      origin: 'Forests from southern Asia to northern Australia',
+      difficulty: 'medium',
+      growthRate: 'moderate',
+      matureCm: 200,
+      water: {
+        warm: 7, cool: 12, soakPct: 0.25, dryBetween: true,
+        note: 'Water when the top 3–5cm of soil is dry, thoroughly, then let it drain. It drops leaves when it is kept either soggy or dry, so a steady routine matters more than the exact amount.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['direct', 'medium'], avoid: ['low'],
+        note: 'Bright light, including some direct sun, keeps it dense. Find it a spot and leave it there: moving it, even to a better spot, is the commonest cause of sudden leaf drop.'
+      },
+      humidity: 'medium', minC: 13, idealC: [16, 26],
+      fert: { everyDays: 28, strength: 'half', type: 'Balanced liquid feed' },
+      soil: 'A standard indoor potting mix with a couple of handfuls of perlite for drainage.',
+      repot: 'Every 2–3 years in spring. It drops leaves after repotting, so do it only when the roots fill the pot.',
+      tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
+        note: 'Listed by the ASPCA as toxic to cats and dogs. The milky sap irritates the mouth, stomach and skin. People with a latex allergy can react to it too.' },
+      prop: [
+        { m: 'Stem cutting', diff: 'medium', season: 'Spring or summer', roots: '4–8 weeks',
+          steps: [
+            'Cut a 10–15cm tip from a firm, leafy stem.',
+            'Rinse the milky sap from the cut, then remove the lowest leaves.',
+            'Push it into damp, gritty mix and cover loosely with a clear bag.',
+            'Keep it warm and out of direct sun until new leaves appear.'
+          ] },
+        { m: 'Air layering', diff: 'medium', season: 'Spring or summer', roots: '4–8 weeks',
+          steps: [
+            'Make a shallow upward cut 3cm long into a stem, just below a node, and wedge it open.',
+            'Wrap damp sphagnum moss around the cut and seal it in cling film tied at both ends.',
+            'Keep the moss damp. When roots fill it, cut the stem below the moss and pot the top.'
+          ] }
+      ],
+      likes: ['Staying in one place', 'Bright light with a little sun', 'A steady watering routine'],
+      dislikes: ['Being moved', 'Cold draughts', 'Sudden changes'],
+      problems: ['transplant-shock', 'draughts', 'leaf-drop-sudden', 'leaves-falling-off', 'scale', 'spider-mites'],
+      tags: ['tree', 'statement']
+    },
+
+    {
+      id: 'alocasia-zebrina',
+      common: 'Alocasia Zebrina',
+      aka: ['Zebra Alocasia', 'Tiger Alocasia'],
+      botanical: 'Alocasia zebrina',
+      family: 'Araceae',
+      origin: 'Rainforests of the Philippines',
+      difficulty: 'hard',
+      growthRate: 'moderate',
+      matureCm: 90,
+      water: {
+        warm: 6, cool: 12, soakPct: 0.25, dryBetween: false,
+        note: 'Keep the soil lightly moist in summer, watering when the top 2–3cm is dry. Water much less in winter: it slows down and may drop leaves, and wet soil around a resting corm rots it.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
+        note: 'Bright filtered light. The striped stems lean hard towards the window, so turn the pot each week. Direct sun scorches the thin leaves.'
+      },
+      humidity: 'high', minC: 15, idealC: [20, 28],
+      fert: { everyDays: 21, strength: 'half', type: 'Balanced liquid feed' },
+      soil: 'Chunky and free-draining: potting mix with orchid bark and perlite in roughly equal parts.',
+      repot: 'Every 1–2 years in spring. Look for small corms in the root ball while it is out.',
+      tox: { cats: 'toxic', dogs: 'toxic', humans: 'toxic',
+        note: 'The ASPCA lists every Alocasia as toxic to cats and dogs. Insoluble calcium oxalate crystals cause intense mouth pain, drooling, swelling and vomiting. Wear gloves when dividing it.' },
+      prop: [{
+        m: 'Division or corms', diff: 'medium', season: 'Spring', roots: '4–8 weeks',
+        steps: [
+          'Unpot it in spring and look for offsets and for small round corms among the roots.',
+          'Cut away an offset with its own roots and pot it straight into damp, chunky mix.',
+          'Half bury the corms in damp sphagnum or perlite in a covered tub, in a warm spot.',
+          'Pot each corm on once it has a leaf and a few centimetres of root.'
+        ]
+      }],
+      likes: ['Warmth and humidity', 'Bright filtered light', 'A chunky, airy mix'],
+      dislikes: ['Cold', 'Wet soil in winter', 'Dry air'],
+      problems: ['dormancy', 'spider-mites', 'overwatering', 'dormancy-dieback', 'yellow-lower-leaves', 'drooping'],
+      tags: ['statement', 'humidity-lover', 'patterned', 'tricky', 'dramatic']
+    },
+
+    {
+      id: 'dypsis-lutescens',
+      common: 'Areca Palm',
+      aka: ['Butterfly Palm', 'Golden Cane Palm', 'Yellow Palm'],
+      botanical: 'Dypsis lutescens',
+      family: 'Arecaceae',
+      origin: 'Forests of Madagascar',
+      difficulty: 'medium',
+      growthRate: 'moderate',
+      matureCm: 200,
+      water: {
+        warm: 7, cool: 12, soakPct: 0.25, dryBetween: true,
+        note: 'Water when the top 3cm is dry, then let it drain completely. Rainwater or filtered water helps: salts and fluoride in tap water brown the frond tips.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
+        note: 'Bright indirect light. Direct sun yellows the fronds; in low light it thins out and stops making new canes.'
+      },
+      humidity: 'medium', minC: 13, idealC: [18, 27],
+      fert: { everyDays: 28, strength: 'half', type: 'Palm feed, or a balanced feed with magnesium' },
+      soil: 'A standard indoor potting mix with a couple of handfuls of perlite for drainage.',
+      repot: 'Every 2–3 years. It likes to be snug, and its roots are brittle, so handle the root ball gently.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'Listed by the ASPCA as non-toxic to cats and dogs.' },
+      prop: [{
+        m: 'Division', diff: 'medium', season: 'Spring', roots: 'Already rooted',
+        steps: [
+          'Shop plants are several seedlings grown together, so a large clump can be split.',
+          'Unpot it and gently pull or cut the root ball into two or three sections, each with several canes.',
+          'Pot each section at its old depth and keep it out of direct sun while it settles.',
+          'Expect a few fronds to brown afterwards; the palm resents root disturbance.'
+        ]
+      }],
+      likes: ['Bright indirect light', 'Rainwater', 'A snug pot'],
+      dislikes: ['Direct sun', 'Dry air', 'Hard tap water'],
+      problems: ['low-humidity', 'spider-mites', 'tap-water-minerals', 'brown-tips-only', 'yellow-lower-leaves', 'frond-dieback'],
+      tags: ['pet-safe', 'palm', 'statement', 'large']
     },
 
     /* ====================== FERNS & HUMIDITY LOVERS ====================== */
@@ -1151,6 +1409,131 @@ window.PLANT_DATA = (function () {
       tags: ['flowering', 'colourful', 'humidity-lover']
     },
 
+    {
+      id: 'calathea-lancifolia',
+      common: 'Rattlesnake Plant',
+      aka: ['Calathea Lancifolia', 'Goeppertia insignis'],
+      botanical: 'Goeppertia insignis',
+      family: 'Marantaceae',
+      origin: 'Rainforest floor in Brazil',
+      difficulty: 'medium',
+      growthRate: 'moderate',
+      matureCm: 60,
+      water: {
+        warm: 6, cool: 10, soakPct: 0.25, dryBetween: false,
+        note: 'Keep the soil lightly moist, watering when the top 2cm feels dry. Use rainwater or filtered water: it is sensitive to the fluoride and salts in tap water, which brown the leaf edges.'
+      },
+      light: {
+        ideal: 'medium', tolerates: ['low', 'bright-indirect'], avoid: ['direct'],
+        note: 'A forest-floor plant, happy a few metres from a window. Direct sun fades the markings and curls the leaves.'
+      },
+      humidity: 'high', minC: 16, idealC: [18, 26],
+      fert: { everyDays: 28, strength: 'quarter', type: 'Balanced liquid feed' },
+      soil: 'Moisture-retentive but airy: potting mix with coir and a little perlite.',
+      repot: 'Every 2 years in spring.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'Listed by the ASPCA as non-toxic to cats and dogs, under the older names Calathea insignis and Calathea lancifolia.' },
+      prop: [{
+        m: 'Division', diff: 'medium', season: 'Spring', roots: 'Already rooted',
+        steps: [
+          'Divide only a mature clump with several crowns.',
+          'Unpot it and tease the rhizomes apart, keeping three or more leaves and good roots on each piece.',
+          'Pot each into damp mix and cover loosely with a clear bag for a week or two.',
+          'Some leaves may curl or brown while it settles; new ones follow.'
+        ]
+      }],
+      likes: ['Rainwater', 'Humid air', 'Medium light'],
+      dislikes: ['Tap water', 'Direct sun', 'Drying out'],
+      problems: ['low-humidity', 'tap-water-minerals', 'underwatering', 'brown-crispy-edges', 'leaves-curling', 'spider-mites'],
+      tags: ['pet-safe', 'patterned', 'humidity-lover', 'low-light', 'bathroom']
+    },
+
+    {
+      id: 'hypoestes-phyllostachya',
+      common: 'Polka Dot Plant',
+      aka: ['Freckle Face', 'Hypoestes'],
+      botanical: 'Hypoestes phyllostachya',
+      family: 'Acanthaceae',
+      origin: 'Forests of Madagascar',
+      difficulty: 'medium',
+      growthRate: 'fast',
+      matureCm: 30,
+      water: {
+        warm: 4, cool: 7, soakPct: 0.25, dryBetween: false,
+        note: 'Keep the soil evenly moist. It wilts dramatically when dry and recovers within an hour of a drink, but repeated wilting browns the leaf edges.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
+        note: 'Bright indirect light keeps the spots vivid and the plant bushy. In low light the colour fades to green and the stems stretch.'
+      },
+      humidity: 'medium', minC: 13, idealC: [18, 26],
+      fert: { everyDays: 21, strength: 'half', type: 'Balanced liquid feed' },
+      soil: 'A standard indoor potting mix with a couple of handfuls of perlite for drainage.',
+      repot: 'Annually in spring. It is short-lived, so many growers simply restart it from cuttings each year.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'Listed by the ASPCA as non-toxic to cats and dogs.' },
+      prop: [{
+        m: 'Stem cutting', diff: 'easy', season: 'Spring or summer', roots: '1–2 weeks',
+        steps: [
+          'Snip 5–8cm tips, just below a pair of leaves.',
+          'Strip the lowest leaves and stand the stems in water, or push them into damp mix.',
+          'Roots appear within a fortnight. Pot several together for a full plant.',
+          'Pinch out the tips as they grow to keep them bushy.'
+        ]
+      }],
+      seed: {
+        viable: true, sowSeason: 'Spring, indoors', germDays: '7–14 days', depthMm: 2,
+        steps: [
+          'Sow thinly on the surface of damp seed compost and barely cover.',
+          'Keep it at 20–24°C, in bright light but out of direct sun.',
+          'The spots appear once seedlings have their first true leaves.',
+          'Pot on into small pots at four leaves, and pinch out the tips at six.'
+        ]
+      },
+      likes: ['Evenly moist soil', 'Regular pinching', 'Bright indirect light'],
+      dislikes: ['Drying out', 'Low light', 'Cold'],
+      problems: ['underwatering', 'needs-pruning', 'drooping', 'leggy-stretching', 'variegation-loss', 'aphids'],
+      tags: ['pet-safe', 'colourful', 'compact', 'fast-growing', 'easy-propagation']
+    },
+
+    {
+      id: 'rhapis-excelsa',
+      common: 'Lady Palm',
+      aka: ['Broadleaf Lady Palm', 'Bamboo Palm'],
+      botanical: 'Rhapis excelsa',
+      family: 'Arecaceae',
+      origin: 'Woodland understorey of southern China and Taiwan',
+      difficulty: 'easy',
+      growthRate: 'slow',
+      matureCm: 150,
+      water: {
+        warm: 8, cool: 14, soakPct: 0.25, dryBetween: true,
+        note: 'Water when the top 3cm is dry, thoroughly, then let it drain. Rainwater or filtered water keeps the frond tips from browning.'
+      },
+      light: {
+        ideal: 'medium', tolerates: ['low', 'bright-indirect'], avoid: ['direct'],
+        note: 'One of the most shade-tolerant palms. It grows slowly in low light but keeps its deep green; direct sun yellows and scorches the fans.'
+      },
+      humidity: 'medium', minC: 7, idealC: [15, 26],
+      fert: { everyDays: 42, strength: 'half', type: 'Palm feed, or a balanced feed' },
+      soil: 'A standard indoor potting mix with a couple of handfuls of perlite for drainage.',
+      repot: 'Every 3 years in spring. It grows slowly and is happy crowded.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'Listed by the ASPCA as non-toxic to cats and dogs, under the older name Rhapis flabelliformis.' },
+      prop: [{
+        m: 'Division', diff: 'easy', season: 'Spring', roots: 'Already rooted',
+        steps: [
+          'It spreads by underground stems, sending up new canes around the clump.',
+          'Unpot it and cut away a group of canes with its own roots and rhizome.',
+          'Pot it at its old depth in fresh mix and keep it shaded while it settles.'
+        ]
+      }],
+      likes: ['Shade', 'Cool rooms', 'Rainwater'],
+      dislikes: ['Direct sun', 'Hard tap water', 'Wet feet'],
+      problems: ['tap-water-minerals', 'brown-tips-only', 'scale', 'overwatering', 'yellow-lower-leaves'],
+      tags: ['pet-safe', 'palm', 'low-light', 'beginner', 'cool-tolerant', 'architectural']
+    },
+
     /* ====================== SUCCULENTS & CACTI ====================== */
     {
       id: 'aloe-vera',
@@ -1465,6 +1848,82 @@ window.PLANT_DATA = (function () {
       tags: ['succulent', 'flowering', 'colourful', 'sun-lover', 'compact', 'beginner']
     },
 
+    {
+      id: 'mammillaria-elongata',
+      common: 'Ladyfinger Cactus',
+      aka: ['Gold Lace Cactus', 'Mammillaria'],
+      botanical: 'Mammillaria elongata',
+      family: 'Cactaceae',
+      origin: 'Rocky hillsides of central Mexico',
+      difficulty: 'easy',
+      growthRate: 'slow',
+      matureCm: 15,
+      water: {
+        warm: 14, cool: 35, soakPct: 0.2, dryBetween: true,
+        note: 'Water thoroughly only when the soil is dry all the way through, then let it drain. Keep it almost dry from late autumn to early spring: a cool, dry rest is what makes it flower.'
+      },
+      light: {
+        ideal: 'direct', tolerates: ['bright-indirect'], avoid: ['low', 'medium'],
+        note: 'A sunny windowsill. Short of sun, the fingers stretch thin and pale towards the glass and do not thicken again.'
+      },
+      humidity: 'low', minC: 5, idealC: [18, 30],
+      fert: { everyDays: 56, strength: 'quarter', type: 'Cactus and succulent feed' },
+      soil: 'Very gritty cactus mix, with extra grit or pumice. It must drain in seconds.',
+      repot: 'Every 2–3 years, into a wide, shallow pot as the clump spreads. Handle it with folded paper against the spines.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'Not listed by the ASPCA; the related Mammillaria fragilis is listed as non-toxic to cats and dogs. The spines are the hazard: they lodge in paws and mouths.' },
+      prop: [{
+        m: 'Offsets', diff: 'easy', season: 'Spring or summer', roots: '2–4 weeks',
+        steps: [
+          'Twist or cut a finger away from the clump at its base, using folded paper to hold it.',
+          'Leave it on a dry windowsill for a few days so the cut seals.',
+          'Set it on the surface of dry cactus mix and water lightly a week later.'
+        ]
+      }],
+      likes: ['Full sun', 'A cool, dry winter', 'Gritty soil'],
+      dislikes: ['Wet soil', 'Shade', 'Watering in winter'],
+      problems: ['root-rot', 'overwatering', 'mealybugs', 'leggy-stretching', 'leaning', 'mushy-base'],
+      tags: ['pet-safe', 'succulent', 'sun-lover', 'compact', 'drought-tolerant', 'beginner', 'flowering']
+    },
+
+    {
+      id: 'opuntia-microdasys',
+      common: 'Bunny Ears Cactus',
+      aka: ['Angel\'s Wings', 'Polka Dot Cactus'],
+      botanical: 'Opuntia microdasys',
+      family: 'Cactaceae',
+      origin: 'Chihuahuan Desert of northern Mexico',
+      difficulty: 'easy',
+      growthRate: 'moderate',
+      matureCm: 45,
+      water: {
+        warm: 14, cool: 35, soakPct: 0.2, dryBetween: true,
+        note: 'Water thoroughly only when the soil is completely dry, then let it drain. Keep it nearly dry in winter.'
+      },
+      light: {
+        ideal: 'direct', tolerates: ['bright-indirect'], avoid: ['low', 'medium'],
+        note: 'The sunniest window you have. In shade the new pads grow thin, pale and floppy.'
+      },
+      humidity: 'low', minC: 5, idealC: [18, 32],
+      fert: { everyDays: 56, strength: 'quarter', type: 'Cactus and succulent feed' },
+      soil: 'Very gritty cactus mix, in a heavy terracotta pot so the pads do not tip it over.',
+      repot: 'Every 2–3 years in spring. Wear thick gloves and handle it with folded newspaper.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'mild',
+        note: 'The ASPCA lists Opuntia as non-toxic to cats and dogs. It has no long spines, but the dots are clusters of fine barbed bristles (glochids) that come away at a touch and lodge in skin. Remove them with sticky tape rather than fingers.' },
+      prop: [{
+        m: 'Pad cutting', diff: 'easy', season: 'Spring or summer', roots: '3–5 weeks',
+        steps: [
+          'Wearing thick gloves, twist or cut a pad away at the joint.',
+          'Leave it somewhere dry for a week until the cut end has sealed.',
+          'Stand it upright, cut end 2cm into dry cactus mix, and water lightly after another week.'
+        ]
+      }],
+      likes: ['Full sun', 'Gritty soil', 'A dry winter'],
+      dislikes: ['Wet soil', 'Shade', 'Being handled'],
+      problems: ['root-rot', 'overwatering', 'mealybugs', 'leggy-stretching', 'sunburn', 'mushy-base'],
+      tags: ['pet-safe', 'succulent', 'sun-lover', 'drought-tolerant', 'beginner']
+    },
+
     /* ====================== VINES & TRAILERS ====================== */
     {
       id: 'ceropegia-woodii',
@@ -1654,6 +2113,123 @@ window.PLANT_DATA = (function () {
       tags: ['trailing', 'climbing', 'fast-growing', 'cool-tolerant', 'low-light']
     },
 
+    {
+      id: 'scindapsus-pictus',
+      common: 'Satin Pothos',
+      aka: ['Silver Pothos', 'Silk Pothos', 'Scindapsus'],
+      botanical: 'Scindapsus pictus',
+      family: 'Araceae',
+      origin: 'Forests of Southeast Asia, from Thailand to the Philippines',
+      difficulty: 'easy',
+      growthRate: 'moderate',
+      matureCm: 200,
+      water: {
+        warm: 8, cool: 14, soakPct: 0.25, dryBetween: true,
+        note: 'Let the top half of the pot dry, then water thoroughly. The leaves curl inward along their length when it is thirsty and flatten again within a day of a drink.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['medium', 'low'], avoid: ['direct'],
+        note: 'Bright indirect light keeps the silver splash bright. It copes with low light, growing slower and greener; direct sun scorches it.'
+      },
+      humidity: 'medium', minC: 15, idealC: [18, 29],
+      fert: { everyDays: 28, strength: 'half', type: 'Balanced liquid feed' },
+      soil: 'A standard indoor potting mix with orchid bark and perlite for drainage.',
+      repot: 'Every 2 years in spring.',
+      tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
+        note: 'Listed by the ASPCA as toxic to cats and dogs. Calcium oxalate crystals cause mouth irritation, drooling and vomiting if chewed. Not a true pothos, but just as harmful.' },
+      prop: [{
+        m: 'Stem cutting', diff: 'easy', season: 'Spring or summer', roots: '3–5 weeks',
+        steps: [
+          'Cut a length of vine with at least two nodes, just below a node.',
+          'Stand it in water with the nodes submerged, or push the nodes into damp mix.',
+          'It roots more slowly than Golden Pothos; keep it warm.',
+          'Pot several cuttings together for a fuller plant.'
+        ]
+      }],
+      likes: ['Drying out between drinks', 'Something to trail from or climb', 'Warmth'],
+      dislikes: ['Wet soil', 'Cold windowsills', 'Direct sun'],
+      problems: ['overwatering', 'root-rot', 'underwatering', 'leaves-curling', 'yellow-lower-leaves', 'leggy-stretching'],
+      tags: ['trailing', 'climbing', 'beginner', 'low-light', 'patterned']
+    },
+
+    {
+      id: 'rhaphidophora-tetrasperma',
+      common: 'Mini Monstera',
+      aka: ['Monstera Minima', 'Philodendron Minima', 'Ginny'],
+      botanical: 'Rhaphidophora tetrasperma',
+      family: 'Araceae',
+      origin: 'Rainforests of southern Thailand and Peninsular Malaysia',
+      difficulty: 'easy',
+      growthRate: 'fast',
+      matureCm: 200,
+      water: {
+        warm: 7, cool: 12, soakPct: 0.25, dryBetween: true,
+        note: 'Water when the top 3–5cm of soil is dry, thoroughly, then let it drain.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
+        note: 'Bright indirect light gives large, deeply split leaves. In low light new leaves come small and unsplit on long bare stems.'
+      },
+      humidity: 'medium', minC: 15, idealC: [18, 28],
+      fert: { everyDays: 28, strength: 'half', type: 'Balanced liquid feed' },
+      soil: 'Chunky and free-draining: two parts potting mix, one part perlite, one part orchid bark.',
+      repot: 'Every 1–2 years in spring. Give it a moss pole or plank to climb at the same time.',
+      tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
+        note: 'Not listed by the ASPCA. Like Monstera and the other aroids, it contains insoluble calcium oxalate crystals, which cause mouth pain, drooling and vomiting if chewed.' },
+      prop: [{
+        m: 'Stem cutting', diff: 'easy', season: 'Spring or summer', roots: '2–4 weeks',
+        steps: [
+          'Cut a stem 2–3cm below a node, with one or two leaves. A node without a leaf still roots.',
+          'Stand the node in water, or in damp sphagnum moss.',
+          'Pot into chunky mix once the roots are 5cm long.',
+          'Cut back a leggy plant this way and the stump branches from below the cut.'
+        ]
+      }],
+      likes: ['Something to climb', 'Bright indirect light', 'Room to grow fast'],
+      dislikes: ['Low light', 'Wet soil', 'Cold draughts'],
+      problems: ['overwatering', 'spider-mites', 'thrips', 'needs-support', 'yellow-lower-leaves', 'leggy-stretching'],
+      tags: ['climbing', 'fast-growing', 'beginner', 'easy-propagation']
+    },
+
+    {
+      id: 'hoya-kerrii',
+      common: 'Sweetheart Hoya',
+      aka: ['Valentine Hoya', 'Wax Heart', 'Lucky Heart'],
+      botanical: 'Hoya kerrii',
+      family: 'Apocynaceae',
+      origin: 'Forests of Thailand, Laos, Cambodia and Vietnam',
+      difficulty: 'easy',
+      growthRate: 'slow',
+      matureCm: 150,
+      water: {
+        warm: 14, cool: 28, soakPct: 0.2, dryBetween: true,
+        note: 'The thick heart-shaped leaves store water, so let the soil dry right through before watering. Soft, wrinkled leaves mean it is thirsty.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['direct', 'medium'], avoid: ['low'],
+        note: 'Bright light, with some gentle direct sun if you have it, which it needs to flower. In low light it stops growing.'
+      },
+      humidity: 'medium', minC: 12, idealC: [18, 28],
+      fert: { everyDays: 42, strength: 'half', type: 'Balanced liquid feed' },
+      soil: 'Very airy: orchid bark, perlite and potting mix in equal parts.',
+      repot: 'Rarely. It flowers best snug in its pot.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'Listed by the ASPCA as non-toxic to cats and dogs.' },
+      prop: [{
+        m: 'Stem cutting', diff: 'easy', season: 'Spring or summer', roots: '4–8 weeks',
+        steps: [
+          'Single hearts are often sold potted on their own. A leaf with no piece of stem and node at its base roots but never grows a vine.',
+          'For a plant that will climb, cut a length of vine with at least one node and a leaf or two.',
+          'Push the node into damp, airy mix, or root it in water first.',
+          'Keep it warm and bright. A new vine can take months to appear.'
+        ]
+      }],
+      likes: ['Drying out completely', 'Bright light', 'A snug pot'],
+      dislikes: ['Wet soil', 'Being moved while in bud', 'Low light'],
+      problems: ['overwatering', 'root-rot', 'mealybugs', 'no-flowers', 'mushy-base'],
+      tags: ['pet-safe', 'beginner', 'trailing', 'drought-tolerant', 'unusual']
+    },
+
     /* ====================== FLOWERING ====================== */
     {
       id: 'phalaenopsis-orchid',
@@ -1772,6 +2348,45 @@ window.PLANT_DATA = (function () {
       dislikes: ['Wet leaves', 'Stagnant humid air', 'Direct sun', 'Waterlogging'],
       problems: ['powdery-mildew', 'leaves-falling-off', 'brown-crispy-edges', 'leggy-stretching', 'spider-mites'],
       tags: ['patterned', 'colourful', 'fast-growing', 'humidity-lover', 'dramatic']
+    },
+
+    {
+      id: 'dendrobium-nobile',
+      common: 'Dendrobium',
+      aka: ['Noble Dendrobium', 'Cane Orchid'],
+      botanical: 'Dendrobium nobile',
+      family: 'Orchidaceae',
+      origin: 'Monsoon forests from the Himalayan foothills to southern China and Indochina',
+      difficulty: 'medium',
+      growthRate: 'moderate',
+      matureCm: 60,
+      water: {
+        warm: 7, cool: 21, soakPct: 0.4, dryBetween: true,
+        note: 'Water freely while new canes are growing in spring and summer, letting the bark dry a little between drinks. From mid-autumn water only enough to stop the canes shrivelling: that dry, cool rest is what sets the flower buds.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['direct'], avoid: ['low', 'medium'],
+        note: 'More light than a Moth Orchid, including some morning sun. In medium light it grows leaves but rarely flowers.'
+      },
+      humidity: 'medium', minC: 10, idealC: [15, 27],
+      fert: { everyDays: 14, strength: 'quarter', type: 'Orchid feed, stopped from mid-autumn until buds show' },
+      soil: 'Medium-grade orchid bark, in a pot only just large enough for the roots.',
+      repot: 'Every 2–3 years, after flowering, when new growth starts.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'Not listed by the ASPCA; the related Dendrobium gracilicaule is listed as non-toxic to cats and dogs.' },
+      prop: [{
+        m: 'Keikis (baby plants)', diff: 'easy', season: 'Spring or summer', roots: 'Already rooted',
+        steps: [
+          'Small plants called keikis sometimes grow from the nodes of old canes, often when the winter rest was too warm.',
+          'Leave one on the cane until it has two or three roots 3–5cm long.',
+          'Cut it away with a little of the cane and pot it in fine orchid bark.',
+          'Care for it as the parent. It flowers in two to three years.'
+        ]
+      }],
+      likes: ['A cool, dry autumn rest', 'Bright light with morning sun', 'Cool nights'],
+      dislikes: ['A warm winter', 'Constant watering', 'Low light'],
+      problems: ['needs-rest-period', 'no-flowers', 'root-rot', 'mealybugs', 'bud-drop', 'yellow-lower-leaves'],
+      tags: ['pet-safe', 'flowering', 'epiphyte', 'cool-tolerant']
     },
 
     /* ====================== EDIBLE & HERBS ====================== */
@@ -1922,6 +2537,54 @@ window.PLANT_DATA = (function () {
       dislikes: ['Overwatering — the usual cause of death', 'Humid stagnant air', 'Rich soil', 'Low light'],
       problems: ['root-rot', 'powdery-mildew', 'brown-crispy-edges', 'leggy-stretching', 'spider-mites'],
       tags: ['edible', 'herb', 'sun-lover', 'pet-safe', 'drought-tolerant', 'kitchen']
+    },
+
+    {
+      id: 'thymus-vulgaris',
+      common: 'Thyme',
+      aka: ['Common Thyme', 'Garden Thyme'],
+      botanical: 'Thymus vulgaris',
+      family: 'Lamiaceae',
+      origin: 'Dry, rocky hillsides of the western Mediterranean',
+      difficulty: 'medium',
+      growthRate: 'slow',
+      matureCm: 25,
+      water: {
+        warm: 7, cool: 14, soakPct: 0.2, dryBetween: true,
+        note: 'Let the soil dry almost completely, then water thoroughly. It is a Mediterranean shrub: too much water kills it far more often than too little.'
+      },
+      light: {
+        ideal: 'direct', tolerates: ['bright-indirect'], avoid: ['low', 'medium'],
+        note: 'The sunniest windowsill you have, six hours of sun or more. In weaker light it grows thin, pale and flavourless.'
+      },
+      humidity: 'low', minC: 0, idealC: [15, 25],
+      fert: { everyDays: 42, strength: 'quarter', type: 'Balanced liquid feed; lean conditions give the strongest flavour' },
+      soil: 'Gritty and poor: two parts potting mix to one part horticultural grit.',
+      repot: 'Every 1–2 years in spring, or replace it with a young plant once it turns woody and sparse.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'Edible. Listed by the ASPCA as non-toxic to cats and dogs.' },
+      prop: [{
+        m: 'Softwood cutting', diff: 'easy', season: 'Late spring or summer', roots: '3–4 weeks',
+        steps: [
+          'Snip 5–8cm of soft, non-flowering shoot, just below a leaf joint.',
+          'Strip the lower leaves and push the stems into gritty compost.',
+          'Keep the compost just damp and the cuttings out of direct sun until they root.',
+          'Pinch out the tips once they grow to make a bushy plant.'
+        ]
+      }],
+      seed: {
+        viable: true, sowSeason: 'Spring, indoors', germDays: '14–28 days', depthMm: 1,
+        steps: [
+          'Sow thinly on the surface of damp seed compost and press in lightly; the seed is tiny.',
+          'Keep it at 18–22°C and only just damp.',
+          'Thin the seedlings and pot them on in small clumps once they have a few true leaves.',
+          'Harvest lightly in the first year so the young plants bulk up.'
+        ]
+      },
+      likes: ['Full sun', 'Gritty soil', 'Regular trimming'],
+      dislikes: ['Wet soil', 'Shade', 'Rich compost'],
+      problems: ['overwatering', 'root-rot', 'needs-pruning', 'leggy-stretching', 'powdery-mildew', 'yellow-lower-leaves'],
+      tags: ['pet-safe', 'edible', 'herb', 'kitchen', 'sun-lover', 'compact', 'drought-tolerant', 'cool-tolerant']
     },
 
     /* ====================== AIR PLANTS & BROMELIADS ======================

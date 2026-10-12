@@ -55,7 +55,7 @@ Two consequences worth knowing before editing anything in there:
   ```
 
   It compares the names and the row count, checks the one figure the copy
-  quotes ("32 safe for cats and dogs"), and fails if the copy states a
+  quotes ("42 safe for cats and dogs"), and fails if the copy states a
   number of species: the list grows, so the site deliberately never says
   how many there are. Run it after touching `plants.js`.
   To regenerate the rows, emit one `<li class="sp-row">` per record in
@@ -211,7 +211,7 @@ this is why.
 
 ## Data model
 
-`js/data/plants.js` — 57 species. Each carries `water.warm` / `water.cool`
+`js/data/plants.js` — 73 species. Each carries `water.warm` / `water.cool`
 (days), `fert.everyDays`, a `light.ideal` from `LOOKUPS.LIGHT`, and `tox`
 rated separately for `cats`, `dogs` and `humans`. `normalise()` fills
 defaults, so a record only states what is distinctive about it. **To add
