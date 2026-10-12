@@ -21,6 +21,13 @@ music is ducked under her.
 Each `.jpg` is that reel's cover, also baked in as frame 0, so Instagram
 picks it up without being asked. `share-copy.txt` has a caption for each.
 
+`promo-landscape.mp4` is the same Reels in 16:9 for the Google Play store
+listing's promo video: schedule, planner, diagnosis and pets back to back,
+about a minute, signed off once at the end. Play takes it only as a YouTube
+link, so it is uploaded to YouTube (public or unlisted, ads off, not age
+restricted) and the link goes in the listing's Video field.
+`promo-thumbnail.jpg` is its 1280×720 YouTube thumbnail.
+
 Rendered on 12 October 2026 from the app as it is on Play. Every one ends
 on sproutevergreen.com, free on Google Play and coming soon to iPhone, and
 no line quotes a species count, since the list grows. Earlier cuts showed
@@ -52,6 +59,10 @@ node audio.js pets             # music → music-pets.wav
 ./mix.sh pets                  # her voice + ducked music → mix-pets.wav
 node render.js pets            # every frame → frames-pets/
 ./mux.sh 4 pets                # → ../04-pets.mp4 + .jpg
+
+# the landscape promo, once each reel above has its mix
+LAND=1 node render.js schedule # → frames-land-schedule/ (and planner, diagnose, pets)
+python3 promo.py               # → ../promo-landscape.mp4 + ../promo-thumbnail.jpg
 ```
 
 What she says and what is captioned are separate strings in
