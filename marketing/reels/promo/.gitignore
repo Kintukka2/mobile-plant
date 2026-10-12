@@ -1,0 +1,9 @@
+# Rebuilt by capture.js, vo.py, audio.js, mix.sh and render.js; the finished
+# film is ../promo-landscape.mp4.
+phone-*/
+frames/
+stills/
+vo/
+music.wav
+mix.wav
+events-*.json

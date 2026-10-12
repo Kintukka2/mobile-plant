@@ -1,0 +1,15 @@
+{
+ "lines": [
+  { "id": "hook",    "say": "Two Monsteras. Two different schedules." },
+  { "id": "why-a",   "say": "One's in terracotta, by a bright window." },
+  { "id": "why-b",   "say": "The other is in plastic, in a dim kitchen." },
+  { "id": "reveal",  "say": "I'm Sprout. I work out each plant's care from where it actually lives." },
+  { "id": "notice",  "say": "And I tell you when a plant is in the wrong light." },
+  { "id": "move",    "say": "Move it somewhere brighter, and its care moves with it." },
+  { "id": "weather", "say": "A hot, dry week coming? I'll offer to water sooner. You decide." },
+  { "id": "pets",    "say": "I'll warn you which plants could hurt the cat." },
+  { "id": "diagnose","say": "And when a leaf turns yellow, I'll help you find out why." },
+  { "id": "private", "say": "Free, with no account. And your plants stay on your phone." },
+  { "id": "end",     "say": "Sprout Evergreen. Free on Google Play." }
+ ]
+}

@@ -1,0 +1,232 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Sprout promo stage</title>
+<!-- The Play promo, one 1920x1080 frame per call to render(t). Served from
+     the repo root by .claude/serve.js, so the faces are the app's own files.
+     The ground, type and phone are the reels' (../build/stage.html); the
+     choreography is this film's: two phones for the hook, cards lifted off
+     the screen, and the phone changing sides from scene to scene, leaving by
+     the foot of the frame and coming back up, so no two busy screens are
+     ever dissolved through each other. -->
+<style>
+@font-face{font-family:'PP Hatton';src:url('/css/fonts/hatton-ultralight.woff2') format('woff2');font-weight:200;font-display:block}
+@font-face{font-family:'PP Hatton';src:url('/css/fonts/hatton-medium.woff2') format('woff2');font-weight:500;font-display:block}
+@font-face{font-family:'Jost';src:url('/css/fonts/jost-var.woff2') format('woff2');font-weight:300 500;font-display:block}
+@font-face{font-family:'Sacramento';src:url('/css/fonts/sacramento-400.woff2') format('woff2');font-weight:400;font-display:block}
+:root{ --bg:#050A08; --ink:#F3F6F1; --ink2:rgba(228,240,232,.72); --ink3:rgba(206,226,214,.52);
+       --glow:#3FBE8B; --mint:#9FD3BE; --gold:#C8A96B; --hair:rgba(214,237,226,.12); }
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:var(--bg)}
+#v{position:relative;width:1920px;height:1080px;overflow:hidden;background:var(--bg)}
+.bloom,.grid,.vig{position:absolute;inset:0}
+.grid{background-image:linear-gradient(to right,rgba(214,237,226,.045) 1px,transparent 1px),linear-gradient(to bottom,rgba(214,237,226,.045) 1px,transparent 1px);
+      background-size:60px 60px;-webkit-mask-image:radial-gradient(1500px 1000px at 50% 40%,#000 0%,rgba(0,0,0,.45) 55%,transparent 85%)}
+.vig{background:radial-gradient(2200px 1300px at 50% 50%,transparent 55%,rgba(0,0,0,.55) 100%)}
+
+.phone{position:absolute;left:0;top:0;width:600px;height:1298px;border-radius:48px;overflow:hidden;background:#0A1410;transform-origin:0 0;
+       box-shadow:0 0 0 1.5px rgba(214,237,226,.16),0 50px 140px rgba(0,0,0,.65),0 0 120px rgba(63,190,139,.10)}
+.phone img{position:absolute;left:0;top:0;width:600px;height:1298px;display:block}
+.shade{position:absolute;inset:0;background:#000;pointer-events:none}
+.rip{position:absolute;border-radius:50%;pointer-events:none}
+.ring{position:absolute;border-radius:16px;pointer-events:none;border:2.5px solid var(--glow);
+      box-shadow:0 0 0 3000px rgba(3,8,6,.5),0 0 30px rgba(63,190,139,.55),inset 0 0 18px rgba(63,190,139,.18)}
+
+/* A card lifted off the screen: the same pixels, larger, ringed in the glow. */
+.lift{position:absolute;left:0;top:0;overflow:hidden;border-radius:22px;background:#0E1B15;transform-origin:0 0;
+      box-shadow:0 0 0 3px var(--glow),0 0 60px rgba(63,190,139,.35),0 40px 80px rgba(0,0,0,.7)}
+.lift img{position:absolute;width:600px;height:1298px;display:block}
+
+.cap{position:absolute;width:850px;font-family:'PP Hatton';font-weight:200;font-size:76px;line-height:1.14;color:var(--ink);text-wrap:balance}
+.cap .l{display:block}
+.cap .a{color:var(--glow)}
+.cap.mid{width:500px;text-align:center;font-size:64px}
+.eyebrow{display:block;font-family:'Jost';font-weight:500;font-size:24px;letter-spacing:.3em;text-transform:uppercase;color:var(--glow);margin-bottom:26px}
+
+.sprout{position:absolute;left:0;bottom:0;height:360px;pointer-events:none;-webkit-mask-image:linear-gradient(to bottom,#000 80%,transparent)}
+
+.end{position:absolute;left:0;right:0;text-align:center}
+.lock{display:flex;flex-direction:column;align-items:center}
+.wm{display:flex;align-items:center;gap:26px}
+.wm svg{width:78px;height:102px;color:var(--glow);display:block}
+.word{font-family:'PP Hatton';font-weight:200;font-size:96px;letter-spacing:.2em;text-transform:uppercase;line-height:1;color:var(--ink);margin-right:-.2em}
+.script{font-family:'Sacramento';font-size:56px;color:var(--mint);line-height:1;margin-top:12px;margin-left:104px}
+.name{font-family:'Jost';font-weight:400;font-size:30px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink2)}
+.free{font-family:'PP Hatton';font-weight:200;font-size:64px;line-height:1.1;color:var(--ink)}
+.badge{height:84px;display:block;margin:30px auto 0}
+</style>
+<div id="v">
+  <div class="bloom" id="bloom"></div><div class="grid" id="grid"></div><div class="vig"></div>
+  <img class="sprout" id="sprout" src="/site/img/sprout-corner.webp" alt="">
+  <div id="phones"></div><div id="lifts"></div><div id="caps"></div>
+  <div class="end" id="lock"><div class="lock">
+    <div class="wm"><svg viewBox="24 20 52 68" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/></svg><span class="word">Sprout</span></div>
+    <div class="script">evergreen</div></div></div>
+  <div class="end" id="name"><div class="name">Plant care, worked out</div></div>
+  <div class="end" id="play"><div class="free">Free on Google Play</div><img class="badge" src="/site/img/google-play.png" alt=""></div>
+</div>
+<script>
+// One phone is shown large and runs off the foot of the frame, so the screen
+// reads on a phone-sized player; the hook's two stand whole.
+const FPS = 30, PS = 600 / 390, BASE = .88, TOP = 70, TRAVEL = 1200;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const k = (t, a, d) => clamp((t - a) / d, 0, 1);
+const oCub = x => 1 - Math.pow(1 - x, 3), iCub = x => x * x * x;
+const io = x => x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2;
+const $ = id => document.getElementById(id);
+const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html) e.innerHTML = html; return e; };
+let P, E = {}, PH = [], LF = [], CP = [];
+
+// Which scene a time falls in, and so which side the words take.
+const sceneAt = t => P.scenes.find(s => t >= s.t[0] && t < s.t[1]) || P.scenes[P.scenes.length - 1];
+
+async function setup() {
+  P = await (await fetch('promo.json')).json();
+  for (const s of P.scenes) for (const ph of s.phones) if (!E[ph.cap]) E[ph.cap] = await (await fetch('events-' + ph.cap + '.json')).json();
+  P.scenes.forEach(s => s.phones.forEach(ph => {
+    const d = el('div', 'phone'); d.innerHTML = '<img><img><div class="shade"></div>';
+    const ev = E[ph.cap];
+    ev.taps.filter(x => !x.key).forEach(() => { d.appendChild(el('div', 'rip')); d.appendChild(el('div', 'rip')); });
+    ev.drags.forEach(() => d.appendChild(el('div', 'rip')));
+    d.appendChild(el('div', 'ring'));
+    $('phones').appendChild(d);
+    PH.push({ s, ph, d, ev, scale: s.scale || BASE });
+  }));
+  P.scenes.forEach(s => (s.lifts || []).forEach(lf => {
+    const owner = PH.find(p => p.s === s && p.ph.cap === lf.cap);
+    const d = el('div', 'lift', '<img>'); $('lifts').appendChild(d);
+    LF.push({ s, lf, d, owner });
+  }));
+  const esc = x => x.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  P.captions.forEach(c => {
+    const d = el('div', 'cap' + (c.centre ? ' mid' : ''), (c.eyebrow ? '<span class="eyebrow">' + esc(c.eyebrow) + '</span>' : '') +
+      c.lines.map((l, i) => '<span class="l' + (i === c.accent ? ' a' : '') + '">' + esc(l) + '</span>').join(''));
+    $('caps').appendChild(d); CP.push({ c, d });
+  });
+  await document.fonts.ready;
+  await Promise.all([...document.images].map(i => i.decode().catch(() => {})));
+  CP.forEach(({ c, d }) => {
+    const s = sceneAt(c.t[0]);
+    // beside the phone, whichever side it is on
+    const ph = s.phones[0], right = ph ? ph.x + 600 * (s.scale || BASE) + 120 : 150;
+    d.style.left = (c.centre ? 710 : s.side === 'right' ? right : 150) + 'px';
+    d.style.top = (540 - d.offsetHeight / 2) + 'px';
+  });
+}
+
+function frameOf(p, t) {
+  const ct = t - (p.ph.shift || 0);
+  return { ct, f: clamp(Math.round(ct * FPS), Math.round(p.ev.from * FPS), Math.round(p.ev.to * FPS)) };
+}
+const src = (cap, f) => cap + '/' + String(f).padStart(4, '0') + '.jpg';
+function load(img, s) {
+  if (img.getAttribute('src') === s) return Promise.resolve();
+  img.setAttribute('src', s); return img.decode().catch(() => {});
+}
+// A phone's place on the stage: up from the foot as its scene opens, down
+// and out as it closes.
+function place(p, t) {
+  const [t0, t1] = p.s.t, h = 1298 * p.scale, y = p.s.phones.length > 1 ? (1080 - h) / 2 : TOP;
+  const rise = p.s.t[0] === 0 ? 1 : oCub(k(t, t0, .6)), drop = iCub(k(t, t1 - .45, .45));
+  return { x: p.ph.x, y: y + (1 - rise) * TRAVEL + drop * TRAVEL, on: t >= t0 && t < t1 };
+}
+
+async function render(t) {
+  const sc = sceneAt(t);
+  // the light leans toward whichever side the phone is on
+  const side = s => s.phones.length === 1 ? s.phones[0].x + 264 : 960;
+  const i = P.scenes.indexOf(sc), prev = P.scenes[Math.max(0, i - 1)];
+  const bx = side(prev) + (side(sc) - side(prev)) * io(k(t, sc.t[0] - .3, 1.2));
+  $('bloom').style.background =
+    `radial-gradient(1000px 800px at ${bx + 60*Math.sin(t*.22)}px ${330 + 40*Math.cos(t*.18)}px, rgba(200,169,107,.13), transparent 66%),` +
+    `radial-gradient(1500px 1000px at ${bx + 50*Math.cos(t*.16)}px ${470 + 30*Math.sin(t*.2)}px, rgba(63,190,139,.16), transparent 70%),` +
+    `radial-gradient(2200px 1300px at 960px 700px, rgba(31,107,76,.18), transparent 72%), #050A08`;
+  $('grid').style.backgroundPosition = `${(t * 6) % 60}px ${(t * 8) % 60}px`;
+
+  for (const p of PH) {
+    const g = place(p, t), d = p.d;
+    d.style.display = g.on ? 'block' : 'none';
+    if (!g.on) continue;
+    d.style.transform = `translate(${g.x}px,${g.y}px) scale(${p.scale})`;
+    const { ct, f } = frameOf(p, t), [A, B] = d.querySelectorAll('img'), sh = d.querySelector('.shade');
+    // a push: the next screen slides over the last one, which steps back and dims
+    const push = p.ev.pushes.filter(q => ct >= q.t && ct < q.t + .36).pop();
+    if (push) {
+      const q = oCub(k(ct, push.t, .34));
+      await Promise.all([load(A, src('phone-' + p.ph.cap, push.f - 1)), load(B, src('phone-' + p.ph.cap, f))]);
+      A.style.transform = `translateX(${-q * 30}%)`; B.style.transform = `translateX(${(1 - q) * 100}%)`;
+      B.style.display = 'block'; B.style.boxShadow = '-30px 0 60px rgba(0,0,0,.45)';
+      sh.style.opacity = q * .5; sh.style.zIndex = 1; B.style.zIndex = 2;
+    } else {
+      await load(A, src('phone-' + p.ph.cap, f)); A.style.transform = 'none'; B.style.display = 'none'; sh.style.opacity = 0;
+    }
+    // taps: a finger lands, then a ring of water spreads from it
+    const rips = d.querySelectorAll('.rip'), taps = p.ev.taps.filter(x => !x.key);
+    taps.forEach((tp, n) => {
+      const dot = rips[n * 2], ring = rips[n * 2 + 1], X = tp.x * PS, Y = tp.y * PS;
+      const a = k(ct, tp.t - .26, .14) * (1 - k(ct, tp.t + .06, .18));
+      dot.style.cssText = `left:${X - 30}px;top:${Y - 30}px;width:60px;height:60px;background:rgba(243,246,241,.20);border:2px solid rgba(243,246,241,.45);opacity:${a};transform:scale(${.85 + .15 * a});z-index:5`;
+      const r = k(ct, tp.t - .04, .55), rs = 30 + oCub(r) * 70;
+      ring.style.cssText = `left:${X - rs}px;top:${Y - rs}px;width:${rs*2}px;height:${rs*2}px;border:2px solid rgba(159,211,190,${.6*(1-r)});opacity:${r > 0 && r < 1 ? 1 : 0};z-index:5`;
+    });
+    // drags: the finger held down, travelling with what it carries
+    p.ev.drags.forEach((dg, n) => {
+      const dot = rips[taps.length * 2 + n], q = io(k(ct, dg.t0, dg.t1 - dg.t0));
+      const a = k(ct, dg.t0 - .25, .2) * (1 - k(ct, dg.t1 + .05, .2));
+      const X = (dg.x0 + (dg.x1 - dg.x0) * q) * PS, Y = (dg.y0 + (dg.y1 - dg.y0) * q) * PS;
+      dot.style.cssText = `left:${X - 34}px;top:${Y - 34}px;width:68px;height:68px;background:rgba(243,246,241,.18);border:2px solid rgba(243,246,241,.5);opacity:${a};z-index:5`;
+    });
+    // focus ring with the rest of the screen dimmed around it
+    const rg = d.querySelector('.ring'); let shown = false;
+    for (const id in p.ev.rings) {
+      const fr = p.ev.rings[id], keys = Object.keys(fr).map(Number), lo = Math.min(...keys), hi = Math.max(...keys);
+      // the hook's rings exist only to place the lifted cards
+      if ((p.s.lifts || []).some(l => l.ring === id && l.cap === p.ph.cap)) continue;
+      const fc = Math.round(ct * FPS);
+      if (fc < lo || fc > hi) continue;
+      const r = fr[clamp(fc, lo, hi)], a = oCub(k(fc, lo, 14)) * (1 - k(fc, hi - 10, 10)), pad = 14;
+      Object.assign(rg.style, { left: (r[0] * PS - pad) + 'px', top: (r[1] * PS - pad) + 'px', width: (r[2] * PS + pad * 2) + 'px', height: (r[3] * PS + pad * 2) + 'px', opacity: a, zIndex: 6 });
+      shown = true;
+    }
+    if (!shown) rg.style.opacity = 0;
+  }
+
+  // lifted cards: out of the phone, enlarged, into the middle of the frame
+  for (const L of LF) {
+    const o = L.owner, g = place(o, t), fr = o.ev.rings[L.lf.ring], r = fr[Math.max(...Object.keys(fr).map(Number))];
+    const on = t >= L.lf.at - .05 && t < L.s.t[1];
+    L.d.style.display = on ? 'block' : 'none';
+    if (!on) continue;
+    const img = L.d.querySelector('img'); await load(img, src('phone-' + o.ph.cap, frameOf(o, t).f));
+    img.style.left = (-r[0] * PS) + 'px'; img.style.top = (-r[1] * PS) + 'px';
+    L.d.style.width = (r[2] * PS) + 'px'; L.d.style.height = (r[3] * PS) + 'px';
+    const s0 = o.scale, s1 = 484 / (r[2] * PS), q = io(k(t, L.lf.at, .75));
+    const x0 = g.x + r[0] * PS * s0, y0 = g.y + r[1] * PS * s0, [x1, y1] = L.lf.to;
+    const out = k(t, L.s.t[1] - .75, .3);
+    L.d.style.transform = `translate(${x0 + (x1 - x0) * q}px,${y0 + (y1 - y0) * q + out * 30}px) scale(${s0 + (s1 - s0) * q})`;
+    L.d.style.opacity = Math.min(1, k(t, L.lf.at - .05, .15)) * (1 - out);
+  }
+
+  // captions: in line by line, out together
+  for (const { c, d } of CP) {
+    const out = k(t, c.t[1] - .3, .3), ls = d.querySelectorAll('.l'), eb = d.querySelector('.eyebrow');
+    d.style.opacity = t < c.t[0] - .1 || t > c.t[1] ? 0 : 1 - out;
+    ls.forEach((l, n) => {
+      const a = oCub(k(t, (c.lineAt || [])[n] ?? c.t[0], .42));
+      l.style.opacity = a; l.style.transform = `translateY(${(1 - a) * 20}px)`;
+    });
+    if (eb) { const a = oCub(k(t, c.t[0] - .15, .42)); eb.style.opacity = a; }
+  }
+
+  // Sprout, in the corner, while it introduces itself
+  const rv = P.scenes.find(s => s.sprout), sa = oCub(k(t, rv.t[0] + .1, .7)) * (1 - k(t, rv.t[1] - .5, .4));
+  $('sprout').style.opacity = sa; $('sprout').style.transform = `translateY(${(1 - sa) * 40}px)`;
+
+  // the end card
+  const E0 = P.end, la = oCub(k(t, E0.lock, .6)), na = oCub(k(t, E0.name, .6)), pa = oCub(k(t, E0.play, .6));
+  $('lock').style.top = '230px'; $('lock').style.opacity = la; $('lock').style.transform = `translateY(${(1 - la) * 24}px)`;
+  $('name').style.top = '470px'; $('name').style.opacity = na; $('name').style.transform = `translateY(${(1 - na) * 16}px)`;
+  $('play').style.top = '600px'; $('play').style.opacity = pa; $('play').style.transform = `translateY(${(1 - pa) * 20}px)`;
+  return true;
+}
+window.setup = setup; window.render = render;
+</script>

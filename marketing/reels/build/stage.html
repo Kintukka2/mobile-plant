@@ -42,15 +42,6 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:var(--bg)}
 .url{font-family:'Jost';font-weight:500;font-size:40px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
 .soon{font-size:64px;line-height:1.14}
 .small{font-family:'Jost';font-weight:400;font-size:24px;letter-spacing:.06em;color:var(--ink3);margin-top:16px}
-
-/* Landscape (stage.html?land): the same reel at 1920x1080 for Play's promo
-   video slot, which wants 16:9. The words take the left of the frame and
-   the phone, scaled, stands on the right; taps and rings ride inside the
-   phone, so they scale with it and stay on their pixels. */
-html.land,html.land body,.land #v{width:1920px;height:1080px}
-.land #phone{left:1190px;transform:scale(.74);transform-origin:0 0}
-.land .cap{left:170px;right:auto;width:900px;bottom:auto;text-align:left;font-size:76px}
-.land .hook{left:120px;right:120px}
 </style>
 <div id="v">
   <div class="bloom" id="bloom"></div><div class="grid" id="grid"></div><div class="vig"></div>
@@ -65,11 +56,7 @@ html.land,html.land body,.land #v{width:1920px;height:1080px}
   <div class="outro" id="soon"><div class="pay soon" id="soonT"></div></div>
 </div>
 <script>
-const LAND = new URLSearchParams(location.search).has('land');
-if (LAND) document.documentElement.classList.add('land');
-const FPS = 30, PW = 600, PS = 600 / 390, PX = 240, PTOP = LAND ? (1080 - 1298 * .74) / 2 : 560;
-// The middle of the frame, and how far the phone travels to come and go.
-const MIDY = LAND ? 540 : 900, TRAVEL = LAND ? 1100 : 1400;
+const FPS = 30, PW = 600, PS = 600 / 390, PX = 240, PTOP = 560;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const k = (t, a, d) => clamp((t - a) / d, 0, 1);
 const oCub = x => 1 - Math.pow(1 - x, 3), iCub = x => x * x * x;
@@ -93,14 +80,12 @@ async function setup(id) {
   $('rips').innerHTML = E.taps.filter(x => !x.key).map(() => '<div class="rip"></div><div class="rip"></div>').join('');
   await document.fonts.ready;
   // One size for every line of the hook, the largest at which none of them wraps.
-  for (let fs = LAND ? 112 : 94; fs >= 60; fs -= 2) {
+  for (let fs = 94; fs >= 60; fs -= 2) {
     [...$('hook').children].forEach(l => l.style.fontSize = fs + 'px');
-    if ([...$('hook').children].every(l => l.scrollWidth <= (LAND ? 1560 : 920))) break;
+    if ([...$('hook').children].every(l => l.scrollWidth <= 920)) break;
   }
   // vertical placement measured once fonts are real
-  const hk = $('hook'); hk.style.top = (MIDY - hk.offsetHeight / 2) + 'px';
-  // In landscape each caption is centred on the frame's height, beside the phone.
-  if (LAND) [...$('caps').children].forEach(el => { el.style.top = (MIDY - el.offsetHeight / 2) + 'px'; });
+  const hk = $('hook'); hk.style.top = (900 - hk.offsetHeight / 2) + 'px';
 }
 
 function src(f) {
@@ -130,14 +115,13 @@ async function render(t) {
   // eyebrow: with the hook first, then above the captions
   const ebIn = oCub(k(t, .1, .5)), ebOut = k(t, C.drop - .1, .4);
   const ebHook = t < he;
-  $('eb').style.top = (ebHook ? MIDY - $('hook').offsetHeight / 2 - 70 : (LAND ? 300 : 290)) + 'px';
-  if (LAND) { $('eb').style.textAlign = ebHook ? 'center' : 'left'; $('eb').style.left = ebHook ? '0' : '172px'; }
+  $('eb').style.top = (ebHook ? 900 - $('hook').offsetHeight / 2 - 70 : 290) + 'px';
   $('eb').style.opacity = ebHook ? ebIn * (1 - hout) : oCub(k(t, he + .45, .5)) * (1 - ebOut);
 
   // phone
   const ph = $('phone'), [p0, p1] = C.phone;
   const rise = oCub(k(t, p0, .7)), drop = iCub(k(t, C.drop, .6));
-  ph.style.top = (PTOP + (1 - rise) * TRAVEL + drop * TRAVEL) + 'px';
+  ph.style.top = (PTOP + (1 - rise) * 1400 + drop * 1400) + 'px';
   ph.style.opacity = t < p0 ? 0 : 1 - drop * .6;
   ph.style.display = (t < p0 || t > C.drop + .62) ? 'none' : 'block';
   if (ph.style.display !== 'none') {
@@ -189,9 +173,9 @@ async function render(t) {
   // outro: the lockup as the phone goes, then the site and the sign-off as each is said
   const o0 = C.drop + .3;
   const la = oCub(k(t, o0, .6)), ua = oCub(k(t, C.outroAt[0] - .1, .5)), sa = oCub(k(t, C.outroAt[1] - .1, .5));
-  $('lock').style.top = (LAND ? 250 : 600) + 'px'; $('lock').style.opacity = la; $('lock').style.transform = `translateY(${(1 - la) * 24}px)`;
-  $('url').style.top = (LAND ? 560 : 930) + 'px'; $('url').style.opacity = ua; $('url').style.transform = `translateY(${(1 - ua) * 16}px)`;
-  $('soon').style.top = (LAND ? 680 : 1060) + 'px'; $('soon').style.opacity = sa; $('soon').style.transform = `translateY(${(1 - sa) * 20}px)`;
+  $('lock').style.top = '600px'; $('lock').style.opacity = la; $('lock').style.transform = `translateY(${(1 - la) * 24}px)`;
+  $('url').style.top = '930px'; $('url').style.opacity = ua; $('url').style.transform = `translateY(${(1 - ua) * 16}px)`;
+  $('soon').style.top = '1060px'; $('soon').style.opacity = sa; $('soon').style.transform = `translateY(${(1 - sa) * 20}px)`;
   return true;
 }
 window.setup = setup; window.render = render;
