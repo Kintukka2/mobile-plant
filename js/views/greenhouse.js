@@ -29,7 +29,8 @@ window.ViewGreenhouse = (function () {
        carries a name, a botanical name and a room there is no reason to make
        them. "WATER IN 14 DAYS" is about 105px at 9.5px with 0.14em tracking,
        so it still clears the narrowest card in the grid. */
-    if (w.never)           { cls = 'drop-now';  text = 'Water now'; }
+    if (w.resting)         { cls = 'drop-ok';   text = 'Resting'; }
+    else if (w.never)      { cls = 'drop-now';  text = 'Water now'; }
     else if (w.days < 0)   { cls = 'drop-over'; text = 'Late by ' + UI.plural(Math.abs(w.days), 'day'); }
     else if (w.days === 0) { cls = 'drop-now';  text = 'Water today'; }
     else if (w.days <= 2)  { cls = 'drop-due';  text = 'Water in ' + UI.plural(w.days, 'day'); }

@@ -174,7 +174,8 @@ window.ViewPlant = (function () {
        three levels as the nudges, the diagnosis cards and the difficulty
        pills, so a colour means the same thing everywhere in the app. */
     let dueLine, dueCls;
-    if (w.never)          { dueLine = 'Never watered — give it a drink today'; dueCls = 'pill-terra'; }
+    if (w.resting)        { dueLine = 'Resting'; dueCls = 'pill-grey'; }
+    else if (w.never)     { dueLine = 'Never watered — give it a drink today'; dueCls = 'pill-terra'; }
     else if (w.days < 0)  { dueLine = UI.relDue(w.days); dueCls = 'pill-terra'; }
     else if (w.days === 0){ dueLine = 'Due today'; dueCls = 'pill-sun'; }
     else                  { dueLine = UI.relDue(w.days); dueCls = 'pill-mint'; }
@@ -187,15 +188,22 @@ window.ViewPlant = (function () {
         '<div style="flex:1;min-width:0">' +
           '<div class="eyebrow">Watering</div>' +
           '<div style="font-family:var(--serif);font-size:22px;margin-top:3px">' +
-            'Every ' + iv.days + ' days</div>' +
+            (iv.resting
+              ? (iv.until ? 'Resting until ' + UI.esc(iv.until.toLowerCase()) : 'Resting')
+              : 'Every ' + iv.days + ' days') + '</div>' +
           '<div class="muted small" style="margin-top:2px">' +
-            (ml == null ? UI.esc(Schedule.waterMethod(p).card) : 'About ' + ml + 'ml each time') +
+            (iv.resting ? 'No water while it rests'
+              : ml == null ? UI.esc(Schedule.waterMethod(p).card) : 'About ' + ml + 'ml each time') +
             (w.lastDate ? ' · last watered ' + UI.esc(UI.fmtDate(w.lastDate)) : '') + '</div>' +
         '</div>' +
         '<span class="pill ' + dueCls + ' pill-lg">' + UI.esc(dueLine) + '</span>' +
       '</div>' +
 
-      (iv.factors.length
+      (iv.resting
+        ? '<hr class="divider"><p class="tiny muted" style="margin:0">' +
+          'It rests through ' + UI.esc(season.label.toLowerCase()) + ' and takes no water' +
+          (iv.until ? ' until ' + UI.esc(iv.until.toLowerCase()) : '') + '. Watering it now is the commonest way to lose it.</p>'
+      : iv.factors.length
         ? '<hr class="divider">' +
           /* Factors can also cancel out, a bright room against a big pot,
              and then there is no "and not" to explain, only the sum. */
@@ -239,7 +247,8 @@ window.ViewPlant = (function () {
        matters. Same ladder, same weight — feeding is genuinely less urgent
        than watering, and the champagne/mint steps say so without hiding it. */
     let fCls = '', fLine = '';
-    if (f && f.dormant)      { fCls = 'pill-grey'; fLine = 'Paused'; }
+    if (f && f.noFeed)       { fCls = 'pill-grey'; fLine = 'Not needed'; }
+    else if (f && f.dormant) { fCls = 'pill-grey'; fLine = 'Paused'; }
     else if (!f || f.never)  { fCls = 'pill-sun';  fLine = 'Not fed yet'; }
     else if (f.days < 0)     { fCls = 'pill-terra'; fLine = UI.relDue(f.days); }
     else if (f.days === 0)   { fCls = 'pill-sun';  fLine = 'Due today'; }
@@ -249,7 +258,10 @@ window.ViewPlant = (function () {
       '<div class="row" style="align-items:flex-start">' +
         '<div style="flex:1;min-width:0">' +
           '<div class="eyebrow">Feeding</div>' +
-          (f && f.dormant
+          (f && f.noFeed
+            ? '<div style="font-family:var(--serif);font-size:22px;margin-top:3px">Never fed</div>' +
+              '<div class="muted small" style="margin-top:2px">' + UI.esc(f.reason) + '</div>'
+            : f && f.dormant
             ? '<div style="font-family:var(--serif);font-size:22px;margin-top:3px">Paused for ' +
                 UI.esc(season.label.toLowerCase()) + '</div>' +
               '<div class="muted small" style="margin-top:2px">' + UI.esc(f.reason) + '</div>'
@@ -877,7 +889,9 @@ window.ViewPlant = (function () {
 
     UI.openSheet('Adjust watering',
       '<p class="muted small" style="margin:0 0 16px;line-height:1.6">' +
-        'I make it every <strong>' + iv.days + ' days</strong> for this one. If you know your home runs ' +
+        (iv.resting
+          ? 'It\'s resting, so I have it down for no water at all' + (iv.until ? ' until ' + UI.esc(iv.until.toLowerCase()) : '') + '.'
+          : 'I make it every <strong>' + iv.days + ' days</strong> for this one.') + ' If you know your home runs ' +
         'hotter, draughtier or damper than I\'m assuming, nudge it here — I\'ll keep the seasonal and pot ' +
         'adjustments on top of whatever you choose.' +
       '</p>' +

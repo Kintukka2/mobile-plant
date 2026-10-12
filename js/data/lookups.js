@@ -388,7 +388,9 @@ window.LOOKUPS = (function () {
      Soak and dip are different instructions, not two words for one: a
      soft green Tillandsia wants half an hour under water, a silver one or a
      bulbous one rots if it sits wet that long. Mist is for the two that
-     are kept damp from the air rather than dunked. */
+     are kept damp from the air rather than dunked. Tray is for bog
+     plants: the pot stands in rainwater all season, so what the schedule
+     tracks is the tray running dry, which the pot has no say in. */
   const WATER_METHODS = {
     pour:   { measured: true,  potted: true,  potDrying: true },
     soak:   { measured: false, potted: false, potDrying: false,
@@ -405,7 +407,10 @@ window.LOOKUPS = (function () {
               card: 'From a saucer each time, never over the leaves' },
     cup:    { measured: false, potted: true,  potDrying: false,
               task: 'Top up the central cup',
-              card: 'Into the central cup each time, with a splash on the mix' }
+              card: 'Into the central cup each time, with a splash on the mix' },
+    tray:   { measured: false, potted: true,  potDrying: false,
+              task: 'Top up the tray with rainwater',
+              card: 'Standing in a tray of rainwater, topped up each time' }
   };
 
   const DRAINAGE = {

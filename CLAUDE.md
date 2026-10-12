@@ -55,7 +55,7 @@ Two consequences worth knowing before editing anything in there:
   ```
 
   It compares the names and the row count, checks the one figure the copy
-  quotes ("42 safe for cats and dogs"), and fails if the copy states a
+  quotes ("45 safe for cats and dogs"), and fails if the copy states a
   number of species: the list grows, so the site deliberately never says
   how many there are. Run it after touching `plants.js`.
   To regenerate the rows, emit one `<li class="sp-row">` per record in
@@ -211,7 +211,7 @@ this is why.
 
 ## Data model
 
-`js/data/plants.js` — 73 species. Each carries `water.warm` / `water.cool`
+`js/data/plants.js` — 76 species. Each carries `water.warm` / `water.cool`
 (days), `fert.everyDays`, a `light.ideal` from `LOOKUPS.LIGHT`, and `tox`
 rated separately for `cats`, `dogs` and `humans`. `normalise()` fills
 defaults, so a record only states what is distinctive about it. **To add
@@ -234,7 +234,7 @@ is cached on first view), and `native/copy-web.js` copies `img/` whole so the
 store builds carry every one.
 
 `js/data/problems.js` — the diagnosis knowledge base: 26 symptoms, 43 clues,
-44 causes. Scoring is `symptom.causes[id]` as a base, `+6` per supporting clue
+46 causes. Scoring is `symptom.causes[id]` as a base, `+6` per supporting clue
 (`SUPPORTS`), `-7` per contradicting one (`CONTRA`), `+4` if the species is
 prone to it.
 
@@ -259,7 +259,7 @@ having flowered.
 
 **How a species takes its water** is `water.method`, a key in
 `LOOKUPS.WATER_METHODS`: `pour` (the default when it is left out), `soak`,
-`dip`, `mist`, `bottom` or `cup`. Only `pour` is given a millilitre figure;
+`dip`, `mist`, `bottom`, `cup` or `tray`. Only `pour` is given a millilitre figure;
 the others put their own line on Today and the watering card. Each method
 also says whether the plant has a pot at all (`potted`, which decides
 whether the plant form asks about one) and whether the pot's size,
@@ -267,6 +267,16 @@ material and drainage move the interval (`potDrying`). An air plant has
 neither; a bromeliad has a pot but drinks from its cup, so the pot does not
 set the pace. `node .claude/check-species.js` fails on a method that is not
 in the table.
+
+**Two plant-specific overrides sit beside it.** `water.seasons` gives days
+per season for a plant on its own calendar, with `0` for a rest: Living
+Stones grow in autumn and spring and take no water in summer or winter.
+`Schedule.wateringInterval()` returns `resting` then, and every consumer
+has to honour it rather than read `days`: `waterDue()` reports it,
+`tasks()` and the reminder digest skip it, the plant page and card badge
+say "Resting". `fert: { never: true, note }` is a plant that is never fed;
+`fertiliseDue()` returns `noFeed` (with `dormant` set, so every caller that
+skips a paused feed skips it too) and the feeding card shows the note.
 
 `js/plan.js` — the floor plan's geometry and light, no DOM. A room drawn on
 the plan carries `room.shape = { pts, win, outdoor }` in grid cells, where

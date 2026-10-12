@@ -66,19 +66,65 @@ window.Schedule = (function () {
      from. The Care heading used to ask "Why <days> and not <base>?", and
      with dormancy the only factor those are the same number: "Why 12 and
      not 12?" on every plant in autumn (PrimeTestLab 8220, M-02). */
+  /* The species' figure for a season. Most plants grow in spring and
+     summer and rest in autumn and winter, which warm and cool describe. A
+     few keep their own calendar: Living Stones grow in autumn and spring
+     and rest in summer and winter, and a schedule built on warm and cool
+     waters them on exactly the days that kill them. water.seasons names
+     them season by season, and 0 is a rest with no water at all. */
+  const SEASON_ORDER = ['spring', 'summer', 'autumn', 'winter'];
+
+  function seasonDays(sp, season) {
+    const own = sp.water.seasons;
+    if (own && typeof own[season] === 'number') return own[season];
+    return LOOKUPS.SEASON_META[season].growing ? sp.water.warm : sp.water.cool;
+  }
+
+  /* The next season in which the species takes water again, for "Resting
+     until autumn". Null for a species that never rests. */
+  function nextWateredSeason(sp, season) {
+    const at = SEASON_ORDER.indexOf(season);
+    for (let i = 1; i <= 4; i++) {
+      const k = SEASON_ORDER[(at + i) % 4];
+      if (seasonDays(sp, k) > 0) return k;
+    }
+    return null;
+  }
+
   function wateringInterval(plant) {
     const sp = Store.species(plant);
     if (!sp || !sp.water) return { days: 7, base: 7, ref: 7, factors: [], notes: [] };
 
     const growing = isGrowingSeason();
     const method = speciesMethod(sp);
-    const base = growing ? sp.water.warm : sp.water.cool;
+    const season = currentSeason();
+    const base = seasonDays(sp, season);
+    const seasonMeta = LOOKUPS.SEASON_META[season];
+
+    /* A rest is not a long interval. It is no watering at all, so nothing
+       downstream may treat it as a number of days: waterDue() reports it,
+       tasks() and the reminder digest skip it, and the plant page says when
+       watering starts again. */
+    if (base <= 0) {
+      const until = nextWateredSeason(sp, season);
+      return { days: 0, base: 0, ref: sp.water.warm, factors: [], growing: growing,
+               resting: true, until: until ? LOOKUPS.SEASON_META[until].label : null };
+    }
+
     let days = base;
     const factors = [];
 
     // --- Season (already baked into base, but explain it) ---
-    const seasonMeta = LOOKUPS.SEASON_META[currentSeason()];
-    if (!growing) {
+    if (sp.water.seasons) {
+      if (base !== sp.water.warm) {
+        factors.push({
+          label: seasonMeta.label + ' timing',
+          effect: base > sp.water.warm ? 'longer' : 'shorter',
+          detail: 'It keeps its own seasons rather than resting in winter, so ' +
+                  seasonMeta.label.toLowerCase() + ' sets the gap at ' + base + ' days.'
+        });
+      }
+    } else if (!growing) {
       factors.push({
         label: seasonMeta.label + ' dormancy',
         effect: 'longer',
@@ -198,7 +244,10 @@ window.Schedule = (function () {
   /* Days until watering is due. Negative means overdue.
      A plant that has never been watered is due immediately. */
   function waterDue(plant) {
-    const interval = wateringInterval(plant).days;
+    const iv = wateringInterval(plant);
+    /* Sorts after every plant that is due, and is never due itself. */
+    if (iv.resting) return { days: 9999, never: false, interval: 0, resting: true, until: iv.until };
+    const interval = iv.days;
     if (!plant.lastWatered) return { days: 0, never: true, interval: interval };
     const last = UI.fromISO(plant.lastWatered);
     if (!last) return { days: 0, never: true, interval: interval };
@@ -216,6 +265,10 @@ window.Schedule = (function () {
   function fertiliseDue(plant) {
     const sp = Store.species(plant);
     if (!sp || !sp.fert) return null;
+    /* Never, not "paused": carnivorous plants are burned by fertiliser and
+       Living Stones split on it. `dormant` stays true so every caller that
+       already skips a paused feed skips this one too. */
+    if (sp.fert.never) return { noFeed: true, dormant: true, interval: 0, reason: sp.fert.note || '' };
     if (!isGrowingSeason()) {
       return {
         dormant: true,
@@ -248,7 +301,7 @@ window.Schedule = (function () {
 
     Store.activePlants().forEach(function (plant) {
       const w = waterDue(plant);
-      if (w.days <= h) {
+      if (!w.resting && w.days <= h) {
         const ml = waterAmount(plant);
         out.push({
           plantId: plant.id,

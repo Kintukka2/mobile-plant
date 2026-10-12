@@ -224,8 +224,8 @@ window.PROBLEM_DATA = (function () {
     'shrivelled-segments': {
       label: 'Segments going limp or wrinkled',
       desc: 'On a cactus or air plant — puckered, soft or shrunken growth.',
-      clues: ['soil-dry', 'soil-wet', 'roots-brown', 'crown-wet', 'direct-sun', 'dry-air'],
-      causes: { 'underwatering': 9, 'root-rot': 8, 'overwatering': 6, 'crown-rot': 5, 'too-much-light': 3 }
+      clues: ['soil-dry', 'soil-wet', 'roots-brown', 'crown-wet', 'direct-sun', 'dry-air', 'winter-now', 'lower-leaves'],
+      causes: { 'underwatering': 9, 'root-rot': 8, 'overwatering': 6, 'crown-rot': 5, 'too-much-light': 3, 'leaf-pair-change': 9 }
     },
 
     'limp-leaves': {
@@ -299,7 +299,9 @@ window.PROBLEM_DATA = (function () {
     'pot-bound':      ['recently-moved'],
     'crown-rot':      ['soil-dry'],
     'air-plant-thirst': ['crown-wet'],
-    'flowered-out':   ['new-growth']
+    'flowered-out':   ['new-growth'],
+    'leaf-pair-change': ['stems-soft', 'soil-wet'],
+    'carnivore-dormancy': ['new-growth']
   };
 
   /* ======================================================================
@@ -824,6 +826,44 @@ window.PROBLEM_DATA = (function () {
       prevent: 'Water more often in summer and in centrally heated rooms. Leaves that feel firm and lie open are the sign it has had enough.'
     },
 
+    /* Living Stones replace their single pair of leaves every year, and
+       the old pair shrivels to a papery skin as the new one grows inside it
+       on the old one's water. The general reading of shrivelling is thirst,
+       and watering a Lithops through it is how most of them die. */
+    'leaf-pair-change': {
+      name: 'New leaves forming',
+      ico: 'sprout',
+      severity: 'low',
+      onlyIfProne: true,
+      why: 'Each year a new pair of leaves grows inside the old pair through winter and spring, drawing on the old pair\'s stored water. The old pair wrinkles, shrinks and finally dries to a papery sheath around the new one. It looks like thirst. It is the plant\'s normal cycle, and water now makes the old pair swell and split while the new one rots.',
+      fix: [
+        'Do not water while the old pair is still plump enough to feed the new one.',
+        'Keep it in full sun and cool, dry air.',
+        'Once the old pair has dried right back to a papery skin, usually by late spring, water lightly again.',
+        'Leave the papery skin in place; it pulls away on its own or with a gentle tug once completely dry.'
+      ],
+      prevent: 'Nothing to prevent. Follow its own calendar: water in autumn and late spring, and leave it dry in winter and high summer.'
+    },
+
+    /* A Venus Flytrap's winter rest needs its soil kept damp, where the
+       general dormancy advice is to let it go barely damp, which is the
+       commonest way a sleeping flytrap is lost. */
+    'carnivore-dormancy': {
+      name: 'Winter dormancy',
+      ico: 'moon',
+      severity: 'low',
+      replaces: ['dormancy'],
+      why: 'A Venus Flytrap needs three to four months of cool, short days each winter. The traps stop growing, the leaves blacken and die back, and the plant shrinks to a small, low rosette over its rhizome. It is alive, and it needs this rest: kept warm and growing all year, it weakens and dies within a couple of years.',
+      fix: [
+        'Move it somewhere bright and cold, ideally 0–10°C: an unheated windowsill, porch or cold greenhouse.',
+        'Keep the soil damp but take it out of the deep tray, or keep only a few millimetres of rainwater in it.',
+        'Snip away leaves once they are fully black, so they do not go mouldy.',
+        'Do not feed it or trigger the traps.',
+        'Bring it back to warmth and a full tray in early spring, when new traps begin to show.'
+      ],
+      prevent: 'Nothing to prevent: plan for it. A plant that skips its rest one winter is weaker the next summer.'
+    },
+
     'flowered-out': {
       name: 'Fading after flowering',
       ico: 'flower',
@@ -1102,6 +1142,8 @@ window.PROBLEM_DATA = (function () {
     'air-plant-rot':       ['crown-wet', 'stems-soft', 'spots-mushy', 'cold-spot'],
     'air-plant-thirst':    ['dry-air', 'direct-sun', 'texture-dry'],
     'flowered-out':        ['flowered-recently', 'lower-leaves'],
+    'leaf-pair-change':    ['winter-now', 'lower-leaves'],
+    'carnivore-dormancy':  ['winter-now', 'cold-spot'],
     'spider-mites':        ['webbing', 'tiny-dots', 'stippling', 'dry-air'],
     'mealybugs':           ['white-fluff', 'sticky'],
     'scale':               ['brown-bumps', 'sticky'],
