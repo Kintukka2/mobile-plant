@@ -1,32 +1,34 @@
 # Instagram Reels
 
-The tooling for Sprout's 20-second Reels: 1080×1920 (9:16), 30fps, H.264 +
-AAC at -16 LUFS, one feature each.
+Five voiced Reels, one feature each, for Sprout's Instagram. About 21–23s,
+1080×1920 (9:16), 30fps, H.264 + AAC at -16 LUFS. Ready to upload as they
+are.
 
-| Reel | Feature | Hook |
+| File | Feature | Hook |
 | --- | --- | --- |
-| `planner` | Home planner | "Your plant isn't dying. It's in the wrong room." |
-| `schedule` | Watering schedule | "Most plant apps ask how often you want reminding." |
-| `diagnose` | Diagnosis | "Yellow leaves can mean ten different things." |
-| `pets` | Pet safety | "Is that plant safe for the cat?" |
+| `01-planner.mp4` | Home planner | "Your plant isn't dying. It's just in the wrong room." |
+| `02-schedule.mp4` | Watering schedule | "Most plant apps ask how often you want reminding." |
+| `03-diagnose.mp4` | Diagnosis | "Yellow leaves can mean ten different things." |
+| `04-pets.mp4` | Pet safety | "Is that plant safe for the cat?" |
+| `05-greenhouse.mp4` | The greenhouse | "Think of it as a smart home, for your plants." |
 
-**There are no finished Reels in here right now.** The first renders, and
-the voiced set and launch film made after them, were removed on 12 October
-2026 because the app had moved past them: letter tiles where the species
-photographs now are, the Greenhouse before it had a scene of its own, the
-planner before its rework, and an end card offering the retired web app (or
-promising a Play release that has since happened). A Reel that shows an
-app the reader will not find is worse than none. They are in git history at
-`70a9a28` if the cut is ever wanted for reference.
+**Sprout speaks in every one**, in the voice pinned in `marketing/voice/`
+(the same vector, speed, model and processing as anything else she says),
+in the first person as the voice rules in `CLAUDE.md` have it. The
+captions are her words, so a Reel still reads with the sound off. The
+music is ducked under her.
 
-Before the next render, the end card copy in `build/reels.json` and
-`build/stage.html` needs to point at sproutevergreen.com and say Sprout is
-on Google Play.
+Each `.jpg` is that reel's cover, also baked in as frame 0, so Instagram
+picks it up without being asked. `share-copy.txt` has a caption for each.
+
+Rendered on 12 October 2026 from the app as it is on Play. Every one ends
+on sproutevergreen.com, free on Google Play and coming soon to iPhone, and
+no line quotes a species count, since the list grows. Earlier cuts showed
+an older app and are in git history at `70a9a28`.
 
 Nothing here is part of the app or the site, and nothing reads from it. It is
 not in `sw.js` ASSETS and needs no `CACHE` bump. `build/seed.js` is also the
-greenhouse `marketing/site-shots/` and `marketing/store-shots/` photograph,
-so it stays even while there is nothing rendered.
+greenhouse `marketing/site-shots/` and `marketing/store-shots/` photograph.
 
 ## Rebuilding
 
@@ -35,24 +37,28 @@ seeded with the six-plant greenhouse in `build/seed.js`, and driven by
 Playwright under a fake clock, so every app frame is deterministic. A change
 to the app shows up in the next rebuild. `build/plan.md` is the storyboard.
 
-You need Node, Playwright with Chromium, and ffmpeg. Run everything from
-`build/`, with the app server up:
+You need Node, Playwright with Chromium, ffmpeg, and Python with
+`kokoro-onnx` and `soundfile`. Run everything from `build/`, with the app
+server up:
 
 ```bash
-node .claude/serve.js &                  # from the repo root → :8787
+node .claude/serve.js &        # from the repo root → :8787
 cd marketing/reels/build
-node capture.js planner                  # → phone-planner/, events-planner.json
-node render.js planner 2.5,9.5,15.5      # check stills first → stills/
-node render.js planner                   # every frame → frames-planner/
-node audio.js planner                    # → audio-planner.wav
-./mux.sh 1 planner                       # → ../01-planner.mp4 + .jpg
+python3 vo.py                  # her lines → vo/, spoken lengths → vo-lines.json
+python3 build-config.py        # script + timeline + lengths → reels.json; fails if a line overruns the next
+node capture.js                # the real app, every frame → phone-*/, events-*.json (or name reels)
+node render.js pets 3,9,15     # check stills first → stills/
+node audio.js pets             # music → music-pets.wav
+./mix.sh pets                  # her voice + ducked music → mix-pets.wav
+node render.js pets            # every frame → frames-pets/
+./mux.sh 4 pets                # → ../04-pets.mp4 + .jpg
 ```
 
-`PLAYWRIGHT=/path/to/playwright` and `FFMPEG=/path/to/ffmpeg` override
-module and binary resolution. Copy and timing live in `build/reels.json`.
-The stage (`build/stage.html`) draws every frame as a pure function of time.
-It takes its type from `css/fonts/`, so a typeface change in the app reaches
-the reels too.
+What she says and what is captioned are separate strings in
+`build/script.json`; where each line falls is `build/timeline.json`, and
+the taps in `capture.js` are timed to land while the line that describes
+them is spoken. `reels.json` is generated: edit the other two. The first
+`vo.py` run downloads the voice model (325MB) and checks its hash.
 
 The capture fixes the date at 3 October 2026 and the time zone at
 `Australia/Sydney`. Without that, the season, the greeting and the due

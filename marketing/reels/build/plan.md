@@ -1,61 +1,67 @@
-# Sprout — four Reels, one feature each
+# Sprout: five voiced Reels — the storyboard
 
-**What it is:** a houseplant app that works out each plant's care from the species,
-the pot, the room's light and the season, instead of asking how often to remind you.
-**For:** people with more than a couple of houseplants who've killed one by schedule.
-**Sets it apart:** it reads the light in your home from a traced plan, and explains its
-own numbers ("Why 10 and not 8?").
-**Format:** 1080×1920, 30fps, ~20s each. Tone: `polished` — Sprout's brand is restrained:
-near-black green field, PP Hatton 200, emerald #3FBE8B, no exclamation marks.
-**Source:** the real app, served locally, seeded with a believable six-plant greenhouse,
-driven by Playwright with a fake clock so every app frame is deterministic. The planner
-reel runs the app's own `js/tour.js` animation, not a re-creation.
+**What it is:** a houseplant app that works out each plant's care from the species, the pot, the
+room's light and the season, instead of asking how often to remind you.
+**For:** anyone with more than a couple of houseplants who has lost one to a fixed schedule.
+**Ask:** five Instagram Reels, each on a different part of the app, all in Sprout's one voice
+(feminine, soft, upbeat), every one ending on sproutevergreen.com and *Free on Google Play.
+Coming soon to iPhone.*
 
-Reels safe area: nothing to read above y≈220 or below y≈1500; nothing at the right edge.
+## The voice
+Kokoro (an open TTS model, run locally), pinned in `marketing/voice/`: voice `af_heart`, speed
+1.06. Every line in all five reels goes through the same voice, speed and processing chain (high-pass, a little presence,
+gentle compression, a very small room), so all five sound like one person.
 
-## Shared shape (each ~20s)
-| | time | what |
-|---|---|---|
-| Hook | 0–3s | Big Hatton line on the field. No phone. |
-| Reveal | ~3–3.7s | Phone rises; the real screen is already live. |
-| Highlights | ~3.7–16s | The app in use: taps, pushes, scrolls. One short caption per beat, above the phone. |
-| Outro | ~16–20s | Phone drops away; payoff line, mark + SPROUT + *evergreen*, sproutevergreen.app. |
+**Sprout is the speaker.** The brand voice in `CLAUDE.md` is Sprout in the first person, so the
+voiceover is Sprout talking ("I'm Sprout, and I work it out"), not a narrator describing an app.
+The on-screen captions are the spoken words, so the reels work with the sound off.
 
-## 01 · Planner — "It's in the wrong room"
-- Hook: *Your plant isn't dying.* / *It's in the wrong room.*
-- The real tour, sped up through tracing, then windows and north, then at full speed for
-  the beat where a plant is dropped in and the floor shades by how well it suits it.
-- Captions: *Trace your home once.* → *Mark the windows. Point north.* → *Then it shows
-  where each plant should stand.*
-- Outro: *It reads the light in every room.*
+## Shared shape (about 21–23s each, 1080×1920, 30fps)
+| | Time | What |
+| --- | --- | --- |
+| Hook | 0–3.4s | Spoken and set big in Hatton 200; each line lands as it is said. No phone. |
+| Highlights | ~3.4–14s | The real app in use under three or four spoken lines, one caption per line above the phone. Taps land on the line that describes them. |
+| Sign-off | ~14–23s | Phone drops away, the lockup comes in. *Find me at sproutevergreen.com* (URL on screen as it is said), then *Free on Google Play. Coming soon to iPhone.* |
 
-## 02 · Schedule — "Why 10 and not 8?"
-- Hook: *Most plant apps ask how often you want reminding.*
-- Today (Good morning, 2 due) → tap Monny → plant page → scroll to the watering card.
-- Captions: *This one works it out.* → *From the species, the pot, the room and the season.*
-  → *And it tells you why.* (ring on WHY 10 AND NOT 8? — 24cm pot ↑, terracotta ↓)
-- Outro: *No reminder interval to set.*
+## 1 · The schedule
+- **Hook:** *Most plant apps ask how often you want reminding.*
+- *I'm Sprout, and I work it out.* (Today, scroll to Coming up, tap Monny)
+- *From the species, the pot, the room and the season.* (her page, scroll to Watering)
+- *And I always show you why.* (ring on **Why 10 and not 8?**: 24cm pot ↑, terracotta ↓)
 
-## 03 · Diagnosis — "Ten different things"
-- Hook: *Yellow leaves can mean ten different things.* (real: that symptom maps to 10 causes)
-- Diagnose → Monny → Leaves turning yellow → two clues → Diagnose → ranked causes.
-- Captions: *Pick the plant. Pick what you see.* → *Say what else is true.* →
-  *It ranks the cause for that species.* (Overwatering · most likely; Root rot · common in Monstera)
-- Outro: *A clinic, not a search box.*
+## 2 · Diagnosis
+- **Hook:** *Yellow leaves can mean ten different things.* (the symptom maps to 10 causes in `problems.js`)
+- *Tell me the plant, and what you're seeing.* (Monny → Leaves turning yellow)
+- *Then what else is true.* (two clues ticked, Diagnose)
+- *And I rank the likely cause, for that species.* (ring on **Common in Monstera** under Root rot)
 
-## 04 · Pets — "Safe for the cat?"
-- Hook: *Is that plant safe for the cat?*
-- Discover → Pet safe → back to everything, search "monstera" → species → Toxicity.
-- Captions: *23 of 48 are safe for cats and dogs.* → *Rated separately for cats, dogs and humans.*
-- Outro: *Know before you bring it home.*
+## 3 · The planner
+- **Hook:** *Your plant isn't dying. It's just in the wrong room.*
+- *Trace your home once, and mark the windows.* (the app's own tour: tracing, size, windows)
+- *Point me north.* (the north step)
+- *And I'll show you exactly where each plant should stand.* (a plant dropped in, the floor shades)
+
+## 4 · Pets
+- **Hook:** *Is that plant safe for the cat?*
+- *One tap, and I'll show you the ones safe for cats and dogs.* (Discover, Pet safe filter. No count: the list grows, and the site states none either)
+- *Or look any plant up.* (search "monstera")
+- *Tell me who lives with you, and I'll warn you first.* (ring on **Not safe for your cats**: the seeded profile lives with cats)
+- *Rated separately for cats, dogs and humans.* (ring on the toxicity row: cats toxic, dogs toxic, people mildly)
+
+## 5 · The greenhouse
+- **Hook:** *Think of it as a smart home, for your plants.* (the README's own model: rooms, with plants instead of devices)
+- *Every room knows its light.* (the rooms list; ring on Living Room's **Bright indirect**)
+- *Step inside, and I'll tell you if each plant is happy there.* (into the Living Room; ring on **Every plant in here is in light it likes.**)
+- *Who needs water, and when.* (ring on the cards' water chips: in 1 day, today)
+- *And what else would thrive in there.* (ring on **Would thrive here**, the species suited to that light)
 
 ## Sound
-One quiet piece per reel in D major at 84 BPM: a soft pad, a sparse plucked motif, UI
-taps tuned to the chord, a breath of filtered noise under each push. Same piece, varied
-voicing per reel. Mixed for phone speakers, normalised to −16 LUFS.
+The Reels' piece (D major, 84 BPM, soft pad, a plucked pulse, taps tuned to the chord), mixed
+9dB down and side-chain ducked under the voice so she always sits on top. −16 LUFS.
 
 ## Honesty notes
-- Demo data only: a seeded greenhouse, a fake 08:12 clock in Sydney. Nothing invented
-  is presented as a claim; every number on screen is the app computing from that data.
-- The seed avoids the Today greeting's count bug (it calls fertilise tasks "plants ready
-  for a drink") by having nothing to fertilise today — reported to the user separately.
+Demo data only: the Reels' seeded six-plant greenhouse under a fixed clock (3 Oct 2026, 08:12 in
+Sydney). Every number on screen is the app computing from that data. Store availability is worded
+the way the marketing site words it: live on Google Play, coming to iPhone.
+
+The commands are in `../README.md`.
