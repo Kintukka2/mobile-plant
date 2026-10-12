@@ -157,8 +157,18 @@ window.Schedule = (function () {
     return { days: days, base: base, ref: sp.water.warm, factors: factors, growing: growing };
   }
 
-  /* How much water, in millilitres, for this specific pot. */
+  /* How the species takes its water, from LOOKUPS.WATER_METHODS. */
+  function waterMethod(plant) {
+    const sp = Store.species(plant);
+    const key = (sp && sp.water && sp.water.method) || 'pour';
+    return LOOKUPS.WATER_METHODS[key] || LOOKUPS.WATER_METHODS.pour;
+  }
+
+  /* How much water, in millilitres, for this specific pot — or null for a
+     species that is not watered by pouring, where a pot-based figure would
+     be a number with nothing behind it. */
   function waterAmount(plant) {
+    if (!waterMethod(plant).measured) return null;
     const sp = Store.species(plant);
     const pct = (sp && sp.water && sp.water.soakPct) || 0.25;
     const litres = potVolumeL(plant.potCm);
@@ -225,12 +235,13 @@ window.Schedule = (function () {
     Store.activePlants().forEach(function (plant) {
       const w = waterDue(plant);
       if (w.days <= h) {
+        const ml = waterAmount(plant);
         out.push({
           plantId: plant.id,
           type: 'water',
           days: w.days,
           never: w.never,
-          detail: waterAmount(plant) + 'ml',
+          detail: ml == null ? waterMethod(plant).task : ml + 'ml',
           overdue: w.days < 0
         });
       }
@@ -455,6 +466,7 @@ window.Schedule = (function () {
   return {
     currentSeason: currentSeason, isGrowingSeason: isGrowingSeason,
     potVolumeL: potVolumeL, wateringInterval: wateringInterval, waterAmount: waterAmount,
+    waterMethod: waterMethod,
     waterDue: waterDue, fertiliseDue: fertiliseDue,
     tasks: tasks, overdueCount: overdueCount,
     lightMatch: lightMatch, bestRoomsFor: bestRoomsFor, petRisk: petRisk,

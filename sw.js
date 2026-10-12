@@ -52,8 +52,11 @@
    v91: store.js takes its key from the planner preview when it sets one,
    and the plan's plant step adds a plant in place.
 
-   v92: Import a home plan, in Settings and on the empty plan. */
-const CACHE = 'sprout-v92-viridium';
+   v92: Import a home plan, in Settings and on the empty plan.
+
+   v93: water.method, so an air plant is told to soak rather than given a
+   millilitre figure; propagation timings that read on their own. */
+const CACHE = 'sprout-v93-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is
