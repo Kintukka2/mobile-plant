@@ -23,7 +23,10 @@ picks it up without being asked. `share-copy.txt` has a caption for each.
 
 `promo-landscape.mp4` is the same Reels in 16:9 for the Google Play store
 listing's promo video: schedule, planner, diagnosis and pets back to back,
-about a minute, signed off once at the end. Play takes it only as a YouTube
+about a minute, signed off once at the end. Its sound is mixed from the
+stems (her lines and each reel's music) rather than the reels' finished
+mixes, so the four beds join as one track instead of cutting into each
+other. Play takes it only as a YouTube
 link, so it is uploaded to YouTube (public or unlisted, ads off, not age
 restricted) and the link goes in the listing's Video field.
 `promo-thumbnail.jpg` is its 1280×720 YouTube thumbnail.
@@ -60,7 +63,7 @@ node audio.js pets             # music → music-pets.wav
 node render.js pets            # every frame → frames-pets/
 ./mux.sh 4 pets                # → ../04-pets.mp4 + .jpg
 
-# the landscape promo, once each reel above has its mix
+# the landscape promo, once each reel above has its voice and music
 LAND=1 node render.js schedule # → frames-land-schedule/ (and planner, diagnose, pets)
 python3 promo.py               # → ../promo-landscape.mp4 + ../promo-thumbnail.jpg
 ```
