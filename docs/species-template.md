@@ -93,7 +93,7 @@ what genuinely is.
 
 Put it in the section it belongs to (`EASY FOLIAGE`, `STATEMENT FOLIAGE`,
 `FERNS & HUMIDITY LOVERS`, `SUCCULENTS & CACTI`, `VINES & TRAILERS`,
-`FLOWERING`, `EDIBLE & HERBS`, `AIR PLANTS & BROMELIADS`). The order of
+`FLOWERING`, `EDIBLE & HERBS`, `AIR PLANTS & BROMELIADS`, `CARNIVOROUS`). The order of
 `PLANT_DATA` is the order of the site's species list, so the site row goes in
 the same position.
 
@@ -183,7 +183,7 @@ can be empty: Echeveria wants direct sun and avoids everything else.
 | Field | Default | Notes |
 |---|---|---|
 | `fert.everyDays` | `28` | Days between feeds in the growing season only; nothing is due in dormancy. Catalogue spans 14–84. |
-| `fert.never` | | `true` for a plant that must never be fed (carnivorous plants, Living Stones), with `fert.note` saying why: the feeding card shows that note and no feed is ever due. Give it as the whole `fert`: `{ never: true, note: '…' }`. The species check fails on `never` without a note. |
+| `fert.never` | | `true` for a plant that must never be fed (carnivorous plants, Living Stones), with `fert.note` saying why: the feeding card shows that note and no feed is ever due. Give it as the whole `fert`: `{ never: true, note: '…' }`. The species check fails on `never` without a note, and on a never-fed plant whose `problems` leave out `fed-by-mistake`. |
 | `fert.seasons` | | Only for a plant that grows outside spring and summer: the seasons it is fed in, such as `['autumn', 'winter']` for Cyclamen. Left out, feeding follows the growing season. |
 | `fert.strength` | `'half'` | `full`, `half` or `quarter`. Shown as Full, ½ or ¼ strength. |
 | `fert.type` | `'Balanced liquid houseplant feed'` | Say how to give it if it is unusual ("added to the soaking water", "never left in the cup"). |
@@ -278,6 +278,7 @@ neither a symptom nor a cause.
 | `flowered-out` | Plants whose rosette dies after its one flowering | Only reaches a species that lists it. |
 | `leaf-pair-change` | Living Stones | Only reaches a species that lists it. Shrivelling in winter and spring is the new leaf pair growing, not thirst. |
 | `carnivore-dormancy` | Venus Flytrap | Replaces `dormancy`, whose advice to keep the soil barely damp is wrong for a bog plant. |
+| `fed-by-mistake` | Every `fert.never` plant | Replaces `overfeeding` and `wrong-feed`, and drops `nutrient-deficiency` and `salt-buildup`, all of which end in feeding again. |
 
 Before writing a generic cause for a plant, read its treatment steps and ask
 whether they are true for this plant. If they are not, the plant needs its own
@@ -293,7 +294,7 @@ are `beginner`, `pet-safe`, `low-light`, `sun-lover`, `trailing`,
 `fast-growing`, `epiphyte`, `architectural`, `bathroom`, `no-soil`,
 `unusual`, `climbing`, `office`, `tree`, `patterned`, `easy-propagation`,
 `large`, `dramatic`, `edible`, `kitchen`, `palm`, `cool-tolerant`,
-`delicate`, `terrarium`, `edible-use`, `bonsai`.
+`delicate`, `terrarium`, `edible-use`, `bonsai`, `carnivorous`, `scented`.
 
 Four filters (Pet safe, Beginner, A challenge, Low light) read the care data
 rather than the tag, but search reads the tag. So a tag that disagrees with

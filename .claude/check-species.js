@@ -75,6 +75,10 @@ if(badSeasons.length){console.error('water.seasons malformed or never waters:', 
 // positive number of days, with any seasons of its own among the four.
 const badFeed=c.window.PLANT_DATA.filter(p=>p.fert.never?!p.fert.note:!(p.fert.everyDays>0)||(p.fert.seasons&&(!Array.isArray(p.fert.seasons)||!p.fert.seasons.length||p.fert.seasons.some(x=>!SEASONS.includes(x))))).map(p=>p.id);
 if(badFeed.length){console.error('fert needs everyDays > 0 and valid seasons, or never with a note:', badFeed.join(', '));process.exit(1);}
+// A plant that is never fed has to list fed-by-mistake, or diagnosis tells
+// it to begin feeding: every general feeding cause ends in feeding again.
+const unfedFed=c.window.PLANT_DATA.filter(p=>p.fert.never&&!p.problems.includes('fed-by-mistake')).map(p=>p.id);
+if(unfedFed.length){console.error('never-fed plants missing fed-by-mistake in problems:', unfedFed.join(', '));process.exit(1);}
 const badMethod=c.window.PLANT_DATA.filter(p=>p.water.method&&!c.window.LOOKUPS.WATER_METHODS[p.water.method]).map(p=>p.id+' ('+p.water.method+')');
 if(badMethod.length){console.error('water.method not in LOOKUPS.WATER_METHODS:', badMethod.join(', '));process.exit(1);}
 // Last, so a species written ahead of its photograph still gets every

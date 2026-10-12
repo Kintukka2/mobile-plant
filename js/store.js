@@ -414,9 +414,10 @@ window.Store = (function () {
   }
 
   /* The species' own photograph, shipped with the app in img/species/ and
-     named by species id. Every species in PLANT_DATA has one, which
-     .claude/check-species.js holds to, so this is a path rather than a
-     lookup. A plant with no species (or one whose species has since been
+     named by species id. Every species in PLANT_DATA is meant to have one,
+     which .claude/check-species.js holds to, so this is a path rather than
+     a lookup; a species written ahead of its picture gets the lettered
+     tile from UI.plantTile until the file lands. A plant with no species (or one whose species has since been
      removed) gets null, and with it the lettered tile. */
   function speciesPhoto(speciesId) {
     if (!speciesId) return null;

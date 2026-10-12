@@ -234,7 +234,7 @@ is cached on first view), and `native/copy-web.js` copies `img/` whole so the
 store builds carry every one.
 
 `js/data/problems.js` — the diagnosis knowledge base: 26 symptoms, 43 clues,
-46 causes. Scoring is `symptom.causes[id]` as a base, `+6` per supporting clue
+47 causes. Scoring is `symptom.causes[id]` as a base, `+6` per supporting clue
 (`SUPPORTS`), `-7` per contradicting one (`CONTRA`), `+4` if the species is
 prone to it.
 
@@ -255,7 +255,11 @@ crown) and an air plant gets `air-plant-rot` instead of root rot,
 crown rot and overwatering (whose treatments are about soil). A cause with
 `onlyIfProne` is listed on symptoms as normal but scores only for a species
 that lists it, so `flowered-out` never tells a Monstera it is dying of
-having flowered.
+having flowered. A cause with `drops: [ids]` takes those causes out of the
+running for a species that lists it: `fed-by-mistake`, on every plant that
+is never fed, drops `nutrient-deficiency` and `salt-buildup`, because both
+treatments end in feeding again, and the species check fails on a
+never-fed plant without it.
 
 **How a species takes its water** is `water.method`, a key in
 `LOOKUPS.WATER_METHODS`: `pour` (the default when it is left out), `soak`,
