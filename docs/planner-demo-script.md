@@ -229,7 +229,7 @@ it was never asked for; then a plant page with its watering interval.
 
 **On screen:** Today again, with the plan's rooms now behind it.
 
-> Seventy-six species, each with its own warm and cool season intervals. A
+> Ninety-five species, each with its own warm and cool season intervals. A
 > home read for light rather than guessed at. And one list each morning that
 > is short because it is right.
 

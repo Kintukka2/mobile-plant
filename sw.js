@@ -67,8 +67,11 @@
    second orchid and a third herb.
 
    v97: plants on their own seasons, plants never fed, the tray method,
-   and Living Stones, Venus Flytrap and Tropical Pitcher Plant. */
-const CACHE = 'sprout-v97-viridium';
+   and Living Stones, Venus Flytrap and Tropical Pitcher Plant.
+
+   v98: nineteen species the ASPCA lists by name, Sago Palm on the
+   very-toxic rung, and feeding seasons of a plant's own (Cyclamen). */
+const CACHE = 'sprout-v98-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is

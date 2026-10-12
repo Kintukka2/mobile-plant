@@ -55,7 +55,7 @@ Two consequences worth knowing before editing anything in there:
   ```
 
   It compares the names and the row count, checks the one figure the copy
-  quotes ("45 safe for cats and dogs"), and fails if the copy states a
+  quotes ("56 safe for cats and dogs"), and fails if the copy states a
   number of species: the list grows, so the site deliberately never says
   how many there are. Run it after touching `plants.js`.
   To regenerate the rows, emit one `<li class="sp-row">` per record in
@@ -211,7 +211,7 @@ this is why.
 
 ## Data model
 
-`js/data/plants.js` — 76 species. Each carries `water.warm` / `water.cool`
+`js/data/plants.js` — 95 species. Each carries `water.warm` / `water.cool`
 (days), `fert.everyDays`, a `light.ideal` from `LOOKUPS.LIGHT`, and `tox`
 rated separately for `cats`, `dogs` and `humans`. `normalise()` fills
 defaults, so a record only states what is distinctive about it. **To add
@@ -277,6 +277,9 @@ has to honour it rather than read `days`: `waterDue()` reports it,
 say "Resting". `fert: { never: true, note }` is a plant that is never fed;
 `fertiliseDue()` returns `noFeed` (with `dormant` set, so every caller that
 skips a paused feed skips it too) and the feeding card shows the note.
+`fert.seasons` lists the seasons a plant is fed in when it grows outside
+spring and summer, so Cyclamen is fed while it flowers in winter and not in
+its summer rest.
 
 `js/plan.js` — the floor plan's geometry and light, no DOM. A room drawn on
 the plan carries `room.shape = { pts, win, outdoor }` in grid cells, where
