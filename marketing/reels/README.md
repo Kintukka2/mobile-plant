@@ -21,9 +21,25 @@ music is ducked under her.
 Each `.jpg` is that reel's cover, also baked in as frame 0, so Instagram
 picks it up without being asked. `share-copy.txt` has a caption for each.
 
-Rendered on 12 October 2026 from the app as it is on Play. Every one ends
-on sproutevergreen.com, free on Google Play and coming soon to iPhone, and
-no line quotes a species count, since the list grows. Earlier cuts showed
+`promo-landscape.mp4` is the Google Play listing's promo video, and it
+is not the Reels: someone who has watched them sees nothing twice. It is
+its own film, made in `promo/`, 1920×1080 for Play's 16:9 slot and about
+48s, inside Google's 30 seconds to 2 minutes. One home and one plant: two
+Monsteras on different schedules, and why; Sprout noticing one is in the
+wrong light; moving it on the floor plan, and its care moving with it; the
+forecast's offer to water sooner; pets and diagnosis; free, no account.
+Play takes it only as a YouTube link, so it is uploaded to YouTube
+(unlisted is fine, ads off, not made for kids) and the link goes in the
+listing's Video field. `promo-thumbnail.jpg` is its 1280×720 custom
+thumbnail, and `promo/share-copy.txt` its YouTube title and description.
+Its reveal line is spelt "livs" in `promo/script.json`'s `say` on purpose:
+the voice's phonemizer reads "actually lives." with a long i, as in "long
+lives". The caption keeps "lives".
+
+Rendered on 12 October 2026 from the app as it is on Play. Every Reel ends
+on sproutevergreen.com, free on Google Play and coming soon to iPhone; the
+promo ends on Google Play alone, since that is where it plays. No line
+quotes a species count, since the list grows. Earlier cuts showed
 an older app and are in git history at `70a9a28`.
 
 Nothing here is part of the app or the site, and nothing reads from it. It is
@@ -52,6 +68,16 @@ node audio.js pets             # music → music-pets.wav
 ./mix.sh pets                  # her voice + ducked music → mix-pets.wav
 node render.js pets            # every frame → frames-pets/
 ./mux.sh 4 pets                # → ../04-pets.mp4 + .jpg
+
+# the Play promo, its own film
+cd ../promo
+python3 vo.py                  # her lines → vo/, spoken lengths → vo.json
+node capture.js                # the real app → phone-*/, events-*.json (or name scenes)
+node render.js 3.2,12,21       # check stills first → stills/
+node audio.js                  # one bed for the whole film → music.wav
+./mix.sh                       # her voice + ducked music → mix.wav
+node render.js                 # every frame → frames/
+./mux.sh                       # → ../promo-landscape.mp4 + ../promo-thumbnail.jpg
 ```
 
 What she says and what is captioned are separate strings in

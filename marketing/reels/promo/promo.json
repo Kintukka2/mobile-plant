@@ -1,0 +1,28 @@
+{
+ "duration": 47.8,
+ "poster": 3.2,
+ "vo": [[0.7, "hook"], [4.4, "why-a"], [6.95, "why-b"], [10.3, "reveal"], [14.15, "notice"], [19.8, "move"],
+        [26.8, "weather"], [32.8, "pets"], [35.5, "diagnose"], [39.7, "private"], [43.7, "end"]],
+ "scenes": [
+  { "id": "two",     "t": [0.0, 9.9],   "phones": [{ "cap": "monny", "x": 290 }, { "cap": "monty", "x": 1234 }], "scale": 0.66,
+    "lifts": [{ "cap": "monny", "ring": "why", "at": 4.4, "to": [718, 236] }, { "cap": "monty", "ring": "why", "at": 6.95, "to": [718, 566] }] },
+  { "id": "reveal",  "t": [9.9, 17.6],  "phones": [{ "cap": "light", "x": 1142 }], "side": "left", "sprout": true },
+  { "id": "move",    "t": [17.6, 26.2], "phones": [{ "cap": "plan", "x": 250, "shift": 0.8 }], "side": "right" },
+  { "id": "weather", "t": [26.2, 32.6], "phones": [{ "cap": "weather", "x": 1142, "shift": 0.8 }], "side": "left" },
+  { "id": "care",    "t": [32.6, 39.2], "phones": [{ "cap": "pets", "x": 250, "shift": 0.8 }], "side": "right" },
+  { "id": "rest",    "t": [39.2, 43.3], "phones": [{ "cap": "rest", "x": 1142, "shift": 0.8 }], "side": "left" },
+  { "id": "end",     "t": [43.3, 47.8], "phones": [] }
+ ],
+ "captions": [
+  { "t": [0.6, 4.1],   "lines": ["Two Monsteras.", "Two different schedules."], "accent": 1, "lineAt": [0.6, 1.75], "centre": true },
+  { "t": [10.2, 13.9], "eyebrow": "I'm Sprout", "lines": ["I work out each plant's care from where it actually lives."] },
+  { "t": [14.0, 17.5], "lines": ["And I tell you when a plant is in the wrong light."], "accent": 0 },
+  { "t": [19.7, 25.9], "lines": ["Move it somewhere brighter,", "and its care moves with it."], "accent": 1, "lineAt": [19.7, 21.0] },
+  { "t": [26.7, 29.0], "lines": ["A hot, dry week coming?"] },
+  { "t": [29.1, 32.3], "lines": ["I'll offer to water sooner.", "You decide."], "accent": 1, "lineAt": [29.1, 30.3] },
+  { "t": [32.7, 35.4], "lines": ["I'll warn you which plants could hurt the cat."] },
+  { "t": [35.5, 39.05], "lines": ["And when a leaf turns yellow, I'll help you find out why."], "accent": 0 },
+  { "t": [39.6, 43.0], "lines": ["Free, with no account.", "Your plants stay on your phone."], "accent": 1, "lineAt": [39.6, 41.2] }
+ ],
+ "end": { "lock": 43.5, "name": 43.8, "play": 44.9 }
+}

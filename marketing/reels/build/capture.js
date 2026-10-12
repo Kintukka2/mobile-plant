@@ -27,6 +27,7 @@ async function run(spec) {
   const b = await chromium.launch({ args: ['--no-sandbox'] });
   const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, timezoneId: 'Australia/Sydney' });
   const st = seed(); if (spec.mutate) spec.mutate(st);
+  if (spec.context) await spec.context(ctx);
   await ctx.addInitScript(s => { try { localStorage.setItem('sprout.state.v1', s); localStorage.setItem('sprout.theme', 'viridium'); } catch (e) {} }, JSON.stringify(st));
   const p = await ctx.newPage();
   const errs = []; p.on('pageerror', e => errs.push(e.message));
@@ -46,9 +47,9 @@ async function run(spec) {
   if (spec.prelude) await spec.prelude(p);
   await p.clock.runFor(100);
 
-  const ev = { taps: [], pushes: [], rings: {}, from: spec.from, to: spec.to };
+  const ev = { taps: [], pushes: [], drags: [], rings: {}, from: spec.from, to: spec.to };
   const acts = spec.actions.map(a => ({ ...a, done: false }));
-  let scroll = null;
+  let scroll = null, drag = null;
   const f0 = Math.round(spec.from * FPS), f1 = Math.round(spec.to * FPS);
   for (let f = f0; f <= f1; f++) {
     const t = f / FPS;
@@ -59,7 +60,10 @@ async function run(spec) {
         const r = await find(p, a.tap);
         if (!r) { console.log(spec.id, 'TAP NOT FOUND', a.tap.re); continue; }
         ev.taps.push({ t: a.t, x: r.x + r.w / 2, y: r.y + r.h / 2 });
-        await p.evaluate(() => { const el = document.querySelector('[data-cap-target]'); el.removeAttribute('data-cap-target'); el.click(); if (el.tagName === 'INPUT') el.focus(); });
+        // A plan marker answers pointer events, not click(), and is SVG,
+        // which has no click() at all: those taps go through the mouse.
+        if (a.tap.mouse) { await p.evaluate(() => document.querySelector('[data-cap-target]').removeAttribute('data-cap-target')); await p.mouse.click(r.x + r.w / 2, r.y + r.h / 2); }
+        else await p.evaluate(() => { const el = document.querySelector('[data-cap-target]'); el.removeAttribute('data-cap-target'); el.click(); if (el.tagName === 'INPUT') el.focus(); });
         if (a.push) { ev.pushes.push({ t: a.t, f }); await p.evaluate(() => window.scrollTo(0, 0)); }
       }
       if (a.type) {
@@ -76,6 +80,22 @@ async function run(spec) {
         if (r) await p.evaluate(() => { const el = document.querySelector('[data-cap-target]'); el && el.removeAttribute('data-cap-target'); });
       }
       if (a.fn) await p.evaluate(a.fn);
+      if (a.drag) {
+        // A finger held down and moved, one step a frame, so pointer-driven
+        // screens (the floor plan) see a real drag rather than a jump.
+        const r = await find(p, a.drag);
+        if (!r) { console.log(spec.id, 'DRAG NOT FOUND', a.drag.re); continue; }
+        await p.evaluate(() => document.querySelector('[data-cap-target]').removeAttribute('data-cap-target'));
+        const x0 = r.x + r.w / 2, y0 = r.y + r.h / 2, [x1, y1] = a.drag.to;
+        drag = { t0: a.t, dur: a.drag.dur, x0, y0, x1, y1 };
+        ev.drags.push({ t0: a.t, t1: a.t + a.drag.dur, x0, y0, x1, y1 });
+        await p.mouse.move(x0, y0); await p.mouse.down();
+      }
+    }
+    if (drag) {
+      const q = ease(Math.min(1, (t - drag.t0) / drag.dur));
+      await p.mouse.move(drag.x0 + (drag.x1 - drag.x0) * q, drag.y0 + (drag.y1 - drag.y0) * q);
+      if (q >= 1) { await p.mouse.up(); drag = null; }
     }
     if (scroll) {
       const k = Math.min(1, (t - scroll.t0) / scroll.dur);
@@ -207,7 +227,9 @@ const SPECS = {
   }
 };
 
-(async () => {
+// The promo (../promo/capture.js) drives the same machine with its own specs.
+module.exports = { run };
+if (require.main === module) (async () => {
   const which = process.argv.slice(2);
   for (const k of (which.length ? which : Object.keys(SPECS))) await run(SPECS[k]);
 })();
