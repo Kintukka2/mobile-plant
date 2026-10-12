@@ -32,6 +32,9 @@ Play takes it only as a YouTube link, so it is uploaded to YouTube
 (unlisted is fine, ads off, not made for kids) and the link goes in the
 listing's Video field. `promo-thumbnail.jpg` is its 1280×720 custom
 thumbnail, and `promo/share-copy.txt` its YouTube title and description.
+Its reveal line is spelt "livs" in `promo/script.json`'s `say` on purpose:
+the voice's phonemizer reads "actually lives." with a long i, as in "long
+lives". The caption keeps "lives".
 
 Rendered on 12 October 2026 from the app as it is on Play. Every Reel ends
 on sproutevergreen.com, free on Google Play and coming soon to iPhone; the

@@ -3,7 +3,7 @@
   { "id": "hook",    "say": "Two Monsteras. Two different schedules." },
   { "id": "why-a",   "say": "One's in terracotta, by a bright window." },
   { "id": "why-b",   "say": "The other is in plastic, in a dim kitchen." },
-  { "id": "reveal",  "say": "I'm Sprout. I work out each plant's care from where it actually lives." },
+  { "id": "reveal",  "say": "I'm Sprout. I work out each plant's care from where it actually livs." },
   { "id": "notice",  "say": "And I tell you when a plant is in the wrong light." },
   { "id": "move",    "say": "Move it somewhere brighter, and its care moves with it." },
   { "id": "weather", "say": "A hot, dry week coming? I'll offer to water sooner. You decide." },
