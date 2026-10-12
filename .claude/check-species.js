@@ -2,7 +2,7 @@
  *  Does the species list on the marketing site still match the app's data?
  *  -------------------------------------------------------------------------
  *  site/ is its own Cloudflare Pages project rooted at site/, so it cannot
- *  reach ../ and cannot read js/data/plants.js. The 48 rows in
+ *  reach ../ and cannot read js/data/plants.js. The rows in
  *  site/index.html are therefore a copy, exactly like site/fonts/ is a copy
  *  of css/fonts/ — and a copy with nothing checking it goes stale in silence.
  *
@@ -45,8 +45,6 @@ if(miss.length||extra.length||got.length!==want.length||stated||!safeOk){
   if(!safeOk)  console.error(`  the copy no longer says ${safe} safe for cats and dogs`);
   process.exit(1);
 }
-const noPhoto=c.window.PLANT_DATA.filter(p=>!fs.existsSync(`img/species/${p.id}.webp`)).map(p=>p.id);
-if(noPhoto.length){console.error('species with no photograph in img/species/:', noPhoto.join(', '));process.exit(1);}
 // Search reads the tags and the Pet safe filter reads the ratings, so a
 // pet-safe tag on a 'mild' plant (Mint, once) put it in front of a reader
 // searching for pet-safe plants without the filter ever agreeing.
@@ -54,4 +52,8 @@ const tagOff=c.window.PLANT_DATA.filter(p=>p.tags.includes('pet-safe')!==(p.tox.
 if(tagOff.length){console.error('pet-safe tag disagrees with tox.cats/tox.dogs:', tagOff.join(', '));process.exit(1);}
 const badMethod=c.window.PLANT_DATA.filter(p=>p.water.method&&!c.window.LOOKUPS.WATER_METHODS[p.water.method]).map(p=>p.id+' ('+p.water.method+')');
 if(badMethod.length){console.error('water.method not in LOOKUPS.WATER_METHODS:', badMethod.join(', '));process.exit(1);}
+// Last, so a species written ahead of its photograph still gets every
+// other check while the photograph is on its way.
+const noPhoto=c.window.PLANT_DATA.filter(p=>!fs.existsSync(`img/species/${p.id}.webp`)).map(p=>p.id);
+if(noPhoto.length){console.error('species with no photograph in img/species/:', noPhoto.join(', '));process.exit(1);}
 console.log(`site species list matches PLANT_DATA — ${want.length} species, ${safe} pet safe`);

@@ -376,12 +376,36 @@ window.LOOKUPS = (function () {
      is worked out from the pot: an air plant has no pot, and the sum turned
      its whole-plant soak (soakPct 1.0) into "1800ml" for a plant that sits
      in a shell. `task` is the line under a Today task and `card` the line
-     on the plant's watering card, both standing in for the millilitres. */
+     on the plant's watering card, both standing in for the millilitres.
+
+     `potted` is whether the plant lives in a pot at all, and so whether the
+     plant form asks about one. `potDrying` is whether the pot's size,
+     material and drainage move the interval. A bromeliad is potted, but
+     what it drinks from is the cup in its leaves, which empties at the rate
+     the room dries it and not the pot; a bottom-watered plant drinks from
+     the mix, so the pot counts exactly as it does for a poured one.
+
+     Soak and dip are different instructions, not two words for one: a
+     soft green Tillandsia wants half an hour under water, a silver one or a
+     bulbous one rots if it sits wet that long. Mist is for the two that
+     are kept damp from the air rather than dunked. */
   const WATER_METHODS = {
-    pour: { measured: true },
-    soak: { measured: false,
-            task: 'Soak the whole plant',
-            card: 'A whole-plant soak each time, not a measured pour' }
+    pour:   { measured: true,  potted: true,  potDrying: true },
+    soak:   { measured: false, potted: false, potDrying: false,
+              task: 'Soak the whole plant',
+              card: 'A whole-plant soak each time, not a measured pour' },
+    dip:    { measured: false, potted: false, potDrying: false,
+              task: 'Dip it, then shake it dry',
+              card: 'A quick dip each time, never a long soak' },
+    mist:   { measured: false, potted: false, potDrying: false,
+              task: 'Mist it until the leaves are wet',
+              card: 'A thorough misting each time, never a soak' },
+    bottom: { measured: false, potted: true,  potDrying: true,
+              task: 'Water from the saucer',
+              card: 'From a saucer each time, never over the leaves' },
+    cup:    { measured: false, potted: true,  potDrying: false,
+              task: 'Top up the central cup',
+              card: 'Into the central cup each time, with a splash on the mix' }
   };
 
   const DRAINAGE = {

@@ -219,6 +219,11 @@ window.ViewGreenhouse = (function () {
     const rooms = Schedule.bestRoomsFor(speciesId);
     const chosenRoom = editing ? plant.roomId : (presetRoomId || (rooms.length ? rooms[0].room.id : null));
     const risk = Schedule.petRisk(sp);
+    /* An air plant sits in a shell or on a branch. Asking for its pot's
+       width and drainage would be asking for a fact it does not have, and
+       the answer would be thrown away anyway: the schedule reads no pot for
+       a species whose water.method says it has none. */
+    const potted = Schedule.speciesMethod(sp).potted;
 
     const roomOpts = '<option value="">Not in a room yet</option>' +
       rooms.map(function (r) {
@@ -278,6 +283,7 @@ window.ViewGreenhouse = (function () {
          of the screen; adding means they are defaults nobody has looked at
          yet, and a 15cm plastic pot with holes is right often enough to be
          worth one line rather than three fields. */
+      (potted ?
       '<details class="disclosure"' + (editing ? ' open' : '') + '>' +
         '<summary>Do you have a pot ready for this?' +
           '<span class="disclosure-chev">' + UI.icon('chevron') + '</span>' +
@@ -319,7 +325,8 @@ window.ViewGreenhouse = (function () {
             UI.esc(potHint(editing ? plant.potMaterial : 'plastic',
                            editing ? !!plant.potPending : false)) + '</p>' +
         '</div>' +
-      '</details>' +
+      '</details>'
+      : '<p class="hint mb-3">It lives without a pot, so I won\'t ask about one.</p>') +
 
       /* Acquired first: it is the fixed fact about the plant, and the date
          it was last watered is read against it. */
@@ -365,6 +372,7 @@ window.ViewGreenhouse = (function () {
          the ones that get saved and fed to the schedule, and the reader can
          see what is being assumed on their behalf instead of being told. */
       function syncPending() {
+        if (!pendEl) return;
         const pending = pendEl.checked;
         potFields.classList.toggle('is-off', pending);
         potFields.querySelectorAll('input, select').forEach(function (el) {
@@ -372,9 +380,11 @@ window.ViewGreenhouse = (function () {
         });
         potNoteEl.textContent = potHint(matEl.value, pending);
       }
-      pendEl.addEventListener('change', syncPending);
-      matEl.addEventListener('change', syncPending);
-      syncPending();
+      if (pendEl) {
+        pendEl.addEventListener('change', syncPending);
+        matEl.addEventListener('change', syncPending);
+        syncPending();
+      }
 
       /* The limit used to be invisible: the field simply stopped taking
          letters at 40, so "Monstera by the reading chair near the tall
@@ -406,13 +416,17 @@ window.ViewGreenhouse = (function () {
           speciesId: speciesId,
           nickname: root.querySelector('#f-nick').value.trim(),
           roomId: root.querySelector('#f-room').value || null,
-          potPending: root.querySelector('#f-pot-pending').checked,
-          potCm: Math.max(5, Math.min(120, Number(root.querySelector('#f-pot').value) || 15)),
-          potMaterial: root.querySelector('#f-mat').value,
-          drainage: root.querySelector('#f-drain').value,
           lastWatered: root.querySelector('#f-watered').value || null,
           acquired: root.querySelector('#f-acq').value || UI.toISO(UI.today())
         };
+        /* Left out rather than defaulted for a plant with no pot, so an
+           edit never writes a pot onto it and Store keeps its own default. */
+        if (potted) {
+          data.potPending = root.querySelector('#f-pot-pending').checked;
+          data.potCm = Math.max(5, Math.min(120, Number(root.querySelector('#f-pot').value) || 15));
+          data.potMaterial = root.querySelector('#f-mat').value;
+          data.drainage = root.querySelector('#f-drain').value;
+        }
 
         if (editing) {
           Store.updatePlant(plant.id, data);

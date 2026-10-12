@@ -46,7 +46,7 @@ Two consequences worth knowing before editing anything in there:
   Replace a typeface in one and replace it in the other in the same commit;
   `diff -r css/fonts site/fonts` is the check.
 - **The species list is a second copy of `PLANT_DATA`.** For the same reason,
-  the 48 rows in `site/index.html` cannot be read from `js/data/plants.js` at
+  the rows in `site/index.html` cannot be read from `js/data/plants.js` at
   runtime — they are generated into the page. Add or rename a species and the
   site keeps quoting the old list with no error anywhere, so there is a check:
 
@@ -55,7 +55,7 @@ Two consequences worth knowing before editing anything in there:
   ```
 
   It compares the names and the row count, checks the one figure the copy
-  quotes ("23 safe for cats and dogs"), and fails if the copy states a
+  quotes ("32 safe for cats and dogs"), and fails if the copy states a
   number of species: the list grows, so the site deliberately never says
   how many there are. Run it after touching `plants.js`.
   To regenerate the rows, emit one `<li class="sp-row">` per record in
@@ -211,7 +211,7 @@ this is why.
 
 ## Data model
 
-`js/data/plants.js` — 48 species. Each carries `water.warm` / `water.cool`
+`js/data/plants.js` — 57 species. Each carries `water.warm` / `water.cool`
 (days), `fert.everyDays`, a `light.ideal` from `LOOKUPS.LIGHT`, and `tox`
 rated separately for `cats`, `dogs` and `humans`. `normalise()` fills
 defaults, so a record only states what is distinctive about it.
@@ -230,8 +230,8 @@ They are deliberately not in `sw.js` ASSETS (4MB, mostly never opened; each
 is cached on first view), and `native/copy-web.js` copies `img/` whole so the
 store builds carry every one.
 
-`js/data/problems.js` — the diagnosis knowledge base: 26 symptoms, 42 clues,
-40 causes. Scoring is `symptom.causes[id]` as a base, `+6` per supporting clue
+`js/data/problems.js` — the diagnosis knowledge base: 26 symptoms, 43 clues,
+44 causes. Scoring is `symptom.causes[id]` as a base, `+6` per supporting clue
 (`SUPPORTS`), `-7` per contradicting one (`CONTRA`), `+4` if the species is
 prone to it.
 
@@ -242,6 +242,28 @@ A plant's `problems` array deliberately **mixes symptom ids and cause ids** —
 When adding a cause, give it an entry in `CAUSES`, list it under at least one
 symptom's `causes`, and add a `SUPPORTS` row — an unreferenced cause is
 unreachable, and one with no supporting clues can never outrank its peers.
+
+Two exceptions to that, both for causes that belong to particular plants.
+A cause with `replaces: [ids]` reaches symptoms through the general causes
+it names: for a species that lists it, `diagnose()` swaps it in for them
+and takes the heaviest of their weights. That is how a bromeliad gets
+`cup-rot` instead of `crown-rot` (whose treatment is never to water the
+crown) and an air plant gets `air-plant-rot` instead of root rot,
+crown rot and overwatering (whose treatments are about soil). A cause with
+`onlyIfProne` is listed on symptoms as normal but scores only for a species
+that lists it, so `flowered-out` never tells a Monstera it is dying of
+having flowered.
+
+**How a species takes its water** is `water.method`, a key in
+`LOOKUPS.WATER_METHODS`: `pour` (the default when it is left out), `soak`,
+`dip`, `mist`, `bottom` or `cup`. Only `pour` is given a millilitre figure;
+the others put their own line on Today and the watering card. Each method
+also says whether the plant has a pot at all (`potted`, which decides
+whether the plant form asks about one) and whether the pot's size,
+material and drainage move the interval (`potDrying`). An air plant has
+neither; a bromeliad has a pot but drinks from its cup, so the pot does not
+set the pace. `node .claude/check-species.js` fails on a method that is not
+in the table.
 
 `js/plan.js` — the floor plan's geometry and light, no DOM. A room drawn on
 the plan carries `room.shape = { pts, win, outdoor }` in grid cells, where
