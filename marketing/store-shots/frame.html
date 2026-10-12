@@ -53,6 +53,11 @@ h1 em{font-style:normal;color:var(--glow)}
         -webkit-mask-image:linear-gradient(to bottom,#000 80%,transparent)}
 .sprout.r{right:0;transform:scaleX(-1)} .sprout.l{left:0}
 
+/* Tablet: Play's 7- and 10-inch slots are landscape, so the words take a
+   left column and the wide layout sits on the right in a drawn tablet. */
+.tab .copy{left:calc(var(--u)*120);right:auto;width:calc(var(--u)*660);top:calc(var(--u)*190);text-align:left}
+.tab .eyebrow{margin-right:0}
+.tab h1{font-size:calc(var(--u)*84)}
 .tilt .copy{text-align:left;right:calc(var(--u)*120)}
 .tilt .eyebrow{margin-right:0}
 </style>
@@ -63,12 +68,15 @@ h1 em{font-style:normal;color:var(--glow)}
 <script>
 (function () {
   const q = new URLSearchParams(location.search);
-  const W = +q.get('w') || 1080, H = +q.get('h') || 1920, U = W / 1080, HU = H / U;
+  // A tablet canvas is laid out on a 1920-wide reference, a phone on 1080.
+  const TAB = q.get('device') === 'tablet';
+  const W = +q.get('w') || 1080, H = +q.get('h') || 1920, U = W / (TAB ? 1920 : 1080), HU = H / U;
   const f = SETS[q.get('set') || 'a'].frames[(+q.get('n') || 1) - 1];
   const v = document.getElementById('v');
   document.documentElement.style.setProperty('--u', U + 'px');
   v.style.width = W + 'px'; v.style.height = H + 'px';
-  if (f.layout === 'tilt') v.classList.add('tilt');
+  if (TAB) v.classList.add('tab');
+  else if (f.layout === 'tilt') v.classList.add('tilt');
   const px = n => (n * U) + 'px';
   const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
   const head = esc(f.head).replace(/\*([^*]+)\*/g, '<em>$1</em>');
@@ -80,7 +88,32 @@ h1 em{font-style:normal;color:var(--glow)}
   v.appendChild(copy);
 
   const SCR = 390 / 844, BEZ = 14;
+  function placeTablet() {
+    // The wide layout at 1280x800, so 16:10, in a near-black bezel that runs
+    // just off the right edge, centred top to bottom.
+    const BZ = 18, pw = 1060, ph = (pw - 2 * BZ) * 0.625 + 2 * BZ;
+    const x0 = 1920 - pw + 30, y0 = (HU - ph) / 2;
+    const halo = document.createElement('div');
+    halo.className = 'halo ' + f.glow;
+    Object.assign(halo.style, { left: px(x0 - 60), top: px(y0 + 60), width: px(pw + 120), height: px(ph - 120) });
+    const tab = document.createElement('div');
+    tab.className = 'phone';
+    tab.innerHTML = '<img class="scr" src="raw/tablet/' + f.screen + '.png">';
+    Object.assign(tab.style, { left: px(x0), top: px(y0), width: px(pw), padding: px(BZ), borderRadius: px(46) });
+    tab.firstChild.style.borderRadius = px(30);
+    v.appendChild(halo); v.appendChild(tab);
+    if (f.sprout) {
+      // Its cut edges are the left and the foot, so as drawn it sits in the
+      // bottom-left corner, under the words.
+      const sp = document.createElement('img');
+      sp.src = '/site/img/sprout-corner.webp';
+      sp.className = 'sprout l';
+      sp.style.height = px(340);
+      v.appendChild(sp);
+    }
+  }
   function place() {
+    if (TAB) return placeTablet();
     const top = (copy.offsetTop + copy.offsetHeight) / U;
     const halo = document.createElement('div');
     const phone = document.createElement('div');

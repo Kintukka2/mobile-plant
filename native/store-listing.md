@@ -88,6 +88,9 @@ Real screens, not mockups. What is in the phone is what the app draws.
   Today, Greenhouse, the plan, a plant, Discover, Diagnose, All caught up.
 - **Sets `b` and `c`** are for store listing experiments against `a`:
   `b` leads with privacy, `c` lifts one card off each screen.
+- **`listing/a/tablet/`** is Set A in landscape at 2560×1440, showing the
+  app's wide layout. Upload the same seven to both the 7-inch and the
+  10-inch tablet sections; the size suits both.
 - **`listing/*/ios-6.9/`** is the same sets at 1320×2868, for the App
   Store when Sprout is there.
 - `listing/overview.jpg` shows every set side by side, for review only.

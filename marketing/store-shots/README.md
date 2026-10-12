@@ -37,6 +37,7 @@ experiments against it.
 | --- | --- | --- |
 | `android-phone` | 1080×1920 | Google Play phone screenshots |
 | `ios-6.9` | 1320×2868 | App Store 6.9" iPhone, the size the others scale from |
+| `tablet` | 2560×1440 | Google Play 7-inch and 10-inch tablet slots, Set A only. Landscape: the words on the left, the app's wide layout (sidebar and all) in a drawn tablet on the right |
 
 ## Rules the copy keeps
 
@@ -61,6 +62,7 @@ experiments against it.
 ```bash
 node .claude/serve.js &
 NODE_PATH=$(npm root -g) node marketing/store-shots/capture.js        # or name screens: capture.js plant today
+NODE_PATH=$(npm root -g) node marketing/store-shots/capture.js --tablet   # the wide layout, 1280×800 ×2, → raw/tablet/
 NODE_PATH=$(npm root -g) node marketing/store-shots/render.js         # or one set and size: render.js c ios-6.9
 ```
 

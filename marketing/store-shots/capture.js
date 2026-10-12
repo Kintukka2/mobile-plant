@@ -3,6 +3,7 @@
 //
 //   node .claude/serve.js &          (the app on :8787)
 //   NODE_PATH=$(npm root -g) node marketing/store-shots/capture.js
+//   NODE_PATH=$(npm root -g) node marketing/store-shots/capture.js --tablet
 //
 // Same home, clock and phone as marketing/site-shots/capture.js, so the
 // listing and the site show one Daniel and one set of plants. Writes
@@ -14,7 +15,11 @@ const path = require('path');
 const state = require('../site-shots/state.js');
 
 const APP = process.env.APP || 'http://127.0.0.1:8787/';
-const OUT = path.join(__dirname, 'raw');
+// --tablet shoots the same screens in the app's wide layout, for Play's
+// 7-inch and 10-inch tablet slots: 1280x800 at 2x, past the 900px point
+// where the sidebar replaces the tab bar, and without phone emulation.
+const TABLET = process.argv.includes('--tablet');
+const OUT = path.join(__dirname, 'raw', TABLET ? 'tablet' : '');
 
 const clickText = (p, sel, re) => p.evaluate(([sel, src]) => {
   const r = new RegExp(src, 'i');
@@ -53,11 +58,13 @@ const SHOTS = [
 
 (async () => {
   fs.mkdirSync(OUT, { recursive: true });
-  const only = process.argv.slice(2);
+  const only = process.argv.slice(2).filter(a => a !== '--tablet');
   const b = await chromium.launch();
   for (const s of SHOTS) {
     if (only.length && !only.includes(s.name)) continue;
-    const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, timezoneId: 'Australia/Sydney', isMobile: true, hasTouch: true });
+    const ctx = await b.newContext(TABLET
+      ? { viewport: { width: 1280, height: 800 }, deviceScaleFactor: 2, timezoneId: 'Australia/Sydney', hasTouch: true }
+      : { viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, timezoneId: 'Australia/Sydney', isMobile: true, hasTouch: true });
     await ctx.addInitScript(j => { try { localStorage.setItem('sprout.state.v1', j); localStorage.setItem('sprout.theme', 'viridium'); } catch (e) {} }, JSON.stringify(state()));
     const p = await ctx.newPage();
     await p.clock.setFixedTime(new Date('2026-10-06T08:40:00+11:00'));
@@ -69,7 +76,7 @@ const SHOTS = [
     await p.waitForTimeout(900);
     await p.screenshot({ path: path.join(OUT, s.name + '.png') });
     const got = [];
-    for (const [name, sel] of Object.entries(s.crops || {})) {
+    for (const [name, sel] of Object.entries((!TABLET && s.crops) || {})) {
       const el = p.locator('.view').locator(sel).first();
       if (await el.count()) {
         // A row with no card of its own sits on the page's gradient, which
