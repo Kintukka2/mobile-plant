@@ -214,7 +214,10 @@ this is why.
 `js/data/plants.js` — 57 species. Each carries `water.warm` / `water.cool`
 (days), `fert.everyDays`, a `light.ideal` from `LOOKUPS.LIGHT`, and `tox`
 rated separately for `cats`, `dogs` and `humans`. `normalise()` fills
-defaults, so a record only states what is distinctive about it.
+defaults, so a record only states what is distinctive about it. **To add
+one, start from `docs/species-template.md`**: the skeleton, every field's
+values and what it drives, the rules the data does not enforce, and the
+files outside the record that a new species touches.
 
 **Species photographs** are `img/species/<id>.webp`, one per species:
 cut-outs with a transparent background, 4:5 at 720×900 to match the hero
