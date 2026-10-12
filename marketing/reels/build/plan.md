@@ -19,7 +19,7 @@ Reels safe area: nothing to read above y≈220 or below y≈1500; nothing at the
 | Hook | 0–3s | Big Hatton line on the field. No phone. |
 | Reveal | ~3–3.7s | Phone rises; the real screen is already live. |
 | Highlights | ~3.7–16s | The app in use: taps, pushes, scrolls. One short caption per beat, above the phone. |
-| Outro | ~16–20s | Phone drops away; payoff line, mark + SPROUT + *evergreen*, sproutevergreen.app. |
+| Outro | ~16–20s | Phone drops away; payoff line, mark + SPROUT + *evergreen*, sproutevergreen.com and where to get it. |
 
 ## 01 · Planner — "It's in the wrong room"
 - Hook: *Your plant isn't dying.* / *It's in the wrong room.*
@@ -46,7 +46,7 @@ Reels safe area: nothing to read above y≈220 or below y≈1500; nothing at the
 ## 04 · Pets — "Safe for the cat?"
 - Hook: *Is that plant safe for the cat?*
 - Discover → Pet safe → back to everything, search "monstera" → species → Toxicity.
-- Captions: *23 of 48 are safe for cats and dogs.* → *Rated separately for cats, dogs and humans.*
+- Captions: *One tap shows the ones safe for cats and dogs.* → *Rated separately for cats, dogs and humans.*
 - Outro: *Know before you bring it home.*
 
 ## Sound
