@@ -1,8 +1,7 @@
 # Sprout's voice
 
-The voice from the first voiced Reels: soft, feminine and a little upbeat. Sprout speaking as
-itself, in the first person. `sample.m4a` is five seconds of it. The Reels were removed as out
-of date (git history has them at `70a9a28`); everything needed to reproduce the voice is here.
+The voice of the Reels in `marketing/reels/`: soft, feminine and a little upbeat. Sprout speaking
+as itself, in the first person. `sample.m4a` is five seconds of it.
 
 ```bash
 pip install kokoro-onnx soundfile          # plus ffmpeg on the path
@@ -32,7 +31,7 @@ originals sample for sample (identical length, differing by no more than 16-bit 
 
 She is Sprout, so the voice rules in `CLAUDE.md` apply: first person, one contraction per line,
 "Sprout" only when introducing itself. What she says and what goes on screen are separate
-strings in the Reels' `script.json`: punctuation steers her delivery (a trailing `!` lifts a line,
+strings in `marketing/reels/build/script.json`: punctuation steers her delivery (a trailing `!` lifts a line,
 `...` slows one), while the caption keeps the house style. She says URLs best spelt out:
 "sprout evergreen dot com".
 

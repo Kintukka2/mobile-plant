@@ -1,5 +1,12 @@
 phone-*/
 frames-*/
 stills/
+vo/
+peek*
+sheet*
 events-*.json
-audio-*.wav
+music-*.wav
+mix-*.wav
+render.log
+crop*
+capture.log

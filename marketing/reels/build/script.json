@@ -1,0 +1,152 @@
+{
+ "outro": [
+  {
+   "text": "Find me at sproutevergreen.com",
+   "say": "Find me at sprout evergreen dot com."
+  },
+  {
+   "text": "Free on Google Play. Coming soon to iPhone.",
+   "say": "Free on Google Play now, and coming soon to iPhone!"
+  }
+ ],
+ "reels": {
+  "schedule": {
+   "eyebrow": "The schedule",
+   "hook": {
+    "text": [
+     "Most plant apps",
+     "ask how often you",
+     "want reminding."
+    ],
+    "say": "Most plant apps ask how often you want reminding."
+   },
+   "lines": [
+    {
+     "text": "I'm Sprout, and I work it out.",
+     "say": "I'm Sprout, and I work it out!"
+    },
+    {
+     "text": "From the species, the pot, the room and the season.",
+     "say": "From the species, the pot, the room, and the season."
+    },
+    {
+     "text": "And I always show you why.",
+     "say": "And I always show you why.",
+     "accent": true
+    }
+   ]
+  },
+  "diagnose": {
+   "eyebrow": "Diagnosis",
+   "hook": {
+    "text": [
+     "Yellow leaves can mean",
+     "ten different things."
+    ],
+    "say": "Yellow leaves can mean ten different things.",
+    "accent": 1
+   },
+   "lines": [
+    {
+     "text": "Tell me the plant, and what you're seeing.",
+     "say": "Tell me the plant, and what you're seeing."
+    },
+    {
+     "text": "Then what else is true.",
+     "say": "Then, what else is true."
+    },
+    {
+     "text": "And I rank the likely cause, for that species.",
+     "say": "And I rank the likely cause, for that species.",
+     "accent": true
+    }
+   ]
+  },
+  "planner": {
+   "eyebrow": "The planner",
+   "hook": {
+    "text": [
+     "Your plant isn't dying.",
+     "It's just in the wrong room."
+    ],
+    "say": "Your plant isn't dying. It's just in the wrong room!",
+    "accent": 1
+   },
+   "lines": [
+    {
+     "text": "Trace your home once, and mark the windows.",
+     "say": "Trace your home once, and mark the windows."
+    },
+    {
+     "text": "Point me north.",
+     "say": "Point me north..."
+    },
+    {
+     "text": "And I'll show you exactly where each plant should stand.",
+     "say": "And I'll show you exactly where each plant should stand.",
+     "accent": true
+    }
+   ]
+  },
+  "pets": {
+   "eyebrow": "Pets",
+   "hook": {
+    "text": [
+     "Is that plant safe",
+     "for the cat?"
+    ],
+    "say": "Is that plant safe for the cat?",
+    "accent": 1
+   },
+   "lines": [
+    {
+     "text": "One tap, and I'll show you the ones safe for cats and dogs.",
+     "say": "One tap, and I'll show you the ones safe for cats and dogs!"
+    },
+    {
+     "text": "Or look any plant up.",
+     "say": "Or look any plant up."
+    },
+    {
+     "text": "Tell me who lives with you, and I'll warn you first.",
+     "say": "Tell me who lives with you, and I'll warn you first."
+    },
+    {
+     "text": "Rated separately for cats, dogs and humans.",
+     "say": "Rated separately, for cats, dogs, and humans.",
+     "accent": true
+    }
+   ]
+  },
+  "greenhouse": {
+   "eyebrow": "The greenhouse",
+   "hook": {
+    "text": [
+     "Think of it as a smart home,",
+     "for your plants."
+    ],
+    "say": "Think of it as a smart home, for your plants!",
+    "accent": 1
+   },
+   "lines": [
+    {
+     "text": "Every room knows its light.",
+     "say": "Every room knows its light."
+    },
+    {
+     "text": "Step inside, and I'll tell you if each plant is happy there.",
+     "say": "Step inside, and I'll tell you if each plant is happy there."
+    },
+    {
+     "text": "Who needs water, and when.",
+     "say": "Who needs water, and when."
+    },
+    {
+     "text": "And what else would thrive in there.",
+     "say": "And what else would thrive in there!",
+     "accent": true
+    }
+   ]
+  }
+ }
+}

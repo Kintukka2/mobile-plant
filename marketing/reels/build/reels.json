@@ -1,145 +1,383 @@
 {
- "planner": {
-  "eyebrow": "The planner",
-  "duration": 20.5,
-  "hook": [
-   "Your plant isn't dying.",
-   "It's in the wrong room."
-  ],
-  "hookAccent": 1,
-  "hookEnd": 3.0,
-  "phone": [
-   3.0,
-   17.2
-  ],
-  "drop": 16.6,
-  "captions": [
-   [
-    3.8,
-    7.9,
-    "Trace your home once."
-   ],
-   [
-    8.1,
-    11.4,
-    "Mark the windows. Point north."
-   ],
-   [
-    11.7,
-    16.4,
-    "Then it shows where each plant should stand."
-   ]
-  ],
-  "outro": "It reads the light in every room.",
-  "poster": 2.5
- },
  "schedule": {
   "eyebrow": "The schedule",
-  "duration": 20.5,
+  "duration": 20.7,
   "hook": [
    "Most plant apps",
    "ask how often you",
    "want reminding."
   ],
   "hookAccent": -1,
+  "hookAt": 0.35,
+  "hookDur": 2.656,
   "hookEnd": 3.4,
   "phone": [
    3.4,
-   17.2
+   13.8
   ],
-  "drop": 16.6,
+  "drop": 13.8,
   "captions": [
    [
-    3.8,
+    3.7,
     6.0,
-    "This one works it out.",
+    "I'm Sprout, and I work it out.",
+    0
+   ],
+   [
+    6.3,
+    9.9,
+    "From the species, the pot, the room and the season.",
+    0
+   ],
+   [
+    10.3,
+    13.5,
+    "And I always show you why.",
     1
-   ],
-   [
-    6.4,
-    10.2,
-    "From the species, the pot, the room and the season."
-   ],
-   [
-    10.5,
-    16.4,
-    "And it tells you why."
    ]
   ],
-  "outro": "No reminder interval to set.",
-  "poster": 2.9
+  "outro": [
+   "Find me at sproutevergreen.com",
+   "Free on Google Play. Coming soon to iPhone."
+  ],
+  "outroAt": [
+   14.4,
+   16.7
+  ],
+  "poster": 11.6,
+  "vo": [
+   [
+    0.35,
+    "schedule-hook"
+   ],
+   [
+    3.7,
+    "schedule-0"
+   ],
+   [
+    6.3,
+    "schedule-1"
+   ],
+   [
+    10.3,
+    "schedule-2"
+   ],
+   [
+    14.4,
+    "outro-0"
+   ],
+   [
+    16.7,
+    "outro-1"
+   ]
+  ]
  },
  "diagnose": {
   "eyebrow": "Diagnosis",
-  "duration": 20.5,
+  "duration": 20.8,
   "hook": [
    "Yellow leaves can mean",
    "ten different things."
   ],
   "hookAccent": 1,
+  "hookAt": 0.35,
+  "hookDur": 2.086,
   "hookEnd": 3.0,
   "phone": [
    3.0,
-   17.2
+   13.9
   ],
-  "drop": 16.6,
+  "drop": 13.9,
   "captions": [
    [
-    3.6,
-    7.9,
-    "Pick the plant. Pick what you see."
+    3.4,
+    6.6,
+    "Tell me the plant, and what you're seeing.",
+    0
    ],
    [
-    8.1,
-    10.6,
-    "Say what else is true."
+    6.9,
+    9.5,
+    "Then what else is true.",
+    0
    ],
    [
-    11.0,
-    16.4,
-    "It ranks the cause, for that species."
+    9.9,
+    13.6,
+    "And I rank the likely cause, for that species.",
+    1
    ]
   ],
-  "outro": "A clinic, not a search box.",
-  "poster": 2.5
+  "outro": [
+   "Find me at sproutevergreen.com",
+   "Free on Google Play. Coming soon to iPhone."
+  ],
+  "outroAt": [
+   14.5,
+   16.8
+  ],
+  "poster": 12.9,
+  "vo": [
+   [
+    0.35,
+    "diagnose-hook"
+   ],
+   [
+    3.4,
+    "diagnose-0"
+   ],
+   [
+    6.9,
+    "diagnose-1"
+   ],
+   [
+    9.9,
+    "diagnose-2"
+   ],
+   [
+    14.5,
+    "outro-0"
+   ],
+   [
+    16.8,
+    "outro-1"
+   ]
+  ]
+ },
+ "planner": {
+  "eyebrow": "The planner",
+  "duration": 21.1,
+  "hook": [
+   "Your plant isn't dying.",
+   "It's just in the wrong room."
+  ],
+  "hookAccent": 1,
+  "hookAt": 0.35,
+  "hookDur": 2.738,
+  "hookEnd": 3.5,
+  "phone": [
+   3.5,
+   14.2
+  ],
+  "drop": 14.2,
+  "captions": [
+   [
+    3.9,
+    7.4,
+    "Trace your home once, and mark the windows.",
+    0
+   ],
+   [
+    7.7,
+    9.5,
+    "Point me north.",
+    0
+   ],
+   [
+    9.9,
+    14.0,
+    "And I'll show you exactly where each plant should stand.",
+    1
+   ]
+  ],
+  "outro": [
+   "Find me at sproutevergreen.com",
+   "Free on Google Play. Coming soon to iPhone."
+  ],
+  "outroAt": [
+   14.8,
+   17.1
+  ],
+  "poster": 13.2,
+  "vo": [
+   [
+    0.35,
+    "planner-hook"
+   ],
+   [
+    3.9,
+    "planner-0"
+   ],
+   [
+    7.7,
+    "planner-1"
+   ],
+   [
+    9.9,
+    "planner-2"
+   ],
+   [
+    14.8,
+    "outro-0"
+   ],
+   [
+    17.1,
+    "outro-1"
+   ]
+  ]
  },
  "pets": {
   "eyebrow": "Pets",
-  "duration": 20.5,
+  "duration": 22.9,
   "hook": [
    "Is that plant safe",
    "for the cat?"
   ],
   "hookAccent": 1,
-  "hookEnd": 3.0,
+  "hookAt": 0.35,
+  "hookDur": 1.47,
+  "hookEnd": 2.8,
   "phone": [
-   3.0,
-   17.2
+   2.8,
+   16.0
   ],
-  "drop": 16.6,
+  "drop": 16.0,
+  "captions": [
+   [
+    3.2,
+    7.3,
+    "One tap, and I'll show you the ones safe for cats and dogs.",
+    0
+   ],
+   [
+    7.4,
+    9.2,
+    "Or look any plant up.",
+    0
+   ],
+   [
+    9.6,
+    12.4,
+    "Tell me who lives with you, and I'll warn you first.",
+    0
+   ],
+   [
+    12.8,
+    15.9,
+    "Rated separately for cats, dogs and humans.",
+    1
+   ]
+  ],
+  "outro": [
+   "Find me at sproutevergreen.com",
+   "Free on Google Play. Coming soon to iPhone."
+  ],
+  "outroAt": [
+   16.6,
+   18.9
+  ],
+  "poster": 14.6,
+  "vo": [
+   [
+    0.35,
+    "pets-hook"
+   ],
+   [
+    3.2,
+    "pets-0"
+   ],
+   [
+    7.4,
+    "pets-1"
+   ],
+   [
+    9.6,
+    "pets-2"
+   ],
+   [
+    12.8,
+    "pets-3"
+   ],
+   [
+    16.6,
+    "outro-0"
+   ],
+   [
+    18.9,
+    "outro-1"
+   ]
+  ]
+ },
+ "greenhouse": {
+  "eyebrow": "The greenhouse",
+  "duration": 22.9,
+  "hook": [
+   "Think of it as a smart home,",
+   "for your plants."
+  ],
+  "hookAccent": 1,
+  "hookAt": 0.35,
+  "hookDur": 2.2,
+  "hookEnd": 3.2,
+  "phone": [
+   3.2,
+   16.0
+  ],
+  "drop": 16.0,
   "captions": [
    [
     3.6,
-    7.5,
-    "One tap shows the ones safe for cats and dogs."
+    6.4,
+    "Every room knows its light.",
+    0
    ],
    [
-    7.8,
+    6.6,
     10.3,
-    "Look any plant up."
+    "Step inside, and I'll tell you if each plant is happy there.",
+    0
    ],
    [
     10.6,
-    12.8,
-    "It knows who lives with you."
+    13.0,
+    "Who needs water, and when.",
+    0
    ],
    [
-    13.0,
-    16.4,
-    "Rated separately for cats, dogs and humans."
+    13.4,
+    16.0,
+    "And what else would thrive in there.",
+    1
    ]
   ],
-  "outro": "Know before you bring it home.",
-  "poster": 2.5
+  "outro": [
+   "Find me at sproutevergreen.com",
+   "Free on Google Play. Coming soon to iPhone."
+  ],
+  "outroAt": [
+   16.6,
+   18.9
+  ],
+  "poster": 15.2,
+  "vo": [
+   [
+    0.35,
+    "greenhouse-hook"
+   ],
+   [
+    3.6,
+    "greenhouse-0"
+   ],
+   [
+    6.6,
+    "greenhouse-1"
+   ],
+   [
+    10.6,
+    "greenhouse-2"
+   ],
+   [
+    13.4,
+    "greenhouse-3"
+   ],
+   [
+    16.6,
+    "outro-0"
+   ],
+   [
+    18.9,
+    "outro-1"
+   ]
+  ]
  }
 }

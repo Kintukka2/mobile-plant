@@ -74,7 +74,9 @@ function breath(t, dur, v, f0, f1, pan = 0) {
 }
 
 // Hook: one note per line as it lands.
-C.hook.forEach((_, i) => bell(fx, 0.22 + i * 0.55 + 0.05, [74, 78, 81][i], 0.07, 1.8, (i - 1) * 0.25));
+// Hook: one note per line as it lands, timed the way the stage times them.
+{ const w = C.hook.map(l => l.split(/\s+/).length), tot = w.reduce((a, b) => a + b, 0);
+  C.hook.forEach((_, i) => bell(fx, C.hookAt + w.slice(0, i).reduce((a, b) => a + b, 0) / tot * C.hookDur, [74, 78, 81][i], 0.05, 1.8, (i - 1) * 0.25)); }
 // The phone rises, and later drops away.
 breath(C.phone[0] - 0.1, 0.9, 0.22, 400, 2400);
 breath(D0, 0.8, 0.18, 2200, 350);
@@ -94,7 +96,7 @@ Object.values(E.rings).forEach(fr => {
 // Captions: a very quiet low note so each one lands without a click.
 C.captions.forEach(c => bell(fx, c[0], chordAt(c[0]).notes[1] + 12, 0.025, 1.4));
 // Payoff: the lockup arrives on the full chord.
-[62, 66, 69, 74, 76].forEach((m, i) => bell(fx, D0 + 0.9 + i * 0.07, m + 12, 0.045, 2.6, (i - 2) * 0.2));
+[62, 66, 69, 74, 76].forEach((m, i) => bell(fx, D0 + 0.3 + i * 0.07, m + 12, 0.045, 2.6, (i - 2) * 0.2));
 
 // The room: a small Schroeder reverb shared by the effects (and a little of the pad).
 function reverb(inp) {
@@ -126,5 +128,5 @@ const hdr = Buffer.alloc(44);
 hdr.write('RIFF', 0); hdr.writeUInt32LE(36 + L.length * 2, 4); hdr.write('WAVE', 8); hdr.write('fmt ', 12);
 hdr.writeUInt32LE(16, 16); hdr.writeUInt16LE(1, 20); hdr.writeUInt16LE(2, 22); hdr.writeUInt32LE(SR, 24);
 hdr.writeUInt32LE(SR * 4, 28); hdr.writeUInt16LE(4, 32); hdr.writeUInt16LE(16, 34); hdr.write('data', 36); hdr.writeUInt32LE(L.length * 2, 40);
-fs.writeFileSync(`audio-${id}.wav`, Buffer.concat([hdr, Buffer.from(L.buffer)]));
+fs.writeFileSync(`music-${id}.wav`, Buffer.concat([hdr, Buffer.from(L.buffer)]));
 console.log(id, 'audio', DUR + 's', 'peak', peak.toFixed(3));

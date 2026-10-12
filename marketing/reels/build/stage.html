@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>Sprout reel stage</title>
+<title>Sprout voiced reel stage</title>
 <style>
 @font-face{font-family:'PP Hatton';src:url('/css/fonts/hatton-ultralight.woff2') format('woff2');font-weight:200;font-display:block}
 @font-face{font-family:'PP Hatton';src:url('/css/fonts/hatton-medium.woff2') format('woff2');font-weight:500;font-display:block}
@@ -39,7 +39,8 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:var(--bg)}
 .wm svg{width:78px;height:102px;color:var(--glow);display:block}
 .word{font-family:'PP Hatton';font-weight:200;font-size:96px;letter-spacing:.2em;text-transform:uppercase;line-height:1;color:var(--ink);margin-right:-.2em}
 .script{font-family:'Sacramento';font-size:56px;color:var(--mint);line-height:1;margin-top:12px;margin-left:104px}
-.url{font-family:'Jost';font-weight:500;font-size:32px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
+.url{font-family:'Jost';font-weight:500;font-size:40px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
+.soon{font-size:64px;line-height:1.14}
 .small{font-family:'Jost';font-weight:400;font-size:24px;letter-spacing:.06em;color:var(--ink3);margin-top:16px}
 </style>
 <div id="v">
@@ -48,11 +49,11 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:var(--bg)}
   <div class="hook" id="hook"></div>
   <div id="caps"></div>
   <div id="phone"><img id="imgA"><img id="imgB"><div id="shade"></div><div id="rips"></div><div id="ring"></div></div>
-  <div class="outro" id="pay"><div class="pay" id="payT"></div></div>
   <div class="outro" id="lock"><div class="lock">
     <div class="wm"><svg viewBox="24 20 52 68" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/></svg><span class="word">Sprout</span></div>
     <div class="script">evergreen</div></div></div>
-  <div class="outro" id="url"><div class="url">sproutevergreen.com</div><div class="small">Free on Google Play. Coming soon to iPhone.</div></div>
+  <div class="outro" id="url"><div class="url" id="urlT"></div></div>
+  <div class="outro" id="soon"><div class="pay soon" id="soonT"></div></div>
 </div>
 <script>
 const FPS = 30, PW = 600, PS = 600 / 390, PX = 240, PTOP = 560;
@@ -66,11 +67,16 @@ let C, E, ID;
 async function setup(id) {
   ID = id;
   C = (await (await fetch('reels.json')).json())[id];
+  window.C = C;
   E = await (await fetch('events-' + id + '.json')).json();
   $('eb').textContent = 'Sprout · ' + C.eyebrow;
   $('hook').innerHTML = C.hook.map((l, i) => '<span class="l' + (i === C.hookAccent ? ' a' : '') + '">' + l + '</span>').join('');
   $('caps').innerHTML = C.captions.map(c => '<div class="cap' + (c[3] ? ' a' : '') + '">' + c[2] + '</div>').join('');
-  $('payT').textContent = C.outro;
+  // each hook line lands as it is spoken: its start, by word count, through the hook's voice line
+  const words = C.hook.map(l => l.split(/\s+/).length), tot = words.reduce((a, b) => a + b, 0);
+  C.hookTimes = words.map((_, i) => C.hookAt + words.slice(0, i).reduce((a, b) => a + b, 0) / tot * C.hookDur - .12);
+  $('urlT').textContent = C.outro[0].replace(/^Find me at /, '');
+  $('soonT').innerHTML = C.outro[1].replace('. ', '.<br>');
   $('rips').innerHTML = E.taps.filter(x => !x.key).map(() => '<div class="rip"></div><div class="rip"></div>').join('');
   await document.fonts.ready;
   // One size for every line of the hook, the largest at which none of them wraps.
@@ -103,7 +109,7 @@ async function render(t) {
   // hook: lines in one by one, out together before the phone comes up
   const he = C.hookEnd, hout = k(t, he - .38, .34);
   [...$('hook').children].forEach((l, i) => {
-    const a = oCub(k(t, .22 + i * .55, .5));
+    const a = oCub(k(t, C.hookTimes[i], .45));
     l.style.opacity = a * (1 - hout); l.style.transform = `translateY(${(1 - a) * 26 - hout * 22}px)`;
   });
   // eyebrow: with the hook first, then above the captions
@@ -164,12 +170,12 @@ async function render(t) {
     el.style.opacity = inn * (1 - out); el.style.transform = `translateY(${(1 - inn) * 20}px)`;
   });
 
-  // outro: the line, then the lockup, then where to get it
+  // outro: the lockup as the phone goes, then the site and the sign-off as each is said
   const o0 = C.drop + .3;
-  const pa = oCub(k(t, o0, .55)), la = oCub(k(t, o0 + .6, .6)), ua = oCub(k(t, o0 + 1.1, .55));
-  $('pay').style.top = '560px'; $('pay').style.opacity = pa; $('pay').style.transform = `translateY(${(1 - pa) * 24}px)`;
-  $('lock').style.top = '930px'; $('lock').style.opacity = la; $('lock').style.transform = `translateY(${(1 - la) * 24}px)`;
-  $('url').style.top = '1250px'; $('url').style.opacity = ua; $('url').style.transform = `translateY(${(1 - ua) * 16}px)`;
+  const la = oCub(k(t, o0, .6)), ua = oCub(k(t, C.outroAt[0] - .1, .5)), sa = oCub(k(t, C.outroAt[1] - .1, .5));
+  $('lock').style.top = '600px'; $('lock').style.opacity = la; $('lock').style.transform = `translateY(${(1 - la) * 24}px)`;
+  $('url').style.top = '930px'; $('url').style.opacity = ua; $('url').style.transform = `translateY(${(1 - ua) * 16}px)`;
+  $('soon').style.top = '1060px'; $('soon').style.opacity = sa; $('soon').style.transform = `translateY(${(1 - sa) * 20}px)`;
   return true;
 }
 window.setup = setup; window.render = render;
