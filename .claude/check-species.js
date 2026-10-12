@@ -56,6 +56,15 @@ if(tagOff.length){console.error('pet-safe tag disagrees with tox.cats/tox.dogs:'
 const D=c.window.PROBLEM_DATA;
 const badProb=c.window.PLANT_DATA.flatMap(p=>p.problems.filter(x=>!D.SYMPTOMS[x]&&!D.CAUSES[x]).map(x=>p.id+' ('+x+')'));
 if(badProb.length){console.error('problems ids that are neither a symptom nor a cause:', badProb.join(', '));process.exit(1);}
+// Every light rung once, between ideal, tolerates and avoid: a rung left
+// out gets the vague "poor" verdict, which is wrong for a plant that the
+// light would really scorch or starve.
+const RUNGS=['low','medium','bright-indirect','direct'];
+const badLight=c.window.PLANT_DATA.filter(p=>RUNGS.some(r=>[p.light.ideal].concat(p.light.tolerates||[],p.light.avoid||[]).filter(x=>x===r).length!==1)).map(p=>p.id);
+if(badLight.length){console.error('light rungs not rated exactly once:', badLight.join(', '));process.exit(1);}
+// A plant with no cause in problems gets no species weighting in diagnosis.
+const noCause=c.window.PLANT_DATA.filter(p=>!p.problems.some(x=>D.CAUSES[x])).map(p=>p.id);
+if(noCause.length){console.error('problems lists with no cause id:', noCause.join(', '));process.exit(1);}
 const badMethod=c.window.PLANT_DATA.filter(p=>p.water.method&&!c.window.LOOKUPS.WATER_METHODS[p.water.method]).map(p=>p.id+' ('+p.water.method+')');
 if(badMethod.length){console.error('water.method not in LOOKUPS.WATER_METHODS:', badMethod.join(', '));process.exit(1);}
 // Last, so a species written ahead of its photograph still gets every

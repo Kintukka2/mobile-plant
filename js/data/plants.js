@@ -65,7 +65,7 @@ window.PLANT_DATA = (function () {
         note: 'Water when the top 3–5cm of soil is dry to your finger. Pour slowly until it runs from the drainage holes, then tip away anything left in the saucer.'
       },
       light: {
-        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct'],
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
         note: 'Those famous holes only develop in good light. In a dim corner it survives, but produces small, solid, disappointing leaves.'
       },
       humidity: 'medium', minC: 15, idealC: [20, 28],
@@ -111,15 +111,22 @@ window.PLANT_DATA = (function () {
       humidity: 'low', minC: 12, idealC: [18, 29],
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
         note: 'Calcium oxalate crystals. Causes mouth irritation, drooling and vomiting if chewed. Trailing vines are tempting for cats — hang it high.' },
-      prop: [{
-        m: 'Stem cutting in water', diff: 'easy', season: 'Any time of year', roots: '2–3 weeks',
-        steps: [
-          'Cut a length of vine with at least four leaves, snipping just below a node.',
-          'Strip the lowest one or two leaves so their nodes sit bare.',
-          'Stand the bare nodes in water — a glass on a windowsill is plenty.',
-          'Roots appear within a fortnight. Pot several cuttings together for a full-looking plant.'
-        ]
-      }],
+      prop: [
+        { m: 'Stem cutting in water', diff: 'easy', season: 'Any time of year', roots: '2–3 weeks',
+          steps: [
+            'Cut a length of vine with at least four leaves, snipping just below a node.',
+            'Strip the lowest one or two leaves so their nodes sit bare.',
+            'Stand the bare nodes in water — a glass on a windowsill is plenty.',
+            'Roots appear within a fortnight. Pot several cuttings together for a full-looking plant.'
+          ] },
+        { m: 'Layering', diff: 'easy', season: 'Spring or summer', roots: '2–4 weeks',
+          steps: [
+            'Stand a small pot of damp potting mix beside the plant.',
+            'Lay a trailing vine across it and pin one node to the surface with a bent paperclip, still attached to the parent.',
+            'Keep that pot damp. Roots grow from the node into the mix within a few weeks.',
+            'Once a gentle tug meets resistance, cut the vine on the parent\'s side of the node. The new plant is already potted.'
+          ] }
+      ],
       likes: ['Being pruned — it branches and thickens up', 'Almost any light level', 'Neglect, frankly'],
       dislikes: ['Constantly soggy soil', 'Cold windowsills in winter'],
       problems: ['yellow-lower-leaves', 'brown-crispy-edges', 'leggy-stretching', 'variegation-loss', 'root-rot', 'fungus-gnats'],
@@ -196,15 +203,22 @@ window.PLANT_DATA = (function () {
       repot: 'Every 3 years. The rhizomes will eventually push the plant up out of its pot when it is truly ready.',
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
         note: 'Calcium oxalate crystals in every part. The sap can irritate skin — worth wearing gloves when dividing it.' },
-      prop: [{
-        m: 'Division of rhizomes', diff: 'easy', season: 'Spring', roots: 'Already rooted',
-        steps: [
-          'Unpot and wash enough soil away to see the potato-like rhizomes clearly.',
-          'Separate a clump that has both a rhizome and its own stems.',
-          'Pot into dry, gritty mix and wait a week before watering.',
-          'Leaf cuttings also work but can take the better part of a year to form a rhizome — division is far quicker.'
-        ]
-      }],
+      prop: [
+        { m: 'Division of rhizomes', diff: 'easy', season: 'Spring', roots: 'Already rooted',
+          steps: [
+            'Unpot and wash enough soil away to see the potato-like rhizomes clearly.',
+            'Separate a clump that has both a rhizome and its own stems.',
+            'Pot into dry, gritty mix and wait a week before watering.',
+            'Leaf cuttings also work but can take the better part of a year to form a rhizome — division is far quicker.'
+          ] },
+        { m: 'Leaf cutting', diff: 'easy', season: 'Spring or summer', roots: '6–10 weeks',
+          steps: [
+            'Pull a few individual leaflets from a stem, or cut a whole stem into sections.',
+            'Let the cut ends dry for a day, then push them 1–2cm into damp, gritty mix.',
+            'Keep them warm and only barely damp. Roots come first, then a small rhizome forms at each base.',
+            'Be patient: the first new shoot can take most of a year to appear.'
+          ] }
+      ],
       likes: ['Long gaps between waterings', 'Low light', 'Being left alone'],
       dislikes: ['Overwatering — the single most common cause of death', 'Cold, wet soil'],
       problems: ['yellow-lower-leaves', 'root-rot', 'mushy-base', 'leggy-stretching'],
@@ -268,19 +282,26 @@ window.PLANT_DATA = (function () {
       humidity: 'medium', minC: 8, idealC: [16, 24],
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
         note: 'Non-toxic and one of the safest choices for a home with pets. Cats are oddly drawn to chewing the leaves — mildly stimulating for them, but harmless.' },
-      prop: [{
-        m: 'Plantlet (spiderette)', diff: 'easy', season: 'Any time of year', roots: '1–2 weeks',
-        steps: [
-          'Look for a baby plantlet on the end of a long arching stem, ideally one already showing stubby root nubs.',
-          'You can either pot the plantlet while still attached to the parent, or snip it free.',
-          'Press it into damp potting mix so the base sits just at soil level.',
-          'Keep evenly moist for two weeks. If still attached, cut the runner once it has taken hold.'
-        ]
-      }],
+      prop: [
+        { m: 'Plantlet (spiderette)', diff: 'easy', season: 'Any time of year', roots: '1–2 weeks',
+          steps: [
+            'Look for a baby plantlet on the end of a long arching stem, ideally one already showing stubby root nubs.',
+            'You can either pot the plantlet while still attached to the parent, or snip it free.',
+            'Press it into damp potting mix so the base sits just at soil level.',
+            'Keep evenly moist for two weeks. If still attached, cut the runner once it has taken hold.'
+          ] },
+        { m: 'Division', diff: 'easy', season: 'Spring', roots: 'Already rooted',
+          steps: [
+            'Slide a crowded plant out of its pot. The thick white roots will fill most of it.',
+            'Pull or cut the clump into two or three pieces, each with its own leaves and a share of roots.',
+            'Pot each piece at the depth it grew before, in fresh mix.',
+            'Water in and keep it out of direct sun for a week while it settles.'
+          ] }
+      ],
       likes: ['Being pot-bound — it flowers and pups more freely', 'Hanging baskets', 'Cool rooms'],
       dislikes: ['Fluoridated tap water', 'Hot direct sun', 'Waterlogged roots'],
       problems: ['brown-tips-only', 'pale-washed-out', 'yellow-lower-leaves', 'root-rot'],
-      tags: ['trailing', 'beginner', 'pet-safe', 'air-purifying', 'easy-propagation']
+      tags: ['trailing', 'beginner', 'pet-safe', 'air-purifying', 'easy-propagation', 'low-light']
     },
 
     {
@@ -370,20 +391,27 @@ window.PLANT_DATA = (function () {
         note: 'Water when the top 3cm are dry. The leaves droop and go slightly soft when thirsty, and perk up within a few hours of watering.'
       },
       light: {
-        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct'],
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
         note: 'Rotate the pot a quarter turn each week — it leans hard towards the light and will grow permanently lopsided otherwise.'
       },
       humidity: 'medium', minC: 13, idealC: [18, 25],
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe', note: 'Non-toxic and safe around pets.' },
-      prop: [{
-        m: 'Offset pups', diff: 'easy', season: 'Spring or summer', roots: '2–3 weeks',
-        steps: [
-          'Small pups appear in the soil beside the mother plant, or from the stem itself.',
-          'Wait until a pup is 5–7cm tall, then cut it away below soil level with a little root attached.',
-          'Pot into damp mix, or root it in water first if it has no roots yet.',
-          'A generous mother plant produces pups for years — this is the classic plant to pass on to friends.'
-        ]
-      }],
+      prop: [
+        { m: 'Offset pups', diff: 'easy', season: 'Spring or summer', roots: '2–3 weeks',
+          steps: [
+            'Small pups appear in the soil beside the mother plant, or from the stem itself.',
+            'Wait until a pup is 5–7cm tall, then cut it away below soil level with a little root attached.',
+            'Pot into damp mix, or root it in water first if it has no roots yet.',
+            'A generous mother plant produces pups for years — this is the classic plant to pass on to friends.'
+          ] },
+        { m: 'Stem cutting', diff: 'easy', season: 'Spring or summer', roots: '2–4 weeks',
+          steps: [
+            'Useful when the main stem has grown tall and bare: cut the top 8–10cm off with clean secateurs.',
+            'Stand the cutting in a glass of water, or push it 2cm into damp mix.',
+            'Roots appear within a few weeks; pot it once they are 2–3cm long.',
+            'The cut stump on the parent often sprouts new shoots of its own.'
+          ] }
+      ],
       likes: ['Weekly rotation to stay symmetrical', 'Bright indirect light', 'Being divided and shared'],
       dislikes: ['Direct sun', 'Sitting in water', 'Dark corners'],
       problems: ['leaves-curling', 'yellow-lower-leaves', 'leggy-stretching', 'drooping', 'fungus-gnats'],
@@ -423,7 +451,7 @@ window.PLANT_DATA = (function () {
       likes: ['Small pots', 'Drying out between drinks', 'Medium to bright indirect light'],
       dislikes: ['Overwatering — it rots quickly', 'Heavy, wet soil', 'Cold'],
       problems: ['root-rot', 'yellow-lower-leaves', 'leaves-falling-off', 'leggy-stretching'],
-      tags: ['beginner', 'pet-safe', 'compact', 'office']
+      tags: ['beginner', 'pet-safe', 'compact', 'office', 'low-light']
     },
 
     /* ====================== STATEMENT FOLIAGE ====================== */
@@ -487,15 +515,22 @@ window.PLANT_DATA = (function () {
       humidity: 'medium', minC: 13, idealC: [18, 28],
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
         note: 'Milky latex sap irritates skin and mouth. Wipe up drips after pruning — pets lick floors.' },
-      prop: [{
-        m: 'Stem cutting', diff: 'medium', season: 'Spring or summer', roots: '4–8 weeks',
-        steps: [
-          'Cut a stem tip 15cm long with two or three leaves.',
-          'Blot the sap with a damp cloth until it stops running.',
-          'Remove the lowest leaf and pot into damp, gritty mix.',
-          'Tent loosely with a clear bag to keep humidity up while it roots.'
-        ]
-      }],
+      prop: [
+        { m: 'Stem cutting', diff: 'medium', season: 'Spring or summer', roots: '4–8 weeks',
+          steps: [
+            'Cut a stem tip 15cm long with two or three leaves.',
+            'Blot the sap with a damp cloth until it stops running.',
+            'Remove the lowest leaf and pot into damp, gritty mix.',
+            'Tent loosely with a clear bag to keep humidity up while it roots.'
+          ] },
+        { m: 'Air layering', diff: 'medium', season: 'Spring or summer', roots: '4–8 weeks',
+          steps: [
+            'Choose a stem where you want the new plant to start, and make a shallow upward cut about 3cm long just below a node.',
+            'Wedge the cut open with a matchstick. The white sap is an irritant, so wear gloves.',
+            'Wrap a handful of damp sphagnum moss around the cut, then cover it tightly with cling film tied at both ends.',
+            'Keep the moss damp. When roots fill it, cut the stem below the moss and pot the top, moss and all.'
+          ] }
+      ],
       likes: ['Monthly leaf dusting — it breathes through those big glossy leaves', 'Being pruned to branch out', 'Bright light'],
       dislikes: ['Cold draughts', 'Soggy soil', 'Sudden moves to darker rooms'],
       problems: ['leaves-falling-off', 'yellow-lower-leaves', 'brown-spots-leaves', 'leggy-stretching', 'scale', 'root-rot'],
@@ -536,6 +571,16 @@ window.PLANT_DATA = (function () {
           'Expect a full season of sulking before new growth appears.'
         ]
       }],
+      seed: {
+        viable: true, sowSeason: 'Spring, indoors in warmth', germDays: '1–3 months', depthMm: 15,
+        steps: [
+          'Pull the fluffy tuft off each seed, then soak the seeds in warm water for two days.',
+          'Sow each one about 1.5cm deep in a small pot of damp seed compost.',
+          'Keep it at 25°C or above. A heated propagator or a warm spot above a radiator helps a great deal.',
+          'Keep the compost damp but not wet, and be patient: some seeds take three months.',
+          'Pot on once the second leaf opens. A plant from seed takes five years or more to flower.'
+        ]
+      },
       likes: ['All the sun you can give it', 'Deep watering then good drainage', 'Being slightly pot-bound'],
       dislikes: ['Dark corners', 'Cold below 13°C', 'Constant repotting'],
       problems: ['leaves-curling', 'brown-crispy-edges', 'no-flowers', 'spider-mites', 'yellow-lower-leaves', 'leaf-splitting'],
@@ -557,7 +602,7 @@ window.PLANT_DATA = (function () {
         note: 'Thinner leaves than its big cousin mean it dries out faster and wilts sooner. Keep it lightly moist through summer.'
       },
       light: {
-        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct'],
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
         note: 'Unlike deliciosa, this one is born with holes. Bright indirect light keeps the internodes short and the vine full.'
       },
       humidity: 'high', minC: 15, idealC: [20, 28],
@@ -576,7 +621,7 @@ window.PLANT_DATA = (function () {
       likes: ['Trailing from a shelf or climbing a small pole', 'Humidity', 'Regular pruning'],
       dislikes: ['Dry air — it browns at the edges', 'Drying out completely', 'Direct sun'],
       problems: ['brown-crispy-edges', 'yellow-lower-leaves', 'leggy-stretching', 'spider-mites', 'drooping'],
-      tags: ['trailing', 'climbing', 'fast-growing', 'beginner']
+      tags: ['trailing', 'climbing', 'fast-growing', 'beginner', 'humidity-lover']
     },
 
     {
@@ -594,7 +639,7 @@ window.PLANT_DATA = (function () {
         note: 'Wants to stay evenly moist but never sodden — the hardest balance in houseplant care. Let only the top 2cm dry between waterings.'
       },
       light: {
-        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct'],
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
         note: 'Bright but filtered. Direct sun burns straight through those thin, dramatic leaves.'
       },
       humidity: 'high', minC: 16, idealC: [20, 28],
@@ -634,7 +679,7 @@ window.PLANT_DATA = (function () {
         note: 'Let the top third dry out. Drops leaves in protest if kept too wet for too long.'
       },
       light: {
-        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct'],
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
         note: 'Good light keeps it compact. In dim rooms it stretches into a leggy, sparse thing that leans towards the window.'
       },
       humidity: 'medium', minC: 13, idealC: [18, 26],
@@ -689,7 +734,7 @@ window.PLANT_DATA = (function () {
       likes: ['Filtered or rainwater', 'Drying out between waterings', 'Being cut back to branch'],
       dislikes: ['Fluoridated water', 'Overwatering', 'Cold draughts'],
       problems: ['brown-tips-only', 'yellow-lower-leaves', 'root-rot', 'spider-mites', 'leaning'],
-      tags: ['tree', 'beginner', 'architectural', 'drought-tolerant', 'air-purifying']
+      tags: ['tree', 'beginner', 'architectural', 'drought-tolerant', 'air-purifying', 'low-light']
     },
 
     {
@@ -726,7 +771,7 @@ window.PLANT_DATA = (function () {
       likes: ['Bright light for maximum colour', 'High humidity', 'Consistent moisture'],
       dislikes: ['Being moved — it drops leaves', 'Cold draughts', 'Dry air', 'Drying out'],
       problems: ['leaves-falling-off', 'variegation-loss', 'spider-mites', 'brown-crispy-edges', 'leaf-drop-sudden'],
-      tags: ['colourful', 'tricky', 'sun-lover', 'dramatic']
+      tags: ['colourful', 'tricky', 'sun-lover', 'dramatic', 'humidity-lover']
     },
 
     /* ====================== FERNS & HUMIDITY LOVERS ====================== */
@@ -745,7 +790,7 @@ window.PLANT_DATA = (function () {
         note: 'Never let it dry out — dry soil means instant crispy fronds that will not recover. Keep the mix consistently damp, like a wrung-out sponge.'
       },
       light: {
-        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct'],
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
         note: 'Dappled light, as it would get on a forest floor. Direct sun crisps the fronds within days.'
       },
       humidity: 'high', minC: 13, idealC: [16, 24],
@@ -804,7 +849,7 @@ window.PLANT_DATA = (function () {
       likes: ['Humid bathrooms', 'Water at the soil, not in the crown', 'Filtered light'],
       dislikes: ['Water in the central nest', 'Dry air', 'Direct sun', 'Being touched — new fronds bruise easily'],
       problems: ['brown-crispy-edges', 'crown-rot', 'pale-washed-out', 'scale'],
-      tags: ['pet-safe', 'humidity-lover', 'bathroom', 'architectural']
+      tags: ['pet-safe', 'humidity-lover', 'bathroom', 'architectural', 'low-light']
     },
 
     {
@@ -840,8 +885,8 @@ window.PLANT_DATA = (function () {
       }],
       likes: ['Constant moisture', 'Steamy bathrooms', 'Being cut right back when it crisps — it regrows from the base'],
       dislikes: ['Drying out', 'Dry air', 'Direct sun', 'Draughts', 'Being fussed over'],
-      problems: ['brown-crispy-edges', 'frond-dieback', 'drooping', 'pale-washed-out'],
-      tags: ['pet-safe', 'humidity-lover', 'tricky', 'bathroom', 'delicate']
+      problems: ['low-humidity', 'underwatering', 'brown-crispy-edges', 'frond-dieback', 'drooping', 'pale-washed-out'],
+      tags: ['pet-safe', 'humidity-lover', 'tricky', 'bathroom', 'delicate', 'low-light']
     },
 
     {
@@ -879,7 +924,7 @@ window.PLANT_DATA = (function () {
       likes: ['Filtered or rainwater', 'High humidity — 60% and up', 'Warm, stable temperatures', 'Medium light'],
       dislikes: ['Tap water', 'Dry air', 'Cold', 'Direct sun', 'Drying out'],
       problems: ['brown-crispy-edges', 'leaves-curling', 'spider-mites', 'pale-washed-out', 'drooping', 'yellow-lower-leaves'],
-      tags: ['pet-safe', 'humidity-lover', 'tricky', 'patterned', 'colourful']
+      tags: ['pet-safe', 'humidity-lover', 'tricky', 'patterned', 'colourful', 'low-light']
     },
 
     {
@@ -916,7 +961,7 @@ window.PLANT_DATA = (function () {
       likes: ['Humidity', 'Filtered water', 'Trailing over the edge of a shelf', 'Medium light'],
       dislikes: ['Dry air', 'Hard tap water', 'Cold', 'Direct sun'],
       problems: ['brown-crispy-edges', 'leaves-curling', 'spider-mites', 'pale-washed-out', 'yellow-lower-leaves'],
-      tags: ['pet-safe', 'humidity-lover', 'patterned', 'trailing', 'compact']
+      tags: ['pet-safe', 'humidity-lover', 'patterned', 'trailing', 'compact', 'low-light']
     },
 
     {
@@ -952,8 +997,8 @@ window.PLANT_DATA = (function () {
       }],
       likes: ['Terrariums and cloches', 'Constant humidity', 'Being pinched back to stay bushy'],
       dislikes: ['Drying out', 'Dry air', 'Direct sun', 'Cold'],
-      problems: ['drooping', 'brown-crispy-edges', 'leggy-stretching', 'pale-washed-out'],
-      tags: ['pet-safe', 'humidity-lover', 'compact', 'colourful', 'terrarium']
+      problems: ['underwatering', 'low-humidity', 'drooping', 'brown-crispy-edges', 'leggy-stretching', 'pale-washed-out'],
+      tags: ['pet-safe', 'humidity-lover', 'compact', 'colourful', 'terrarium', 'low-light']
     },
 
     {
@@ -1028,7 +1073,7 @@ window.PLANT_DATA = (function () {
       likes: ['Bright indirect light', 'Even moisture in summer', 'Being left in place'],
       dislikes: ['Direct sun', 'Waterlogging', 'Root disturbance', 'Cold draughts'],
       problems: ['brown-tips-only', 'yellow-lower-leaves', 'spider-mites', 'scale', 'root-rot'],
-      tags: ['pet-safe', 'palm', 'large', 'beginner', 'architectural']
+      tags: ['pet-safe', 'palm', 'large', 'beginner', 'architectural', 'low-light']
     },
 
     {
@@ -1083,7 +1128,7 @@ window.PLANT_DATA = (function () {
         note: 'Let the top third dry out. As an epiphyte its roots need air as much as water — soggy soil is the fastest way to lose it.'
       },
       light: {
-        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct'],
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
         note: 'Bright indirect light is what drives flowering. In medium light it stays healthy but stops producing those red spathes.'
       },
       humidity: 'high', minC: 16, idealC: [20, 28],
@@ -1103,7 +1148,7 @@ window.PLANT_DATA = (function () {
       likes: ['Chunky, airy potting mix', 'High humidity', 'Bright indirect light', 'Being slightly pot-bound'],
       dislikes: ['Dense wet compost', 'Direct sun', 'Cold', 'Dry air'],
       problems: ['no-flowers', 'brown-crispy-edges', 'yellow-lower-leaves', 'root-rot', 'scale'],
-      tags: ['flowering', 'colourful', 'humidity-lover', 'compact']
+      tags: ['flowering', 'colourful', 'humidity-lover']
     },
 
     /* ====================== SUCCULENTS & CACTI ====================== */
@@ -1201,7 +1246,7 @@ window.PLANT_DATA = (function () {
         note: 'Water the soil directly, never over the rosette — water trapped between the leaves rots the centre out. Let it dry completely between drinks.'
       },
       light: {
-        ideal: 'direct', tolerates: [], avoid: ['low', 'medium'],
+        ideal: 'direct', tolerates: [], avoid: ['low', 'medium', 'bright-indirect'],
         note: 'Needs four to six hours of direct sun. Anything less and it stretches upward into a pale, unrecognisable tower — that is etiolation, and it cannot be reversed.'
       },
       humidity: 'low', minC: 7, idealC: [18, 28],
@@ -1301,7 +1346,7 @@ window.PLANT_DATA = (function () {
       likes: ['Very bright light', 'Shallow wide pots', 'Drying out fully', 'Hanging high'],
       dislikes: ['Overwatering', 'Deep pots', 'Low light', 'Humidity'],
       problems: ['shrivelled-pearls', 'root-rot', 'leggy-stretching', 'mealybugs', 'mushy-base'],
-      tags: ['succulent', 'trailing', 'tricky', 'sun-lover', 'drought-tolerant']
+      tags: ['succulent', 'trailing', 'tricky', 'drought-tolerant']
     },
 
     {
@@ -1319,7 +1364,7 @@ window.PLANT_DATA = (function () {
         note: 'Unlike desert cacti this is a forest epiphyte and wants more water — let the top third dry, then water properly. Keep it drier for six weeks before you want flowers.'
       },
       light: {
-        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct'],
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
         note: 'It grows in trees, not deserts, so bright indirect light suits it. Direct sun reddens and scorches the segments.'
       },
       humidity: 'medium', minC: 10, idealC: [16, 24],
@@ -1417,7 +1462,7 @@ window.PLANT_DATA = (function () {
       likes: ['Bright light', 'Drying out between waterings', 'Deadheading spent flowers'],
       dislikes: ['Overwatering', 'Water on the leaves', 'Low light'],
       problems: ['no-flowers', 'root-rot', 'mushy-base', 'leggy-stretching', 'mealybugs', 'powdery-mildew'],
-      tags: ['succulent', 'flowering', 'colourful', 'sun-lover', 'compact']
+      tags: ['succulent', 'flowering', 'colourful', 'sun-lover', 'compact', 'beginner']
     },
 
     /* ====================== VINES & TRAILERS ====================== */
@@ -1436,7 +1481,7 @@ window.PLANT_DATA = (function () {
         note: 'Semi-succulent, so let it dry out well between waterings. The leaves go slightly soft and thin when it is genuinely thirsty.'
       },
       light: {
-        ideal: 'bright-indirect', tolerates: ['direct'], avoid: ['low'],
+        ideal: 'bright-indirect', tolerates: ['direct', 'medium'], avoid: ['low'],
         note: 'Bright light keeps the leaves close together and brings out the silver marbling and pink undersides. Dim light gives long, bare, sparse strands.'
       },
       humidity: 'low', minC: 10, idealC: [18, 26],
@@ -1570,7 +1615,7 @@ window.PLANT_DATA = (function () {
       likes: ['Regular pinching to stay compact', 'A pole to climb — leaves change shape and get larger', 'Warmth'],
       dislikes: ['Direct sun', 'Cold draughts', 'Drying out completely'],
       problems: ['yellow-lower-leaves', 'leggy-stretching', 'brown-crispy-edges', 'spider-mites', 'variegation-loss'],
-      tags: ['trailing', 'climbing', 'beginner', 'fast-growing', 'colourful']
+      tags: ['trailing', 'climbing', 'beginner', 'fast-growing', 'colourful', 'low-light']
     },
 
     {
@@ -1606,7 +1651,7 @@ window.PLANT_DATA = (function () {
       likes: ['Cool rooms — it dislikes central heating', 'Regular misting to deter spider mites', 'Being cut back hard'],
       dislikes: ['Hot dry air', 'Direct sun', 'Waterlogged soil'],
       problems: ['spider-mites', 'brown-crispy-edges', 'variegation-loss', 'leggy-stretching', 'yellow-lower-leaves'],
-      tags: ['trailing', 'climbing', 'fast-growing', 'cool-tolerant']
+      tags: ['trailing', 'climbing', 'fast-growing', 'cool-tolerant', 'low-light']
     },
 
     /* ====================== FLOWERING ====================== */
@@ -1625,7 +1670,7 @@ window.PLANT_DATA = (function () {
         note: 'Do not water the pot — soak it. Hold the whole pot under a running tap or in a bowl for a minute, then let it drain completely. Healthy roots are silver-green when dry and bright green when wet.'
       },
       light: {
-        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct'],
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
         note: 'An east-facing sill is close to perfect. Leaves should be a mid olive-green; dark green means too little light, reddish means too much.'
       },
       humidity: 'high', minC: 16, idealC: [18, 28],
@@ -1647,7 +1692,7 @@ window.PLANT_DATA = (function () {
       likes: ['A thorough soak then complete drainage', 'Bright indirect light', 'A 5–10°C night-time temperature drop to trigger flowering'],
       dislikes: ['Water sitting in the crown between the leaves', 'Being potted in soil', 'Ice cubes — a persistent and harmful myth', 'Cold draughts'],
       problems: ['no-flowers', 'bud-drop', 'root-rot', 'crown-rot', 'yellow-lower-leaves', 'limp-leaves'],
-      tags: ['flowering', 'pet-safe', 'epiphyte', 'compact', 'bathroom']
+      tags: ['flowering', 'pet-safe', 'epiphyte', 'bathroom', 'humidity-lover']
     },
 
     {
@@ -1665,7 +1710,7 @@ window.PLANT_DATA = (function () {
         note: 'Water from below — stand the pot in a saucer of tepid water for 20 minutes, then tip away what is left. Water on those furry leaves causes brown spots and rot.'
       },
       light: {
-        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct'],
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
         note: 'Bright indirect light for 12 hours a day keeps it flowering almost continuously. It does very well under a simple desk grow light.'
       },
       humidity: 'medium', minC: 16, idealC: [18, 24],
@@ -1705,7 +1750,7 @@ window.PLANT_DATA = (function () {
         note: 'Let the top 2–3cm dry, then water at the base. Wet leaves in still air lead to powdery mildew, which begonias are prone to.'
       },
       light: {
-        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct'],
+        ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
         note: 'Bright indirect light keeps the silver spots crisp and the red undersides deep. Direct sun bleaches and burns.'
       },
       humidity: 'high', minC: 15, idealC: [18, 26],
@@ -1826,7 +1871,7 @@ window.PLANT_DATA = (function () {
       likes: ['Damp soil', 'Its own pot', 'Hard harvesting — it comes back stronger', 'Cool conditions'],
       dislikes: ['Drying out', 'Sharing a pot', 'Deep shade'],
       problems: ['powdery-mildew', 'aphids', 'leggy-stretching', 'rust', 'drooping'],
-      tags: ['edible', 'herb', 'fast-growing', 'kitchen', 'cool-tolerant']
+      tags: ['edible', 'herb', 'fast-growing', 'kitchen', 'cool-tolerant', 'beginner']
     },
 
     {
@@ -1863,6 +1908,16 @@ window.PLANT_DATA = (function () {
           'Seed is slow and unreliable; cuttings are much the better route.'
         ]
       }],
+      seed: {
+        viable: true, sowSeason: 'Early spring, indoors', germDays: '14–28 days', depthMm: 3,
+        steps: [
+          'Germination is patchy, often under half, so sow three times as many seeds as you want plants.',
+          'Scatter seed on damp seed compost and cover with a thin layer, no more than 3mm.',
+          'Keep it at 18–25°C and only just damp. Wet compost rots the seedlings.',
+          'Pot on into gritty mix once seedlings have four true leaves.',
+          'Seedlings take a year to make a useful bush. Cuttings are quicker and stay true to the parent.'
+        ]
+      },
       likes: ['All the direct sun available', 'Dry roots and good airflow', 'Terracotta pots', 'Regular light pruning'],
       dislikes: ['Overwatering — the usual cause of death', 'Humid stagnant air', 'Rich soil', 'Low light'],
       problems: ['root-rot', 'powdery-mildew', 'brown-crispy-edges', 'leggy-stretching', 'spider-mites'],

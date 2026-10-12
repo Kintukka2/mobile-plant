@@ -170,10 +170,11 @@ on a method that is not in the table.
 | `light.note` | yes | What it does when the light is wrong in each direction. |
 
 **Rate every rung exactly once.** Between `ideal`, `tolerates` and `avoid`,
-each of `low`, `medium`, `bright-indirect` and `direct` should appear once and
-only once. A rung left out gets a vaguer verdict, "Expect slow, stretched
-growth here", which is wrong for a plant that would really be scorched.
-Thirteen older records still leave one out; do not add a fourteenth.
+each of `low`, `medium`, `bright-indirect` and `direct` appears once and only
+once. A rung left out gets a vaguer verdict, "Expect slow, stretched growth
+here", which is wrong for a plant that would really be scorched. The species
+check fails on a record that leaves one out or names one twice. `tolerates`
+can be empty: Echeveria wants direct sun and avoids everything else.
 
 ### Feeding, soil, repotting
 
@@ -209,8 +210,9 @@ pet safe only when `cats` and `dogs` are both `safe`; `mild` is not pet safe.
 | `roots` | A bare duration, "3–5 weeks", which the plant page shows as "Roots in 3–5 weeks"; or a phrase that reads on its own: "Already rooted", "No rooting needed", "Germinates in 2–4 months". Never "Immediate" or "N/A". |
 | `steps` | Three to six steps, one action each. |
 
-56 of 57 species list one method. A second one (division as well as cuttings,
-say) is worth adding wherever it is real.
+Most species list one method. A second one (division as well as cuttings,
+say) is worth adding wherever it is real, as Pothos, Spider Plant, Rubber
+Plant, Chinese Money Plant, ZZ Plant and Snake Plant have.
 
 `seed` is `null`, or for species really grown from seed at home:
 
@@ -239,8 +241,8 @@ Both kinds are shown under "What tends to go wrong", on the species page and
 the plant page.
 
 List at least one cause, or the plant gets no species-specific weighting at
-all (Maidenhair and Fittonia are the two that list none). The species check
-fails on an id that is neither a symptom nor a cause.
+all. The species check fails on a list with no cause, and on an id that is
+neither a symptom nor a cause.
 
 **Symptoms:** `yellow-lower-leaves`, `brown-crispy-edges`, `brown-tips-only`,
 `brown-spots-leaves`, `drooping`, `leaves-curling`, `leaves-falling-off`,
@@ -342,7 +344,7 @@ conversational surfaces, never in care data, treatments or toxicity notes.
 - [ ] `common` and every `aka` searched against the existing records
 - [ ] Toxicity taken from the ASPCA list, or the note says it is not listed
 - [ ] Watering method decided; `soakPct` given only if poured
-- [ ] Every light rung rated exactly once
+- [ ] Every light rung rated exactly once (the species check enforces it)
 - [ ] `cool` at least `warm`; `minC` below `idealC[0]`
 - [ ] Every propagation `roots` reads after "Roots in", or on its own
 - [ ] At least one cause id in `problems`, and the treatments checked against this plant
