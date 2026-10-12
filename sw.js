@@ -70,8 +70,13 @@
    and Living Stones, Venus Flytrap and Tropical Pitcher Plant.
 
    v98: nineteen species the ASPCA lists by name, Sago Palm on the
-   very-toxic rung, and feeding seasons of a plant's own (Cyclamen). */
-const CACHE = 'sprout-v98-viridium';
+   very-toxic rung, and feeding seasons of a plant's own (Cyclamen).
+
+   v99: a review of all ninety-five profiles, a lettered tile for a
+   species still waiting on its photograph, diagnosis that never tells a
+   never-fed plant to feed, and propagation timed by each method's own
+   season. */
+const CACHE = 'sprout-v99-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is

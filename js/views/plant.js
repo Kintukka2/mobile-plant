@@ -357,12 +357,12 @@ window.ViewPlant = (function () {
   function toxPill(ico, label, rating) {
     const t = LOOKUPS.TOX[rating] || LOOKUPS.TOX.safe;
     /* safe / mild / toxic / very-toxic -> plain, champagne, clay wash,
-       oxblood fill. Oxblood is the top rung only: twenty-two of the
-       forty-eight species are 'toxic' to cats and one is 'very-toxic', so
-       putting the filled chip on both would mark half the catalogue and it
-       would stop being read. The one that qualifies does so for cardiac
-       glycosides rather than a sore mouth, which is the distinction the
-       rung exists to make.
+       oxblood fill. Oxblood is the top rung only: thirty-four of the
+       ninety-five species are 'toxic' to cats and two are 'very-toxic', so
+       putting the filled chip on all of them would mark nearly two in five
+       and it would stop being read. The two that qualify do so for cardiac
+       glycosides and liver failure rather than a sore mouth, which is the
+       distinction the rung exists to make.
        The variant comes from LOOKUPS.TOX rather than a ladder written out
        here, because ViewDiscover renders the same ratings and the two
        copies drifted the last time the top rung moved. */
@@ -615,8 +615,27 @@ window.ViewPlant = (function () {
 
   function propTab(p, sp) {
     if (!sp) return '';
-    const growing = Schedule.isGrowingSeason();
-    const season = LOOKUPS.SEASON_META[Schedule.currentSeason()];
+    /* The methods' own seasons decide, where they name one. Spring and
+       summer alone told a Cyclamen, sown in late summer or autumn, and a
+       flytrap, divided in late winter, to wait for spring. A method that
+       names no season ("After flowering") leaves it to the growing season. */
+    const ORDER = ['spring', 'summer', 'autumn', 'winter'];
+    const now = Schedule.currentSeason();
+    const named = (sp.prop || []).map(function (m) {
+      return ORDER.filter(function (k) { return new RegExp('\\b' + k + '\\b', 'i').test(m.season || ''); });
+    });
+    const anyNamed = named.some(function (a) { return a.length; });
+    const growing = anyNamed
+      ? named.some(function (a) { return a.indexOf(now) !== -1; })
+      : Schedule.isGrowingSeason();
+    let next = 'spring';
+    if (anyNamed) {
+      for (let i = 1; i <= 4; i++) {
+        const k = ORDER[(ORDER.indexOf(now) + i) % 4];
+        if (named.some(function (a) { return a.indexOf(k) !== -1; })) { next = k; break; }
+      }
+    }
+    const season = LOOKUPS.SEASON_META[now];
 
     let html = '';
 
@@ -633,8 +652,8 @@ window.ViewPlant = (function () {
           '<div class="nudge-t">' + UI.esc(growing ? 'Good time to propagate' : 'Not the season for it') + '</div>' +
           '<p class="nudge-p">' +
             (growing
-              ? 'It is ' + UI.esc(season.label.toLowerCase()) + ' — active growth means cuttings root faster and rot less.'
-              : 'It is ' + UI.esc(season.label.toLowerCase()) + '. Cuttings taken now root slowly and often rot instead. Wait for spring if you can.') +
+              ? 'It is ' + UI.esc(season.label.toLowerCase()) + ' — active growth means new plants take faster and rot less.'
+              : 'It is ' + UI.esc(season.label.toLowerCase()) + '. Anything started now is slow to take and more likely to rot. Wait for ' + next + ' if you can.') +
           '</p>' +
           /* The verdict is the answer most visits want; the method is a
              page of steps that only matters on the day. So the steps wait

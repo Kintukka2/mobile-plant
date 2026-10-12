@@ -380,7 +380,7 @@ window.PROBLEM_DATA = (function () {
       why: 'Fluoride, chlorine and dissolved salts in treated tap water accumulate in leaf tips, where transpiration concentrates them. Some plants simply cannot tolerate it — spider plants, dracaenas, calatheas, marantas and palms are the classic sufferers. The giveaway is browning confined to the very tips while the rest of the leaf stays perfectly healthy.',
       fix: [
         'Switch to rainwater, filtered water or distilled water. Rainwater is free and by far the best.',
-        'Failing that, leave tap water standing uncovered overnight — this lets chlorine off-gas, though it does nothing for fluoride.',
+        'Failing that, leave tap water standing uncovered overnight — this lets chlorine off-gas, though it does nothing for fluoride or dissolved minerals. That is not enough for a carnivorous plant, which needs rainwater, distilled or reverse-osmosis water only.',
         'Flush the pot thoroughly: run water through it for a minute or two to wash accumulated salts out of the soil.',
         'Trim brown tips with clean scissors, following the leaf\'s natural shape so the cut is less obvious.',
         'Avoid softened water — ion-exchange softeners replace calcium with sodium, which is worse for plants than hard water.'
@@ -615,13 +615,13 @@ window.PROBLEM_DATA = (function () {
       name: 'Natural dormancy',
       ico: 'moon',
       severity: 'low',
-      why: 'Many plants — alocasias, caladiums, some begonias — die back deliberately when light and temperature drop, retreating into their tuber or rhizome to wait out the unfavourable season. It looks exactly like death. It is not. The underground parts are alive and will resprout.',
+      why: 'Many plants — alocasias, caladiums, cyclamen, some begonias — die back deliberately for part of the year, retreating into their tuber or rhizome to wait out the season that does not suit them. For most that is winter; a cyclamen rests through summer. It looks exactly like death. It is not. The underground parts are alive and will resprout.',
       fix: [
-        'Cut watering right back to barely damp — perhaps once a month. Wet soil around a dormant tuber is what actually kills it.',
+        'Cut watering right back to barely damp, or stop it altogether if its care page says it rests dry. Wet soil around a dormant tuber is what actually kills it.',
         'Stop feeding entirely until growth restarts.',
-        'Keep it somewhere cool but frost-free and reasonably bright.',
+        'Keep it at the temperature its care page gives. A cyclamen rests cool, but tropical tubers such as caladiums and alocasias must stay above 15°C.',
         'Remove dead foliage once it has fully browned, so it does not rot.',
-        'Wait. New shoots typically appear in spring as light levels climb.',
+        'Wait. New shoots appear when its growing season comes round again, for most plants in spring.',
         'To confirm it is alive, feel gently in the soil for the tuber — it should still be firm.'
       ],
       prevent: 'Nothing to prevent — this is healthy behaviour. Better light and warmth through winter can reduce or avoid it if you would rather it kept growing.'
@@ -864,6 +864,28 @@ window.PROBLEM_DATA = (function () {
       prevent: 'Nothing to prevent: plan for it. A plant that skips its rest one winter is weaker the next summer.'
     },
 
+    /* A plant that is never fed (fert.never) must not be told to feed.
+       Every general feeding cause ends in feeding again, and a pale
+       flytrap was being told to begin feeding at half strength. This one
+       stands in for overfeeding and the wrong feed, and `drops` takes the
+       causes that only make sense for a fed plant out of the running
+       altogether for a species that lists it. */
+    'fed-by-mistake': {
+      name: 'Fertiliser it should never have',
+      ico: 'flask',
+      severity: 'med',
+      replaces: ['overfeeding', 'wrong-feed'],
+      drops: ['nutrient-deficiency', 'salt-buildup'],
+      why: 'This plant is never fed. Carnivorous plants take their nutrients from what they catch, and living stones need almost none; fertiliser in the pot burns their fine roots, and the damage looks like drought: browning edges, blackened leaves or traps, and wilting.',
+      fix: [
+        'Stop any feeding at once, and do not feed it again.',
+        'Flush the pot thoroughly and let it drain completely: rainwater, distilled or reverse-osmosis water for a carnivorous plant, plain water for a living stone.',
+        'Repeat the flush once or twice over the following fortnight.',
+        'In a bad case, repot into fresh, unfertilised mix of the kind its care page gives.'
+      ],
+      prevent: 'Nothing in the pot but water. A carnivorous plant feeds itself, and a living stone needs nothing at all.'
+    },
+
     'flowered-out': {
       name: 'Fading after flowering',
       ico: 'flower',
@@ -1048,11 +1070,14 @@ window.PROBLEM_DATA = (function () {
        Where one stands in for several (an air plant's rot for crown rot,
        root rot and overwatering at once) it keeps the heaviest. */
     const swap = {};
+    const dropped = {};
     prone.forEach(function (id) {
       ((CAUSES[id] && CAUSES[id].replaces) || []).forEach(function (r) { swap[r] = id; });
+      ((CAUSES[id] && CAUSES[id].drops) || []).forEach(function (d) { dropped[d] = true; });
     });
     const weights = {};
     Object.keys(symptom.causes).forEach(function (id) {
+      if (dropped[id]) return;
       const to = swap[id] || id;
       if (CAUSES[to] && CAUSES[to].onlyIfProne && prone.indexOf(to) === -1) return;
       weights[to] = Math.max(weights[to] || 0, symptom.causes[id]);
@@ -1144,6 +1169,7 @@ window.PROBLEM_DATA = (function () {
     'flowered-out':        ['flowered-recently', 'lower-leaves'],
     'leaf-pair-change':    ['winter-now', 'lower-leaves'],
     'carnivore-dormancy':  ['winter-now', 'cold-spot'],
+    'fed-by-mistake':      ['fed-lots', 'white-crust', 'edges-first'],
     'spider-mites':        ['webbing', 'tiny-dots', 'stippling', 'dry-air'],
     'mealybugs':           ['white-fluff', 'sticky'],
     'scale':               ['brown-bumps', 'sticky'],

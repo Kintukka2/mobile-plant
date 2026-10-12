@@ -81,7 +81,7 @@ window.ViewDiscover = (function () {
            to lose it again at 360px, which plenty of phones are.
 
            So the real question was which pill deserved the room, and the
-           light chip cannot answer it. Across 48 species and four light
+           light chip cannot answer it. Across the whole catalogue and four light
            levels the value repeats constantly — most cards read BRIGHT or
            MEDIUM — and a mark that says the same thing on almost every tile
            stops being read at all, the same failure as the four LIVING ROOM

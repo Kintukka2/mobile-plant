@@ -644,12 +644,14 @@ window.UI = (function () {
 
        A cut-out is contained, not cropped: in a 4:5 card the two are the same,
        but in a 34px room-strip square cover would cut the pot off and keep a
-       slice of leaf. Lazy, because Discover puts all forty-eight on one page
+       slice of leaf. Lazy, because Discover puts every species on one page
        and most of them are below the fold. */
-    if (photoSrc) {
+    const s = String(label || '').trim();
+    const ch = s ? s.charAt(0).toUpperCase() : '·';
+    if (photoSrc && !missingPhoto[photoSrc]) {
       const cut = String(photoSrc).indexOf('img/species/') === 0;
       return '<span class="tmark ' + tintClass(seed || 'plant') + (cut ? ' tmark-cut' : '') + '">' +
-             '<img src="' + attr(photoSrc) + '" alt="" loading="lazy"></span>';
+             '<img src="' + attr(photoSrc) + '" alt="" loading="lazy" data-ch="' + attr(ch) + '"></span>';
     }
 
     /* The letter, not a leaf. A row of six identical hairline leaves in six
@@ -657,11 +659,31 @@ window.UI = (function () {
        initials reads as a guest list, and at 34px a letterform survives
        where a 15px icon turns to mush. It also ties the plant back to the
        room monogram, so the two use one vocabulary instead of two. */
-    const s = String(label || '').trim();
-    const ch = s ? s.charAt(0).toUpperCase() : '·';
     return '<span class="tmark ' + tintClass(seed || 'plant') + '">' +
            '<span class="tmark-t">' + esc(ch) + '</span></span>';
   }
+
+  /* A species photograph that has not been made yet. Species are written
+     ahead of their pictures, and Store.speciesPhoto() builds the path
+     without looking, so the file can be missing: that showed as a broken
+     image on every card, row and hero for the species. The tile falls back
+     to its letter instead, and remembers the path for the rest of the visit
+     so a re-render draws the letter at once rather than asking again.
+     Dropping the photograph into img/species/ is then the whole fix.
+
+     Error events do not bubble, so this listens in the capture phase, and
+     only for the cut-outs: an owner's own photo is a data URL that cannot
+     go missing this way. */
+  const missingPhoto = {};
+  document.addEventListener('error', function (e) {
+    const img = e.target;
+    if (!img || img.tagName !== 'IMG') return;
+    const plate = img.parentNode;
+    if (!plate || !plate.classList || !plate.classList.contains('tmark-cut')) return;
+    missingPhoto[img.getAttribute('src')] = true;
+    plate.classList.remove('tmark-cut');
+    plate.innerHTML = '<span class="tmark-t">' + esc(img.getAttribute('data-ch') || '·') + '</span>';
+  }, true);
 
   /* An initial set in the display face inside a hairline square — what a room
      gets instead of a pictogram.
