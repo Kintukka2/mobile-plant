@@ -47,4 +47,11 @@ if(miss.length||extra.length||got.length!==want.length||stated||!safeOk){
 }
 const noPhoto=c.window.PLANT_DATA.filter(p=>!fs.existsSync(`img/species/${p.id}.webp`)).map(p=>p.id);
 if(noPhoto.length){console.error('species with no photograph in img/species/:', noPhoto.join(', '));process.exit(1);}
+// Search reads the tags and the Pet safe filter reads the ratings, so a
+// pet-safe tag on a 'mild' plant (Mint, once) put it in front of a reader
+// searching for pet-safe plants without the filter ever agreeing.
+const tagOff=c.window.PLANT_DATA.filter(p=>p.tags.includes('pet-safe')!==(p.tox.cats==='safe'&&p.tox.dogs==='safe')).map(p=>p.id);
+if(tagOff.length){console.error('pet-safe tag disagrees with tox.cats/tox.dogs:', tagOff.join(', '));process.exit(1);}
+const badMethod=c.window.PLANT_DATA.filter(p=>p.water.method&&!c.window.LOOKUPS.WATER_METHODS[p.water.method]).map(p=>p.id+' ('+p.water.method+')');
+if(badMethod.length){console.error('water.method not in LOOKUPS.WATER_METHODS:', badMethod.join(', '));process.exit(1);}
 console.log(`site species list matches PLANT_DATA — ${want.length} species, ${safe} pet safe`);

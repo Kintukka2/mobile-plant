@@ -8,7 +8,13 @@
    water.warm  = days between waterings during the growing season
    water.cool  = days between waterings during dormancy
    water.soakPct = fraction of pot volume to apply as water
+   water.method = a key in LOOKUPS.WATER_METHODS; left out means 'pour'.
+                  Only a poured plant is given a measured amount.
    fert.everyDays = days between feeds, growing season only
+   prop[].roots   = a bare duration ('3–5 weeks') or a phrase that reads on
+                    its own ('Already rooted'). The plant page puts
+                    "Roots in" in front of durations only: in front of
+                    anything else it printed "Roots in Immediate".
 
    Toxicity ratings follow ASPCA classifications: 'safe' | 'mild' | 'toxic'
    | 'very-toxic'.
@@ -144,7 +150,7 @@ window.PLANT_DATA = (function () {
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
         note: 'Contains saponins. Chewing leads to nausea, vomiting and diarrhoea. Unpleasant rather than dangerous, but worth keeping out of reach.' },
       prop: [
-        { m: 'Division', diff: 'easy', season: 'Spring', roots: 'Immediate',
+        { m: 'Division', diff: 'easy', season: 'Spring', roots: 'Already rooted',
           steps: [
             'Slide the whole plant out of its pot and brush the soil off the rhizomes.',
             'Find a natural split where a cluster of leaves has its own thick rhizome and roots.',
@@ -190,7 +196,7 @@ window.PLANT_DATA = (function () {
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
         note: 'Calcium oxalate crystals in every part. The sap can irritate skin — worth wearing gloves when dividing it.' },
       prop: [{
-        m: 'Division of rhizomes', diff: 'easy', season: 'Spring', roots: 'Immediate',
+        m: 'Division of rhizomes', diff: 'easy', season: 'Spring', roots: 'Already rooted',
         steps: [
           'Unpot and wash enough soil away to see the potato-like rhizomes clearly.',
           'Separate a clump that has both a rhizome and its own stems.',
@@ -299,7 +305,7 @@ window.PLANT_DATA = (function () {
       repot: 'Every 4–5 years. It resents disturbance and sulks for a season afterwards.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe', note: 'Non-toxic and safe around cats and dogs.' },
       prop: [{
-        m: 'Division', diff: 'easy', season: 'Spring', roots: 'Immediate',
+        m: 'Division', diff: 'easy', season: 'Spring', roots: 'Already rooted',
         steps: [
           'Unpot in spring and locate the creeping rhizomes below the soil.',
           'Cut a section carrying at least two or three leaves and its own roots.',
@@ -335,7 +341,7 @@ window.PLANT_DATA = (function () {
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
         note: 'Calcium oxalate crystals causing oral irritation, drooling and vomiting.' },
       prop: [{
-        m: 'Division', diff: 'easy', season: 'Spring', roots: 'Immediate',
+        m: 'Division', diff: 'easy', season: 'Spring', roots: 'Already rooted',
         steps: [
           'Mature plants throw up separate shoots from the base — these are your divisions.',
           'Unpot and tease the root ball apart, keeping roots with each shoot.',
@@ -520,7 +526,7 @@ window.PLANT_DATA = (function () {
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
         note: 'The seeds and fruit contain toxins that cause vomiting and drowsiness. The leaves are far less of a concern than the seed pods.' },
       prop: [{
-        m: 'Division', diff: 'medium', season: 'Spring', roots: 'Immediate',
+        m: 'Division', diff: 'medium', season: 'Spring', roots: 'Already rooted',
         steps: [
           'This is a physical job — a mature plant has a dense, woody rhizome.',
           'Unpot and identify a fan of leaves with its own roots at the base.',
@@ -748,7 +754,7 @@ window.PLANT_DATA = (function () {
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
         note: 'Completely non-toxic and one of the best choices for homes with cats and dogs.' },
       prop: [{
-        m: 'Division', diff: 'easy', season: 'Spring', roots: 'Immediate',
+        m: 'Division', diff: 'easy', season: 'Spring', roots: 'Already rooted',
         steps: [
           'Unpot and look for natural clumps of fronds with their own roots.',
           'Pull or cut the root ball into two or three sections.',
@@ -823,7 +829,7 @@ window.PLANT_DATA = (function () {
       soil: 'Moisture-retentive and rich — coco coir based mix with a little perlite.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe', note: 'Non-toxic and safe around pets.' },
       prop: [{
-        m: 'Division', diff: 'medium', season: 'Spring', roots: 'Immediate',
+        m: 'Division', diff: 'medium', season: 'Spring', roots: 'Already rooted',
         steps: [
           'Unpot and cut the rhizome mass into sections, each with several fronds and good roots.',
           'Pot immediately into damp mix — do not let the roots dry out for even a moment.',
@@ -861,7 +867,7 @@ window.PLANT_DATA = (function () {
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
         note: 'Non-toxic. All calatheas are safe around cats and dogs, which makes them a favourite for pet owners willing to fuss.' },
       prop: [{
-        m: 'Division', diff: 'medium', season: 'Spring', roots: 'Immediate',
+        m: 'Division', diff: 'medium', season: 'Spring', roots: 'Already rooted',
         steps: [
           'Only divide a genuinely mature, multi-stemmed clump — small plants rarely survive it.',
           'Unpot and gently tease the rhizomes apart, keeping three or more leaves per division.',
@@ -973,7 +979,7 @@ window.PLANT_DATA = (function () {
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
         note: 'Non-toxic. A genuinely pet-safe palm — unlike the sago palm, which is not a true palm and is lethally toxic.' },
       prop: [{
-        m: 'Seed', diff: 'hard', season: 'Spring', roots: '2–4 months to germinate',
+        m: 'Seed', diff: 'hard', season: 'Spring', roots: 'Germinates in 2–4 months',
         steps: [
           'Palms cannot be divided or taken as cuttings — each stem grows from a single point.',
           'Sow fresh seed 1cm deep in damp seed compost.',
@@ -1010,7 +1016,7 @@ window.PLANT_DATA = (function () {
       repot: 'Every 3–4 years. Resents disturbance, so pot on only when roots fill the pot.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe', note: 'Non-toxic and safe around pets.' },
       prop: [{
-        m: 'Seed', diff: 'hard', season: 'Spring', roots: '3–12 months to germinate',
+        m: 'Seed', diff: 'hard', season: 'Spring', roots: 'Germinates in 3–12 months',
         steps: [
           'Cannot be divided — clumps sold in shops are several seedlings grown together.',
           'Soak fresh seed for two days, then sow in damp compost.',
@@ -1047,7 +1053,7 @@ window.PLANT_DATA = (function () {
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
         note: 'Calcium oxalate crystals — mouth burning, drooling, vomiting. Worth knowing: this is NOT a true lily. True lilies (Lilium, Hemerocallis) cause fatal kidney failure in cats; a peace lily is painful but not deadly.' },
       prop: [{
-        m: 'Division', diff: 'easy', season: 'Spring', roots: 'Immediate',
+        m: 'Division', diff: 'easy', season: 'Spring', roots: 'Already rooted',
         steps: [
           'Unpot a mature clump and look for crowns — each has its own leaves and roots.',
           'Tease the crowns apart by hand, cutting only where you must.',
@@ -1085,7 +1091,7 @@ window.PLANT_DATA = (function () {
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
         note: 'Calcium oxalate crystals throughout. Causes intense oral burning, swelling and drooling if chewed.' },
       prop: [{
-        m: 'Division', diff: 'easy', season: 'Spring', roots: 'Immediate',
+        m: 'Division', diff: 'easy', season: 'Spring', roots: 'Already rooted',
         steps: [
           'Unpot and find offsets — side shoots with their own aerial roots.',
           'Cut an offset away with a sterilised blade, keeping as much root as possible.',
@@ -1819,7 +1825,7 @@ window.PLANT_DATA = (function () {
       likes: ['Damp soil', 'Its own pot', 'Hard harvesting — it comes back stronger', 'Cool conditions'],
       dislikes: ['Drying out', 'Sharing a pot', 'Deep shade'],
       problems: ['powdery-mildew', 'aphids', 'leggy-stretching', 'rust', 'drooping'],
-      tags: ['edible', 'herb', 'pet-safe', 'fast-growing', 'kitchen', 'cool-tolerant']
+      tags: ['edible', 'herb', 'fast-growing', 'kitchen', 'cool-tolerant']
     },
 
     {
@@ -1873,7 +1879,7 @@ window.PLANT_DATA = (function () {
       growthRate: 'slow',
       matureCm: 8,
       water: {
-        warm: 7, cool: 12, soakPct: 1.0, dryBetween: true,
+        warm: 7, cool: 12, soakPct: 1.0, dryBetween: true, method: 'soak',
         note: 'It has no functional roots and takes water through its leaves. Submerge the whole plant in tepid water for 20–30 minutes, then shake it out hard and leave it upside down somewhere airy to dry within 4 hours. Water left in the base rots the plant.'
       },
       light: {
@@ -1886,7 +1892,7 @@ window.PLANT_DATA = (function () {
       repot: 'Never. If mounted, use wire or a neutral glue, never copper, which is toxic to bromeliads.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe', note: 'Non-toxic and safe around pets.' },
       prop: [{
-        m: 'Offsets (pups)', diff: 'easy', season: 'After flowering', roots: 'N/A',
+        m: 'Offsets (pups)', diff: 'easy', season: 'After flowering', roots: 'No rooting needed',
         steps: [
           'Each plant flowers once, then produces pups from its base and slowly dies — this is its natural cycle.',
           'Let a pup grow to about a third of the parent\'s size.',

@@ -188,7 +188,8 @@ window.ViewPlant = (function () {
           '<div class="eyebrow">Watering</div>' +
           '<div style="font-family:var(--serif);font-size:22px;margin-top:3px">' +
             'Every ' + iv.days + ' days</div>' +
-          '<div class="muted small" style="margin-top:2px">About ' + ml + 'ml each time' +
+          '<div class="muted small" style="margin-top:2px">' +
+            (ml == null ? UI.esc(Schedule.waterMethod(p).card) : 'About ' + ml + 'ml each time') +
             (w.lastDate ? ' · last watered ' + UI.esc(UI.fmtDate(w.lastDate)) : '') + '</div>' +
         '</div>' +
         '<span class="pill ' + dueCls + ' pill-lg">' + UI.esc(dueLine) + '</span>' +
@@ -640,7 +641,7 @@ window.ViewPlant = (function () {
                 UI.pill(LOOKUPS.DIFFICULTY[m.diff] ? LOOKUPS.DIFFICULTY[m.diff].label : m.diff,
                         m.diff === 'easy' ? '' : m.diff === 'hard' ? 'terra' : 'sun') +
                 UI.pill(m.season, 'grey', 'calendar') +
-                UI.pill('Roots in ' + m.roots, 'grey', 'clock') +
+                UI.pill(/^\d/.test(m.roots) ? 'Roots in ' + m.roots : m.roots, 'grey', 'clock') +
               '</div>' +
             '</div>' +
           '</div>' +

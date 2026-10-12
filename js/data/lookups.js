@@ -370,6 +370,20 @@ window.LOOKUPS = (function () {
     'basket':    { label: 'Basket / fabric',  dryFactor: 0.7,  note: 'Very airy, dries out quickly.' }
   };
 
+  /* ---------- How a species takes its water ----------
+     A species record names one in `water.method`, and leaving it out means
+     'pour'. Only a poured plant gets a measured amount, because the amount
+     is worked out from the pot: an air plant has no pot, and the sum turned
+     its whole-plant soak (soakPct 1.0) into "1800ml" for a plant that sits
+     in a shell. `task` is the line under a Today task and `card` the line
+     on the plant's watering card, both standing in for the millilitres. */
+  const WATER_METHODS = {
+    pour: { measured: true },
+    soak: { measured: false,
+            task: 'Soak the whole plant',
+            card: 'A whole-plant soak each time, not a measured pour' }
+  };
+
   const DRAINAGE = {
     'good':  { label: 'Has drainage holes', factor: 1.0 },
     'none':  { label: 'No drainage holes',  factor: 1.25,
@@ -407,6 +421,6 @@ window.LOOKUPS = (function () {
     LIGHT, ASPECTS, ASPECT_NAMES, aspectProfile, aspectLabel,
     hemisphereFromTimeZone: hemisphereFromTimeZone,
     ROOM_PRESETS, ROOM_ICONS, HUMIDITY, DIFFICULTY, TOX, TASKS, LOG_KINDS,
-    season, seasonPhase, SEASON_META, POT_MATERIALS, DRAINAGE
+    season, seasonPhase, SEASON_META, POT_MATERIALS, DRAINAGE, WATER_METHODS
   };
 })();
