@@ -18,13 +18,16 @@ const stills = process.argv[2];
     }
     console.log('stills', stills, 'errors', errs.length ? errs : 'none');
   } else {
-    fs.rmSync('frames', { recursive: true, force: true }); fs.mkdirSync('frames');
-    const N = Math.round(P.duration * 30);
-    for (let f = 0; f < N; f++) {
+    // FROM and TO render one stretch into the frames already there, so a
+    // long render can be split across processes or picked up after a stop.
+    const N = Math.round(P.duration * 30), F0 = +(process.env.FROM || 0), F1 = Math.min(N, +(process.env.TO || N));
+    if (!process.env.FROM) fs.rmSync('frames', { recursive: true, force: true });
+    fs.mkdirSync('frames', { recursive: true });
+    for (let f = F0; f < F1; f++) {
       await p.evaluate(t => window.render(t), f / 30);
       await p.screenshot({ path: `frames/${String(f).padStart(4, '0')}.png` });
     }
-    console.log('frames', N, 'errors', errs.length ? errs : 'none');
+    console.log('frames', F0, '-', F1, 'errors', errs.length ? errs : 'none');
   }
   await b.close();
 })();
