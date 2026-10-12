@@ -15,68 +15,80 @@ Brand first, then the words a stranger types. There are already several
 plant apps called some variant of Sprout, so the second word is doing real
 work; "Plant Care" is what makes the listing findable at all.
 
-## Short description — 80 / 80
+## Short description — 79 / 80
 
 ```
-Plant care schedules built from real species data, your pots, weather, and home.
+Plant care and watering reminders worked out from your pots, light and weather.
 ```
 
-Play shows this under the title in search results and it is weighted for
-ranking, so it carries the nouns the app is actually about rather than an
-adjective. "and home" is the floor plan, which is the one thing no other
-plant app does, and it earns the last five characters — this is exactly at
-the 80 limit, so anything added has to displace something.
+Play shows this under the title and weights it for ranking, alongside the
+name. "Plant care" is already in the name, so this line spends its
+characters on the next search term, "watering reminders", and still says
+what makes Sprout different: the schedule comes from the pot, the light
+and the weather. Live since 12 October 2026. The previous line, "Plant care
+schedules built from real species data, your pots, weather, and home.", is
+the one to run against it in a Store listing experiment.
 
-## Full description — 2,211 / 4,000
+## Full description — 2,881 / 4,000
 
 ```
 Most plant apps ask how often you want reminding. Sprout works it out.
 
-Every schedule starts from real data for the species — 48 of the most common
-houseplants, each with its own warm and cool season watering intervals,
-feeding cycle, ideal light and toxicity. Then it adjusts for your situation:
-pot size and material, drainage, how bright the room is, which way the window
-faces, and what season it is where you live. A Monstera in a 24cm terracotta
-pot by a north window is not on the same cycle as one in plastic in a dim
-corner, and Sprout does not pretend otherwise.
+A houseplant companion that sets plant care and watering reminders for each plant, from what it is and where it lives. Free, with no account, no ads and no subscription.
 
-WEATHER THAT CHANGES THE PLAN
-Set a location and Sprout reads the local forecast. Before a hot dry spell it
-offers to bring watering forward; before a wet week it offers to hold off.
-You approve every change.
+Every plant care schedule starts from real care data for the species you own: warm and cool season watering intervals, a feeding cycle, ideal light and toxicity for some of the most common houseplants. Sprout then adjusts it for where each plant actually lives: pot size and material, drainage, how bright the room is, which way the window faces and the season where you live. A Monstera in a 24cm terracotta pot by a north window is not on the same cycle as one in a plastic pot in a dim corner, and Sprout does not pretend otherwise. Every schedule comes with the reason behind it.
 
-A CLINIC FOR WHEN SOMETHING LOOKS WRONG
-Yellow leaves, brown tips, sudden drop, fungus gnats. Pick the symptom,
-answer a few questions about what else you are seeing, and Sprout ranks the
-likely causes — 26 symptoms, 42 clues and 40 causes, weighted by what your
-particular species is prone to. Each cause comes with what to do about it.
+<b>Watering that follows the weather</b>
+Set a location and Sprout reads the local forecast. Before a hot, dry spell it offers to bring watering forward; before a wet week it offers to hold off. You approve every change.
 
-YOUR HOME, NOT A LIST
-Group plants into rooms tagged by light and window aspect. Draw your actual
-floor plan if you like, and Sprout works out which rooms are bright, which
-are dim, and which borrow light through a doorway.
+<b>Draw your home, find the light</b>
+Group plants into rooms, or trace your actual floor plan, mark the windows and point north. Sprout works out which rooms are bright, which are dim and which borrow light through a doorway, then shows where each plant should stand and tells you when one is in the wrong light.
 
-A RECORD WORTH KEEPING
-Every plant gets a diary and a growth chart. Photos, measurements,
-milestones, repottings, problems. Watch a cutting become a plant.
+<b>A plant doctor for when something looks wrong</b>
+Yellow leaves, brown tips, drooping, sudden leaf drop, fungus gnats. Pick the symptom, answer a few questions about what else you are seeing, and Sprout ranks the likely causes, weighted by what your species is prone to. Each cause comes with clear steps for what to do about it.
 
-TOXICITY, STATED PLAINLY
-Tell Sprout you have cats, dogs or other pets and it flags what is dangerous
-to them, rated separately for each — because the same plant is not equally
-risky to a cat, a dog and a toddler.
+<b>Pet safe plants, stated plainly</b>
+Tell Sprout you have cats or dogs and it flags what is toxic to them. Every plant is rated separately for cats, dogs and people, because the same plant is not equally risky to each. One tap in Discover shows the ones safe for both.
 
-ONE REMINDER, ONLY WHEN IT MATTERS
-At most one notification a day, and only on days something is actually due.
-Nothing due, nothing from Sprout.
+<b>Find plants that suit your rooms</b>
+Browse the plant library with photos, care needs and toxicity for every species, and see which plants would thrive in the light you actually have.
 
-NO ACCOUNT. NO ADS. NO TRACKING.
-There is no sign-up, no server and no analytics. Your plants, photos, diary
-and schedule live on your phone and are never uploaded. The only thing that
-ever leaves is an approximate location — rounded to about a kilometre — sent
-to the weather service to fetch your forecast. Nothing else, ever.
+<b>A plant care journal worth keeping</b>
+Every plant gets a diary and a growth chart: photos, measurements, repotting, problems and milestones. Propagation guides show how to grow new plants from the ones you have. Watch a cutting become a plant.
+
+<b>One reminder, only when it matters</b>
+At most one notification a day, and only on days something is actually due. Nothing due, nothing from Sprout.
+
+<b>Private by design</b>
+No sign-up, no server and no analytics. Your plants, photos, diary and schedule live on your phone and are never uploaded. The only thing that ever leaves is an approximate location, rounded to about a kilometre, sent to the weather service for your forecast. Nothing else, ever.
 
 Works offline.
 ```
+
+Rewritten on 12 October 2026 after a brand, store-search and competitor
+review. What changed, and why:
+
+- **Free comes first.** The category leaders keep reminders and diagnosis
+  behind subscriptions; Sprout has no purchases at all, so it is in the
+  second paragraph, not left to be discovered.
+- **Search terms, used naturally.** Plant care, watering, houseplant,
+  reminders, toxic and light each appear two to five times. More than that
+  reads as keyword stuffing, which Play counts against a listing.
+- **Bold headings in sentence case** instead of capitals. Play allows `<b>`
+  in the full description and discourages heavy capitalisation.
+- **No counts.** The species list and the diagnosis tables grow, so like
+  the site the listing states neither.
+- **Only what the app does.** Cats and dogs, not "other pets", because those
+  are the two it tracks. "Every schedule", not "every number", comes with a
+  reason. Propagation is "from the ones you have", because not every species
+  propagates from cuttings. No plant identification by photo, which Sprout
+  does not do.
+- **Never name a competitor.** Play's policy forbids it; "Most plant apps"
+  is as far as the contrast goes.
+
+The privacy section is unchanged in substance and must keep saying exactly
+what `native/store-privacy.md`, `site/privacy.html`, `README.md` and
+`CLAUDE.md` say about what leaves the device.
 
 ## Screenshots
 
