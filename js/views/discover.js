@@ -296,6 +296,25 @@ window.ViewSpecies = (function () {
     if (act === 'add') ViewGreenhouse.plantForm(App.route().id, null, null);
   }
 
+  /* "Every 14 days in the growing season, every 28 when it slows down"
+     is wrong for a plant that keeps its own seasons, and worse than wrong
+     for one that rests: it would tell a Living Stones owner to water in
+     summer. Those are listed season by season instead. */
+  function wateringLine(s) {
+    const own = s.water.seasons;
+    if (!own) return 'Every ' + s.water.warm + ' days in the growing season, every ' + s.water.cool + ' when it slows down';
+    const order = ['spring', 'summer', 'autumn', 'winter'];
+    const wet = [], dry = [];
+    order.forEach(function (k) {
+      const d = typeof own[k] === 'number' ? own[k]
+              : LOOKUPS.SEASON_META[k].growing ? s.water.warm : s.water.cool;
+      (d > 0 ? wet : dry).push(d > 0 ? 'every ' + d + ' days in ' + k : k);
+    });
+    const line = wet.join(', ');
+    return line.charAt(0).toUpperCase() + line.slice(1) +
+      (dry.length ? '; none in ' + dry.join(' or ') : '');
+  }
+
   function render(params) {
     const s = sp(params);
     const light = LOOKUPS.LIGHT[s.light.ideal];
@@ -364,13 +383,14 @@ window.ViewSpecies = (function () {
 
     /* First element of each row is an icon *name* for UI.icon(). */
     const facts = [
-      ['drop', 'Watering', 'Every ' + s.water.warm + ' days in the growing season, every ' + s.water.cool + ' when it slows down',
-       s.water.note],
+      ['drop', 'Watering', wateringLine(s), s.water.note],
       [light.ico, 'Light', light.label +
         (tolerates.length ? ' — copes with ' + tolerates.join(' and ') : '') +
         (avoid.length ? '. Avoid ' + avoid.join(' and ') : ''), s.light.note],
-      ['wheat', 'Feeding', 'Every ' + s.fert.everyDays + ' days at ' + s.fert.strength + ' strength',
-       s.fert.type + '. Growing season only — feeding a dormant plant simply builds up salt in the soil.'],
+      s.fert.never
+        ? ['wheat', 'Feeding', 'Never', s.fert.note || '']
+        : ['wheat', 'Feeding', 'Every ' + s.fert.everyDays + ' days at ' + s.fert.strength + ' strength',
+           s.fert.type + '. Growing season only — feeding a dormant plant simply builds up salt in the soil.'],
       hum ? [hum.ico, 'Humidity', hum.label, hum.desc] : null,
       ['thermo', 'Temperature', s.idealC[0] + '–' + s.idealC[1] + '°C', 'Never below ' + s.minC + '°C.'],
       ['pot', 'Soil', s.soil, ''],

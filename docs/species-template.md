@@ -135,6 +135,7 @@ is allowed, but check it twice.
 | `water.soakPct` | poured plants | Fraction of the pot's volume to give, which becomes the millilitre figure. 0.2 for succulents and dry-lovers, 0.25 for most, 0.3–0.4 for thirsty plants and orchids in bark. Leave it out for any other method. |
 | `water.dryBetween` | | `true` if it should dry out between waterings, `false` if it wants to stay damp. Not read by the app yet, but keep it accurate. |
 | `water.method` | | Leave it out for an ordinary pour. Otherwise one key from `LOOKUPS.WATER_METHODS`, below. |
+| `water.seasons` | | Only for a plant that keeps its own calendar: days per season, `{ spring, summer, autumn, winter }`, where `0` means it rests and gets no water at all. A season left out falls back to `warm` or `cool`. Living Stones are the worked example: `{ spring: 21, summer: 0, autumn: 14, winter: 0 }`. A resting plant gets no task or reminder, and its page says when watering starts again. The species check fails on any other key, on a negative number, and on a plant that would never be watered. |
 | `water.note` | yes | Reference voice (section 4). How to tell it needs water and how to give it. For any method but `pour`, this is where the specifics go (how long to soak, how full to keep the cup). |
 
 The schedule adjusts the two day counts for room light, season and weather.
@@ -151,6 +152,7 @@ state the figures for the reference case and let it do the rest.
 | `mist` | Plants kept damp from the air (*T. tectorum*, Spanish moss) | no | no | Mist it until the leaves are wet |
 | `bottom` | Plants that must not get wet leaves (African Violet) | yes | yes | Water from the saucer |
 | `cup` | Bromeliads that drink from a central cup | yes | no | Top up the central cup |
+| `tray` | Bog plants that stand in rainwater (Venus Flytrap) | yes | no | Top up the tray with rainwater |
 
 A plant without a pot gets no pot questions on the add form. A new method
 needs an entry in `LOOKUPS.WATER_METHODS` (`js/data/lookups.js`) with
@@ -181,6 +183,7 @@ can be empty: Echeveria wants direct sun and avoids everything else.
 | Field | Default | Notes |
 |---|---|---|
 | `fert.everyDays` | `28` | Days between feeds in the growing season only; nothing is due in dormancy. Catalogue spans 14–84. |
+| `fert.never` | | `true` for a plant that must never be fed (carnivorous plants, Living Stones), with `fert.note` saying why: the feeding card shows that note and no feed is ever due. Give it as the whole `fert`: `{ never: true, note: '…' }`. The species check fails on `never` without a note. |
 | `fert.strength` | `'half'` | `full`, `half` or `quarter`. Shown as Full, ½ or ¼ strength. |
 | `fert.type` | `'Balanced liquid houseplant feed'` | Say how to give it if it is unusual ("added to the soaking water", "never left in the cup"). |
 | `soil` | a standard mix with perlite | State it unless the standard mix really is right. "None" for a plant with no pot. |
@@ -271,6 +274,8 @@ neither a symptom nor a cause.
 | `air-plant-rot` | Every Tillandsia | Replaces `crown-rot`, `root-rot` and `overwatering`, whose treatments are about soil. |
 | `air-plant-thirst` | Every Tillandsia | Replaces `underwatering`. |
 | `flowered-out` | Plants whose rosette dies after its one flowering | Only reaches a species that lists it. |
+| `leaf-pair-change` | Living Stones | Only reaches a species that lists it. Shrivelling in winter and spring is the new leaf pair growing, not thirst. |
+| `carnivore-dormancy` | Venus Flytrap | Replaces `dormancy`, whose advice to keep the soil barely damp is wrong for a bog plant. |
 
 Before writing a generic cause for a plant, read its treatment steps and ask
 whether they are true for this plant. If they are not, the plant needs its own

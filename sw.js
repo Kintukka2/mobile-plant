@@ -64,8 +64,11 @@
    care data, five second propagation methods and two seed blocks.
 
    v96: sixteen more species, among them the first desert cacti, a
-   second orchid and a third herb. */
-const CACHE = 'sprout-v96-viridium';
+   second orchid and a third herb.
+
+   v97: plants on their own seasons, plants never fed, the tray method,
+   and Living Stones, Venus Flytrap and Tropical Pitcher Plant. */
+const CACHE = 'sprout-v97-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is

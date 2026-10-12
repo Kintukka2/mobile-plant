@@ -11,6 +11,12 @@
                    only; the other methods are not measured)
    water.method = a key in LOOKUPS.WATER_METHODS; left out means 'pour'.
                   Only a poured plant is given a measured amount.
+   water.seasons = optional days per season, { spring, summer, autumn,
+                  winter }, for a plant that keeps its own calendar; 0 means
+                  it rests and takes no water at all. A season left out
+                  falls back to warm or cool.
+   fert.never   = true for a plant that must never be fertilised, with
+                  fert.note saying why. It is given no feeding task.
    fert.everyDays = days between feeds, growing season only
    prop[].roots   = a bare duration ('3–5 weeks') or a phrase that reads on
                     its own ('Already rooted'). The plant page puts
@@ -1924,6 +1930,55 @@ window.PLANT_DATA = (function () {
       tags: ['pet-safe', 'succulent', 'sun-lover', 'drought-tolerant', 'beginner']
     },
 
+    {
+      id: 'lithops',
+      common: 'Living Stones',
+      aka: ['Lithops', 'Pebble Plant', 'Flowering Stones'],
+      botanical: 'Lithops species',
+      family: 'Aizoaceae',
+      origin: 'Arid stony plains of southern Africa, mostly Namibia and South Africa',
+      difficulty: 'medium',
+      growthRate: 'slow',
+      matureCm: 4,
+      water: {
+        warm: 14, cool: 28, soakPct: 0.2, dryBetween: true,
+        seasons: { spring: 21, summer: 0, autumn: 14, winter: 0 },
+        note: 'It keeps its own calendar. It grows and flowers in autumn, when it is watered thoroughly every couple of weeks. Through winter a new pair of leaves forms inside the old pair and lives on its water, so it gets none at all. In spring, once the old pair has dried to a papery skin, it is watered lightly. In high summer it rests again and gets none.'
+      },
+      light: {
+        ideal: 'direct', tolerates: ['bright-indirect'], avoid: ['low', 'medium'],
+        note: 'The sunniest window you have, four hours of direct sun or more. Short of light, the pairs grow tall and pale and topple sideways.'
+      },
+      humidity: 'low', minC: 5, idealC: [15, 30],
+      fert: { never: true, note: 'It needs none. Fertiliser makes the leaves swell soft and split.' },
+      soil: 'Almost all mineral: two parts horticultural grit or pumice to one part cactus mix, with a grit top dressing.',
+      repot: 'Every 3–4 years, in late summer before growth starts, into a deep pot for its long taproot.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'The ASPCA lists Lithops (as Lithops naureeniae) as non-toxic to cats and dogs.' },
+      prop: [{
+        m: 'Division', diff: 'medium', season: 'Late summer', roots: '3–5 weeks',
+        steps: [
+          'An old plant often grows into a clump of several pairs, each with its own roots.',
+          'Unpot it while it is dry and gently pull or cut a pair away with its roots.',
+          'Let any cut dry for a few days, then pot it into dry gritty mix.',
+          'Wait a week before the first light watering.'
+        ]
+      }],
+      seed: {
+        viable: true, sowSeason: 'Late summer or autumn', germDays: '1–3 weeks', depthMm: 1,
+        steps: [
+          'Sow the dust-fine seed on the surface of damp, sieved gritty compost and barely cover it with fine grit.',
+          'Cover the pot with clear film and keep it bright, out of direct sun, at 15–25°C.',
+          'Mist to keep the surface damp, then let it dry between mistings once the seedlings appear.',
+          'Leave the seedlings together in the same pot for their first year.'
+        ]
+      },
+      likes: ['Full sun', 'Its own calendar of watering', 'Grit, not compost'],
+      dislikes: ['Water in winter or high summer', 'Shade', 'Fertiliser'],
+      problems: ['leaf-pair-change', 'overwatering', 'root-rot', 'shrivelled-segments', 'mushy-base', 'leggy-stretching'],
+      tags: ['pet-safe', 'succulent', 'sun-lover', 'compact', 'drought-tolerant', 'unusual']
+    },
+
     /* ====================== VINES & TRAILERS ====================== */
     {
       id: 'ceropegia-woodii',
@@ -2981,6 +3036,97 @@ window.PLANT_DATA = (function () {
       dislikes: ['Stale urn water', 'Soggy mix', 'Cold draughts'],
       problems: ['cup-rot', 'flowered-out', 'brown-tips-only', 'sunburn', 'scale'],
       tags: ['pet-safe', 'flowering', 'colourful', 'statement', 'beginner', 'epiphyte']
+    },
+
+    /* ====================== CARNIVOROUS ======================
+       Rainwater only, and never any fertiliser: both feed through what
+       they catch, and the minerals in tap water and feed burn their roots.
+       That is why fert.never exists. The flytrap is a bog plant and stands
+       in its water (the tray method); the pitcher plant is a climber from
+       humid forest and is poured on like any other. */
+    {
+      id: 'dionaea-muscipula',
+      common: 'Venus Flytrap',
+      aka: ['Flytrap', 'Dionaea'],
+      botanical: 'Dionaea muscipula',
+      family: 'Droseraceae',
+      origin: 'Sunny, boggy pine savannah in the Carolinas, USA',
+      difficulty: 'hard',
+      growthRate: 'moderate',
+      matureCm: 12,
+      water: {
+        warm: 3, cool: 7, dryBetween: false, method: 'tray',
+        note: 'Stand the pot in 1–2cm of rainwater, distilled or reverse-osmosis water and top it up before the tray runs dry. Never use tap water or bottled mineral water: the dissolved minerals build up in the peat and kill it within months. In winter, keep the soil damp with only a few millimetres in the tray.'
+      },
+      light: {
+        ideal: 'direct', tolerates: ['bright-indirect'], avoid: ['low', 'medium'],
+        note: 'As much direct sun as you can give it, six hours or more. The traps colour red inside in full sun; in weaker light they stay green, small and floppy.'
+      },
+      humidity: 'medium', minC: 0, idealC: [18, 32],
+      fert: { never: true, note: 'Never fertilise it, and never feed it meat. It catches its own insects; fertiliser burns its roots, and a trap given food it cannot digest turns black.' },
+      soil: 'Unfertilised sphagnum peat or a peat-free carnivorous-plant mix, with an equal part of perlite or lime-free silica sand. Never ordinary compost.',
+      repot: 'Every 1–2 years in late winter, before growth restarts, into fresh mix in a plastic pot. Terracotta leaches minerals into the soil.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'Listed by the ASPCA as non-toxic to cats and dogs. The traps cannot harm a person or a pet.' },
+      prop: [
+        { m: 'Division', diff: 'medium', season: 'Late winter or early spring', roots: 'Already rooted',
+          steps: [
+            'A healthy plant grows into a clump of several rosettes over a few years.',
+            'Unpot it while dormant and wash the peat from the white rhizomes.',
+            'Gently pull apart rosettes that each have their own rhizome and roots.',
+            'Pot each into fresh carnivorous mix and stand it in its tray of rainwater.'
+          ] },
+        { m: 'Leaf cutting', diff: 'medium', season: 'Late spring or summer', roots: '4–8 weeks',
+          steps: [
+            'Pull a healthy leaf down and away so it comes off with its white base attached.',
+            'Lay it on damp sphagnum moss or carnivorous mix, base just pressed in.',
+            'Cover with clear film and keep it bright and humid, out of direct sun.',
+            'Tiny plantlets appear from the base. Grow them on for a year before separating them.'
+          ] }
+      ],
+      likes: ['Full sun', 'Rainwater in its tray', 'A cold winter rest'],
+      dislikes: ['Tap water', 'Fertiliser', 'Being set off for fun: each trap closes only a few times'],
+      problems: ['carnivore-dormancy', 'tap-water-minerals', 'overfeeding', 'dormancy-dieback', 'pale-washed-out', 'leggy-stretching'],
+      tags: ['pet-safe', 'carnivorous', 'sun-lover', 'compact', 'unusual', 'tricky', 'cool-tolerant']
+    },
+
+    {
+      id: 'nepenthes-hybrids',
+      common: 'Tropical Pitcher Plant',
+      aka: ['Monkey Cup', 'Nepenthes'],
+      botanical: 'Nepenthes hybrids',
+      family: 'Nepenthaceae',
+      origin: 'Humid forests of Southeast Asia, chiefly Borneo and Sumatra',
+      difficulty: 'medium',
+      growthRate: 'moderate',
+      matureCm: 100,
+      water: {
+        warm: 4, cool: 7, soakPct: 0.25, dryBetween: false,
+        note: 'Keep the mix lightly moist with rainwater, distilled or reverse-osmosis water, and let the pot drain: unlike a flytrap it should not stand in water. Tap water kills it slowly. Leave whatever fluid is in the pitchers; it is the plant\'s own.'
+      },
+      light: {
+        ideal: 'bright-indirect', tolerates: ['direct', 'medium'], avoid: ['low'],
+        note: 'Bright light, with an hour or two of gentle sun if you can, brings red colour to the pitchers. In medium light it grows leaves but few pitchers.'
+      },
+      humidity: 'high', minC: 15, idealC: [20, 30],
+      fert: { never: true, note: 'Never fertilise the mix. It feeds through its pitchers; an insect dropped into one pitcher a month is plenty, and indoors it rarely needs even that.' },
+      soil: 'Open and airy: sphagnum moss, perlite and orchid bark in roughly equal parts, with no fertiliser. A hanging basket shows off the pitchers.',
+      repot: 'Every 2 years in spring, into fresh mix.',
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
+        note: 'Not listed by the ASPCA, and no toxic compound is known in it.' },
+      prop: [{
+        m: 'Stem cutting', diff: 'medium', season: 'Spring or summer', roots: '4–8 weeks',
+        steps: [
+          'Cut a section of vine with two or three leaves, just below a node.',
+          'Trim each leaf by half to cut water loss, and remove any pitchers.',
+          'Push the cut end into damp sphagnum moss and cover it with a clear bag.',
+          'Keep it warm and bright, out of direct sun, until new growth shows.'
+        ]
+      }],
+      likes: ['Humid air', 'Rainwater', 'Bright light'],
+      dislikes: ['Tap water', 'Fertiliser', 'Dry air'],
+      problems: ['low-humidity', 'tap-water-minerals', 'overfeeding', 'brown-crispy-edges', 'leaves-curling', 'root-rot'],
+      tags: ['pet-safe', 'carnivorous', 'humidity-lover', 'trailing', 'unusual']
     }
 
   ];
