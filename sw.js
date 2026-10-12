@@ -58,8 +58,11 @@
    millilitre figure; propagation timings that read on their own.
 
    v94: nine air plants and bromeliads, the dip, mist, bottom and cup
-   methods, and no pot for a plant that has none. */
-const CACHE = 'sprout-v94-viridium';
+   methods, and no pot for a plant that has none.
+
+   v95: every light rung rated on every species, tags that agree with the
+   care data, five second propagation methods and two seed blocks. */
+const CACHE = 'sprout-v95-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is

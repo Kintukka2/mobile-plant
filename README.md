@@ -274,8 +274,9 @@ weather-dependent parts rather than failing.
 Propagation tracking and seed-starting are the natural next features. The
 groundwork is already unevenly laid: every one of the 57 species carries a
 populated `prop` field describing how it is propagated, so propagation is
-mostly a matter of surfacing data that exists. `seed` is set on only two
-species and would need filling in first.
+mostly a matter of surfacing data that exists. `seed` is set on only four
+species (Basil, Mint, Rosemary and Bird of Paradise) and would need filling
+in first.
 
 ---
 
