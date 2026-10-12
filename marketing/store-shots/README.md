@@ -51,9 +51,10 @@ experiments against it.
   stay on your phone" is safe because a location, the one thing that
   leaves, is not about the plants. Do not write "nothing leaves the
   phone".
-- **The figures are the ones `.claude/check-species.js` holds the site
-  to:** 48 species, 23 safe for both cats and dogs. Discover's "Pet safe"
-  filter is the same test, so the screen and the headline agree.
+- **No counts.** The species list grows, so, like the site, the listing
+  never says how many species there are or how many are pet safe. The
+  Discover frames say "these" over the "Pet safe" results instead, and
+  that filter is the same both-safe test the site's tags use.
 
 ## Rebuilding
 

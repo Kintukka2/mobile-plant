@@ -15,9 +15,10 @@
 //         or a diagnosis: frames on plant, discover and diagnose carry none.
 //
 // Copy rules: British English, no exclamation marks, one contraction a
-// line, and every privacy sentence true to native/store-privacy.md. The
-// figures (48 species, 23 safe for cats and dogs) are the ones
-// .claude/check-species.js holds the site to.
+// line, and every privacy sentence true to native/store-privacy.md. No
+// counts: the species list grows, so like the site the listing never says
+// how many there are or how many are pet safe. "These" points at the
+// pet-safe results on the screen instead, which stay true as the list does.
 (function (root) {
   const SETS = {
     a: { name: 'Final', note: 'The listing. Upload order matches native/store-listing.md.', frames: [
@@ -25,7 +26,7 @@
       { screen: 'greenhouse', eyebrow: 'Room by room', head: 'Care worked out from *where each plant lives.*', glow: 'leaf', layout: 'centre' },
       { screen: 'plan', eyebrow: 'Draw your home', head: 'It knows which rooms are bright, *because you showed it.*', glow: 'sun', layout: 'centre' },
       { screen: 'plant', eyebrow: 'Worth keeping', head: 'A record of the plant, *not just a reminder.*', glow: 'leaf', layout: 'centre' },
-      { screen: 'discover', eyebrow: '48 species', head: 'Twenty-three are safe *for cats and dogs.*', glow: 'leaf', layout: 'centre' },
+      { screen: 'discover', eyebrow: 'Pet safe', head: 'These are safe *for cats and dogs.*', glow: 'leaf', layout: 'centre' },
       { screen: 'diagnose', eyebrow: 'When something looks wrong', head: 'A clinic, *not a search box.*', glow: 'terra', layout: 'centre' },
       { screen: 'caught-up', eyebrow: 'Private by design', head: 'No account. *Your plants stay on your phone.*', glow: 'leaf', layout: 'centre' }
     ] },
@@ -33,7 +34,7 @@
       { screen: 'today', eyebrow: 'Private by design', head: 'No account. *Nothing to sign in to.*', sub: 'Your plants, rooms and photos stay on your phone.', glow: 'leaf', layout: 'centre', sprout: 'corner' },
       { screen: 'plan', eyebrow: 'Draw your home', head: 'Your floor plan *never leaves the house.*', sub: 'Light is worked out on the phone, from the windows you mark.', glow: 'sun', layout: 'centre' },
       { screen: 'plant', eyebrow: 'Worth keeping', head: 'Photos and a diary, *kept on the device.*', sub: 'A backup goes only where you send it.', glow: 'leaf', layout: 'centre' },
-      { screen: 'discover', eyebrow: '48 species', head: 'Rated for cats, dogs *and people, separately.*', sub: 'Twenty-three are safe for both cats and dogs.', glow: 'leaf', layout: 'centre' },
+      { screen: 'discover', eyebrow: 'Pet safe', head: 'Rated for cats, dogs *and people, separately.*', sub: 'The pet-safe ones are a tap away.', glow: 'leaf', layout: 'centre' },
       { screen: 'diagnose', eyebrow: 'Works offline', head: 'A diagnosis *with no signal at all.*', sub: 'Only the weather forecast needs a connection.', glow: 'terra', layout: 'centre' },
       { screen: 'caught-up', eyebrow: 'Reminders', head: 'Reminders from your phone, *not from a server.*', sub: 'Your phone schedules them itself. There\'s no account behind them.', glow: 'leaf', layout: 'centre' }
     ] },
@@ -42,7 +43,7 @@
       { screen: 'greenhouse', eyebrow: 'Room by room', head: 'Every room *knows its light.*', glow: 'leaf', layout: 'tilt' },
       { screen: 'plan', eyebrow: 'Draw your home', head: 'Not dying, *just in the wrong room.*', glow: 'sun', layout: 'tilt' },
       { screen: 'plant', eyebrow: 'Worth keeping', head: 'Toxic to cats? *It says so up front.*', glow: 'leaf', layout: 'tilt', pop: 'plant-chips' },
-      { screen: 'discover', eyebrow: '48 species', head: 'Twenty-three *safe for cats and dogs.*', glow: 'leaf', layout: 'tilt' },
+      { screen: 'discover', eyebrow: 'Pet safe', head: 'These are safe *for cats and dogs.*', glow: 'leaf', layout: 'tilt' },
       { screen: 'diagnose', eyebrow: 'When something looks wrong', head: 'Yellow leaves? *Causes ranked for that plant.*', glow: 'terra', layout: 'tilt', pop: 'diagnose-cause' },
       { screen: 'caught-up', eyebrow: 'All caught up', head: 'Some days, *nothing needs you.*', glow: 'leaf', layout: 'tilt' }
     ] }
