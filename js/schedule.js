@@ -10,6 +10,8 @@
      · pot size      — small pots dry out much faster than large ones
      · pot material  — terracotta breathes and wicks moisture away
      · drainage      — no holes means water more cautiously
+                       (the three pot factors only where the species'
+                       water.method says the pot sets the drying)
      · weather       — a hot dry spell shortens intervals
 
    Every adjustment is reported back through `explain()` so the app can tell
@@ -69,6 +71,7 @@ window.Schedule = (function () {
     if (!sp || !sp.water) return { days: 7, base: 7, ref: 7, factors: [], notes: [] };
 
     const growing = isGrowingSeason();
+    const method = speciesMethod(sp);
     const base = growing ? sp.water.warm : sp.water.cool;
     let days = base;
     const factors = [];
@@ -95,7 +98,8 @@ window.Schedule = (function () {
         factors.push({
           label: 'Bright spot',
           effect: 'shorter',
-          detail: room.name + ' is brighter than this plant\'s baseline, so the soil dries faster.'
+          detail: room.name + ' is brighter than this plant\'s baseline, so ' +
+                  (method.potDrying ? 'the soil dries' : 'it dries out') + ' faster.'
         });
       } else if (delta < 0) {
         const f = 1 + (0.14 * Math.abs(delta));
@@ -108,39 +112,44 @@ window.Schedule = (function () {
       }
     }
 
-    // --- Pot size ---
-    const sizeF = potSizeFactor(plant.potCm);
-    if (Math.abs(sizeF - 1) > 0.08) {
-      days *= sizeF;
-      factors.push({
-        label: plant.potCm + 'cm pot',
-        effect: sizeF < 1 ? 'shorter' : 'longer',
-        detail: sizeF < 1
-          ? 'A smaller pot holds less soil and dries out sooner.'
-          : 'A larger pot holds more moisture and stays damp for longer.'
-      });
-    }
+    /* A plant with no pot has a 15cm plastic one on file, the form's
+       default, and nothing should be read from it. A bromeliad's pot is
+       real but its cup is what empties, so the pot does not set the pace. */
+    if (method.potDrying) {
+      // --- Pot size ---
+      const sizeF = potSizeFactor(plant.potCm);
+      if (Math.abs(sizeF - 1) > 0.08) {
+        days *= sizeF;
+        factors.push({
+          label: plant.potCm + 'cm pot',
+          effect: sizeF < 1 ? 'shorter' : 'longer',
+          detail: sizeF < 1
+            ? 'A smaller pot holds less soil and dries out sooner.'
+            : 'A larger pot holds more moisture and stays damp for longer.'
+        });
+      }
 
-    // --- Pot material ---
-    const mat = LOOKUPS.POT_MATERIALS[plant.potMaterial];
-    if (mat && mat.dryFactor !== 1) {
-      days *= mat.dryFactor;
-      factors.push({
-        label: mat.label,
-        effect: 'shorter',
-        detail: mat.note
-      });
-    }
+      // --- Pot material ---
+      const mat = LOOKUPS.POT_MATERIALS[plant.potMaterial];
+      if (mat && mat.dryFactor !== 1) {
+        days *= mat.dryFactor;
+        factors.push({
+          label: mat.label,
+          effect: 'shorter',
+          detail: mat.note
+        });
+      }
 
-    // --- Drainage ---
-    const drain = LOOKUPS.DRAINAGE[plant.drainage];
-    if (drain && drain.factor !== 1) {
-      days *= drain.factor;
-      factors.push({
-        label: 'No drainage holes',
-        effect: 'longer',
-        detail: drain.note
-      });
+      // --- Drainage ---
+      const drain = LOOKUPS.DRAINAGE[plant.drainage];
+      if (drain && drain.factor !== 1) {
+        days *= drain.factor;
+        factors.push({
+          label: 'No drainage holes',
+          effect: 'longer',
+          detail: drain.note
+        });
+      }
     }
 
     // --- Weather / manual offset ---
@@ -157,11 +166,16 @@ window.Schedule = (function () {
     return { days: days, base: base, ref: sp.water.warm, factors: factors, growing: growing };
   }
 
-  /* How the species takes its water, from LOOKUPS.WATER_METHODS. */
-  function waterMethod(plant) {
-    const sp = Store.species(plant);
+  /* How a species takes its water, from LOOKUPS.WATER_METHODS. The form
+     asks before there is a plant, so this reads the species; waterMethod()
+     is the same answer for a plant already in the greenhouse. */
+  function speciesMethod(sp) {
     const key = (sp && sp.water && sp.water.method) || 'pour';
     return LOOKUPS.WATER_METHODS[key] || LOOKUPS.WATER_METHODS.pour;
+  }
+
+  function waterMethod(plant) {
+    return speciesMethod(Store.species(plant));
   }
 
   /* How much water, in millilitres, for this specific pot — or null for a
@@ -466,7 +480,7 @@ window.Schedule = (function () {
   return {
     currentSeason: currentSeason, isGrowingSeason: isGrowingSeason,
     potVolumeL: potVolumeL, wateringInterval: wateringInterval, waterAmount: waterAmount,
-    waterMethod: waterMethod,
+    waterMethod: waterMethod, speciesMethod: speciesMethod,
     waterDue: waterDue, fertiliseDue: fertiliseDue,
     tasks: tasks, overdueCount: overdueCount,
     lightMatch: lightMatch, bestRoomsFor: bestRoomsFor, petRisk: petRisk,

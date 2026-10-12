@@ -91,7 +91,7 @@ keeps a diary of a few dozen photos inside budget.
 A weighted symptom checker rather than a static troubleshooting list:
 
 > pick the plant → **what do you notice** (26 symptoms) → **what else is true**
-> (42 clues) → ranked **causes** (40) with treatment steps
+> (43 clues) → ranked **causes** (44) with treatment steps
 
 Each cause starts at a base weight for the chosen symptom, gains points for
 confirmed clues, and loses points for clues that argue against it. Causes the
@@ -272,7 +272,7 @@ weather-dependent parts rather than failing.
 ## Roadmap
 
 Propagation tracking and seed-starting are the natural next features. The
-groundwork is already unevenly laid: every one of the 48 species carries a
+groundwork is already unevenly laid: every one of the 57 species carries a
 populated `prop` field describing how it is propagated, so propagation is
 mostly a matter of surfacing data that exists. `seed` is set on only two
 species and would need filling in first.

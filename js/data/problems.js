@@ -63,7 +63,8 @@ window.PROBLEM_DATA = (function () {
     'winter-now':      { label: 'It is autumn or winter', desc: 'The plant should be resting rather than growing.' },
     'never-repotted':  { label: 'Not repotted in over two years', desc: 'Same pot and same soil for a long stretch.' },
     'crown-wet':       { label: 'Water collects in the centre', desc: 'It pools where the leaves meet, in the rosette or crown.' },
-    'flower-buds-fell':{ label: 'Buds formed then dropped', desc: 'They developed and then fell before opening.' }
+    'flower-buds-fell':{ label: 'Buds formed then dropped', desc: 'They developed and then fell before opening.' },
+    'flowered-recently':{ label: 'It flowered in the last few months', desc: 'Even if the flower has finished or been cut off.' }
   };
 
   /* ======================================================================
@@ -75,8 +76,8 @@ window.PROBLEM_DATA = (function () {
       desc: 'Leaves losing their green, going pale yellow or buttery.',
       clues: ['soil-wet', 'soil-dry', 'lower-leaves', 'all-over', 'new-growth', 'soil-smell',
               'no-drainage', 'roots-brown', 'not-fed', 'never-repotted', 'winter-now',
-              'low-light-spot', 'direct-sun', 'flying-gnats', 'cold-spot'],
-      causes: { 'overwatering': 10, 'root-rot': 6, 'natural-ageing': 7, 'underwatering': 5,
+              'low-light-spot', 'direct-sun', 'flying-gnats', 'cold-spot', 'flowered-recently'],
+      causes: { 'overwatering': 10, 'root-rot': 6, 'natural-ageing': 7, 'underwatering': 5, 'flowered-out': 4,
                 'nutrient-deficiency': 6, 'too-little-light': 4, 'pot-bound': 3,
                 'too-much-light': 2, 'cold-damage': 2, 'fungus-gnats': 1 }
     },
@@ -266,8 +267,8 @@ window.PROBLEM_DATA = (function () {
     'dormancy-dieback': {
       label: 'Dying back completely',
       desc: 'On an Alocasia or similar — losing every leaf, seemingly dead.',
-      clues: ['winter-now', 'cold-spot', 'soil-wet', 'roots-brown', 'low-light-spot'],
-      causes: { 'dormancy': 10, 'root-rot': 7, 'cold-damage': 6, 'overwatering': 5 }
+      clues: ['winter-now', 'cold-spot', 'soil-wet', 'roots-brown', 'low-light-spot', 'flowered-recently'],
+      causes: { 'dormancy': 10, 'root-rot': 7, 'cold-damage': 6, 'overwatering': 5, 'flowered-out': 8 }
     },
 
     'pests-general': {
@@ -296,7 +297,9 @@ window.PROBLEM_DATA = (function () {
     'fungus-gnats':   ['soil-dry'],
     'dormancy':       ['new-growth'],
     'pot-bound':      ['recently-moved'],
-    'crown-rot':      ['soil-dry']
+    'crown-rot':      ['soil-dry'],
+    'air-plant-thirst': ['crown-wet'],
+    'flowered-out':   ['new-growth']
   };
 
   /* ======================================================================
@@ -767,6 +770,75 @@ window.PROBLEM_DATA = (function () {
       prevent: 'Water at the soil, never into the crown. Water in the morning so any splashes dry during the day.'
     },
 
+    /* The four below belong to particular plants, and a symptom's general
+       cause would give them the wrong treatment. Crown rot says never to
+       water into the crown, which is exactly how a bromeliad is watered;
+       root rot says to repot into fresh mix, and an air plant has none.
+       `replaces` swaps a species' own cause in for the general one, but
+       only for a species that lists it in its problems, and `onlyIfProne`
+       keeps a cause out of every other plant's diagnosis altogether. */
+    'cup-rot': {
+      name: 'Rot in the central cup',
+      ico: 'droplets',
+      severity: 'high',
+      replaces: ['crown-rot'],
+      why: 'A bromeliad drinks from the cup its leaves make, so standing water there is normal. Rot sets in when that water goes stale, when it sits in a cold room, or when the mix below stays soggy as well. The base of the cup softens and browns, the central leaves pull out with a tug, and the smell is unmistakable.',
+      fix: [
+        'Tip the plant over the sink to empty the cup completely.',
+        'Pull out any central leaves that come away easily, and cut back soft brown tissue to firm growth with sterilised scissors.',
+        'Leave the cup empty and the mix on the dry side for a week while it firms up.',
+        'Refill with fresh rainwater or filtered water once the base is firm again, and only a third full to begin with.',
+        'If the centre has gone entirely, keep the plant for its pups: they grow on from the base and can be cut away once they are a third of its size.'
+      ],
+      prevent: 'Empty and refill the cup every two to three weeks so the water never stands for long, keep it shallower in winter, and keep the mix itself only just moist.'
+    },
+
+    'air-plant-rot': {
+      name: 'Staying wet too long',
+      ico: 'droplets',
+      severity: 'high',
+      replaces: ['crown-rot', 'root-rot', 'overwatering'],
+      why: 'An air plant takes in water through the scales on its leaves and then needs to dry out completely, within about four hours. Water trapped at the base, a plant put back in a closed glass globe, or a soak followed by a cold still room keeps the base wet long enough for it to rot. The centre darkens and goes soft, and leaves start falling out from the middle.',
+      fix: [
+        'Turn it upside down and shake it firmly to drain water from between the leaves.',
+        'Pull away any leaves that come loose from the base without resistance.',
+        'Dry it upside down somewhere bright and airy, out of direct sun, before it goes back on display.',
+        'If the base has turned black and mushy right through, it will not recover. Keep any pups that are still firm.',
+        'From now on dip rather than soak if it is a silver or bulb-based type, and always dry it upside down.'
+      ],
+      prevent: 'Dry it upside down after every watering, and never return it to a globe, shell or dish while it is still wet. Air moving past it matters more than how long it soaked.'
+    },
+
+    'air-plant-thirst': {
+      name: 'Too little water',
+      ico: 'arid',
+      severity: 'med',
+      replaces: ['underwatering'],
+      why: 'An air plant has no soil to dry out, so thirst shows in the leaves. They roll inward along their length, feel soft rather than firm, and the tips go crisp and brown. Silver types tolerate it longest; green types show it within a week or two in a dry, warm room.',
+      fix: [
+        'Give it a longer soak than usual, an hour for a green type, then dry it upside down as normal.',
+        'For a silver or bulb-based type, dip or mist more often rather than soaking it for longer.',
+        'Move it back from a radiator or a hot sunny pane, which dries it faster than it can drink.',
+        'Trim crisp brown tips at an angle with clean scissors. They will not green up again.'
+      ],
+      prevent: 'Water more often in summer and in centrally heated rooms. Leaves that feel firm and lie open are the sign it has had enough.'
+    },
+
+    'flowered-out': {
+      name: 'Fading after flowering',
+      ico: 'flower',
+      severity: 'low',
+      onlyIfProne: true,
+      why: 'Bromeliads and air plants flower once in each rosette\'s life. Afterwards the parent puts its energy into pups at its base and slowly dies back over the following months. Nothing has gone wrong, and nothing will reverse it: this is how the plant carries on.',
+      fix: [
+        'Keep caring for it as normal. The parent feeds its pups for as long as it lasts.',
+        'Look around the base for pups. Leave them attached until they reach a third to half of the parent\'s size.',
+        'Cut or twist the pups away then and pot or mount them on their own, or leave the clump to grow as one.',
+        'Once the parent has browned, cut it away at the base so the pups have the room.'
+      ],
+      prevent: 'Nothing to prevent. A rosette that has flowered will not flower again; its pups will, in a few years.'
+    },
+
     /* ---------------- Pests ---------------- */
     'spider-mites': {
       name: 'Spider mites',
@@ -932,8 +1004,22 @@ window.PROBLEM_DATA = (function () {
     const clues = selectedClues || [];
     const prone = proneTo || [];
 
-    const scored = Object.keys(symptom.causes).map(function (causeId) {
-      let score = symptom.causes[causeId];
+    /* A species' own cause takes the general one's place and its weight.
+       Where one stands in for several (an air plant's rot for crown rot,
+       root rot and overwatering at once) it keeps the heaviest. */
+    const swap = {};
+    prone.forEach(function (id) {
+      ((CAUSES[id] && CAUSES[id].replaces) || []).forEach(function (r) { swap[r] = id; });
+    });
+    const weights = {};
+    Object.keys(symptom.causes).forEach(function (id) {
+      const to = swap[id] || id;
+      if (CAUSES[to] && CAUSES[to].onlyIfProne && prone.indexOf(to) === -1) return;
+      weights[to] = Math.max(weights[to] || 0, symptom.causes[id]);
+    });
+
+    const scored = Object.keys(weights).map(function (causeId) {
+      let score = weights[causeId];
 
       // Clues that support this cause.
       clues.forEach(function (clueId) {
@@ -1010,6 +1096,12 @@ window.PROBLEM_DATA = (function () {
     'bolting-heat-stress': ['direct-sun', 'soil-dry'],
     'natural-wind-damage': ['near-draught', 'all-over'],
     'crown-rot':           ['crown-wet', 'stems-soft', 'spots-mushy', 'soil-wet'],
+    /* Not crown-wet: a full cup is how a bromeliad is meant to be kept, so
+       it cannot count as evidence against the way it is kept. */
+    'cup-rot':             ['stems-soft', 'spots-mushy', 'soil-wet', 'soil-smell', 'cold-spot'],
+    'air-plant-rot':       ['crown-wet', 'stems-soft', 'spots-mushy', 'cold-spot'],
+    'air-plant-thirst':    ['dry-air', 'direct-sun', 'texture-dry'],
+    'flowered-out':        ['flowered-recently', 'lower-leaves'],
     'spider-mites':        ['webbing', 'tiny-dots', 'stippling', 'dry-air'],
     'mealybugs':           ['white-fluff', 'sticky'],
     'scale':               ['brown-bumps', 'sticky'],

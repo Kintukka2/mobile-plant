@@ -55,8 +55,11 @@
    v92: Import a home plan, in Settings and on the empty plan.
 
    v93: water.method, so an air plant is told to soak rather than given a
-   millilitre figure; propagation timings that read on their own. */
-const CACHE = 'sprout-v93-viridium';
+   millilitre figure; propagation timings that read on their own.
+
+   v94: nine air plants and bromeliads, the dip, mist, bottom and cup
+   methods, and no pot for a plant that has none. */
+const CACHE = 'sprout-v94-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is
