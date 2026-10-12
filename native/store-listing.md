@@ -119,6 +119,19 @@ The feature graphic, `store-assets/play-feature-graphic-1024x500.png`,
 is the lockup and one line, "Houseplant care, worked out for your home",
 beside the plant page in the same phone. It renders with the screenshots.
 
+## Promo video
+
+```
+https://www.youtube.com/watch?v=E8N01OwKGOE
+```
+
+Public on YouTube since 12 October 2026, embedding on, not made for kids,
+with the English subtitles from `marketing/reels/promo-landscape.en-GB.srt`.
+It is `marketing/reels/promo-landscape.mp4`, made in `marketing/reels/promo/`
+for this slot (its README has how). Play takes it in the Graphics section of
+the main store listing, as a YouTube link only; replace the video on
+YouTube and this link has to change with it.
+
 ## Category and tags
 
 - **Category** — Lifestyle. House & Home is the alternative; Lifestyle is
