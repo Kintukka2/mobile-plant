@@ -1,7 +1,8 @@
 # Sprout's voice
 
-The voice from the voiced Reels (`brag-output-2026-10-05-092403/`): soft, feminine and a little
-upbeat. Sprout speaking as itself, in the first person. `sample.m4a` is five seconds of it.
+The voice from the first voiced Reels: soft, feminine and a little upbeat. Sprout speaking as
+itself, in the first person. `sample.m4a` is five seconds of it. The Reels were removed as out
+of date (git history has them at `70a9a28`); everything needed to reproduce the voice is here.
 
 ```bash
 pip install kokoro-onnx soundfile          # plus ffmpeg on the path

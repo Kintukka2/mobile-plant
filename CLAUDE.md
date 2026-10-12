@@ -78,6 +78,12 @@ Two consequences worth knowing before editing anything in there:
   `site/img/og.jpg` is the share card. Change a screen in the app that the
   site shows, and recapture: its README has the three commands.
 
+- **The store listing is captured the same way.** `marketing/store-shots/`
+  frames real screens under a headline for Play and the App Store, into
+  `native/store-assets/listing/`, and renders the feature graphic. It
+  shares the site's home (`marketing/site-shots/state.js`), so a changed
+  screen means recapturing both.
+
 - **The site opens on the app's splash**, once a session: a copy of the
   `#splash` markup, its rules and `dismissSplash()`'s timing, at the top of
   `site/index.html` and the end of `site/site.css`. Change the app's splash
