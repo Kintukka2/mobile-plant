@@ -337,7 +337,7 @@ conversational surfaces, never in care data, treatments or toxicity notes.
 
 | Where | What | Checked by |
 |---|---|---|
-| `img/species/<id>.webp` | The photograph: a cut-out with a transparent background, 720×900, cut from a Pexels photo. It sits on the plant's tinted plate, so a photo with its own backdrop breaks the set. | species check |
+| `img/species/<id>.webp` | The photograph: a cut-out with a transparent background, 720×900, cut from a Pexels photo or one supplied by the owner. It sits on the plant's tinted plate, so a photo with its own backdrop breaks the set. | species check |
 | `docs/species-photo-sources.csv` | One row: `species_id,common_name,file,source,licence`. | by eye |
 | `site/index.html` | One `<li class="sp-row">` in `PLANT_DATA` order: `data-find` (common, botanical and every aka, lowercase), `sp-name`, `sp-bot`, and `<span class="sp-tag">Pet safe</span>` if pet safe. If pet safe, also update the "N safe for cats and dogs" line. | species check |
 | `sw.js` | Bump `CACHE` and add a line to the version note above it. `plants.js` is a cached file, so returning readers keep the old list until the name changes. The photograph is not added to `ASSETS`. | by eye |

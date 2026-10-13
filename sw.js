@@ -109,7 +109,7 @@ const ASSETS = [
      may only be trying the web version.
 
      The species photographs in img/species are left out for the same
-     reason, at thirty times the size: 4MB for forty-eight of them, most of
+     reason, at sixty times the size: 9MB for ninety-odd of them, most of
      which a reader never opens. Each is cached the first time it is shown. */
   'css/fonts/hatton-ultralight.woff2',
   'css/fonts/hatton-medium.woff2',
