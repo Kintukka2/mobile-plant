@@ -19,9 +19,10 @@
 
    The ask itself is the platform's. A store only lets an app *request* its
    review sheet, and both stores decide on their own whether to show it,
-   quietly and without saying so. So the first tap asks, the screen thanks
-   the reader either way, and a quiet link to the store page stays under the
-   button for the times the sheet never came. There is deliberately no
+   quietly and without saying so. So the first tap asks, the screen waits
+   until the store's flow is over and then thanks the reader either way, and
+   a quiet link to the store page stays under the button for the times the
+   sheet never came. There is deliberately no
    "are you enjoying Sprout?" step in front of the button: both stores'
    review guidelines forbid asking for an opinion before offering the
    rating, and a screen that only shows the stars to the happy ones is the
@@ -154,15 +155,21 @@ window.Rate = (function () {
   /* The in-app sheet where the shell carries the plugin for it
      (@capacitor-community/in-app-review registers as InAppReview), and the
      store page where it does not. A browser has neither, and gets the
-     thanks without the ask. */
+     thanks without the ask.
+
+     It settles once the store's flow is over, which is what the thanks
+     waits for. Play's flow completes when its card closes, or at once when
+     the card was never going to show (quota, already reviewed), and says
+     nothing about which; so a tap that showed nothing still gets thanked,
+     just as before. */
   function requestReview() {
     const plugins = window.Capacitor && Capacitor.Plugins;
     const review = plugins && plugins.InAppReview;
     if (review && review.requestReview) {
-      review.requestReview().catch(function () { openStore(); });
-      return;
+      return review.requestReview().catch(function () { openStore(); });
     }
     if (platform() !== 'web') openStore();
+    return Promise.resolve();
   }
 
   function openStore() {
@@ -332,9 +339,26 @@ window.Rate = (function () {
     later(function () { old.remove(); }, 700);
   }
 
+  /* The tap only asks. The thanks used to start on the same tap, so it
+     played behind the store's card and said "Thank you" to a reader who was
+     still choosing their stars. Now the screen holds as it was, its button
+     held so a second tap cannot ask twice, until the flow is over. */
   function ask() {
     asked = true;
-    requestReview();
+    const el = root;
+    const cta = el.querySelector('[data-rate="cta"]');
+    cta.disabled = true;
+    cta.setAttribute('aria-busy', 'true');
+    if (typeof opts.onRequest === 'function') opts.onRequest();
+    requestReview().then(function () {
+      if (root !== el) return;          // closed while the card was up
+      cta.disabled = false;
+      cta.removeAttribute('aria-busy');
+      thank();
+    });
+  }
+
+  function thank() {
     root.classList.add('is-asked');
     root.querySelector('#rate-cta-label').textContent = 'Back to my plants';
     root.querySelector('[data-rate="store"]').hidden = !storeUrl();
@@ -345,7 +369,6 @@ window.Rate = (function () {
       fall(54);
       later(function () { if (root) fall(26); }, 220);
     });
-    if (typeof opts.onRequest === 'function') opts.onRequest();
   }
 
   function open(options) {

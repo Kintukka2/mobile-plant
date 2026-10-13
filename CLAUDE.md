@@ -482,8 +482,10 @@ the store's own review sheet, and never asks whether the reader is enjoying
 the app first: both stores forbid an opinion question in front of the rating
 prompt, and routing only the happy ones to the stars is review gating. The
 in-app sheet comes from `@capacitor-community/in-app-review` in `native/`
-(since Android 1.2). If the sheet call fails the button opens the Play
-listing instead, and on the web the screen only says thank you.
+(since Android 1.2). The thank-you waits until that sheet's flow is over,
+so it never plays behind the card while the reader is still choosing. If the
+sheet call fails the button opens the Play listing instead, and on the web
+the screen only says thank you.
 
 ## Type
 
