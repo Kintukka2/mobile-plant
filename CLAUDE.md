@@ -223,10 +223,10 @@ files outside the record that a new species touches.
 cut-outs with a transparent background, 4:5 at 720×900 to match the hero
 and card crop. `UI.plantTile` draws them on the plant's tinted plate
 (`.tmark`), so one file suits both themes and the set reads as one; a
-replacement must be a cut-out too, or it brings its own backdrop back. Most
-are cut from Pexels photographs, which ask for no credit and allow edits; a
-few were supplied by the owner, and `docs/species-photo-sources.csv` records
-which, and where each came from. `Store.speciesPhoto(id)` builds the path
+replacement must be a cut-out too, or it brings its own backdrop back. All
+are cut from Pexels photographs, which ask for no credit and allow edits;
+where each came from is in `docs/species-photo-sources.csv`, and the few whose
+photo link was not kept say so there. `Store.speciesPhoto(id)` builds the path
 without looking, so a new species needs its photograph in the same commit —
 `node .claude/check-species.js` fails without one. A plant's tile shows the
 owner's own photo first and the species photo after (`Store.tilePhoto`).
