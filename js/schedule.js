@@ -306,6 +306,17 @@ window.Schedule = (function () {
         return { days: UI.daysBetween(UI.today(), first), never: false, settling: true,
                  interval: interval, nextDate: first, dormant: false };
       }
+      /* A plant with no arrival date was already at home when the reader
+         added it in the introduction, so it is settled and owed a feed. But
+         every one of them owed it on the first morning made day one a list
+         of feeds on top of the waterings, so the first is held a week from
+         the day it was added. After that it is due as any other. */
+      const added = !got ? UI.fromISO(plant.createdAt) : null;
+      const held = added ? UI.addDays(added, 7) : null;
+      if (held && held > UI.today()) {
+        return { days: UI.daysBetween(UI.today(), held), never: false, held: true,
+                 interval: interval, nextDate: held, dormant: false };
+      }
       return { days: 0, never: true, interval: interval, dormant: false };
     }
     const last = UI.fromISO(plant.lastFertilised);

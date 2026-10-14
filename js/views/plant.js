@@ -271,7 +271,8 @@ window.ViewPlant = (function () {
                 ', at ' + UI.esc(sp.fert.strength) + ' strength' +
                 /* Said, so a new plant's first feed weeks away reads as a
                    decision rather than a schedule that forgot it. */
-                (f && f.settling ? ' · first feed once it has settled in' : '') + '</div>') +
+                (f && f.settling ? ' · first feed once it has settled in' :
+                 f && f.held ? ' · first feed a week after it joined' : '') + '</div>') +
         '</div>' +
         '<span class="pill ' + fCls + ' pill-lg">' + UI.esc(fLine) + '</span>' +
       '</div>' +

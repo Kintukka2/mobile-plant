@@ -76,7 +76,7 @@
    species still waiting on its photograph, diagnosis that never tells a
    never-fed plant to feed, and propagation timed by each method's own
    season. */
-const CACHE = 'sprout-v103-viridium';
+const CACHE = 'sprout-v104-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is
