@@ -17,7 +17,7 @@ window.PROBLEM_DATA = (function () {
      CLUES — the follow-up observations
      ====================================================================== */
   const CLUES = {
-    'soil-wet':        { label: 'Soil is wet or damp', desc: 'Push a finger 4cm in — it feels moist or muddy.' },
+    'soil-wet':        { label: 'Soil is wet or damp', desc: 'Push a finger 4cm in: it feels moist or muddy.' },
     'soil-dry':        { label: 'Soil is bone dry', desc: 'Dry all the way through, possibly shrunk from the pot sides.' },
     'soil-smell':      { label: 'Soil smells sour or musty', desc: 'A swampy, rotten-egg or drain-like smell from the pot.' },
     'water-runs-through': { label: 'Water runs straight through', desc: 'You water and it pours out of the bottom seconds later.' },
@@ -38,7 +38,7 @@ window.PROBLEM_DATA = (function () {
     'stippling':       { label: 'Fine pale speckling on leaves', desc: 'A dusty, sand-blasted look when held to the light.' },
     'white-fluff':     { label: 'White cottony fluff', desc: 'Cotton-wool tufts in leaf joints or under leaves.' },
     'brown-bumps':     { label: 'Hard brown or tan bumps', desc: 'Limpet-like discs on stems and leaf veins that scrape off.' },
-    'sticky':          { label: 'Sticky residue on leaves or floor', desc: 'A tacky film — honeydew, which insects excrete.' },
+    'sticky':          { label: 'Sticky residue on leaves or floor', desc: 'A tacky film: honeydew, which insects excrete.' },
     'flying-gnats':    { label: 'Small flies around the pot', desc: 'Dark gnats that drift up when you water.' },
     'green-clusters':  { label: 'Clusters of green or black insects', desc: 'Massed on new growth, buds and stem tips.' },
     'white-powder':    { label: 'White powdery coating', desc: 'Looks dusted with flour, usually on the upper leaf surface.' },
@@ -47,7 +47,7 @@ window.PROBLEM_DATA = (function () {
     'stems-soft':      { label: 'Stems or base feel soft and squashy', desc: 'You can dent the base with a fingernail.' },
     'stems-long':      { label: 'Long bare gaps between leaves', desc: 'Stretched, spindly stems with widely spaced leaves.' },
     'leaning':         { label: 'Leaning hard in one direction', desc: 'Growing sideways towards the light source.' },
-    'roots-brown':     { label: 'Roots are brown, black or mushy', desc: 'Slide it out — healthy roots are firm and pale, not slimy.' },
+    'roots-brown':     { label: 'Roots are brown, black or mushy', desc: 'Slide it out: healthy roots are firm and pale, not slimy.' },
     'roots-circling':  { label: 'Roots circling or out of the holes', desc: 'A dense mat, or roots escaping the drainage holes.' },
 
     'recently-moved':  { label: 'I moved or repotted it recently', desc: 'Within the last month or so.' },
@@ -178,7 +178,7 @@ window.PROBLEM_DATA = (function () {
 
     'no-fenestration': {
       label: 'New leaves have no holes or splits',
-      desc: 'On a Monstera or similar — new leaves coming out small and solid.',
+      desc: 'On a Monstera or similar: new leaves coming out small and solid.',
       clues: ['low-light-spot', 'not-fed', 'never-repotted', 'winter-now'],
       causes: { 'too-little-light': 10, 'too-young': 7, 'nutrient-deficiency': 5,
                 'needs-support': 5, 'pot-bound': 3 }
@@ -194,7 +194,7 @@ window.PROBLEM_DATA = (function () {
 
     'leaves-falling-over': {
       label: 'Leaves flopping outward',
-      desc: 'On upright plants — leaves splaying outward instead of standing up.',
+      desc: 'On upright plants: leaves splaying outward instead of standing up.',
       clues: ['soil-wet', 'roots-brown', 'low-light-spot', 'never-repotted', 'stems-soft', 'roots-circling'],
       causes: { 'overwatering': 9, 'too-little-light': 7, 'root-rot': 6, 'pot-bound': 5, 'pot-too-big': 3 }
     },
@@ -208,7 +208,7 @@ window.PROBLEM_DATA = (function () {
 
     'frond-dieback': {
       label: 'Whole fronds dying off',
-      desc: 'On a fern — entire fronds going brown and dying from the base.',
+      desc: 'On a fern: entire fronds going brown and dying from the base.',
       clues: ['soil-dry', 'dry-air', 'soil-wet', 'direct-sun', 'fed-lots', 'near-draught', 'lower-leaves'],
       causes: { 'underwatering': 10, 'low-humidity': 9, 'overfeeding': 5, 'too-much-light': 5,
                 'natural-ageing': 4, 'root-rot': 4 }
@@ -216,28 +216,28 @@ window.PROBLEM_DATA = (function () {
 
     'shrivelled-pearls': {
       label: 'Beads shrivelling or flattening',
-      desc: 'On a String of Pearls or Hearts — beads gone wrinkly or deflated.',
+      desc: 'On a String of Pearls or Hearts: beads gone wrinkly or deflated.',
       clues: ['soil-dry', 'soil-wet', 'roots-brown', 'direct-sun', 'stems-long', 'white-fluff'],
       causes: { 'underwatering': 9, 'root-rot': 8, 'overwatering': 7, 'too-much-light': 4, 'mealybugs': 3 }
     },
 
     'shrivelled-segments': {
       label: 'Segments going limp or wrinkled',
-      desc: 'On a cactus or air plant — puckered, soft or shrunken growth.',
+      desc: 'On a cactus or air plant: puckered, soft or shrunken growth.',
       clues: ['soil-dry', 'soil-wet', 'roots-brown', 'crown-wet', 'direct-sun', 'dry-air', 'winter-now', 'lower-leaves'],
       causes: { 'underwatering': 9, 'root-rot': 8, 'overwatering': 6, 'crown-rot': 5, 'too-much-light': 3, 'leaf-pair-change': 9 }
     },
 
     'limp-leaves': {
       label: 'Leaves gone limp and leathery',
-      desc: 'On an orchid — wrinkled, floppy leaves that have lost their firmness.',
+      desc: 'On an orchid: wrinkled, floppy leaves that have lost their firmness.',
       clues: ['soil-dry', 'soil-wet', 'roots-brown', 'water-runs-through', 'never-repotted', 'dry-air'],
       causes: { 'root-rot': 10, 'underwatering': 8, 'old-potting-media': 7, 'overwatering': 5 }
     },
 
     'green-flowers': {
       label: 'Flowers coming out green',
-      desc: 'On a Peace Lily — the white spathes emerging green, or greening early.',
+      desc: 'On a Peace Lily: the white spathes emerging green, or greening early.',
       clues: ['fed-lots', 'low-light-spot', 'direct-sun'],
       causes: { 'overfeeding': 10, 'natural-ageing': 7, 'too-little-light': 4, 'too-much-light': 3 }
     },
@@ -252,7 +252,7 @@ window.PROBLEM_DATA = (function () {
 
     'bolting': {
       label: 'Running to flower and going bitter',
-      desc: 'On a herb — shooting up a flower stalk, leaves turning tough and bitter.',
+      desc: 'On a herb: shooting up a flower stalk, leaves turning tough and bitter.',
       clues: ['direct-sun', 'soil-dry', 'never-repotted', 'not-fed'],
       causes: { 'bolting-heat-stress': 10, 'underwatering': 6, 'pot-bound': 5, 'natural-ageing': 4 }
     },
@@ -266,7 +266,7 @@ window.PROBLEM_DATA = (function () {
 
     'dormancy-dieback': {
       label: 'Dying back completely',
-      desc: 'On an Alocasia or similar — losing every leaf, seemingly dead.',
+      desc: 'On an Alocasia or similar: losing every leaf, seemingly dead.',
       clues: ['winter-now', 'cold-spot', 'soil-wet', 'roots-brown', 'low-light-spot', 'flowered-recently'],
       causes: { 'dormancy': 10, 'root-rot': 7, 'cold-damage': 6, 'overwatering': 5, 'flowered-out': 8 }
     },
@@ -315,28 +315,28 @@ window.PROBLEM_DATA = (function () {
       name: 'Overwatering',
       ico: 'drop',
       severity: 'med',
-      why: 'Waterlogged soil has no air in it. Roots need oxygen as much as water, and when the gaps between soil particles stay flooded the roots suffocate and begin to die. The plant then cannot draw water up, so — confusingly — it wilts and yellows exactly as if it were thirsty. This is the single most common way houseplants are killed, and almost always out of affection.',
+      why: 'Waterlogged soil has no air in it. Roots need oxygen as much as water, and when the gaps between soil particles stay flooded the roots suffocate and begin to die. The plant then cannot draw water up, so it wilts and yellows exactly as if it were thirsty. Overwatering kills more houseplants than anything else.',
       fix: [
-        'Stop watering completely and let the soil dry until the top 5cm are properly dry to your finger.',
+        'Stop watering completely and let the soil dry until the top 5cm are dry to your finger.',
         'Empty the saucer or cachepot. A plant must never stand in collected water.',
-        'Move it somewhere brighter and warmer if you can — that speeds up drying.',
-        'Check the pot actually has drainage holes. If it does not, repot into one that does; this is not optional.',
+        'Move it somewhere brighter and warmer if you can: that speeds up drying.',
+        'Check the pot has drainage holes. If it does not, repot into one that does.',
         'Remove any leaves that have gone fully yellow or mushy. They will not recover and they invite fungus.',
-        'Once recovered, water by weight and feel rather than by calendar — lift the pot, and learn what dry feels like.'
+        'Once recovered, water by weight and feel rather than by calendar: lift the pot, and learn what dry feels like.'
       ],
-      prevent: 'Always check the soil before watering rather than watering on a fixed day. My schedule is a prompt to check, not an instruction to pour.'
+      prevent: 'Check the soil before every watering, and when a reminder comes up, water only if the soil is dry.'
     },
 
     'root-rot': {
       name: 'Root rot',
       ico: 'microbe',
       severity: 'high',
-      why: 'Once roots have been suffocated by wet soil for long enough, opportunistic fungi and bacteria move in and the tissue starts to decay. Healthy roots are firm and pale — white, cream or tan. Rotten ones are brown or black, slimy, and pull apart between your fingers. This will not resolve on its own and it spreads, so it needs surgery.',
+      why: 'Once roots have been suffocated by wet soil for long enough, opportunistic fungi and bacteria move in and the tissue starts to decay. Healthy roots are firm and pale: white, cream or tan. Rotten ones are brown or black, slimy, and pull apart between your fingers. It does not recover by itself and it spreads, so the rotten roots have to be cut away.',
       fix: [
         'Slide the plant out of its pot and wash all the old soil off the roots under a gentle tap.',
         'Inspect carefully. Cut away every soft, brown, black or slimy root with sterilised scissors, back to firm healthy tissue.',
-        'If you removed a lot of root, cut back a proportional amount of the top growth too — the remaining roots cannot support a full canopy.',
-        'Optionally dust the cuts with cinnamon, which has genuine mild antifungal properties.',
+        'If you removed a lot of root, cut back a proportional amount of the top growth too: the remaining roots cannot support a full canopy.',
+        'Optionally, dust the cuts with cinnamon, a mild antifungal.',
         'Repot into fresh, dry, free-draining mix in a clean pot. Never reuse the old soil.',
         'Water very lightly, then keep it on the dry side and out of direct sun for a fortnight while it rebuilds roots.'
       ],
@@ -347,14 +347,14 @@ window.PROBLEM_DATA = (function () {
       name: 'Underwatering',
       ico: 'dropOff',
       severity: 'low',
-      why: 'The soil has dried out so far that the plant cannot maintain pressure in its cells, so leaves go limp, then crisp from the edges inward. Badly dried compost can also become hydrophobic — water then runs straight down the sides and out of the bottom without ever wetting the root ball, so you can water a bone-dry plant and achieve nothing at all.',
+      why: 'The soil has dried out so far that the plant cannot maintain pressure in its cells, so leaves go limp, then crisp from the edges inward. Badly dried compost can also repel water: it then runs straight down the sides and out of the bottom without wetting the root ball.',
       fix: [
         'If water runs straight through, the soil has shrunk away from the roots. Bottom-water instead: stand the pot in a few centimetres of water for 20–30 minutes and let it drink upward.',
         'Otherwise water slowly and thoroughly until it runs from the drainage holes, then let it drain.',
         'Give it a few hours. Most plants perk back up remarkably fast.',
-        'Trim off leaves that have gone fully crisp — they cannot green up again.',
+        'Trim off leaves that have gone fully crisp: they cannot green up again.',
         'If the compost has visibly shrunk from the pot sides, repot into fresh mix.',
-        'Shorten the watering interval here so the reminder arrives sooner next time.'
+        'Shorten its watering interval with Adjust watering on the plant\'s page, so the reminder comes sooner.'
       ],
       prevent: 'Check the soil before the reminder is due, especially in summer or after a run of hot days. Thirsty plants in small pots may need water twice as often in a heatwave.'
     },
@@ -368,7 +368,7 @@ window.PROBLEM_DATA = (function () {
         'Settle into a rhythm: water thoroughly, let it dry to the right point, water thoroughly again.',
         'Use the same method every time rather than a small splash some days and a soak on others.',
         'Check the soil with your finger before each watering so you learn the plant\'s actual pace.',
-        'Log each watering — the history quickly shows whether you are being erratic.'
+        'Log each watering, so the diary shows how far apart they are.'
       ],
       prevent: 'One thorough watering when the plant is ready beats frequent small top-ups, which only ever wet the surface.'
     },
@@ -377,13 +377,13 @@ window.PROBLEM_DATA = (function () {
       name: 'Sensitivity to tap water',
       ico: 'tap',
       severity: 'low',
-      why: 'Fluoride, chlorine and dissolved salts in treated tap water accumulate in leaf tips, where transpiration concentrates them. Some plants simply cannot tolerate it — spider plants, dracaenas, calatheas, marantas and palms are the classic sufferers. The giveaway is browning confined to the very tips while the rest of the leaf stays perfectly healthy.',
+      why: 'Fluoride, chlorine and dissolved salts in treated tap water accumulate in leaf tips, where transpiration concentrates them. Some plants cannot tolerate it: spider plants, dracaenas, calatheas, marantas and palms are the classic sufferers. The giveaway is browning confined to the very tips while the rest of the leaf stays perfectly healthy.',
       fix: [
         'Switch to rainwater, filtered water or distilled water. Rainwater is free and by far the best.',
-        'Failing that, leave tap water standing uncovered overnight — this lets chlorine off-gas, though it does nothing for fluoride or dissolved minerals. That is not enough for a carnivorous plant, which needs rainwater, distilled or reverse-osmosis water only.',
+        'Failing that, leave tap water standing uncovered overnight. This lets chlorine escape, but not chloramine, fluoride or dissolved minerals. That is not enough for a carnivorous plant, which needs rainwater, distilled or reverse-osmosis water only.',
         'Flush the pot thoroughly: run water through it for a minute or two to wash accumulated salts out of the soil.',
         'Trim brown tips with clean scissors, following the leaf\'s natural shape so the cut is less obvious.',
-        'Avoid softened water — ion-exchange softeners replace calcium with sodium, which is worse for plants than hard water.'
+        'Avoid softened water: ion-exchange softeners replace calcium with sodium, which is worse for plants than hard water.'
       ],
       prevent: 'Keep a watering can filled and standing, or collect rainwater in a bucket outside. Flush the soil every few months.'
     },
@@ -392,15 +392,15 @@ window.PROBLEM_DATA = (function () {
       name: 'Fertiliser salt build-up',
       ico: 'crystal',
       severity: 'low',
-      why: 'Fertiliser salts and minerals accumulate in the soil over time, especially if the pot is never flushed through. High salt concentration draws moisture out of roots by osmosis — chemically burning them — and shows up as brown edges plus a white crust on the soil surface or pot rim.',
+      why: 'Fertiliser salts and minerals accumulate in the soil over time, especially if the pot is never flushed through. High salt concentration draws moisture out of roots by osmosis, chemically burning them, and shows up as brown edges plus a white crust on the soil surface or pot rim.',
       fix: [
         'Scrape off any visible white crust from the soil surface.',
         'Flush the pot heavily: run lukewarm water through it for two to three minutes, letting it drain freely. Do this in a sink, bath or outside.',
         'Repeat the flush two or three times over a fortnight.',
         'Hold off feeding for two months, then resume at half strength.',
-        'If the crust is severe, repot into fresh soil instead — it is faster.'
+        'If the crust is severe, repot into fresh soil instead: it is faster.'
       ],
-      prevent: 'Flush the soil thoroughly every three or four months, and feed at half the strength on the bottle. Most houseplant feeds are dosed for greenhouse growers.'
+      prevent: 'Flush the soil thoroughly every three or four months, and feed at half the strength on the bottle.'
     },
 
     /* ---------------- Light ---------------- */
@@ -408,41 +408,41 @@ window.PROBLEM_DATA = (function () {
       name: 'Not enough light',
       ico: 'sunOff',
       severity: 'low',
-      why: 'Light is the plant\'s food source — no light means no photosynthesis, and everything else follows from that. It stretches towards whatever light there is, producing long bare stems and small pale leaves. Variegation fades because the plant sacrifices its decorative white and yellow areas, which cannot photosynthesise, in favour of green ones. Flowering stops entirely, since blooming is expensive.',
+      why: 'A plant makes its food from light, so in too little light it stretches towards whatever light there is, producing long bare stems and small pale leaves. Variegation fades because the plant sacrifices its decorative white and yellow areas, which cannot photosynthesise, in favour of green ones. Flowering stops entirely, since blooming is expensive.',
       fix: [
-        'Move it closer to a window. As a rough rule, light intensity falls off with the square of the distance — a metre from the glass is dramatically dimmer than 30cm.',
+        'Move it closer to a window. Light falls away fast with distance from the glass: a metre back gets far less than 30cm.',
         'An east or west-facing window is the safest upgrade for most houseplants.',
         'Clean the window and dust the leaves. Both cut light transmission more than people expect.',
         'Cut back the stretched, leggy growth. It will not shorten again, and pruning encourages compact new shoots.',
-        'In a genuinely dark home, a simple LED grow light on a timer for 10–12 hours a day works well and is inexpensive.',
+        'In a dark home, a simple LED grow light on a timer for 10–12 hours a day works well and is inexpensive.',
         'Introduce brighter light over a week or two rather than all at once, so it does not scorch.'
       ],
-      prevent: 'Match the plant to the room rather than the room to the plant. My room light tags will flag a mismatch when you add one.'
+      prevent: 'Choose plants whose light needs suit the room. The room page flags any plant whose light does not match.'
     },
 
     'too-much-light': {
       name: 'Too much light',
       ico: 'sun',
       severity: 'low',
-      why: 'Excess light destroys chlorophyll faster than the plant can replace it, bleaching leaves to a pale, washed-out yellow-green. Combined with heat, direct sun through glass also dries leaf tissue out faster than roots can resupply it, so you get scorched patches. Glass magnifies the effect considerably compared to the same sun outdoors.',
+      why: 'Excess light destroys chlorophyll faster than the plant can replace it, bleaching leaves to a pale, washed-out yellow-green. Combined with heat, direct sun through glass also dries leaf tissue out faster than roots can resupply it, so you get scorched patches.',
       fix: [
         'Move it back from the window, or across to one with a gentler aspect.',
         'A sheer curtain or a strip of frosted film diffuses harsh sun very effectively while keeping the room bright.',
-        'Bleached leaves will not recover their colour, but they still photosynthesise — only remove them if they are badly scorched.',
-        'Check watering. Plants in strong light dry out much faster, and sun damage is often really drought damage.',
+        'Bleached leaves will not recover their colour, but they still photosynthesise. Only remove them if they are badly scorched.',
+        'Check watering. Plants in strong light dry out much faster, and what looks like sun damage is often drought damage.',
         'Move it gradually if the new spot is much dimmer, to avoid shocking it a second time.'
       ],
-      prevent: 'Remember the sun\'s path shifts through the year — a spot that was fine in winter can be brutal in midsummer.'
+      prevent: 'The sun\'s path shifts through the year, so a spot that was fine in winter can scorch in midsummer.'
     },
 
     'sunburn': {
       name: 'Sunburn',
       ico: 'flame',
       severity: 'low',
-      why: 'Direct sun on leaves that were not acclimatised to it kills the tissue outright, leaving dry bleached-white or tan patches with sharply defined edges. It is very common in the first fortnight after moving a plant from a shady shop or a dim corner into a sunny window — the leaves have no chance to adapt their pigments.',
+      why: 'Direct sun on leaves that were not acclimatised to it kills the tissue outright, leaving dry bleached-white or tan patches with sharply defined edges. It is very common in the first fortnight after moving a plant from a shady shop or a dim corner into a sunny window: the leaves have no chance to adapt their pigments.',
       fix: [
         'Move it out of direct sun immediately.',
-        'Damaged patches are dead and will not heal. Leave the leaf on unless most of it is gone — it still contributes.',
+        'Damaged patches are dead and will not heal. Leave the leaf on unless most of it is gone: it still contributes.',
         'Water normally; do not overcompensate, as scorched plants are not necessarily thirsty.',
         'If you do want it in that bright spot, reintroduce it over two to three weeks, adding an hour of sun at a time.'
       ],
@@ -453,14 +453,14 @@ window.PROBLEM_DATA = (function () {
       name: 'Growing towards the light',
       ico: 'rotate',
       severity: 'low',
-      why: 'Phototropism — the plant redistributes growth hormone to the shaded side, which elongates and bends the stem towards the light. Entirely normal and healthy, but over months it produces a permanently lopsided plant.',
+      why: 'Phototropism: the plant redistributes growth hormone to the shaded side, which elongates and bends the stem towards the light. Entirely normal and healthy, but over months it produces a permanently lopsided plant.',
       fix: [
         'Give the pot a quarter turn every week or two. Watering day is an easy thing to attach the habit to.',
         'Stems already bent will not straighten, but new growth will come up evenly.',
         'A badly leaning plant can be pruned back and allowed to regrow with regular rotation.',
         'For tall or top-heavy plants, a stake or moss pole gives support while it rebalances.'
       ],
-      prevent: 'Rotate a quarter turn each time you water. I can log a rotate task alongside the watering.'
+      prevent: 'Rotate a quarter turn each time you water.'
     },
 
     /* ---------------- Feeding & roots ---------------- */
@@ -468,12 +468,12 @@ window.PROBLEM_DATA = (function () {
       name: 'Nutrient deficiency',
       ico: 'dial',
       severity: 'low',
-      why: 'Potting compost carries only two or three months of nutrients from the nursery. After that, a plant in the same soil is living on nothing. Nitrogen shortage is the usual culprit — it is mobile within the plant, so old lower leaves are stripped to feed new growth, which is why yellowing starts at the bottom and works upward.',
+      why: 'Potting compost carries only two or three months of nutrients from the nursery. After that, a plant in the same soil gets little from it. Nitrogen shortage is the usual culprit: it is mobile within the plant, so old lower leaves are stripped to feed new growth, which is why yellowing starts at the bottom and works upward.',
       fix: [
         'Begin feeding with a balanced liquid houseplant fertiliser at half the strength stated on the bottle.',
-        'Feed only during the growing season — roughly spring and summer. Feeding a dormant plant does harm, not good.',
+        'Feed only during the growing season, roughly spring and summer. Feeding a dormant plant harms it.',
         'Always water first, then feed, or feed into already-damp soil. Fertiliser on dry roots burns them.',
-        'If it has been in the same soil for over two years, repot into fresh compost instead — that alone often fixes it.',
+        'If it has been in the same soil for over two years, repot into fresh compost instead: that alone often fixes it.',
         'Expect two to four weeks before you see improvement in new growth. Existing yellow leaves will not green up.'
       ],
       prevent: 'Feed fortnightly to monthly through spring and summer at half strength, and repot every couple of years.'
@@ -486,22 +486,22 @@ window.PROBLEM_DATA = (function () {
       why: 'Too much fertiliser raises the salt concentration in the soil above that inside the roots, so water is drawn out of the plant rather than into it. The roots are effectively chemically burned, and the symptoms look almost identical to drought: brown crispy edges, wilting, and a white crust on the soil.',
       fix: [
         'Stop feeding at once.',
-        'Flush the pot thoroughly — run lukewarm water through it for two or three minutes and let it drain completely.',
+        'Flush the pot thoroughly: run lukewarm water through it for two or three minutes and let it drain completely.',
         'Repeat the flush a couple of times over the following fortnight.',
         'In severe cases, repot into completely fresh soil, rinsing the roots gently as you go.',
         'Wait two months before feeding again, and then at a quarter to half strength.'
       ],
-      prevent: 'Half the recommended dose is right for almost all houseplants. Under-feeding is easily corrected; over-feeding causes lasting root damage.'
+      prevent: 'Half the recommended dose is right for almost all houseplants. Over-feeding damages roots.'
     },
 
     'wrong-feed': {
       name: 'Wrong kind of feed',
       ico: 'wheat',
       severity: 'low',
-      why: 'A high-nitrogen fertiliser drives lush leaf growth at the direct expense of flowers — the plant has no reason to reproduce when conditions look this good. Flowering needs phosphorus and potassium instead. This is why a well-fed peace lily or orchid can look magnificent and never bloom.',
+      why: 'A high-nitrogen fertiliser drives leaf growth at the expense of flowers. Flowering needs phosphorus and potassium.',
       fix: [
-        'Switch to a high-potassium or high-phosphorus feed — tomato feed works well and is cheap.',
-        'For orchids specifically, use a proper orchid fertiliser weakly and weekly.',
+        'Switch to a high-potassium or high-phosphorus feed: tomato feed works well and is cheap.',
+        'For orchids, use an orchid feed at quarter strength every other watering.',
         'Reduce nitrogen from late summer onwards so the plant shifts into flowering mode.',
         'Be patient: many plants set buds a full season before they open.'
       ],
@@ -514,13 +514,13 @@ window.PROBLEM_DATA = (function () {
       severity: 'low',
       why: 'The roots have filled every available space and begun circling the pot. There is very little soil left to hold water or nutrients, so it dries out within a day or two of watering and starves however much you feed it. You will often see roots pushing out of the drainage holes or spiralling on the surface.',
       fix: [
-        'Repot in spring into a pot 2–4cm wider in diameter. No larger — an oversized pot holds wet soil the roots cannot reach.',
+        'Repot in spring into a pot 2–4cm wider in diameter. No larger: an oversized pot holds wet soil the roots cannot reach.',
         'Tease the outer roots loose and cut through any that circle the root ball tightly.',
         'If the root ball is a solid mat, slice 2cm off the sides and bottom with a clean knife to encourage fresh growth outward.',
         'Use fresh compost, and water thoroughly once potted.',
         'Keep it out of direct sun for a fortnight while it re-establishes.'
       ],
-      prevent: 'Check the roots every spring. Some plants — hoyas, orchids, peace lilies — actually flower better slightly pot-bound, so do not repot on principle.'
+      prevent: 'Check the roots every spring. Some plants (hoyas, orchids, peace lilies) flower better slightly pot-bound, so do not repot on principle.'
     },
 
     'pot-too-big': {
@@ -533,14 +533,14 @@ window.PROBLEM_DATA = (function () {
         'Check the roots while you are there and remove any that have already rotted.',
         'Use free-draining mix and water more sparingly until the roots catch up.'
       ],
-      prevent: 'Step up one pot size at a time. Resist the temptation to give a plant room to grow into.'
+      prevent: 'Step up one pot size at a time.'
     },
 
     'old-potting-media': {
       name: 'Potting media has broken down',
       ico: 'layers',
       severity: 'med',
-      why: 'Bark-based orchid mixes decompose over two or three years into a fine, water-retentive compost. That is exactly what an epiphyte\'s roots cannot cope with — they need air. The plant then rots even though you have changed nothing about your watering.',
+      why: 'Bark-based orchid mixes decompose over two or three years into a fine, water-retentive compost. That is exactly what an epiphyte\'s roots cannot cope with: they need air. The plant then rots even though you have changed nothing about your watering.',
       fix: [
         'Unpot and remove all the old broken-down bark from the roots.',
         'Trim away any dead, papery or mushy roots with sterilised scissors.',
@@ -555,27 +555,27 @@ window.PROBLEM_DATA = (function () {
       name: 'Air is too dry',
       ico: 'arid',
       severity: 'low',
-      why: 'Tropical plants evolved in 70–90% humidity. Heated or air-conditioned indoor air sits nearer 20–30% — comparable to a desert. Leaves lose water through their pores faster than the roots can replace it, and the extremities go first, which is why damage starts at tips and edges.',
+      why: 'Tropical plants evolved in 70–90% humidity. Heated or air-conditioned indoor air sits nearer 20–30%, comparable to a desert. Leaves lose water through their pores faster than the roots can replace it, and the extremities go first, which is why damage starts at tips and edges.',
       fix: [
-        'Group plants together. They transpire, and collectively they raise the humidity around themselves noticeably.',
-        'Stand the pot on a tray of pebbles with water below the pot base — never letting the pot sit in the water itself.',
+        'Group plants together: their transpiration raises the humidity around them a little.',
+        'Stand the pot on a tray of pebbles with water below the pot base, never letting the pot sit in the water itself.',
         'Move it to a bathroom or kitchen, where humidity is naturally far higher.',
-        'For genuinely fussy plants — calatheas, ferns, alocasias — a small room humidifier is the only thing that reliably works.',
+        'For fussy plants (calatheas, ferns, alocasias), a small room humidifier is the only thing that reliably works.',
         'Move it away from radiators, heat pumps and air conditioning vents.',
         'Trim crispy edges with clean scissors, cutting along the leaf\'s natural line.'
       ],
-      prevent: 'Misting is largely theatre — it raises humidity for a few minutes at most. Grouping, pebble trays and humidifiers actually work.'
+      prevent: 'Misting raises humidity for a few minutes at most. A humidifier works; grouping plants and pebble trays help a little.'
     },
 
     'draughts': {
       name: 'Draughts',
       ico: 'wind',
       severity: 'low',
-      why: 'A steady flow of moving air — hot or cold — strips moisture from leaves and causes rapid temperature swings at the leaf surface. Plants respond to that stress by shedding leaves, often abruptly and while the leaves are still green. Figs are notoriously sensitive to this.',
+      why: 'A steady flow of moving air, hot or cold, strips moisture from leaves and causes rapid temperature swings at the leaf surface. Plants respond to that stress by shedding leaves, often abruptly and while the leaves are still green. Figs are notoriously sensitive to this.',
       fix: [
         'Identify the source: an entrance door, a draughty window frame, a radiator, or an air conditioning vent.',
         'Move the plant at least a metre away, or somewhere else entirely.',
-        'Do not sit plants between a cold windowpane and a hot radiator — that is the worst spot in most homes.',
+        'Do not sit plants between a cold windowpane and a hot radiator: that is the worst spot in most homes.',
         'Once relocated, leave it alone. Recovery takes weeks and further moves only compound the stress.'
       ],
       prevent: 'When choosing a spot, stand there yourself for a minute and notice whether you feel moving air.'
@@ -588,7 +588,7 @@ window.PROBLEM_DATA = (function () {
       why: 'Below a species\' minimum temperature, cell membranes are damaged and water inside the cells can freeze or leak. The result is blackened, translucent or water-soaked patches, and the damage typically shows up a day or two after the cold event rather than immediately. Leaves touching a cold window overnight are a very common cause.',
       fix: [
         'Move it somewhere warmer immediately, away from the window glass.',
-        'Do not prune damaged growth straight away — wait a fortnight to see the true extent of it.',
+        'Do not prune damaged growth straight away. Wait a fortnight to see the true extent of it.',
         'Cut watering back sharply. A cold-damaged plant cannot use much water and will rot readily.',
         'Do not feed until you see healthy new growth.',
         'Remove any blackened, mushy tissue once things have stabilised, as it invites fungal infection.'
@@ -600,38 +600,38 @@ window.PROBLEM_DATA = (function () {
       name: 'Transplant or relocation shock',
       ico: 'archive',
       severity: 'low',
-      why: 'Repotting inevitably tears fine root hairs, which are what actually absorb most water. Moving to a new spot changes light, temperature and humidity all at once. Either way the plant sheds leaves to reduce its water demand while it recalibrates. This is a normal adjustment, not a disease.',
+      why: 'Repotting inevitably tears fine root hairs, which are what absorb most water. Moving to a new spot changes light, temperature and humidity all at once. Either way the plant sheds leaves to reduce its water demand while it recalibrates. This is a normal adjustment, not a disease.',
       fix: [
         'Resist the urge to intervene. Do not fertilise, do not repot again, do not keep moving it.',
-        'Keep the soil evenly and lightly moist — not wet — while new roots form.',
+        'Keep the soil evenly and lightly moist, not wet, while new roots form.',
         'Keep it out of direct sun for two to three weeks.',
         'Maintain steady warmth and, if you can, a little extra humidity.',
         'Expect two to six weeks before you see new growth. Some leaf loss along the way is acceptable.'
       ],
-      prevent: 'Repot in spring, when the plant has the energy to recover, and disturb the roots as little as you can. Pick a permanent spot and commit to it.'
+      prevent: 'Repot in spring, when the plant has the energy to recover, and disturb the roots as little as you can. Pick a permanent spot and leave it there.'
     },
 
     'dormancy': {
       name: 'Natural dormancy',
       ico: 'moon',
       severity: 'low',
-      why: 'Many plants — alocasias, caladiums, cyclamen, some begonias — die back deliberately for part of the year, retreating into their tuber or rhizome to wait out the season that does not suit them. For most that is winter; a cyclamen rests through summer. It looks exactly like death. It is not. The underground parts are alive and will resprout.',
+      why: 'Many plants (alocasias, caladiums, cyclamen, some begonias) die back deliberately for part of the year, retreating into their tuber or rhizome to wait out the season that does not suit them. For most that is winter; a cyclamen rests through summer. The plant looks dead, but the tuber or rhizome is alive and will resprout.',
       fix: [
-        'Cut watering right back to barely damp, or stop it altogether if its care page says it rests dry. Wet soil around a dormant tuber is what actually kills it.',
+        'Cut watering right back to barely damp, or stop it altogether if its care page says it rests dry. Wet soil around a dormant tuber is what kills it.',
         'Stop feeding entirely until growth restarts.',
         'Keep it at the temperature its care page gives. A cyclamen rests cool, but tropical tubers such as caladiums and alocasias must stay above 15°C.',
         'Remove dead foliage once it has fully browned, so it does not rot.',
         'Wait. New shoots appear when its growing season comes round again, for most plants in spring.',
-        'To confirm it is alive, feel gently in the soil for the tuber — it should still be firm.'
+        'To confirm it is alive, feel gently in the soil for the tuber: it should still be firm.'
       ],
-      prevent: 'Nothing to prevent — this is healthy behaviour. Better light and warmth through winter can reduce or avoid it if you would rather it kept growing.'
+      prevent: 'Nothing to prevent: this is healthy behaviour. Better light and warmth through winter can reduce or avoid it if you would rather it kept growing.'
     },
 
     'needs-rest-period': {
       name: 'Needs a rest period to flower',
       ico: 'sleep',
       severity: 'low',
-      why: 'Some plants will only set buds after a distinct environmental trigger — usually a stretch of cooler nights, shorter days, or drier soil. Kept in constant warm comfortable conditions all year, they have no signal to begin, so they simply keep making leaves.',
+      why: 'Some plants will only set buds after a distinct environmental trigger, usually a stretch of cooler nights, shorter days, or drier soil. Kept in constant warm comfortable conditions all year, they have no signal to begin, so they keep making leaves.',
       fix: [
         'For Christmas cactus: give it 12–14 hours of complete darkness a night and cool 12–15°C temperatures for six weeks, keeping the soil fairly dry.',
         'For orchids: allow a night-time temperature drop of 5–10°C for a few weeks in autumn.',
@@ -646,7 +646,7 @@ window.PROBLEM_DATA = (function () {
       name: 'Moved or disturbed while budding',
       ico: 'move',
       severity: 'low',
-      why: 'Developing buds are the first thing a stressed plant abandons, because they are metabolically expensive and not essential to survival. Any significant change while buds are forming — a new spot, a different light angle, a temperature swing, an erratic watering — can trigger the plant to drop the lot.',
+      why: 'Developing buds are the first thing a stressed plant abandons, because they are metabolically expensive and not essential to survival. Any significant change while buds are forming (a new spot, a different light angle, a temperature swing, an erratic watering) can trigger the plant to drop the lot.',
       fix: [
         'Put it back where it was, if you can, and then leave it completely alone.',
         'Keep watering, light and temperature as steady as possible.',
@@ -657,24 +657,24 @@ window.PROBLEM_DATA = (function () {
     },
 
     'too-young': {
-      name: 'Simply not mature yet',
+      name: 'Not mature yet',
       ico: 'sprout',
       severity: 'low',
-      why: 'Plenty of plants must reach a certain size or age before they will flower or produce their adult leaf form. Monstera fenestration, hoya blooms and bird of paradise flowers all arrive only with maturity — sometimes after several years. Nothing is wrong; it is just early.',
+      why: 'Plenty of plants must reach a certain size or age before they will flower or produce their adult leaf form. Monstera fenestration, hoya blooms and bird of paradise flowers all arrive only with maturity, sometimes after several years. Nothing is wrong; it is just early.',
       fix: [
         'Keep providing good light, appropriate feeding and steady care. There is no shortcut.',
-        'For Monstera, give it something to climb — mature leaf form is triggered partly by climbing.',
+        'For Monstera, give it something to climb: mature leaf form is triggered partly by climbing.',
         'For bird of paradise, expect four to six years from a young plant, and lots of sun.',
-        'For hoya, two to three years, and do not cut off the old flower spurs — it reblooms from the same ones.'
+        'For hoya, two to three years, and do not cut off the old flower spurs: it reblooms from the same ones.'
       ],
-      prevent: 'Patience, and buying a larger plant if you want flowers sooner.'
+      prevent: 'Buy a larger, older plant if you want flowers sooner.'
     },
 
     'natural-ageing': {
       name: 'Normal leaf ageing',
       ico: 'fall',
       severity: 'low',
-      why: 'Leaves do not live forever. A plant continually retires its oldest, lowest, most shaded leaves and recycles the nutrients into new growth. One or two yellowing lower leaves while the rest of the plant looks healthy and is producing new growth is simply housekeeping.',
+      why: 'A plant continually retires its oldest, lowest, most shaded leaves and recycles the nutrients into new growth. One or two yellowing lower leaves on a plant that is otherwise healthy and growing is normal.',
       fix: [
         'Check the rest of the plant. Firm stems, healthy colour and new growth mean there is nothing to fix.',
         'Remove the spent leaf once it has yellowed fully, so the plant stops spending energy on it.',
@@ -691,7 +691,7 @@ window.PROBLEM_DATA = (function () {
       why: 'Many vines and shrubs put all their energy into their growing tips, producing ever-longer bare stems and abandoning the base. Cutting those tips removes the hormone that suppresses side shoots, so the plant branches instead and thickens up. Tradescantia, pothos and scheffleras all need this regularly.',
       fix: [
         'Cut each long stem back to just above a node, removing a third to a half of its length.',
-        'Do not be timid — hard pruning gives much better results than a light trim.',
+        'Prune hard: it gives better results than a light trim.',
         'Prune in spring or summer so it regrows quickly.',
         'Root the cuttings you have just removed and plant them back into the same pot to fill it out.',
         'Feed after pruning to support the flush of new growth.'
@@ -703,11 +703,11 @@ window.PROBLEM_DATA = (function () {
       name: 'Needs something to climb',
       ico: 'trellis',
       severity: 'low',
-      why: 'Climbing plants read contact with a vertical surface as a signal that they have found a tree and can safely invest in larger adult foliage. Left trailing, a Monstera or Philodendron stays in juvenile mode with small, unsplit leaves — it behaves as though still searching for a trunk.',
+      why: 'Climbing plants read contact with a vertical surface as a signal that they have found a tree and can safely invest in larger adult foliage. Left trailing, a Monstera or Philodendron stays in juvenile mode with small, unsplit leaves: it behaves as though still searching for a trunk.',
       fix: [
         'Add a moss pole, coir pole or plank of untreated timber to the pot.',
         'Tie the stems on loosely with soft plant ties, positioning the aerial roots against the pole.',
-        'Keep a moss pole damp by misting it — the aerial roots will grip and grow into it.',
+        'Keep a moss pole damp by misting it: the aerial roots will grip and grow into it.',
         'Expect each successive new leaf to come out larger and more deeply split.'
       ],
       prevent: 'Add support while the plant is young. Retrofitting a pole to a large sprawling plant is awkward.'
@@ -722,7 +722,7 @@ window.PROBLEM_DATA = (function () {
         'Cut any fully green shoot right back to its origin as soon as you spot it.',
         'Move the plant to brighter indirect light, which favours variegated growth.',
         'Prune back to a point where the stem still shows good variegation, and let it regrow from there.',
-        'Accept that some plants — particularly variegated Monstera — will always throw the occasional green leaf.'
+        'Accept that some plants (particularly variegated Monstera) will always throw the occasional green leaf.'
       ],
       prevent: 'Bright indirect light and prompt removal of green reversions. Never propagate from an all-green shoot.'
     },
@@ -731,9 +731,9 @@ window.PROBLEM_DATA = (function () {
       name: 'Bolting from heat or stress',
       ico: 'thermo',
       severity: 'low',
-      why: 'Herbs are annuals or biennials whose entire purpose is to set seed. Heat, drought, long days or root restriction all signal that time is short, so the plant abandons leaf production and rushes to flower. Once it does, the leaves turn bitter and tough as resources move into the seed head.',
+      why: 'Basil is an annual and parsley a biennial, so both run to seed quickly. Heat, drought, long days or root restriction all signal that time is short, so the plant stops making leaves and flowers. Once it does, the leaves turn bitter and tough as resources move into the seed head.',
       fix: [
-        'Pinch out flower stalks the moment you see them forming — this buys you weeks of leaf harvest.',
+        'Pinch out flower stalks the moment you see them forming: this buys you weeks of leaf harvest.',
         'Harvest more aggressively. Regular cutting delays flowering.',
         'Move it somewhere cooler, and keep the soil consistently moist.',
         'Once it has fully bolted, the flavour will not come back. Take cuttings from a side shoot, or sow fresh seed.',
@@ -746,12 +746,12 @@ window.PROBLEM_DATA = (function () {
       name: 'Physical or wind damage',
       ico: 'wind',
       severity: 'low',
-      why: 'Large thin leaves tear easily against nearby objects, in a draught, or simply from being brushed past. On some plants — bird of paradise especially — splitting along the leaf is entirely natural with age, and in the wild helps the plant shed wind load without snapping.',
+      why: 'Large thin leaves tear easily against nearby objects, in a draught, or from being brushed past. On some plants (bird of paradise especially), splitting along the leaf is entirely natural with age, and in the wild helps the plant shed wind load without snapping.',
       fix: [
         'Move the plant out of a high-traffic route or away from a draught.',
-        'Split leaves cannot heal. Leave them unless they look bad to you — they still photosynthesise perfectly well.',
+        'Split leaves cannot heal. Leave them unless they look bad to you: they still photosynthesise perfectly well.',
         'Support tall leaves with a stake if they are catching on things.',
-        'On a bird of paradise, accept it. Split leaves are a sign of a mature, healthy plant.'
+        'On a bird of paradise, split leaves are normal on a mature, healthy plant.'
       ],
       prevent: 'Give large-leaved plants clearance on all sides, and keep them off busy corridors.'
     },
@@ -760,14 +760,14 @@ window.PROBLEM_DATA = (function () {
       name: 'Crown rot',
       ico: 'droplets',
       severity: 'high',
-      why: 'Water sitting in the centre of a rosette, or where leaves meet the stem, has nowhere to evaporate to. Bacteria and fungi flourish in that pocket and rot the growing point. Because that point is where all new growth comes from, losing it is often fatal — this is why rosette-forming plants must never be watered overhead.',
+      why: 'Water sitting in the centre of a rosette, or where leaves meet the stem, has nowhere to evaporate to. Bacteria and fungi flourish in that pocket and rot the growing point. Because that point is where all new growth comes from, losing it is often fatal. This is why rosette-forming plants must never be watered overhead.',
       fix: [
         'Tip the plant carefully to drain any standing water, and blot the crown dry with kitchen paper.',
         'Cut away all soft, brown or slimy tissue with sterilised scissors, back to firm clean growth.',
         'Dust the wound with cinnamon or a sulphur-based fungicide.',
         'Move it somewhere with good airflow so the crown dries fast.',
         'Water only at the soil, around the edge of the pot, from now on.',
-        'If the growing point is entirely gone, look for offsets or pups at the base — they may be all you can save.'
+        'If the growing point is entirely gone, look for offsets or pups at the base: they may be all you can save.'
       ],
       prevent: 'Water at the soil, never into the crown. Water in the morning so any splashes dry during the day.'
     },
@@ -835,7 +835,7 @@ window.PROBLEM_DATA = (function () {
       ico: 'sprout',
       severity: 'low',
       onlyIfProne: true,
-      why: 'Each year a new pair of leaves grows inside the old pair through winter and spring, drawing on the old pair\'s stored water. The old pair wrinkles, shrinks and finally dries to a papery sheath around the new one. It looks like thirst. It is the plant\'s normal cycle, and water now makes the old pair swell and split while the new one rots.',
+      why: 'Each year a new pair of leaves grows inside the old pair through winter and spring, drawing on the old pair\'s stored water. The old pair wrinkles, shrinks and finally dries to a papery sheath around the new one. The shrivelling is the plant\'s normal cycle; water now makes the old pair swell and split while the new one rots.',
       fix: [
         'Do not water while the old pair is still plump enough to feed the new one.',
         'Keep it in full sun and cool, dry air.',
@@ -891,7 +891,7 @@ window.PROBLEM_DATA = (function () {
       ico: 'flower',
       severity: 'low',
       onlyIfProne: true,
-      why: 'Bromeliads and air plants flower once in each rosette\'s life. Afterwards the parent puts its energy into pups at its base and slowly dies back over the following months. Nothing has gone wrong, and nothing will reverse it: this is how the plant carries on.',
+      why: 'Bromeliads and air plants flower once in each rosette\'s life. Afterwards the parent puts its energy into pups at its base and slowly dies back over the following months. This is normal and cannot be reversed.',
       fix: [
         'Keep caring for it as normal. The parent feeds its pups for as long as it lasts.',
         'Look around the base for pups. Leave them attached until they reach a third to half of the parent\'s size.',
@@ -906,14 +906,14 @@ window.PROBLEM_DATA = (function () {
       name: 'Spider mites',
       ico: 'web',
       severity: 'high',
-      why: 'Barely visible arachnids, under half a millimetre across, that pierce leaf cells and drain them. The tell-tale signs are fine pale stippling — a sand-blasted look — and delicate webbing in the leaf joints. They thrive in hot dry air and reproduce in about a week, so an infestation escalates alarmingly fast. To confirm, hold a sheet of white paper under a leaf and tap: you will see moving specks.',
+      why: 'Barely visible arachnids, under half a millimetre across, that pierce leaf cells and drain them. The signs are fine pale stippling (a sand-blasted look) and delicate webbing in the leaf joints. They thrive in hot dry air and reproduce in about a week, so an infestation grows fast. To confirm, hold a sheet of white paper under a leaf and tap: you will see moving specks.',
       fix: [
         'Isolate the plant immediately, well away from everything else. Mites travel.',
         'Take it to a shower or outside and blast every leaf surface with water, paying particular attention to the undersides.',
         'Spray thoroughly with insecticidal soap or a horticultural oil such as neem, wetting the undersides until they drip.',
-        'Repeat every five to seven days for at least three cycles — sprays kill adults but not eggs, so you must break the hatching cycle.',
+        'Repeat every five to seven days for at least three cycles: sprays kill adults but not eggs, so you must break the hatching cycle.',
         'Wipe down the shelf, windowsill and pot exterior, where eggs also sit.',
-        'Raise the humidity around the plant. Mites genuinely hate damp air, and this is your best long-term defence.',
+        'Raise the humidity around the plant. Mites thrive in dry air, so humid air is the best long-term defence.',
         'Check every neighbouring plant carefully for a fortnight.'
       ],
       prevent: 'Keep humidity up and inspect leaf undersides monthly. Quarantine every new plant for two weeks before it joins the others.'
@@ -923,12 +923,12 @@ window.PROBLEM_DATA = (function () {
       name: 'Mealybugs',
       ico: 'cloud',
       severity: 'med',
-      why: 'Soft scale insects that coat themselves in a white waxy fluff resembling cotton wool. They cluster in leaf joints, along stems and under leaves, feeding on sap and excreting sticky honeydew. The waxy coating repels water and many sprays, which is exactly why they are stubborn — you generally have to touch each one.',
+      why: 'Sap-sucking insects, related to scale, that coat themselves in a white waxy fluff resembling cotton wool. They cluster in leaf joints, along stems and under leaves, feeding on sap and excreting sticky honeydew. The waxy coating repels water and many sprays, which is exactly why they are stubborn: you generally have to touch each one.',
       fix: [
         'Isolate the plant from your others.',
         'Dab each visible insect with a cotton bud dipped in surgical spirit. This dissolves the wax and kills them on contact.',
         'Then spray the whole plant with insecticidal soap or neem oil, covering leaf undersides and joints.',
-        'Check the soil surface and the top of the root ball — mealybugs also live on roots.',
+        'Check the soil surface and the top of the root ball: mealybugs also live on roots.',
         'Repeat weekly for at least four weeks. They hide in crevices and you will miss some every time.',
         'Wipe the pot, saucer and shelf, and inspect neighbouring plants.'
       ],
@@ -939,14 +939,14 @@ window.PROBLEM_DATA = (function () {
       name: 'Scale insects',
       ico: 'bumps',
       severity: 'med',
-      why: 'Sap-suckers that, once settled, grow a hard protective shell and stop moving entirely — which is why people mistake them for a natural bump or a bit of dirt. They sit along stems and leaf veins, draining the plant and excreting honeydew that then grows black sooty mould. The shell makes them highly resistant to contact sprays.',
+      why: 'Sap-suckers that, once settled, grow a hard protective shell and stop moving entirely, which is why people mistake them for a natural bump or a bit of dirt. They sit along stems and leaf veins, draining the plant and excreting honeydew that then grows black sooty mould. The shell makes them highly resistant to contact sprays.',
       fix: [
         'Isolate the plant.',
         'Scrape the scales off physically with a fingernail, an old toothbrush or a blunt knife. This is the most effective single step.',
         'Wipe every stem and leaf with a cloth dipped in soapy water or diluted surgical spirit.',
         'Follow up with horticultural oil, which smothers the young mobile crawlers you cannot see.',
         'Repeat every 10–14 days for two months. Their life cycle is slow, so treatment must be persistent.',
-        'Prune out any badly encrusted stems entirely — it is quicker than treating them.',
+        'Prune out any badly encrusted stems entirely: it is quicker than treating them.',
         'Wash off sooty mould with soapy water once the insects are gone.'
       ],
       prevent: 'Inspect stems and the undersides of leaf veins monthly, especially on ficus, citrus and ferns. Quarantine new arrivals.'
@@ -956,11 +956,11 @@ window.PROBLEM_DATA = (function () {
       name: 'Fungus gnats',
       ico: 'fly',
       severity: 'low',
-      why: 'Small dark flies that breed in persistently damp compost, where their larvae feed on fungi and organic matter. The adults are a nuisance rather than a threat, though large larval populations will nibble fine roots on seedlings. Their real significance is diagnostic: they are proof the top of your soil is staying wet for too long.',
+      why: 'Small dark flies that breed in persistently damp compost, where their larvae feed on fungi and organic matter. The adults are a nuisance rather than a threat, though large larval populations will nibble fine roots on seedlings. They show that the top of the soil is staying wet for too long.',
       fix: [
         'Let the top 3–5cm of soil dry out fully between waterings. This alone breaks the breeding cycle, as larvae cannot survive dry compost.',
         'Water from the bottom for a few weeks, so the surface stays dry.',
-        'Cover the soil surface with a 1cm layer of horticultural grit, sand or decorative pebbles — the adults then cannot reach the compost to lay.',
+        'Cover the soil surface with a 1cm layer of horticultural grit, sand or decorative pebbles: the adults then cannot reach the compost to lay.',
         'Hang yellow sticky traps just above the soil to catch the flying adults and monitor progress.',
         'For a heavy infestation, water with a Bacillus thuringiensis israelensis drench, which targets the larvae specifically and is harmless to the plant.',
         'Expect two to three weeks to clear, as you are waiting out the existing generation.'
@@ -974,12 +974,12 @@ window.PROBLEM_DATA = (function () {
       severity: 'low',
       why: 'Soft pear-shaped insects, green, black, pink or grey, that mass on the softest new growth and flower buds. They reproduce without mating and give birth to live young, so a colony explodes in days. Their honeydew makes leaves sticky and grows sooty mould, and they can transmit plant viruses.',
       fix: [
-        'Knock them off with a firm jet of water — for a light infestation this may be all you need.',
-        'Or squash them between finger and thumb, which is crude but immediate and effective.',
+        'Knock them off with a firm jet of water. For a light infestation this may be all you need.',
+        'Or squash them between finger and thumb.',
         'Spray with insecticidal soap, covering growing tips and bud clusters where they congregate.',
         'Repeat every four or five days until you see no new colonies.',
         'Pinch out badly infested growing tips altogether.',
-        'Check for ants — they farm aphids for honeydew and will actively move them around and protect them.'
+        'Check for ants: they farm aphids for honeydew and will actively move them around and protect them.'
       ],
       prevent: 'Inspect new growth weekly in spring, when aphids appear. Avoid heavy nitrogen feeding, which produces the soft sappy growth they prefer.'
     },
@@ -988,13 +988,13 @@ window.PROBLEM_DATA = (function () {
       name: 'Thrips',
       ico: 'bug',
       severity: 'high',
-      why: 'Slender insects a millimetre or two long that rasp the leaf surface and drink the contents of the cells, leaving silvery streaks, distorted new growth and tiny black specks of excrement. They are hard to see, they fly, and they pupate in the soil — which makes them among the most tenacious of houseplant pests.',
+      why: 'Slender insects a millimetre or two long that rasp the leaf surface and drink the contents of the cells, leaving silvery streaks, distorted new growth and tiny black specks of excrement. They are hard to see, they fly, and they pupate in the soil, which makes them among the most tenacious of houseplant pests.',
       fix: [
         'Isolate the plant straight away. Thrips spread readily and are difficult to eradicate.',
         'Cut off the worst-affected and distorted leaves and bin them, sealed, outside.',
         'Spray thoroughly with insecticidal soap or neem oil, covering both leaf surfaces.',
-        'Also drench the soil, because the pupal stage lives there and untreated soil will simply reinfest the plant.',
-        'Repeat every five days for at least four weeks — this is a long campaign.',
+        'Also drench the soil, because the pupal stage lives there and untreated soil will reinfest the plant.',
+        'Repeat every five days for at least four weeks.',
         'Use blue sticky traps, which attract thrips more effectively than yellow ones.',
         'For a severe case on a plant you are not attached to, disposal is the pragmatic option.'
       ],
@@ -1006,12 +1006,12 @@ window.PROBLEM_DATA = (function () {
       name: 'Powdery mildew',
       ico: 'spore',
       severity: 'med',
-      why: 'A fungal infection that appears as a white flour-like dusting on the upper leaf surface. Unusually among fungi it does not need standing water — it thrives in humid but still air with poor circulation, and in swings between warm days and cool nights. Left alone it blocks light from the leaf and growth stalls.',
+      why: 'A fungal infection that appears as a white flour-like dusting on the upper leaf surface. Unusually among fungi it does not need standing water: it thrives in humid but still air with poor circulation, and in swings between warm days and cool nights. Left alone it blocks light from the leaf and growth stalls.',
       fix: [
-        'Improve air circulation immediately — space the plants out, or run a small fan nearby for a few hours a day.',
+        'Improve air circulation immediately: space the plants out, or run a small fan nearby for a few hours a day.',
         'Remove and bin the worst-affected leaves. Do not compost them.',
         'Spray with a solution of one teaspoon of bicarbonate of soda plus a few drops of washing-up liquid in a litre of water, which alters the leaf surface pH.',
-        'Alternatively use a milk spray — one part milk to nine parts water — which is genuinely effective and well documented.',
+        'Alternatively, use a milk spray of one part milk to nine parts water.',
         'Neem oil or a proprietary fungicide works for stubborn cases.',
         'Water at the soil and avoid wetting the foliage from now on.',
         'Repeat weekly until no new patches appear.'
@@ -1025,7 +1025,7 @@ window.PROBLEM_DATA = (function () {
       severity: 'med',
       why: 'A fungal disease producing raised orange, brown or rust-coloured pustules on the underside of leaves, with corresponding pale spots on top. The pustules release spores that smudge onto your fingers and spread on air currents and water splash. It needs prolonged leaf wetness to establish, so it is common on mint and other damp-loving herbs.',
       fix: [
-        'Remove and bin every affected leaf immediately — sealed, and not into the compost.',
+        'Remove and bin every affected leaf immediately, sealed in a bag and not in the compost.',
         'Wash your hands and sterilise your scissors afterwards; the spores travel very easily.',
         'Improve airflow and stop misting or overhead watering entirely.',
         'Spray remaining foliage with a sulphur-based or copper fungicide.',
@@ -1047,7 +1047,7 @@ window.PROBLEM_DATA = (function () {
         'Improve airflow around the plant.',
         'Treat remaining foliage with a copper-based fungicide if spots keep appearing.',
         'Reduce watering frequency generally, since consistently wet conditions are what favour the pathogen.',
-        'If spots keep spreading despite all this, it is likely bacterial — much harder to treat, and disposal may be the sensible call.'
+        'If spots keep spreading despite all this, it is likely bacterial. That is much harder to treat, and disposal may be the sensible call.'
       ],
       prevent: 'Water the soil rather than the plant, keep leaves dry, allow air movement, and quarantine new arrivals.'
     }

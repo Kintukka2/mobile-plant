@@ -74,25 +74,25 @@ window.PLANT_DATA = (function () {
       },
       light: {
         ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
-        note: 'Those famous holes only develop in good light. In a dim corner it survives, but produces small, solid, disappointing leaves.'
+        note: 'The holes only develop in good light. In a dim corner it survives, but produces small, solid leaves.'
       },
       humidity: 'medium', minC: 15, idealC: [20, 28],
       fert: { everyDays: 28, strength: 'half', type: 'Balanced liquid feed, NPK around 20-20-20' },
-      soil: 'Chunky and free-draining — two parts potting mix, one part perlite, one part orchid bark.',
+      soil: 'Chunky and free-draining: two parts potting mix, one part perlite, one part orchid bark.',
       repot: 'Every 2 years in spring. It likes to be a little snug; a pot that is far too big holds wet soil around the roots.',
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
-        note: 'Insoluble calcium oxalate crystals throughout the plant. Chewing causes intense mouth burning, drooling and vomiting — rarely dangerous, but genuinely painful.' },
+        note: 'Insoluble calcium oxalate crystals throughout the plant. Chewing causes intense mouth burning, drooling and vomiting. It is painful but rarely serious.' },
       prop: [{
         m: 'Stem cutting in water', diff: 'easy', season: 'Spring or summer', roots: '3–5 weeks',
         steps: [
-          'Find a node — the slightly swollen band on the stem where a leaf and aerial root emerge. This is essential; a leaf without a node may root but will never grow.',
+          'Find a node: the slightly swollen band on the stem where a leaf and aerial root emerge. This is essential; a leaf without a node may root but will never grow.',
           'Cut 2–3cm below the node with clean secateurs, taking one or two leaves with it.',
           'Sit the node in a jar of room-temperature water, keeping the leaves dry.',
           'Change the water every 3–4 days so it stays clear and oxygenated.',
           'Once roots reach 5–8cm, pot into a chunky mix and keep it damp for the first fortnight while it adjusts.'
         ]
       }],
-      likes: ['Something to climb — a moss pole or plank will double its leaf size', 'A good soak, then a chance to dry out', 'Warm, bright rooms'],
+      likes: ['Something to climb: a moss pole or plank gives it larger leaves', 'A good soak, then a chance to dry out', 'Warm, bright rooms'],
       dislikes: ['Sitting in water', 'Cold draughts', 'Being moved constantly'],
       problems: ['yellow-lower-leaves', 'brown-crispy-edges', 'no-fenestration', 'leggy-stretching', 'spider-mites', 'root-rot', 'drooping'],
       tags: ['statement', 'climbing', 'fast-growing', 'beginner']
@@ -110,7 +110,7 @@ window.PLANT_DATA = (function () {
       matureCm: 200,
       water: {
         warm: 7, cool: 12, soakPct: 0.25, dryBetween: true,
-        note: 'Let the top half of the pot dry out, then water thoroughly. It will wilt dramatically when thirsty and recover within hours — a useful, if theatrical, signal.'
+        note: 'Let the top half of the pot dry out, then water thoroughly. It wilts when thirsty and recovers within hours of a drink.'
       },
       light: {
         ideal: 'bright-indirect', tolerates: ['medium', 'low'], avoid: ['direct'],
@@ -118,13 +118,13 @@ window.PLANT_DATA = (function () {
       },
       humidity: 'low', minC: 12, idealC: [18, 29],
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
-        note: 'Calcium oxalate crystals. Causes mouth irritation, drooling and vomiting if chewed. Trailing vines are tempting for cats — hang it high.' },
+        note: 'Calcium oxalate crystals. Causes mouth irritation, drooling and vomiting if chewed. Trailing vines are tempting for cats. Hang it high.' },
       prop: [
         { m: 'Stem cutting in water', diff: 'easy', season: 'Any time of year', roots: '2–3 weeks',
           steps: [
             'Cut a length of vine with at least four leaves, snipping just below a node.',
             'Strip the lowest one or two leaves so their nodes sit bare.',
-            'Stand the bare nodes in water — a glass on a windowsill is plenty.',
+            'Stand the bare nodes in water: a glass on a windowsill is plenty.',
             'Roots appear in two or three weeks. Pot several cuttings together for a full-looking plant.'
           ] },
         { m: 'Layering', diff: 'easy', season: 'Spring or summer', roots: '2–4 weeks',
@@ -135,7 +135,7 @@ window.PLANT_DATA = (function () {
             'Once a gentle tug meets resistance, cut the vine on the parent\'s side of the node. The new plant is already potted.'
           ] }
       ],
-      likes: ['Being pruned — it branches and thickens up', 'Almost any light level', 'Neglect, frankly'],
+      likes: ['Being pruned: it branches and thickens up', 'Almost any light level', 'Being left alone'],
       dislikes: ['Constantly soggy soil', 'Cold windowsills in winter'],
       problems: ['yellow-lower-leaves', 'brown-crispy-edges', 'leggy-stretching', 'variegation-loss', 'root-rot', 'fungus-gnats'],
       tags: ['trailing', 'beginner', 'low-light', 'fast-growing', 'air-purifying']
@@ -153,18 +153,18 @@ window.PLANT_DATA = (function () {
       matureCm: 90,
       water: {
         warm: 18, cool: 35, soakPct: 0.2, dryBetween: true,
-        note: 'Let the soil dry out completely, then water. When in doubt, wait another week — far more snake plants die of kindness than of thirst.'
+        note: 'Let the soil dry out completely, then water. If unsure, wait another week: overwatering kills far more snake plants than drought.'
       },
       light: {
         ideal: 'bright-indirect', tolerates: ['medium', 'low', 'direct'], avoid: [],
-        note: 'Genuinely tolerates anything from a dim hallway to a sunny sill. It simply grows faster in brighter light.'
+        note: 'Tolerates anything from a dim hallway to a sunny sill. It grows faster in brighter light.'
       },
       humidity: 'low', minC: 10, idealC: [18, 30],
       fert: { everyDays: 56, strength: 'half', type: 'Cactus and succulent feed' },
       soil: 'Free-draining cactus and succulent mix. Ordinary potting compost holds far too much water.',
-      repot: 'Every 3–4 years — it is happy being crowded, and often only needs repotting when it cracks the pot.',
+      repot: 'Every 3–4 years: it is happy being crowded, and often only needs repotting when it cracks the pot.',
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
-        note: 'Contains saponins. Chewing leads to nausea, vomiting and diarrhoea. Unpleasant rather than dangerous, but worth keeping out of reach.' },
+        note: 'Contains saponins. Chewing causes nausea, vomiting and diarrhoea. Keep it out of reach of pets.' },
       prop: [
         { m: 'Division', diff: 'easy', season: 'Spring', roots: 'Already rooted',
           steps: [
@@ -175,10 +175,10 @@ window.PLANT_DATA = (function () {
           ] },
         { m: 'Leaf cutting', diff: 'medium', season: 'Spring or summer', roots: '6–10 weeks',
           steps: [
-            'Cut a healthy leaf into 5cm sections, noting which end pointed downwards — only that end will root.',
+            'Cut a healthy leaf into 5cm sections, noting which end pointed downwards: only that end will root.',
             'Leave the sections on a windowsill for two days until the cut edges dry and seal.',
             'Push them 2cm into damp cactus mix, original bottom edge down.',
-            'Be patient. Note that variegated forms lose their yellow edges this way — use division to keep the stripe.'
+            'Be patient. Note that variegated forms lose their yellow edges this way. Use division to keep the stripe.'
           ] }
       ],
       likes: ['Being forgotten', 'Tight pots', 'Dry air'],
@@ -199,18 +199,18 @@ window.PLANT_DATA = (function () {
       matureCm: 90,
       water: {
         warm: 18, cool: 32, soakPct: 0.2, dryBetween: true,
-        note: 'Those thick stems are water stores — it is built for drought. Water only when the soil is dry all the way through, and skip it entirely if you are unsure.'
+        note: 'Those thick stems are water stores: it is built for drought. Water only when the soil is dry all the way through, and skip it entirely if you are unsure.'
       },
       light: {
         ideal: 'bright-indirect', tolerates: ['medium', 'low'], avoid: ['direct'],
-        note: 'One of the very few plants that genuinely copes with a windowless office under fluorescent light. Direct sun scorches the glossy leaves.'
+        note: 'One of the very few plants that copes with a windowless office under fluorescent light. Direct sun scorches the glossy leaves.'
       },
       humidity: 'low', minC: 12, idealC: [18, 28],
       fert: { everyDays: 56, strength: 'half', type: 'Balanced liquid feed' },
-      soil: 'Free-draining mix — potting compost with a generous third of perlite or a cactus mix.',
+      soil: 'Free-draining mix: potting compost with a generous third of perlite or a cactus mix.',
       repot: 'Every 3 years. The rhizomes will eventually push the plant up out of its pot when it is truly ready.',
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
-        note: 'Calcium oxalate crystals in every part. The sap can irritate skin — worth wearing gloves when dividing it.' },
+        note: 'Calcium oxalate crystals in every part cause mouth irritation, drooling and vomiting if chewed. The sap irritates skin, so wear gloves when dividing it.' },
       prop: [
         { m: 'Division of rhizomes', diff: 'easy', season: 'Spring', roots: 'Already rooted',
           steps: [
@@ -228,7 +228,7 @@ window.PLANT_DATA = (function () {
           ] }
       ],
       likes: ['Long gaps between waterings', 'Bright indirect light, though it copes with low', 'Being left alone'],
-      dislikes: ['Overwatering — the single most common cause of death', 'Cold, wet soil'],
+      dislikes: ['Overwatering: the single most common cause of death', 'Cold, wet soil'],
       problems: ['yellow-lower-leaves', 'root-rot', 'mushy-base', 'leggy-stretching', 'overwatering'],
       tags: ['beginner', 'low-light', 'drought-tolerant', 'architectural', 'office']
     },
@@ -253,7 +253,7 @@ window.PLANT_DATA = (function () {
       },
       humidity: 'medium', minC: 13, idealC: [18, 27],
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
-        note: 'Calcium oxalate crystals — mouth burning, drooling and vomiting if chewed.' },
+        note: 'Calcium oxalate crystals cause mouth burning, drooling and vomiting if chewed.' },
       prop: [{
         m: 'Stem cutting in water', diff: 'easy', season: 'Spring or summer', roots: '2–4 weeks',
         steps: [
@@ -306,7 +306,7 @@ window.PLANT_DATA = (function () {
             'Water in and keep it out of direct sun for a week while it settles.'
           ] }
       ],
-      likes: ['Being pot-bound — it flowers and pups more freely', 'Hanging baskets', 'Cool rooms'],
+      likes: ['Being pot-bound: it flowers and pups more freely', 'Hanging baskets', 'Cool rooms'],
       dislikes: ['Fluoridated tap water', 'Hot direct sun', 'Waterlogged roots'],
       problems: ['brown-tips-only', 'pale-washed-out', 'yellow-lower-leaves', 'root-rot', 'tap-water-minerals'],
       tags: ['trailing', 'beginner', 'pet-safe', 'air-purifying', 'easy-propagation', 'low-light']
@@ -328,19 +328,19 @@ window.PLANT_DATA = (function () {
       },
       light: {
         ideal: 'low', tolerates: ['medium', 'bright-indirect'], avoid: ['direct'],
-        note: 'Named for its indestructibility — it thrives in the dark corners where nothing else will. Direct sun bleaches and scorches it badly.'
+        note: 'It thrives in dark corners where few other plants grow. Direct sun bleaches and scorches it badly.'
       },
       humidity: 'low', minC: 5, idealC: [15, 24],
       fert: { everyDays: 56, strength: 'half', type: 'Balanced liquid feed' },
       repot: 'Every 4–5 years. It resents disturbance and sulks for a season afterwards.',
-      tox: { cats: 'safe', dogs: 'safe', humans: 'safe', note: 'Non-toxic and safe around cats and dogs.' },
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe', note: 'Listed by the ASPCA as non-toxic to cats and dogs.' },
       prop: [{
         m: 'Division', diff: 'easy', season: 'Spring', roots: 'Already rooted',
         steps: [
           'Unpot in spring and locate the creeping rhizomes below the soil.',
           'Cut a section carrying at least two or three leaves and its own roots.',
           'Pot up at the same depth and water sparingly until you see new growth.',
-          'Expect it to sit still for several months before it settles — this is normal.'
+          'Expect it to sit still for several months before it settles. This is normal.'
         ]
       }],
       likes: ['Deep shade', 'Cool rooms', 'Being ignored for years'],
@@ -365,7 +365,7 @@ window.PLANT_DATA = (function () {
       },
       light: {
         ideal: 'medium', tolerates: ['low', 'bright-indirect'], avoid: ['direct'],
-        note: 'Dark green varieties handle genuinely low light. The pink, red and silver cultivars need brighter indirect light to keep their colour.'
+        note: 'Dark green varieties handle low light. The pink, red and silver cultivars need brighter indirect light to keep their colour.'
       },
       humidity: 'medium', minC: 15, idealC: [18, 27],
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
@@ -373,13 +373,13 @@ window.PLANT_DATA = (function () {
       prop: [{
         m: 'Division', diff: 'easy', season: 'Spring', roots: 'Already rooted',
         steps: [
-          'Mature plants throw up separate shoots from the base — these are your divisions.',
+          'Mature plants throw up separate shoots from the base. These are your divisions.',
           'Unpot and tease the root ball apart, keeping roots with each shoot.',
           'Pot individually and keep warm and lightly moist for a fortnight.'
         ]
       }],
       likes: ['Warm, draught-free spots', 'Medium light', 'Consistent routine'],
-      dislikes: ['Cold below 15°C — leaves blacken', 'Direct sun', 'Draughty hallways'],
+      dislikes: ['Cold below 15°C: leaves blacken', 'Direct sun', 'Draughty hallways'],
       problems: ['yellow-lower-leaves', 'brown-crispy-edges', 'cold-damage', 'spider-mites', 'root-rot'],
       tags: ['beginner', 'low-light', 'colourful', 'air-purifying']
     },
@@ -400,17 +400,17 @@ window.PLANT_DATA = (function () {
       },
       light: {
         ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
-        note: 'Rotate the pot a quarter turn each week — it leans hard towards the light and will grow permanently lopsided otherwise. In dim light the stems stretch and the leaves shrink; direct sun scorches them.'
+        note: 'Rotate the pot a quarter turn each week: it leans hard towards the light and will grow permanently lopsided otherwise. In dim light the stems stretch and the leaves shrink; direct sun scorches them.'
       },
       humidity: 'medium', minC: 13, idealC: [18, 25],
-      tox: { cats: 'safe', dogs: 'safe', humans: 'safe', note: 'Non-toxic and safe around pets.' },
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe', note: 'Not listed by the ASPCA by name; the related Pilea cadierei is listed as non-toxic to cats and dogs.' },
       prop: [
         { m: 'Offset pups', diff: 'easy', season: 'Spring or summer', roots: '2–3 weeks',
           steps: [
             'Small pups appear in the soil beside the mother plant, or from the stem itself.',
             'Wait until a pup is 5–7cm tall, then cut it away below soil level with a little root attached.',
             'Pot into damp mix, or root it in water first if it has no roots yet.',
-            'A generous mother plant produces pups for years — this is the classic plant to pass on to friends.'
+            'A mother plant produces pups for years.'
           ] },
         { m: 'Stem cutting', diff: 'easy', season: 'Spring or summer', roots: '2–4 weeks',
           steps: [
@@ -445,7 +445,7 @@ window.PLANT_DATA = (function () {
         note: 'Happy under a grow light or in a room that gets no direct sun. Direct sun causes pale, washed-out patches.'
       },
       humidity: 'medium', minC: 13, idealC: [18, 26],
-      soil: 'Light and airy — potting mix with plenty of perlite, or a peat-free orchid-style blend.',
+      soil: 'Light and airy: potting mix with plenty of perlite, or a peat-free orchid-style blend.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe', note: 'Listed by the ASPCA as non-toxic to cats and dogs.' },
       prop: [{
         m: 'Leaf or stem cutting', diff: 'easy', season: 'Spring or summer', roots: '3–5 weeks',
@@ -453,11 +453,11 @@ window.PLANT_DATA = (function () {
           'Take a stem cutting with two or three leaves, or even a single leaf with 2cm of stalk.',
           'Let the cut end dry for an hour, then push it into damp, gritty mix.',
           'Cover loosely with a clear bag to hold humidity, opening it daily for air.',
-          'Tug gently after a month — resistance means roots.'
+          'Tug gently after a month. Resistance means roots.'
         ]
       }],
       likes: ['Small pots', 'Drying out between drinks', 'Medium to bright indirect light'],
-      dislikes: ['Overwatering — it rots quickly', 'Heavy, wet soil', 'Cold'],
+      dislikes: ['Overwatering: it rots quickly', 'Heavy, wet soil', 'Cold'],
       problems: ['root-rot', 'yellow-lower-leaves', 'leaves-falling-off', 'leggy-stretching'],
       tags: ['beginner', 'pet-safe', 'compact', 'office', 'low-light']
     },
@@ -686,25 +686,25 @@ window.PLANT_DATA = (function () {
       matureCm: 250,
       water: {
         warm: 9, cool: 16, soakPct: 0.25, dryBetween: true,
-        note: 'Water thoroughly only when the top 5cm are properly dry — push a finger right in to check. It hates both extremes, and inconsistency is what causes leaf drop.'
+        note: 'Water thoroughly only when the top 5cm are dry. Push a finger right in to check. It hates both extremes, and inconsistency is what causes leaf drop.'
       },
       light: {
         ideal: 'bright-indirect', tolerates: ['direct'], avoid: ['low', 'medium'],
-        note: 'Needs genuinely bright light — right beside a large window. It is famously dramatic about being moved, so find the right spot and then leave it there.'
+        note: 'Needs bright light: right beside a large window. It drops leaves when moved, so find the right spot and leave it there.'
       },
       humidity: 'medium', minC: 15, idealC: [18, 27],
       fert: { everyDays: 21, strength: 'half', type: 'High-nitrogen feed to support big leaves' },
-      soil: 'Well-draining and slightly chunky — potting mix with perlite and a little bark.',
+      soil: 'Well-draining and slightly chunky: potting mix with perlite and a little bark.',
       repot: 'Every 2 years in spring.',
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
-        note: 'The milky sap contains ficin and psoralen — irritating to skin and mouth, causing drooling and vomiting if chewed.' },
+        note: 'The milky sap contains ficin and psoralen, which irritate the skin and mouth and cause drooling and vomiting if chewed.' },
       prop: [{
         m: 'Stem cutting', diff: 'medium', season: 'Late spring or early summer', roots: '6–10 weeks',
         steps: [
           'Take a cutting 20–25cm long with two or three leaves, cutting just below a node.',
           'Rinse the cut end to stop the milky sap sealing it over, then let it dry for 20 minutes.',
           'Stand in water in a bright, warm spot, or pot into damp mix with rooting hormone.',
-          'Change the water weekly. Roots are slow — do not give up before two months.'
+          'Change the water weekly. Roots are slow. Do not give up before two months.'
         ]
       }],
       likes: ['One bright spot it can stay in permanently', 'Rotating a quarter turn monthly', 'Warm, stable rooms', 'A monthly wipe of the leaves'],
@@ -725,7 +725,7 @@ window.PLANT_DATA = (function () {
       matureCm: 200,
       water: {
         warm: 9, cool: 16, soakPct: 0.25, dryBetween: true,
-        note: 'Let the top third of the pot dry out. Considerably more forgiving than its fiddle leaf cousin.'
+        note: 'Let the top third of the pot dry out.'
       },
       light: {
         ideal: 'bright-indirect', tolerates: ['medium', 'direct'], avoid: ['low'],
@@ -750,7 +750,7 @@ window.PLANT_DATA = (function () {
             'Keep the moss damp. When roots fill it, cut the stem below the moss and pot the top, moss and all.'
           ] }
       ],
-      likes: ['Monthly leaf dusting — dust on those big leaves cuts the light they get', 'Being pruned to branch out', 'Bright light'],
+      likes: ['Monthly leaf dusting: dust on those big leaves cuts the light they get', 'Being pruned to branch out', 'Bright light'],
       dislikes: ['Cold draughts', 'Soggy soil', 'Sudden moves to darker rooms'],
       problems: ['leaves-falling-off', 'yellow-lower-leaves', 'brown-spots-leaves', 'leggy-stretching', 'scale', 'root-rot'],
       tags: ['statement', 'tree', 'beginner', 'air-purifying']
@@ -772,18 +772,18 @@ window.PLANT_DATA = (function () {
       },
       light: {
         ideal: 'direct', tolerates: ['bright-indirect'], avoid: ['low', 'medium'],
-        note: 'One of the few houseplants that genuinely wants hours of direct sun. In dim light it produces sparse, floppy leaves and will never flower.'
+        note: 'One of the few houseplants that wants hours of direct sun. In dim light it produces sparse, floppy leaves and will never flower.'
       },
       humidity: 'medium', minC: 13, idealC: [20, 30],
       fert: { everyDays: 21, strength: 'full', type: 'Balanced feed, high potassium in summer to encourage flowering' },
-      soil: 'Rich but free-draining — good potting mix with perlite and a little composted bark.',
+      soil: 'Rich but free-draining: good potting mix with perlite and a little composted bark.',
       repot: 'Every 2–3 years. It flowers better when slightly root-bound, so resist over-potting.',
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
         note: 'The ASPCA lists the related Strelitzia reginae as toxic to cats and dogs: gastrointestinal irritants, mainly in the fruit and seeds, cause mild nausea, vomiting and drowsiness. The leaves are far less of a concern than the seed pods.' },
       prop: [{
         m: 'Division', diff: 'medium', season: 'Spring', roots: 'Already rooted',
         steps: [
-          'This is a physical job — a mature plant has a dense, woody rhizome.',
+          'A mature plant has a dense, woody rhizome.',
           'Unpot and identify a fan of leaves with its own roots at the base.',
           'Cut cleanly through the rhizome with a sharp, sterilised knife.',
           'Pot the division and keep it slightly dry for two weeks so the wound can seal rather than rot.',
@@ -825,20 +825,20 @@ window.PLANT_DATA = (function () {
         note: 'Unlike Monstera deliciosa, this one is born with holes. Bright indirect light keeps the internodes short and the vine full; in low light it stretches, and direct sun scorches the thin leaves.'
       },
       humidity: 'high', minC: 15, idealC: [20, 28],
-      soil: 'Chunky and airy — two parts potting mix to one part each of perlite and orchid bark.',
+      soil: 'Chunky and airy: two parts potting mix to one part each of perlite and orchid bark.',
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
-        note: 'Calcium oxalate crystals — oral burning, drooling and vomiting if chewed.' },
+        note: 'Calcium oxalate crystals cause oral burning, drooling and vomiting if chewed.' },
       prop: [{
         m: 'Stem cutting in water', diff: 'easy', season: 'Spring or summer', roots: '2–4 weeks',
         steps: [
-          'Cut the vine just below a node — you can take several cuttings from one long vine.',
+          'Cut the vine just below a node. You can take several cuttings from one long vine.',
           'Each cutting needs at least one node and one leaf.',
           'Root in water, changing it every few days.',
           'Plant three or four rooted cuttings in one pot for a lush, full result.'
         ]
       }],
       likes: ['Trailing from a shelf or climbing a small pole', 'Humidity', 'Regular pruning'],
-      dislikes: ['Dry air — it browns at the edges', 'Drying out completely', 'Direct sun'],
+      dislikes: ['Dry air: it browns at the edges', 'Drying out completely', 'Direct sun'],
       problems: ['brown-crispy-edges', 'yellow-lower-leaves', 'leggy-stretching', 'spider-mites', 'drooping'],
       tags: ['trailing', 'climbing', 'fast-growing', 'beginner', 'humidity-lover']
     },
@@ -855,29 +855,29 @@ window.PLANT_DATA = (function () {
       matureCm: 60,
       water: {
         warm: 5, cool: 10, soakPct: 0.25, dryBetween: false,
-        note: 'Wants to stay evenly moist but never sodden — the hardest balance in houseplant care. Let only the top 2cm dry between waterings.'
+        note: 'Keep it evenly moist but never sodden. Let only the top 2cm dry between waterings.'
       },
       light: {
         ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
-        note: 'Bright but filtered. Direct sun burns straight through those thin, dramatic leaves.'
+        note: 'Bright but filtered. Direct sun burns the thin leaves.'
       },
       humidity: 'high', minC: 16, idealC: [20, 28],
       fert: { everyDays: 21, strength: 'half', type: 'Balanced liquid feed' },
-      soil: 'Very airy and fast-draining — coco coir or peat with plenty of perlite and bark.',
-      repot: 'Annually in spring. Check for corms while you are in there — they are free plants.',
+      soil: 'Very airy and fast-draining: coco coir or peat with plenty of perlite and bark.',
+      repot: 'Annually in spring. Check the roots for corms while it is out of the pot: each one can grow a new plant.',
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'toxic',
-        note: 'High concentration of calcium oxalate crystals. Among the more severe of the common houseplants — significant mouth swelling and pain if chewed.' },
+        note: 'Listed by the ASPCA as toxic to cats and dogs (Alocasia species). A high concentration of insoluble calcium oxalate crystals causes severe mouth pain and swelling if chewed.' },
       prop: [{
         m: 'Corm division', diff: 'medium', season: 'Spring', roots: '4–8 weeks',
         steps: [
-          'When repotting, look for small round corms — like tiny bulbs — clinging to the roots.',
+          'When repotting, look for small round corms (like tiny bulbs) clinging to the roots.',
           'Twist them off gently. Peel the brown papery skin from each one.',
           'Sit each corm on damp sphagnum moss in a covered container, pointed end up and half exposed.',
           'Keep warm and humid. A root and then a tiny leaf will appear over several weeks.',
-          'Pot into airy mix once the first leaf has properly opened.'
+          'Pot into airy mix once the first leaf has fully opened.'
         ]
       }],
-      likes: ['High humidity — 60% or more', 'Warmth and stability', 'Bright filtered light'],
+      likes: ['High humidity: 60% or more', 'Warmth and stability', 'Bright filtered light'],
       dislikes: ['Dry air', 'Cold', 'Drying out fully', 'Sitting wet'],
       problems: ['brown-crispy-edges', 'drooping', 'spider-mites', 'yellow-lower-leaves', 'dormancy-dieback', 'root-rot'],
       tags: ['dramatic', 'tricky', 'humidity-lover', 'patterned']
@@ -895,7 +895,7 @@ window.PLANT_DATA = (function () {
       matureCm: 180,
       water: {
         warm: 9, cool: 16, soakPct: 0.25, dryBetween: true,
-        note: 'Let the top third dry out. Drops leaves in protest if kept too wet for too long.'
+        note: 'Let the top third dry out. It drops leaves if kept too wet for too long.'
       },
       light: {
         ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
@@ -913,7 +913,7 @@ window.PLANT_DATA = (function () {
           'Keep warm and out of direct sun until new growth shows.'
         ]
       }],
-      likes: ['Hard pruning — it responds by branching thickly', 'Bright light', 'Regular rotation'],
+      likes: ['Hard pruning: it responds by branching thickly', 'Bright light', 'Regular rotation'],
       dislikes: ['Overwatering', 'Cold draughts', 'Low light'],
       problems: ['leaves-falling-off', 'leggy-stretching', 'scale', 'spider-mites', 'yellow-lower-leaves'],
       tags: ['tree', 'beginner', 'fast-growing', 'air-purifying']
@@ -931,7 +931,7 @@ window.PLANT_DATA = (function () {
       matureCm: 180,
       water: {
         warm: 12, cool: 21, soakPct: 0.2, dryBetween: true,
-        note: 'Let at least the top half dry out. Very sensitive to fluoride in tap water — use rainwater or filtered water if your tips keep browning.'
+        note: 'Let at least the top half dry out. Very sensitive to fluoride in tap water. Use rainwater or filtered water if your tips keep browning.'
       },
       light: {
         ideal: 'bright-indirect', tolerates: ['medium', 'low'], avoid: ['direct'],
@@ -944,7 +944,7 @@ window.PLANT_DATA = (function () {
       prop: [{
         m: 'Cane cutting', diff: 'easy', season: 'Spring or summer', roots: '3–6 weeks',
         steps: [
-          'Cut the woody cane wherever you like — the parent will resprout below the cut, usually with two or three new heads.',
+          'Cut the woody cane wherever you like: the parent will resprout below the cut, usually with two or three new heads.',
           'Cut the removed top into sections, keeping track of which end was up.',
           'Root the leafy top in water or damp mix.',
           'Bare cane sections will also sprout if laid half-buried in damp mix, right way up.'
@@ -968,7 +968,7 @@ window.PLANT_DATA = (function () {
       matureCm: 120,
       water: {
         warm: 6, cool: 12, soakPct: 0.25, dryBetween: false,
-        note: 'Keep evenly moist through summer — it drops leaves if it dries out fully, and again if it sits wet. Water when the top 2cm are dry.'
+        note: 'Keep evenly moist through summer: it drops leaves if it dries out fully, and again if it sits wet. Water when the top 2cm are dry.'
       },
       light: {
         ideal: 'direct', tolerates: ['bright-indirect'], avoid: ['low', 'medium'],
@@ -977,18 +977,18 @@ window.PLANT_DATA = (function () {
       humidity: 'high', minC: 16, idealC: [20, 29],
       fert: { everyDays: 21, strength: 'half', type: 'Balanced feed' },
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'toxic',
-        note: 'Euphorbia-family latex sap — irritating to skin, eyes and mouth. Causes burning, vomiting and, in quantity, bloody diarrhoea. Handle with gloves.' },
+        note: 'Euphorbia-family latex sap irritates skin, eyes and mouth. Causes burning, vomiting and, in quantity, bloody diarrhoea. Handle with gloves.' },
       prop: [{
         m: 'Stem cutting', diff: 'medium', season: 'Late spring', roots: '4–6 weeks',
         steps: [
           'Wearing gloves, take a 10–12cm tip cutting.',
           'Rinse the sap from the cut end and let it dry briefly.',
           'Dip in rooting hormone and pot into damp mix.',
-          'High humidity is essential — tent it and keep it at 21°C or above.'
+          'High humidity is essential. Tent it and keep it at 21°C or above.'
         ]
       }],
       likes: ['Bright light for maximum colour', 'High humidity', 'Consistent moisture'],
-      dislikes: ['Being moved — it drops leaves', 'Cold draughts', 'Dry air', 'Drying out'],
+      dislikes: ['Being moved: it drops leaves', 'Cold draughts', 'Dry air', 'Drying out'],
       problems: ['leaves-falling-off', 'variegation-loss', 'spider-mites', 'brown-crispy-edges', 'leaf-drop-sudden'],
       tags: ['colourful', 'tricky', 'sun-lover', 'dramatic', 'humidity-lover']
     },
@@ -1423,8 +1423,8 @@ window.PLANT_DATA = (function () {
         note: 'Dappled light, as it would get on a forest floor. Direct sun crisps the fronds within days.'
       },
       humidity: 'high', minC: 13, idealC: [16, 24],
-      fert: { everyDays: 28, strength: 'quarter', type: 'Weak balanced feed — ferns burn easily' },
-      soil: 'Moisture-retentive but airy — peat-free compost with coco coir and a little perlite.',
+      fert: { everyDays: 28, strength: 'quarter', type: 'Weak balanced feed: ferns burn easily' },
+      soil: 'Moisture-retentive but airy: peat-free compost with coco coir and a little perlite.',
       repot: 'Annually in spring; it fills a pot quickly with dense roots.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
         note: 'Listed by the ASPCA as non-toxic to cats and dogs, as Nephrolepis exalta bostoniensis.' },
@@ -1434,7 +1434,7 @@ window.PLANT_DATA = (function () {
           'Unpot and look for natural clumps of fronds with their own roots.',
           'Pull or cut the root ball into two or three sections.',
           'Pot each into moisture-retentive mix at the same depth.',
-          'Keep humid and shaded for a fortnight — expect some frond loss while it recovers.'
+          'Keep humid and shaded for a fortnight. Expect some frond loss while it recovers.'
         ]
       }],
       likes: ['Bathrooms and kitchens', 'Standing on a pebble tray', 'Consistently damp soil', 'Cool rooms'],
@@ -1455,7 +1455,7 @@ window.PLANT_DATA = (function () {
       matureCm: 60,
       water: {
         warm: 6, cool: 10, soakPct: 0.25, dryBetween: false,
-        note: 'Water the soil around the edge of the pot, never into the central rosette — water pooling in the crown causes rot.'
+        note: 'Water the soil around the edge of the pot, never into the central rosette: water pooling in the crown causes rot.'
       },
       light: {
         ideal: 'medium', tolerates: ['bright-indirect', 'low'], avoid: ['direct'],
@@ -1463,7 +1463,7 @@ window.PLANT_DATA = (function () {
       },
       humidity: 'high', minC: 15, idealC: [18, 26],
       fert: { everyDays: 42, strength: 'quarter', type: 'Very dilute balanced feed' },
-      soil: 'Loose and organic — a peat-free mix with bark and perlite, as it naturally grows on trees.',
+      soil: 'Loose and organic: a peat-free mix with bark and perlite, as it naturally grows on trees.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe', note: 'Not listed by the ASPCA by name; the related Asplenium bulbiferum is listed as non-toxic to cats and dogs.' },
       prop: [{
         m: 'Spores (it cannot be divided)', diff: 'hard', season: 'When spores ripen', roots: 'Young fronds in 3–6 months',
@@ -1474,7 +1474,7 @@ window.PLANT_DATA = (function () {
         ]
       }],
       likes: ['Humid bathrooms', 'Water at the soil, not in the crown', 'Filtered light'],
-      dislikes: ['Water in the central nest', 'Dry air', 'Direct sun', 'Being touched — new fronds bruise easily'],
+      dislikes: ['Water in the central nest', 'Dry air', 'Direct sun', 'Being touched: new fronds bruise easily'],
       problems: ['brown-crispy-edges', 'crown-rot', 'pale-washed-out', 'scale'],
       tags: ['pet-safe', 'humidity-lover', 'bathroom', 'architectural', 'low-light']
     },
@@ -1491,7 +1491,7 @@ window.PLANT_DATA = (function () {
       matureCm: 40,
       water: {
         warm: 3, cool: 5, soakPct: 0.3, dryBetween: false,
-        note: 'One of the thirstiest plants here. The soil must never dry out — not once, not for an afternoon. Many people stand the pot in a shallow tray of water.'
+        note: 'One of the thirstiest plants here. The soil must never dry out. Many people stand the pot in a shallow tray of water.'
       },
       light: {
         ideal: 'medium', tolerates: ['bright-indirect', 'low'], avoid: ['direct'],
@@ -1499,13 +1499,13 @@ window.PLANT_DATA = (function () {
       },
       humidity: 'high', minC: 15, idealC: [16, 24],
       fert: { everyDays: 42, strength: 'quarter', type: 'Very dilute balanced feed' },
-      soil: 'Moisture-retentive and rich — coco coir based mix with a little perlite.',
+      soil: 'Moisture-retentive and rich: coco coir based mix with a little perlite.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe', note: 'Not listed by the ASPCA, and no toxic compound is known in it.' },
       prop: [{
         m: 'Division', diff: 'medium', season: 'Spring', roots: 'Already rooted',
         steps: [
           'Unpot and cut the rhizome mass into sections, each with several fronds and good roots.',
-          'Pot immediately into damp mix — do not let the roots dry out for even a moment.',
+          'Pot immediately into damp mix. Do not let the roots dry out for even a moment.',
           'Cut the fronds back by half to reduce water loss while it re-establishes.',
           'Keep in a humid, shaded spot and expect a few weeks of sulking.'
         ]
@@ -1528,27 +1528,27 @@ window.PLANT_DATA = (function () {
       matureCm: 80,
       water: {
         warm: 5, cool: 9, soakPct: 0.25, dryBetween: false,
-        note: 'Keep evenly moist, never wet or dry. Very sensitive to tap water minerals — use rainwater, filtered or distilled water to avoid brown edges.'
+        note: 'Keep evenly moist, never wet or dry. Very sensitive to tap water minerals. Use rainwater, filtered or distilled water to avoid brown edges.'
       },
       light: {
         ideal: 'medium', tolerates: ['bright-indirect', 'low'], avoid: ['direct'],
-        note: 'A forest floor plant. Bright indirect at most — direct sun fades the silver striping and scorches the leaves.'
+        note: 'A forest floor plant. Bright indirect at most: direct sun fades the silver striping and scorches the leaves.'
       },
       humidity: 'high', minC: 16, idealC: [18, 26],
       fert: { everyDays: 28, strength: 'quarter', type: 'Dilute balanced feed' },
-      soil: 'Moisture-retentive but airy — coco coir with perlite and a little fine bark.',
+      soil: 'Moisture-retentive but airy: coco coir with perlite and a little fine bark.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
         note: 'Listed by the ASPCA as non-toxic to cats and dogs (Calathea species, now Goeppertia).' },
       prop: [{
         m: 'Division', diff: 'medium', season: 'Spring', roots: 'Already rooted',
         steps: [
-          'Only divide a genuinely mature, multi-stemmed clump — small plants rarely survive it.',
+          'Only divide a mature, multi-stemmed clump: small plants rarely survive it.',
           'Unpot and gently tease the rhizomes apart, keeping three or more leaves per division.',
           'Pot into damp mix and tent with a clear bag for two weeks to hold humidity.',
           'Keep warm and shaded while it recovers.'
         ]
       }],
-      likes: ['Filtered or rainwater', 'High humidity — 60% and up', 'Warm, stable temperatures', 'Medium light'],
+      likes: ['Filtered or rainwater', 'High humidity: 60% and up', 'Warm, stable temperatures', 'Medium light'],
       dislikes: ['Tap water', 'Dry air', 'Cold', 'Direct sun', 'Drying out'],
       problems: ['brown-crispy-edges', 'leaves-curling', 'spider-mites', 'pale-washed-out', 'drooping', 'yellow-lower-leaves', 'tap-water-minerals', 'low-humidity'],
       tags: ['pet-safe', 'humidity-lover', 'tricky', 'patterned', 'colourful', 'low-light']
@@ -1566,15 +1566,15 @@ window.PLANT_DATA = (function () {
       matureCm: 30,
       water: {
         warm: 5, cool: 9, soakPct: 0.25, dryBetween: false,
-        note: 'Keep lightly and evenly moist. Use filtered or rainwater where you can — it is nearly as fussy as its calathea cousins.'
+        note: 'Keep lightly and evenly moist. Use filtered or rainwater where you can: it is nearly as fussy as its calathea cousins.'
       },
       light: {
         ideal: 'medium', tolerates: ['bright-indirect', 'low'], avoid: ['direct'],
-        note: 'Watch it fold its leaves up at dusk and open them at dawn — that is the praying it is named for, and a healthy plant does it noticeably. Direct sun bleaches the leaves and browns the edges; in deep shade the colours dull.'
+        note: 'Watch it fold its leaves up at dusk and open them at dawn: that is the praying it is named for, and a healthy plant does it noticeably. Direct sun bleaches the leaves and browns the edges; in deep shade the colours dull.'
       },
       humidity: 'high', minC: 15, idealC: [18, 26],
       fert: { everyDays: 28, strength: 'quarter', type: 'Dilute balanced feed' },
-      soil: 'Moisture-retentive and airy — coco coir with perlite.',
+      soil: 'Moisture-retentive and airy: coco coir with perlite.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe', note: 'Listed by the ASPCA as non-toxic to cats and dogs.' },
       prop: [{
         m: 'Stem cutting', diff: 'easy', season: 'Spring or summer', roots: '3–4 weeks',
@@ -1614,18 +1614,18 @@ window.PLANT_DATA = (function () {
       },
       light: {
         ideal: 'medium', tolerates: ['bright-indirect', 'low'], avoid: ['direct'],
-        note: 'Low to medium light suits it. Perfect for a terrarium or a bathroom shelf.'
+        note: 'Low to medium light suits it, in a terrarium or on a bathroom shelf.'
       },
       humidity: 'high', minC: 16, idealC: [18, 26],
       fert: { everyDays: 42, strength: 'quarter', type: 'Dilute balanced feed' },
-      soil: 'Moisture-retentive — coco coir or peat-free compost with a little perlite.',
+      soil: 'Moisture-retentive: coco coir or peat-free compost with a little perlite.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe', note: 'Listed by the ASPCA as non-toxic to cats and dogs, as Fittonia verschaffeltii.' },
       prop: [{
         m: 'Stem cutting', diff: 'easy', season: 'Spring or summer', roots: '2–3 weeks',
         steps: [
           'Snip a 5cm stem tip below a node.',
           'Remove the lowest leaves and stand in water or push into damp moss.',
-          'Cover to hold humidity — this one roots very readily.',
+          'Cover to hold humidity. This one roots very readily.',
           'Pot up several together for a dense cushion of colour.'
         ]
       }],
@@ -1651,11 +1651,11 @@ window.PLANT_DATA = (function () {
       },
       light: {
         ideal: 'medium', tolerates: ['low', 'bright-indirect'], avoid: ['direct'],
-        note: 'The Victorians grew these in dim parlours for good reason — it handles low light better than almost any other palm.'
+        note: 'It handles low light better than almost any other palm.'
       },
       humidity: 'medium', minC: 13, idealC: [18, 26],
-      fert: { everyDays: 56, strength: 'half', type: 'Balanced feed — palms are light feeders' },
-      repot: 'Every 3 years. Palms hate root disturbance, so only pot on when genuinely necessary.',
+      fert: { everyDays: 56, strength: 'half', type: 'Balanced feed: palms are light feeders' },
+      repot: 'Every 3 years. Palms hate root disturbance, so only pot on when necessary.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
         note: 'Listed by the ASPCA as non-toxic to cats and dogs. Not to be confused with the Sago Palm, which is not a true palm and is highly toxic.' },
       prop: [{
@@ -1689,7 +1689,7 @@ window.PLANT_DATA = (function () {
       },
       light: {
         ideal: 'bright-indirect', tolerates: ['medium', 'low'], avoid: ['direct'],
-        note: 'Elegant and adaptable — the classic hotel-lobby palm because it copes with imperfect light so gracefully.'
+        note: 'It copes with medium and low light.'
       },
       humidity: 'medium', minC: 10, idealC: [18, 26],
       fert: { everyDays: 42, strength: 'half', type: 'Balanced feed with magnesium' },
@@ -1722,11 +1722,11 @@ window.PLANT_DATA = (function () {
       matureCm: 60,
       water: {
         warm: 6, cool: 10, soakPct: 0.25, dryBetween: false,
-        note: 'It wilts theatrically when thirsty and recovers within hours — a handy signal, though letting it faint repeatedly damages the roots over time.'
+        note: 'It wilts when thirsty and recovers within hours, but repeated wilting damages the roots.'
       },
       light: {
         ideal: 'medium', tolerates: ['low', 'bright-indirect'], avoid: ['direct'],
-        note: 'Flowers best in bright indirect light but survives happily in genuinely dim rooms — it simply stops blooming.'
+        note: 'Flowers best in bright indirect light but survives happily in dim rooms, where it stops blooming.'
       },
       humidity: 'medium', minC: 15, idealC: [18, 27],
       fert: { everyDays: 42, strength: 'half', type: 'Balanced feed; too much causes green flowers' },
@@ -1735,13 +1735,13 @@ window.PLANT_DATA = (function () {
       prop: [{
         m: 'Division', diff: 'easy', season: 'Spring', roots: 'Already rooted',
         steps: [
-          'Unpot a mature clump and look for crowns — each has its own leaves and roots.',
+          'Unpot a mature clump and look for crowns: each has its own leaves and roots.',
           'Tease the crowns apart by hand, cutting only where you must.',
           'Pot each with two or more leaves into fresh mix.',
           'Keep shaded and evenly moist for a fortnight while it settles.'
         ]
       }],
-      likes: ['Medium light', 'Even moisture', 'Filtered water — it browns with hard tap water'],
+      likes: ['Medium light', 'Even moisture', 'Filtered water: it browns with hard tap water'],
       dislikes: ['Direct sun', 'Drying out fully', 'Cold below 15°C', 'Overfeeding'],
       problems: ['brown-crispy-edges', 'drooping', 'no-flowers', 'yellow-lower-leaves', 'root-rot', 'green-flowers', 'underwatering', 'too-little-light', 'tap-water-minerals'],
       tags: ['low-light', 'beginner', 'flowering', 'air-purifying']
@@ -1759,7 +1759,7 @@ window.PLANT_DATA = (function () {
       matureCm: 45,
       water: {
         warm: 7, cool: 12, soakPct: 0.25, dryBetween: true,
-        note: 'Let the top third dry out. As an epiphyte its roots need air as much as water — soggy soil is the fastest way to lose it.'
+        note: 'Let the top third dry out. As an epiphyte its roots need air as much as water: soggy soil is the fastest way to lose it.'
       },
       light: {
         ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
@@ -1767,13 +1767,13 @@ window.PLANT_DATA = (function () {
       },
       humidity: 'high', minC: 16, idealC: [20, 28],
       fert: { everyDays: 28, strength: 'quarter', type: 'High-phosphorus feed to encourage flowering' },
-      soil: 'Very chunky and airy — orchid bark with coco coir and perlite. Standard compost suffocates it.',
+      soil: 'Very chunky and airy: orchid bark with coco coir and perlite. Standard compost suffocates it.',
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
         note: 'The ASPCA lists the related Anthurium scherzeranum as toxic to cats and dogs. Insoluble calcium oxalate crystals throughout cause intense oral burning, swelling and drooling if chewed.' },
       prop: [{
         m: 'Division', diff: 'easy', season: 'Spring', roots: 'Already rooted',
         steps: [
-          'Unpot and find offsets — side shoots with their own aerial roots.',
+          'Unpot and find offsets: side shoots with their own aerial roots.',
           'Cut an offset away with a sterilised blade, keeping as much root as possible.',
           'Pot into a chunky, airy mix.',
           'Keep warm and humid; expect flowers again within a year.'
@@ -1845,7 +1845,7 @@ window.PLANT_DATA = (function () {
       humidity: 'medium', minC: 13, idealC: [18, 26],
       fert: { everyDays: 21, strength: 'half', type: 'Balanced liquid feed' },
       soil: 'A standard indoor potting mix with a couple of handfuls of perlite for drainage.',
-      repot: 'Annually in spring. It is short-lived, so many growers simply restart it from cuttings each year.',
+      repot: 'Annually in spring. It is short-lived, so many growers restart it from cuttings each year.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
         note: 'Listed by the ASPCA as non-toxic to cats and dogs.' },
       prop: [{
@@ -2005,7 +2005,7 @@ window.PLANT_DATA = (function () {
       },
       light: {
         ideal: 'direct', tolerates: ['bright-indirect'], avoid: ['low', 'medium'],
-        note: 'Wants several hours of direct sun. Introduce it to strong sun gradually though — it can sunburn if moved abruptly from a dim shop.'
+        note: 'Wants several hours of direct sun. Introduce it to strong sun gradually. It can sunburn if moved abruptly from a dim shop.'
       },
       humidity: 'low', minC: 10, idealC: [18, 28],
       fert: { everyDays: 84, strength: 'half', type: 'Cactus and succulent feed, spring and summer only' },
@@ -2018,12 +2018,12 @@ window.PLANT_DATA = (function () {
         steps: [
           'Look for small pups pushing up around the base of the parent.',
           'Unpot the whole plant and separate a pup that is at least 8cm tall, ideally with its own roots.',
-          'Let the cut surfaces dry and callus over for two or three days — this is essential to prevent rot.',
+          'Let the cut surfaces dry and callus over for two or three days. This is essential to prevent rot.',
           'Pot into dry cactus mix and wait a full week before the first light watering.'
         ]
       }],
       likes: ['Full sun', 'Terracotta pots', 'Long dry spells'],
-      dislikes: ['Overwatering — by far the main killer', 'Cold wet soil', 'Water in the crown'],
+      dislikes: ['Overwatering: by far the main killer', 'Cold wet soil', 'Water in the crown'],
       problems: ['mushy-base', 'root-rot', 'leaves-curling', 'pale-washed-out', 'sunburn', 'leaves-falling-over', 'overwatering'],
       tags: ['succulent', 'sun-lover', 'drought-tolerant', 'beginner', 'edible-use']
     },
@@ -2049,9 +2049,9 @@ window.PLANT_DATA = (function () {
       humidity: 'low', minC: 7, idealC: [18, 28],
       fert: { everyDays: 84, strength: 'half', type: 'Cactus and succulent feed' },
       soil: 'Gritty cactus mix with extra pumice or coarse sand.',
-      repot: 'Every 3–4 years. It makes a lovely bonsai-style specimen if kept in a shallow pot.',
+      repot: 'Every 3–4 years. Kept in a shallow pot, it can be trained like a bonsai.',
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
-        note: 'Cause unknown but well documented — vomiting, lethargy and loss of coordination in cats and dogs. Worth siting out of reach.' },
+        note: 'Listed by the ASPCA as toxic to cats and dogs; the toxic compound is not known. Eating it causes vomiting, lethargy and loss of coordination. Keep it out of reach.' },
       prop: [{
         m: 'Leaf or stem cutting', diff: 'easy', season: 'Spring or summer', roots: '3–5 weeks',
         steps: [
@@ -2080,24 +2080,24 @@ window.PLANT_DATA = (function () {
       matureCm: 15,
       water: {
         warm: 14, cool: 30, soakPct: 0.2, dryBetween: true,
-        note: 'Water the soil directly, never over the rosette — water trapped between the leaves rots the centre out. Let it dry completely between drinks.'
+        note: 'Water the soil directly, never over the rosette: water trapped between the leaves rots the centre out. Let it dry completely between drinks.'
       },
       light: {
         ideal: 'direct', tolerates: [], avoid: ['low', 'medium', 'bright-indirect'],
-        note: 'Needs four to six hours of direct sun. Anything less and it stretches upward into a pale, unrecognisable tower — that is etiolation, and it cannot be reversed.'
+        note: 'Needs four to six hours of direct sun. Anything less and it stretches upward and turns pale. This stretching (etiolation) cannot be reversed.'
       },
       humidity: 'low', minC: 7, idealC: [18, 28],
       fert: { everyDays: 84, strength: 'quarter', type: 'Dilute cactus feed' },
-      soil: 'Very gritty — half cactus mix, half pumice or coarse sand.',
+      soil: 'Very gritty: half cactus mix, half pumice or coarse sand.',
       repot: 'Every 2 years in spring. Terracotta strongly preferred.',
-      tox: { cats: 'safe', dogs: 'safe', humans: 'safe', note: 'Non-toxic and safe around pets.' },
+      tox: { cats: 'safe', dogs: 'safe', humans: 'safe', note: 'Listed by the ASPCA as non-toxic to cats and dogs.' },
       prop: [{
         m: 'Leaf cutting', diff: 'easy', season: 'Spring or summer', roots: '4–6 weeks',
         steps: [
-          'Gently twist a leaf off so it comes away whole, with its base intact — a torn leaf will not root.',
+          'Gently twist a leaf off so it comes away whole, with its base intact: a torn leaf will not root.',
           'Lay the leaves on dry cactus mix in bright indirect light and leave them alone for a week.',
           'Mist lightly every few days once you see pink roots.',
-          'A tiny rosette forms at the leaf base. Once it has its own roots, the original leaf shrivels — that is correct.',
+          'A tiny rosette forms at the leaf base. Once it has its own roots, the original leaf shrivels. That is normal.',
           'Pot up the rosette and begin normal watering.'
         ]
       }],
@@ -2123,14 +2123,14 @@ window.PLANT_DATA = (function () {
       },
       light: {
         ideal: 'bright-indirect', tolerates: ['direct', 'medium'], avoid: ['low'],
-        note: 'More shade-tolerant than most succulents — it grows under shrubs in the wild. Bright indirect light is ideal; harsh midday sun can bronze it.'
+        note: 'More shade-tolerant than most succulents: it grows under shrubs in the wild. Bright indirect light is ideal; harsh midday sun can bronze it.'
       },
       humidity: 'low', minC: 7, idealC: [18, 27],
       fert: { everyDays: 84, strength: 'quarter', type: 'Dilute cactus feed' },
       soil: 'Gritty cactus mix with added pumice.',
       repot: 'Every 2–3 years, usually when offsets fill the pot.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
-        note: 'Non-toxic and safe around pets — a good succulent choice for a cat household.' },
+        note: 'Non-toxic to cats and dogs.' },
       prop: [{
         m: 'Offsets', diff: 'easy', season: 'Spring', roots: '3–5 weeks',
         steps: [
@@ -2158,7 +2158,7 @@ window.PLANT_DATA = (function () {
       matureCm: 90,
       water: {
         warm: 14, cool: 28, soakPct: 0.2, dryBetween: true,
-        note: 'Water only when the pearls start to look slightly flattened rather than perfectly round. Shallow roots rot with terrible ease.'
+        note: 'Water only when the pearls start to look slightly flattened rather than perfectly round. Its shallow roots rot quickly in wet soil.'
       },
       light: {
         ideal: 'bright-indirect', tolerates: ['direct'], avoid: ['low', 'medium'],
@@ -2166,10 +2166,10 @@ window.PLANT_DATA = (function () {
       },
       humidity: 'low', minC: 10, idealC: [18, 26],
       fert: { everyDays: 84, strength: 'quarter', type: 'Dilute cactus feed' },
-      soil: 'Very gritty — cactus mix with plenty of pumice. It has a fine, shallow root system.',
+      soil: 'Very gritty: cactus mix with plenty of pumice. It has a fine, shallow root system.',
       repot: 'Every 2–3 years into a wide shallow pot rather than a deep one.',
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
-        note: 'Causes vomiting, drooling and skin irritation. The dangling strands are extremely tempting to cats — hang it genuinely out of reach or choose something else.' },
+        note: 'Eating it causes vomiting and drooling, and the sap irritates skin. Hang it where cats cannot reach the strands.' },
       prop: [{
         m: 'Stem cutting laid on soil', diff: 'easy', season: 'Spring or summer', roots: '2–4 weeks',
         steps: [
@@ -2198,7 +2198,7 @@ window.PLANT_DATA = (function () {
       matureCm: 40,
       water: {
         warm: 10, cool: 18, soakPct: 0.25, dryBetween: true,
-        note: 'Unlike desert cacti this is a forest epiphyte and wants more water — let the top third dry, then water properly. Keep it drier for six weeks before you want flowers.'
+        note: 'Unlike desert cacti this is a forest epiphyte and wants more water: let the top third dry, then water thoroughly. Keep it drier for six weeks before you want flowers.'
       },
       light: {
         ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
@@ -2206,21 +2206,21 @@ window.PLANT_DATA = (function () {
       },
       humidity: 'medium', minC: 10, idealC: [16, 24],
       fert: { everyDays: 28, strength: 'half', type: 'Balanced feed; switch to high-potassium in autumn for buds' },
-      soil: 'Airy epiphyte mix — orchid bark, coco coir and perlite.',
+      soil: 'Airy epiphyte mix: orchid bark, coco coir and perlite.',
       repot: 'Every 3–4 years. It flowers more freely when a little pot-bound.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
         note: 'Listed by the ASPCA as non-toxic to cats and dogs (Schlumbergera species), unlike mistletoe and holly.' },
       prop: [{
         m: 'Segment cutting', diff: 'easy', season: 'Late spring', roots: '3–5 weeks',
         steps: [
-          'Twist off a Y-shaped piece two or three segments long — twisting is better than cutting.',
+          'Twist off a Y-shaped piece two or three segments long. Twisting is better than cutting.',
           'Let it dry on a windowsill for two days so the wound calluses.',
           'Push the base 1cm into damp airy mix.',
           'Water sparingly until new growth appears.'
         ]
       }],
       likes: ['Bright indirect light', 'Cool nights and long darkness in autumn to set buds', 'Being pot-bound'],
-      dislikes: ['Direct sun', 'Being moved once buds form — they drop', 'Waterlogging'],
+      dislikes: ['Direct sun', 'Being moved once buds form: they drop', 'Waterlogging'],
       problems: ['bud-drop', 'no-flowers', 'root-rot', 'shrivelled-segments', 'mealybugs', 'needs-rest-period', 'moved-while-budding'],
       tags: ['succulent', 'pet-safe', 'flowering', 'trailing', 'beginner', 'epiphyte']
     },
@@ -2241,14 +2241,14 @@ window.PLANT_DATA = (function () {
       },
       light: {
         ideal: 'direct', tolerates: ['bright-indirect'], avoid: ['low', 'medium'],
-        note: 'Wants the brightest spot you have. It tolerates bright indirect light but grows painfully slowly.'
+        note: 'Wants the brightest spot you have. It tolerates bright indirect light but grows very slowly.'
       },
       humidity: 'low', minC: 7, idealC: [18, 28],
       fert: { everyDays: 84, strength: 'half', type: 'Cactus feed, growing season only' },
-      soil: 'Very gritty cactus mix — sharp drainage is non-negotiable.',
+      soil: 'Very gritty cactus mix: sharp drainage is non-negotiable.',
       repot: 'Every 4–5 years. It stays smaller and neater in a tight pot.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
-        note: 'Non-toxic. Not a true palm, and importantly not to be confused with the sago palm, which is lethal to cats and dogs.' },
+        note: 'Listed by the ASPCA as non-toxic to cats and dogs. Do not confuse it with the sago palm, which can kill cats and dogs.' },
       prop: [{
         m: 'Offsets', diff: 'medium', season: 'Spring', roots: '6–10 weeks',
         steps: [
@@ -2259,7 +2259,7 @@ window.PLANT_DATA = (function () {
         ]
       }],
       likes: ['Full sun', 'Long droughts', 'Tight pots', 'Terracotta'],
-      dislikes: ['Overwatering — the caudex rots and softens', 'Cold wet soil', 'Deep shade'],
+      dislikes: ['Overwatering: the caudex rots and softens', 'Cold wet soil', 'Deep shade'],
       problems: ['brown-tips-only', 'mushy-base', 'root-rot', 'spider-mites', 'pale-washed-out'],
       tags: ['succulent', 'pet-safe', 'sun-lover', 'drought-tolerant', 'architectural', 'beginner']
     },
@@ -2280,20 +2280,20 @@ window.PLANT_DATA = (function () {
       },
       light: {
         ideal: 'direct', tolerates: ['bright-indirect'], avoid: ['low', 'medium'],
-        note: 'Bright light drives the flowering. It needs short days — around 14 hours of darkness for six weeks — to set new buds.'
+        note: 'Bright light drives the flowering. It needs short days (around 14 hours of darkness for six weeks) to set new buds.'
       },
       humidity: 'low', minC: 10, idealC: [18, 27],
       fert: { everyDays: 42, strength: 'half', type: 'High-potassium feed while budding' },
       soil: 'Gritty cactus mix.',
       tox: { cats: 'very-toxic', dogs: 'very-toxic', humans: 'toxic',
-        note: 'Contains bufadienolide cardiac glycosides — these affect heart rhythm. Beyond vomiting and diarrhoea it can cause dangerous arrhythmias. One of the genuinely serious houseplants for pets; keep it well away or avoid it entirely.' },
+        note: 'Listed by the ASPCA as toxic to cats and dogs. It contains bufadienolides, cardiac glycosides that cause vomiting and diarrhoea and, rarely, an abnormal heart rhythm. Keep it out of reach of pets.' },
       prop: [{
         m: 'Stem cutting', diff: 'easy', season: 'Spring or summer', roots: '2–4 weeks',
         steps: [
           'Take an 8cm non-flowering stem tip.',
           'Strip the lower leaves and let the cut dry for two days.',
           'Push into dry gritty mix and water very lightly.',
-          'It roots readily — keep it in bright light.'
+          'It roots readily. Keep it in bright light.'
         ]
       }],
       likes: ['Bright light', 'Drying out between waterings', 'Deadheading spent flowers'],
@@ -2485,7 +2485,7 @@ window.PLANT_DATA = (function () {
       matureCm: 200,
       water: {
         warm: 12, cool: 24, soakPct: 0.2, dryBetween: true,
-        note: 'Semi-succulent, so let it dry out well between waterings. The leaves go slightly soft and thin when it is genuinely thirsty.'
+        note: 'Semi-succulent, so let it dry out well between waterings. The leaves go slightly soft and thin when it is thirsty.'
       },
       light: {
         ideal: 'bright-indirect', tolerates: ['direct', 'medium'], avoid: ['low'],
@@ -2493,7 +2493,7 @@ window.PLANT_DATA = (function () {
       },
       humidity: 'low', minC: 10, idealC: [18, 26],
       fert: { everyDays: 56, strength: 'quarter', type: 'Dilute cactus or balanced feed' },
-      soil: 'Gritty and free-draining — cactus mix with added perlite.',
+      soil: 'Gritty and free-draining: cactus mix with added perlite.',
       repot: 'Every 2–3 years. Look for tubers along the strands and in the soil.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
         note: 'Not listed by the ASPCA, and no toxic compound is known in it.' },
@@ -2525,18 +2525,18 @@ window.PLANT_DATA = (function () {
       matureCm: 200,
       water: {
         warm: 12, cool: 21, soakPct: 0.2, dryBetween: true,
-        note: 'Thick waxy leaves store water. Let the soil dry most of the way through — this is an epiphyte, and its roots want air.'
+        note: 'Thick waxy leaves store water. Let the soil dry most of the way through: this is an epiphyte, and its roots want air.'
       },
       light: {
         ideal: 'bright-indirect', tolerates: ['direct', 'medium'], avoid: ['low'],
-        note: 'Bright light is what produces those clusters of scented star flowers. It may take a few years to bloom, and patience is the main requirement.'
+        note: 'Bright light is what produces the clusters of scented star flowers. It can take a few years to flower.'
       },
       humidity: 'medium', minC: 12, idealC: [18, 28],
       fert: { everyDays: 42, strength: 'half', type: 'Balanced feed; high-potassium encourages blooms' },
-      soil: 'Chunky epiphyte mix — orchid bark, perlite and a little coco coir.',
+      soil: 'Chunky epiphyte mix: orchid bark, perlite and a little coco coir.',
       repot: 'Every 3 years at most. It flowers best when pot-bound and resents disturbance.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
-        note: 'Non-toxic and safe around pets. The flowers produce sticky nectar that can drip — worth knowing for furniture rather than for safety.' },
+        note: 'Listed by the ASPCA as non-toxic to cats and dogs.' },
       prop: [{
         m: 'Stem cutting', diff: 'easy', season: 'Spring or summer', roots: '4–8 weeks',
         steps: [
@@ -2547,7 +2547,7 @@ window.PLANT_DATA = (function () {
         ]
       }],
       likes: ['Being left pot-bound', 'Bright light', 'Drying out between drinks', 'Something to climb or trail from'],
-      dislikes: ['Repotting', 'Having spent flower spurs cut off — it reblooms from the same spur', 'Soggy soil'],
+      dislikes: ['Repotting', 'Having spent flower spurs cut off: it reblooms from the same spur', 'Soggy soil'],
       problems: ['no-flowers', 'yellow-lower-leaves', 'root-rot', 'mealybugs', 'leggy-stretching'],
       tags: ['trailing', 'climbing', 'pet-safe', 'flowering', 'beginner']
     },
@@ -2573,17 +2573,17 @@ window.PLANT_DATA = (function () {
       humidity: 'medium', minC: 10, idealC: [18, 27],
       fert: { everyDays: 28, strength: 'half', type: 'Balanced liquid feed' },
       tox: { cats: 'mild', dogs: 'mild', humans: 'mild',
-        note: 'The sap causes contact dermatitis in pets and people — itchy skin and mild stomach upset if eaten. Not dangerous, but wear gloves if you are sensitive.' },
+        note: 'The sap causes itchy skin rashes in pets and people, and eating it causes mild stomach upset. Wear gloves when handling it if your skin reacts.' },
       prop: [{
         m: 'Stem cutting', diff: 'easy', season: 'Any time of year', roots: '1–2 weeks',
         steps: [
-          'Snip any 8cm length of stem below a node — this plant roots with almost comical ease.',
+          'Snip any 8cm length of stem below a node. It roots very easily.',
           'Strip the bottom leaves and stand in water, or push straight into damp soil.',
           'Roots often appear within a week.',
           'Plant five or six cuttings per pot for the full, cascading look.'
         ]
       }],
-      likes: ['Hard pinching back — it gets bald and leggy otherwise', 'Bright light', 'Hanging baskets'],
+      likes: ['Hard pinching back: it gets bald and leggy otherwise', 'Bright light', 'Hanging baskets'],
       dislikes: ['Low light', 'Being left unpruned', 'Soggy soil'],
       problems: ['leggy-stretching', 'variegation-loss', 'brown-crispy-edges', 'yellow-lower-leaves', 'spider-mites'],
       tags: ['trailing', 'fast-growing', 'colourful', 'beginner', 'easy-propagation']
@@ -2605,11 +2605,11 @@ window.PLANT_DATA = (function () {
       },
       light: {
         ideal: 'bright-indirect', tolerates: ['medium', 'low'], avoid: ['direct'],
-        note: 'Pink and variegated cultivars need brighter light to hold their colour. The plain green forms cope with genuinely dim rooms.'
+        note: 'Pink and variegated cultivars need brighter light to hold their colour. The plain green forms cope with dim rooms.'
       },
       humidity: 'medium', minC: 15, idealC: [18, 27],
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
-        note: 'Calcium oxalate crystals — oral burning, drooling and vomiting if chewed.' },
+        note: 'Calcium oxalate crystals cause oral burning, drooling and vomiting if chewed.' },
       prop: [{
         m: 'Stem cutting', diff: 'easy', season: 'Spring or summer', roots: '2–3 weeks',
         steps: [
@@ -2619,7 +2619,7 @@ window.PLANT_DATA = (function () {
           'Pinch the growing tips to keep it bushy rather than letting it vine.'
         ]
       }],
-      likes: ['Regular pinching to stay compact', 'A pole to climb — leaves change shape and get larger', 'Warmth'],
+      likes: ['Regular pinching to stay compact', 'A pole to climb: leaves change shape and get larger', 'Warmth'],
       dislikes: ['Direct sun', 'Cold draughts', 'Drying out completely'],
       problems: ['yellow-lower-leaves', 'leggy-stretching', 'brown-crispy-edges', 'spider-mites', 'variegation-loss'],
       tags: ['trailing', 'climbing', 'beginner', 'fast-growing', 'colourful', 'low-light']
@@ -2655,7 +2655,7 @@ window.PLANT_DATA = (function () {
           'Pot up once roots are established.'
         ]
       }],
-      likes: ['Cool rooms — it dislikes central heating', 'Regular misting to deter spider mites', 'Being cut back hard'],
+      likes: ['Cool rooms: it dislikes central heating', 'Humid air, which deters spider mites', 'Being cut back hard'],
       dislikes: ['Hot dry air', 'Direct sun', 'Waterlogged soil'],
       problems: ['spider-mites', 'brown-crispy-edges', 'variegation-loss', 'leggy-stretching', 'yellow-lower-leaves'],
       tags: ['trailing', 'climbing', 'fast-growing', 'cool-tolerant', 'low-light']
@@ -2799,14 +2799,14 @@ window.PLANT_DATA = (function () {
       },
       humidity: 'high', minC: 16, idealC: [18, 28],
       fert: { everyDays: 14, strength: 'quarter', type: 'Orchid feed, weakly, at every other watering' },
-      soil: 'No soil at all. Coarse bark chips only — it is an epiphyte that grows on tree trunks, and compost will rot its roots.',
+      soil: 'No soil at all. Coarse bark chips only: it is an epiphyte that grows on tree trunks, and compost will rot its roots.',
       repot: 'Every 2 years after flowering, into fresh bark. Trim any dead, papery roots.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
         note: 'Listed by the ASPCA as non-toxic to cats and dogs.' },
       prop: [{
         m: 'Keiki (baby plant)', diff: 'easy', season: 'After flowering', roots: 'Already rooted',
         steps: [
-          'Occasionally a plantlet — a keiki — forms on an old flower spike.',
+          'Occasionally a plantlet (a keiki) forms on an old flower spike.',
           'Leave it attached until it has two or three leaves and roots at least 5cm long.',
           'Cut the spike 3cm either side of the keiki.',
           'Pot into fine bark and keep humid.',
@@ -2814,7 +2814,7 @@ window.PLANT_DATA = (function () {
         ]
       }],
       likes: ['A thorough soak then complete drainage', 'Bright indirect light', 'A 5–10°C night-time temperature drop to trigger flowering'],
-      dislikes: ['Water sitting in the crown between the leaves', 'Being potted in soil', 'Ice cubes — a persistent and harmful myth', 'Cold draughts'],
+      dislikes: ['Water sitting in the crown between the leaves', 'Being potted in soil', 'Ice cubes in place of a proper soak', 'Cold draughts'],
       problems: ['no-flowers', 'bud-drop', 'root-rot', 'crown-rot', 'yellow-lower-leaves', 'limp-leaves', 'needs-rest-period', 'moved-while-budding'],
       tags: ['flowering', 'pet-safe', 'epiphyte', 'bathroom', 'humidity-lover']
     },
@@ -2831,7 +2831,7 @@ window.PLANT_DATA = (function () {
       matureCm: 15,
       water: {
         warm: 6, cool: 10, dryBetween: true, method: 'bottom',
-        note: 'Water from below — stand the pot in a saucer of tepid water for 20 minutes, then tip away what is left. Water on those furry leaves causes brown spots and rot.'
+        note: 'Water from below: stand the pot in a saucer of tepid water for 20 minutes, then tip away what is left. Water on those furry leaves causes brown spots and rot.'
       },
       light: {
         ideal: 'bright-indirect', tolerates: ['medium'], avoid: ['direct', 'low'],
@@ -2839,10 +2839,10 @@ window.PLANT_DATA = (function () {
       },
       humidity: 'medium', minC: 16, idealC: [18, 24],
       fert: { everyDays: 14, strength: 'quarter', type: 'African violet feed, high in phosphorus' },
-      soil: 'Light, airy African violet mix — peat-free compost with plenty of perlite and vermiculite.',
+      soil: 'Light, airy African violet mix: peat-free compost with plenty of perlite and vermiculite.',
       repot: 'Annually into the same size pot with fresh mix. It flowers best slightly pot-bound.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
-        note: 'Non-toxic and safe around pets — a lovely, genuinely safe flowering option.' },
+        note: 'Listed by the ASPCA as non-toxic to cats and dogs.' },
       prop: [{
         m: 'Leaf cutting', diff: 'easy', season: 'Spring or summer', roots: '3–5 weeks',
         steps: [
@@ -2879,7 +2879,7 @@ window.PLANT_DATA = (function () {
       },
       humidity: 'high', minC: 15, idealC: [18, 26],
       fert: { everyDays: 21, strength: 'half', type: 'Balanced feed while in growth' },
-      soil: 'Light and airy — peat-free compost with perlite for sharp drainage.',
+      soil: 'Light and airy: peat-free compost with perlite for sharp drainage.',
       repot: 'Annually in spring; it grows quickly and gets top-heavy.',
       tox: { cats: 'toxic', dogs: 'toxic', humans: 'mild',
         note: 'Listed by the ASPCA as toxic to cats and dogs (Begonia species). Soluble calcium oxalates cause drooling, vomiting and difficulty swallowing if chewed. In tuberous begonias the tubers are the most toxic part; this cane begonia has none.' },
@@ -2887,12 +2887,12 @@ window.PLANT_DATA = (function () {
         m: 'Stem cutting', diff: 'easy', season: 'Spring or summer', roots: '3–4 weeks',
         steps: [
           'Cut a stem below a node, keeping two leaves.',
-          'Root in water — begonias root readily this way and you can watch progress.',
+          'Root in water: begonias root readily this way and you can watch progress.',
           'Change the water twice weekly to prevent the stem rotting.',
           'Pot into airy mix once roots reach 4cm, and pinch the tip to encourage branching.'
         ]
       }],
-      likes: ['High humidity with good air movement', 'Bright indirect light', 'Regular pruning — it gets leggy fast'],
+      likes: ['High humidity with good air movement', 'Bright indirect light', 'Regular pruning: it gets leggy fast'],
       dislikes: ['Wet leaves', 'Stagnant humid air', 'Direct sun', 'Waterlogging'],
       problems: ['powdery-mildew', 'leaves-falling-off', 'brown-crispy-edges', 'leggy-stretching', 'spider-mites'],
       tags: ['patterned', 'colourful', 'fast-growing', 'humidity-lover', 'dramatic']
@@ -3112,7 +3112,7 @@ window.PLANT_DATA = (function () {
       matureCm: 45,
       water: {
         warm: 2, cool: 4, soakPct: 0.3, dryBetween: false,
-        note: 'Thirsty and shallow-rooted. Water in the morning at the base as soon as the surface dries — wilting basil recovers, but its flavour suffers.'
+        note: 'Thirsty and shallow-rooted. Water in the morning at the base as soon as the surface dries: wilting basil recovers, but its flavour suffers.'
       },
       light: {
         ideal: 'direct', tolerates: ['bright-indirect'], avoid: ['low', 'medium'],
@@ -3123,7 +3123,7 @@ window.PLANT_DATA = (function () {
       soil: 'Rich, moisture-retentive potting compost with a little perlite.',
       repot: 'Treat as an annual. Sow fresh seed each spring rather than trying to overwinter it.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
-        note: 'Listed by the ASPCA as non-toxic to cats and dogs. Edible for people; large amounts may cause mild stomach upset in pets.' },
+        note: 'Listed by the ASPCA as non-toxic to cats and dogs. Edible for people. Eating a lot can upset a pet\'s stomach.' },
       prop: [{
         m: 'Stem cutting', diff: 'easy', season: 'Spring or summer', roots: '1–2 weeks',
         steps: [
@@ -3138,7 +3138,7 @@ window.PLANT_DATA = (function () {
         steps: [
           'Fill a shallow tray with damp seed compost and firm it gently.',
           'Scatter seed thinly and cover with 5mm of compost.',
-          'Keep at 20–25°C — warmth is the key to germination. A windowsill above a radiator works well.',
+          'Keep at 20–25°C: warmth is the key to germination. A windowsill above a radiator works well.',
           'Keep the surface damp with a mister rather than a watering can.',
           'Once seedlings have two true leaves, thin to the strongest and pot on into individual pots.',
           'Pinch out the growing tip at six leaves to force bushy growth rather than one tall stem.'
@@ -3162,7 +3162,7 @@ window.PLANT_DATA = (function () {
       matureCm: 40,
       water: {
         warm: 3, cool: 6, soakPct: 0.3, dryBetween: false,
-        note: 'Likes consistently damp soil — more so than most herbs. Water whenever the surface feels dry.'
+        note: 'Likes consistently damp soil, more so than most herbs. Water whenever the surface feels dry.'
       },
       light: {
         ideal: 'bright-indirect', tolerates: ['direct', 'medium'], avoid: ['low'],
@@ -3171,13 +3171,13 @@ window.PLANT_DATA = (function () {
       humidity: 'medium', minC: 0, idealC: [15, 24],
       fert: { everyDays: 28, strength: 'half', type: 'Balanced feed' },
       soil: 'Moisture-retentive potting compost.',
-      repot: 'Annually — it fills a pot with runners quickly and gets congested. Always grow it in its own pot; it will strangle anything it shares with.',
+      repot: 'Annually: it fills a pot with runners quickly and gets congested. Always grow it in its own pot; it will strangle anything it shares with.',
       tox: { cats: 'mild', dogs: 'mild', humans: 'safe',
         note: 'Listed by the ASPCA as toxic to cats and dogs, and rated mild here: large quantities cause vomiting and diarrhoea, and the concentrated essential oil is toxic to them. Edible for people.' },
       prop: [{
         m: 'Stem cutting or runner division', diff: 'easy', season: 'Any time in the growing season', roots: '1–2 weeks',
         steps: [
-          'Snip a 10cm stem below a node, or simply pull up a rooted runner from the edge of the pot.',
+          'Snip a 10cm stem below a node, or pull up a rooted runner from the edge of the pot.',
           'Stand cuttings in water. Mint roots within a week or two.',
           'Pot up once roots appear.',
           'Pot several rooted pieces together for a fuller plant.'
@@ -3188,12 +3188,12 @@ window.PLANT_DATA = (function () {
         steps: [
           'Sow thinly on the surface of damp seed compost and barely cover.',
           'Keep at 18–21°C and evenly moist.',
-          'Germination is uneven — do not be surprised if only half come up.',
+          'Germination is uneven: do not be surprised if only half come up.',
           'Pot on when seedlings have four true leaves.',
           'Cuttings or division are quicker and give a truer plant: named varieties do not come true from seed.'
         ]
       },
-      likes: ['Damp soil', 'Its own pot', 'Hard harvesting — it comes back stronger', 'Cool conditions'],
+      likes: ['Damp soil', 'Its own pot', 'Hard harvesting: it comes back stronger', 'Cool conditions'],
       dislikes: ['Drying out', 'Sharing a pot', 'Deep shade'],
       problems: ['powdery-mildew', 'aphids', 'leggy-stretching', 'rust', 'drooping'],
       tags: ['edible', 'herb', 'fast-growing', 'kitchen', 'cool-tolerant', 'beginner']
@@ -3211,15 +3211,15 @@ window.PLANT_DATA = (function () {
       matureCm: 90,
       water: {
         warm: 8, cool: 16, soakPct: 0.2, dryBetween: true,
-        note: 'A Mediterranean shrub — it wants far less water than people give it. Let the soil dry well down before watering, and never let it stand wet.'
+        note: 'A Mediterranean shrub that needs little water. Let the soil dry well down before watering, and never let it stand wet.'
       },
       light: {
         ideal: 'direct', tolerates: [], avoid: ['low', 'medium', 'bright-indirect'],
-        note: 'Needs six to eight hours of direct sun. It genuinely struggles as an indoor plant unless you have a very sunny sill or a grow light.'
+        note: 'Needs six to eight hours of direct sun. It struggles as an indoor plant unless you have a very sunny sill or a grow light.'
       },
       humidity: 'low', minC: -5, idealC: [15, 26],
-      fert: { everyDays: 56, strength: 'quarter', type: 'Light balanced feed — rich soil reduces the aromatic oils' },
-      soil: 'Gritty and free-draining, on the poor side — potting mix with plenty of coarse sand or perlite.',
+      fert: { everyDays: 56, strength: 'quarter', type: 'Light balanced feed: rich soil reduces the aromatic oils' },
+      soil: 'Gritty and free-draining, on the poor side: potting mix with plenty of coarse sand or perlite.',
       repot: 'Every 2 years into a terracotta pot, which suits its need for dry roots.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
         note: 'Listed by the ASPCA as non-toxic to cats and dogs, as Rosmarinus officinalis. Culinary.' },
@@ -3229,7 +3229,7 @@ window.PLANT_DATA = (function () {
           'Take 10cm cuttings from this year\'s growth, where the stem is firm but not yet woody.',
           'Strip the lower two-thirds of needles.',
           'Dip in rooting hormone and push into gritty, free-draining mix.',
-          'Keep just barely damp in bright light — too much water rots rosemary cuttings.'
+          'Keep just barely damp in bright light: too much water rots rosemary cuttings.'
         ]
       }],
       seed: {
@@ -3243,7 +3243,7 @@ window.PLANT_DATA = (function () {
         ]
       },
       likes: ['All the direct sun available', 'Dry roots and good airflow', 'Terracotta pots', 'Regular light pruning'],
-      dislikes: ['Overwatering — the usual cause of death', 'Humid stagnant air', 'Rich soil', 'Low light'],
+      dislikes: ['Overwatering: the usual cause of death', 'Humid stagnant air', 'Rich soil', 'Low light'],
       problems: ['root-rot', 'powdery-mildew', 'brown-crispy-edges', 'leggy-stretching', 'spider-mites'],
       tags: ['edible', 'herb', 'sun-lover', 'pet-safe', 'drought-tolerant', 'kitchen', 'cool-tolerant']
     },
@@ -3413,14 +3413,14 @@ window.PLANT_DATA = (function () {
       },
       humidity: 'medium', minC: 10, idealC: [16, 28],
       fert: { everyDays: 28, strength: 'quarter', type: 'Bromeliad or air plant feed added to the soaking water' },
-      soil: 'None at all — it grows mounted on wood, in a shell, or simply sitting in a bowl.',
+      soil: 'None at all: it grows mounted on wood, in a shell, or sitting in a bowl.',
       repot: 'Never. If mounted, use wire or a neutral glue, never copper, which is toxic to bromeliads.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
         note: 'Not listed by the ASPCA, and no toxic compound is known in any Tillandsia.' },
       prop: [{
         m: 'Offsets (pups)', diff: 'easy', season: 'After flowering', roots: 'No rooting needed',
         steps: [
-          'Each plant flowers once, then produces pups from its base and slowly dies — this is its natural cycle.',
+          'Each plant flowers once, then produces pups from its base and slowly dies. This is its natural cycle.',
           'Let a pup grow to about a third of the parent\'s size.',
           'Twist and pull it gently away from the parent.',
           'Care for it exactly as the parent. A cluster left intact makes a handsome clump.'
@@ -3451,10 +3451,10 @@ window.PLANT_DATA = (function () {
       },
       humidity: 'low', minC: 10, idealC: [18, 30],
       fert: { everyDays: 28, strength: 'quarter', type: 'Bromeliad or air plant feed added to the dipping water' },
-      soil: 'None — it sits on a dish, a stand or a piece of wood.',
+      soil: 'None: it sits on a dish, a stand or a piece of wood.',
       repot: 'Never. It needs no pot at all.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
-        note: 'Not listed by the ASPCA, and no toxic compound is known in any Tillandsia. Cats often chew the leaves; this damages the plant but not the cat.' },
+        note: 'Not listed by the ASPCA, and no toxic compound is known in any Tillandsia. Cats often chew the leaves, which damages the plant.' },
       prop: [{
         m: 'Offsets (pups)', diff: 'easy', season: 'After flowering', roots: 'No rooting needed',
         steps: [
@@ -3490,7 +3490,7 @@ window.PLANT_DATA = (function () {
       },
       humidity: 'low', minC: 10, idealC: [18, 28],
       fert: { everyDays: 28, strength: 'quarter', type: 'Bromeliad or air plant feed added to the dipping water' },
-      soil: 'None — sit it on a dish or a stand, or mount it base upward on wood.',
+      soil: 'None: sit it on a dish or a stand, or mount it base upward on wood.',
       repot: 'Never. If mounted, use wire or a neutral glue, never copper, which is toxic to bromeliads.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
         note: 'Not listed by the ASPCA, and no toxic compound is known in any Tillandsia.' },
@@ -3529,7 +3529,7 @@ window.PLANT_DATA = (function () {
       },
       humidity: 'medium', minC: 12, idealC: [18, 28],
       fert: { everyDays: 28, strength: 'quarter', type: 'Bromeliad or air plant feed added to the dipping water' },
-      soil: 'None — it sits on a dish, a stand or a branch.',
+      soil: 'None: it sits on a dish, a stand or a branch.',
       repot: 'Never. It needs no pot at all.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
         note: 'Not listed by the ASPCA, and no toxic compound is known in any Tillandsia.' },
@@ -3568,7 +3568,7 @@ window.PLANT_DATA = (function () {
       },
       humidity: 'low', minC: 7, idealC: [12, 26],
       fert: { everyDays: 42, strength: 'quarter', type: 'Bromeliad or air plant feed added to the misting water' },
-      soil: 'None — set it on a dish or stand where air moves freely around it.',
+      soil: 'None: set it on a dish or stand where air moves freely around it.',
       repot: 'Never. It needs no pot at all.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
         note: 'Not listed by the ASPCA, and no toxic compound is known in any Tillandsia.' },
@@ -3607,7 +3607,7 @@ window.PLANT_DATA = (function () {
       },
       humidity: 'high', minC: 5, idealC: [15, 30],
       fert: { everyDays: 42, strength: 'quarter', type: 'Bromeliad or air plant feed added to the misting water' },
-      soil: 'None — drape it over a hook, a branch or a frame where air reaches every strand.',
+      soil: 'None: drape it over a hook, a branch or a frame where air reaches every strand.',
       repot: 'Never. It needs no pot at all.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
         note: 'Not listed by the ASPCA, and no toxic compound is known in any Tillandsia. Hang it high anyway: cats pull the strands down.' },
@@ -3646,7 +3646,7 @@ window.PLANT_DATA = (function () {
       },
       humidity: 'high', minC: 13, idealC: [18, 27],
       fert: { everyDays: 28, strength: 'quarter', type: 'Bromeliad feed, or a balanced feed at quarter strength, on the mix and never left in the cup' },
-      soil: 'A very open mix — orchid bark with a little coir and perlite. It needs anchoring more than feeding.',
+      soil: 'A very open mix: orchid bark with a little coir and perlite. It needs anchoring more than feeding.',
       repot: 'Rarely. Its roots are small and it flowers once, so pot its pups on into small pots rather than moving the parent up.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
         note: 'Listed by the ASPCA as non-toxic to cats, dogs and horses.' },
@@ -3685,7 +3685,7 @@ window.PLANT_DATA = (function () {
       },
       humidity: 'high', minC: 15, idealC: [18, 27],
       fert: { everyDays: 28, strength: 'quarter', type: 'Bromeliad feed, or a balanced feed at quarter strength, on the mix and never left in the cup' },
-      soil: 'A very open mix — orchid bark with a little coir and perlite.',
+      soil: 'A very open mix: orchid bark with a little coir and perlite.',
       repot: 'Rarely. It flowers once, so pot its pups on rather than moving the parent up.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
         note: 'Not listed by the ASPCA. No toxic compound is known in it, and the ASPCA lists the related Guzmania and Neoregelia as non-toxic.' },
@@ -3724,7 +3724,7 @@ window.PLANT_DATA = (function () {
       },
       humidity: 'medium', minC: 12, idealC: [18, 28],
       fert: { everyDays: 28, strength: 'quarter', type: 'Bromeliad feed, or a balanced feed at quarter strength, on the mix and never left in the cup' },
-      soil: 'A very open mix — orchid bark with a little coir and perlite.',
+      soil: 'A very open mix: orchid bark with a little coir and perlite.',
       repot: 'Rarely. Pot its pups on into small pots rather than moving the parent up.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'safe',
         note: 'Listed by the ASPCA as non-toxic to cats and dogs.' },
@@ -3763,7 +3763,7 @@ window.PLANT_DATA = (function () {
       },
       humidity: 'medium', minC: 12, idealC: [18, 27],
       fert: { everyDays: 28, strength: 'quarter', type: 'Bromeliad feed, or a balanced feed at quarter strength, on the mix and never left in the cup' },
-      soil: 'A very open mix — orchid bark with a little coir and perlite, in a heavy pot so the top-heavy urn stays upright.',
+      soil: 'A very open mix: orchid bark with a little coir and perlite, in a heavy pot so the top-heavy urn stays upright.',
       repot: 'Rarely. Pot its pups on rather than moving the parent up.',
       tox: { cats: 'safe', dogs: 'safe', humans: 'mild',
         note: 'Not listed by the ASPCA, and not known to poison pets. The leaf edges carry small spines and the sap can irritate skin, so wear gloves when cutting away pups.' },

@@ -153,7 +153,8 @@ window.Schedule = (function () {
         factors.push({
           label: 'Dim spot',
           effect: 'longer',
-          detail: room.name + ' is dimmer than ideal — less light means slower drying and a real risk of overwatering.'
+          detail: room.name + ' is dimmer than this plant\'s baseline, so ' +
+                  (method.potDrying ? 'the soil dries' : 'it dries out') + ' more slowly and is easier to overwater.'
         });
       }
     }
@@ -198,13 +199,19 @@ window.Schedule = (function () {
       }
     }
 
-    // --- Weather / manual offset ---
+    /* --- Weather / manual offset ---
+       One field, two ways in: a weather nudge accepted on Today and Adjust
+       schedule on the plant page both write waterOffset, and nothing records
+       which. It used to say the forecast had set it, which told a reader who
+       had nudged it by hand that the weather had. So it says what the
+       adjustment is and that the reader chose it, and nothing about why. */
     if (plant.waterOffset) {
       days += plant.waterOffset;
+      const by = Math.abs(plant.waterOffset);
       factors.push({
-        label: plant.waterOffset < 0 ? 'Adjusted for dry weather' : 'Adjusted for wet weather',
+        label: (plant.waterOffset < 0 ? 'Shortened by ' : 'Lengthened by ') + UI.plural(by, 'day'),
         effect: plant.waterOffset < 0 ? 'shorter' : 'longer',
-        detail: 'You accepted a ' + Math.abs(plant.waterOffset) + '-day adjustment based on your local forecast.'
+        detail: 'An adjustment you chose, from the forecast or by hand.'
       });
     }
 
@@ -287,8 +294,8 @@ window.Schedule = (function () {
         dormant: true,
         interval: sp.fert.everyDays,
         reason: LOOKUPS.SEASON_META[season].label +
-                (own ? ' — it is not growing now, so no feed until ' + next + '.'
-                     : ' — hold off feeding until growth restarts in spring.')
+                (own ? ': it isn\'t growing, so no plant food until ' + next + '.'
+                     : ': no plant food until growth restarts in spring.')
       };
     }
     const interval = sp.fert.everyDays;
@@ -400,10 +407,8 @@ window.Schedule = (function () {
 
        That ordering is backwards for the thing this app is for. Missing a
        feed by three weeks costs a plant some growth it will make up; missing
-       a drink can kill it. The view's own greeting says as much — "most
-       plants forgive a late drink far more readily than an early one" — and
-       feeding is forgiven more readily still. Ranking a month-old feed above
-       today's watering tells the reader to do the harmless thing first.
+       a drink can kill it. Ranking a month-old feed above today's watering
+       tells the reader to do the harmless thing first.
 
        So everything already due collapses into one bucket, because inside it
        the kind of job matters more than its precise lateness: drinks first,
@@ -432,6 +437,16 @@ window.Schedule = (function () {
 
   /* ---------- Light matching ---------- */
 
+  /* A light rung as words in a sentence. The labels are written for a chip,
+     where "Bright indirect" stands alone; lowercased into running text it
+     ended a sentence on a bare adjective ("would much rather have bright
+     indirect."), so any label without a noun of its own takes "light". */
+  function lightWords(key, capital) {
+    const label = LOOKUPS.LIGHT[key].label;
+    const words = /\b(light|sun)$/i.test(label) ? label : label + ' light';
+    return capital ? words : words.toLowerCase();
+  }
+
   /* Is this plant in a room that suits it? */
   function lightMatch(plant) {
     const sp = Store.species(plant);
@@ -449,8 +464,8 @@ window.Schedule = (function () {
     if (roomLight === 'none') {
       return {
         verdict: 'bad',
-        text: room.name + ' has no daylight, so nothing will hold its leaves here for long. ' +
-              'Rotate it back to a lit room every week or two, or put a grow lamp over it.'
+        text: room.name + ' has no daylight, so it will lose its leaves unless you move it to a lit ' +
+              'room every week or two or put a grow lamp over it.'
       };
     }
 
@@ -460,21 +475,21 @@ window.Schedule = (function () {
     if ((sp.light.avoid || []).indexOf(roomLight) !== -1) {
       return {
         verdict: 'bad',
-        text: LOOKUPS.LIGHT[roomLight].label + ' is specifically bad for this plant. ' +
-              'It would much rather have ' + LOOKUPS.LIGHT[sp.light.ideal].label.toLowerCase() + '.'
+        text: lightWords(roomLight, true) + ' is bad for this plant, which wants ' +
+              lightWords(sp.light.ideal) + '.'
       };
     }
     if ((sp.light.tolerates || []).indexOf(roomLight) !== -1) {
       return {
         verdict: 'ok',
-        text: 'It will cope with ' + LOOKUPS.LIGHT[roomLight].label.toLowerCase() +
-              ', though ' + LOOKUPS.LIGHT[sp.light.ideal].label.toLowerCase() + ' would suit it better.'
+        text: 'It will cope with ' + lightWords(roomLight) +
+              ', though ' + lightWords(sp.light.ideal) + ' would suit it better.'
       };
     }
     return {
       verdict: 'poor',
-      text: 'This plant really wants ' + LOOKUPS.LIGHT[sp.light.ideal].label.toLowerCase() +
-            '. Expect slow, stretched growth here.'
+      text: 'It wants ' + lightWords(sp.light.ideal) + ', so expect slow, stretched growth in ' +
+            room.name + '.'
     };
   }
 
@@ -565,14 +580,32 @@ window.Schedule = (function () {
       return order[r.rating] > order[acc.rating] ? r : acc;
     }, risks[0]);
 
-    /* The names feed "Not safe for your cats or dogs". "Other" would read as
-       "your other", so once it is in the mix the line says "your pets". */
-    const names = risks.some(function (r) { return r.pet === 'other'; }) ? ['pets'] : risks.map(function (r) { return r.pet; });
+    /* "Other" would read as "your other", so once it is in the mix the
+       line says "your pets". */
+    const other = risks.some(function (r) { return r.pet === 'other'; });
+    const names = other ? ['pets'] : risks.map(function (r) { return r.pet; });
+
+    /* The warning every screen shows, built here so the add form, the
+       species page and the introduction can never word it differently.
+       Each pet gets its own level: a plant toxic to cats and only mildly
+       toxic to dogs says so, rather than calling it toxic to both. */
+    function label(rating, lower) {
+      const l = LOOKUPS.TOX[rating].label;
+      return lower ? l.charAt(0).toLowerCase() + l.slice(1) : l;
+    }
+    let headline;
+    if (other || risks.every(function (r) { return r.rating === worst.rating; })) {
+      headline = label(worst.rating) + ' to your ' + names.join(' and ');
+    } else {
+      headline = risks.slice().sort(function (a, b) { return order[b.rating] - order[a.rating]; })
+        .map(function (r, i) { return label(r.rating, i > 0) + ' to your ' + r.pet; }).join(', ');
+    }
 
     return {
       risks: risks,
       worst: worst.rating,
       pets: names,
+      headline: headline,
       note: sp.tox.note
     };
   }
@@ -582,7 +615,7 @@ window.Schedule = (function () {
     const all = Store.activePlants();
     const due = tasks(0);
     /* Plants, not jobs, and only waterings. The greeting says "N plants are
-       ready for a drink", and it used to be handed every overdue task: a
+       overdue for water", and it used to be handed every overdue task: a
        plant late for both water and feed counted twice and a plant late only
        for feed counted once, so six plants could read as seven thirsty. */
     const thirsty = {};

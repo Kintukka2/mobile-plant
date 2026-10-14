@@ -80,9 +80,9 @@ window.ViewProfile = (function () {
 
     const body =
       '<p class="muted small" style="margin:0 0 16px;line-height:1.6">' +
-        'I use this for two things: your local forecast, so I can offer to stretch or shorten watering before ' +
-        'a wet or dry spell, and your latitude — which tells me which hemisphere you\'re in, and therefore ' +
-        'which months are the growing season and which way a bright window faces.' +
+        'Your location gives me a local forecast, so I can offer to stretch or shorten watering before ' +
+        'a wet or dry spell. Its latitude tells me your hemisphere, which sets your growing season and ' +
+        'which way a bright window faces.' +
       '</p>' +
 
       '<div class="field">' +
@@ -105,7 +105,7 @@ window.ViewProfile = (function () {
          offered beside two better ones has to be honest about being the
          lesser one. */
       '<div class="row" style="gap:10px;margin:18px 0 12px"><hr class="divider" style="flex:1;margin:0">' +
-        '<span class="tiny muted">or general location</span><hr class="divider" style="flex:1;margin:0"></div>' +
+        '<span class="tiny muted">or just your hemisphere</span><hr class="divider" style="flex:1;margin:0"></div>' +
 
       '<div class="row-wrap" id="loc-hemi">' +
         '<button type="button" class="chip' + (hemiSet && hemi === 'north' ? ' is-on' : '') + '" ' +
@@ -113,11 +113,11 @@ window.ViewProfile = (function () {
         '<button type="button" class="chip' + (hemiSet && hemi === 'south' ? ' is-on' : '') + '" ' +
           'data-loc-hemi="south">Southern hemisphere</button>' +
       '</div>' +
-      '<p class="hint">Enough for your seasons and which way a bright window faces. No forecast, ' +
-        'so no offers to stretch or shorten watering before a spell of weather.</p>' +
+      '<p class="hint">That\'s enough for your seasons and window light, but with no forecast I can\'t ' +
+        'offer to stretch or shorten watering before a wet or dry spell.</p>' +
 
-      '<p class="hint" id="loc-note">I round it to about a kilometre, then send that to Open-Meteo for ' +
-        'the forecast. Nowhere else, and there\'s no account behind any of it.</p>';
+      '<p class="hint" id="loc-note">I round your location to about a kilometre and send it only to ' +
+        'Open-Meteo for the forecast, with no account attached.</p>';
 
     UI.openSheet('Your location', body, function (root) {
       const input = root.querySelector('#loc-q');
@@ -140,7 +140,7 @@ window.ViewProfile = (function () {
         const pick = btn.getAttribute('data-loc-hemi');
         Store.updateProfile({ hemisphere: pick });
         UI.closeSheet();
-        UI.toast(pick === 'south' ? 'Southern hemisphere it is' : 'Northern hemisphere it is', 'leaf');
+        UI.toast(pick === 'south' ? 'Set to southern hemisphere' : 'Set to northern hemisphere', 'leaf');
         App.refresh();
       });
 
@@ -163,7 +163,7 @@ window.ViewProfile = (function () {
               note.textContent = err.message + ' Everything else works without it.';
               return;
             }
-            note.textContent = places.length ? 'Pick the closest match.' : 'No match — try a larger nearby town.';
+            note.textContent = places.length ? 'Pick the closest match.' : 'No match. Try a larger town nearby.';
             list.innerHTML = places.map(function (p, i) {
               return '<button class="dx-opt" data-place="' + i + '" style="margin:0">' +
                 '<span class="dx-opt-ico">' + UI.icon('pin') + '</span>' +
@@ -229,8 +229,8 @@ window.ViewProfile = (function () {
           return '<button class="chip' + (on ? ' is-on' : '') + '" data-pet="' + p.key + '">' +
             UI.icon(p.ico) + UI.esc(p.label) + '</button>';
         }).join('') + '</div>' +
-        '<p class="hint">Do you have any pets at home? Tag the relevant icon and I\'ll make sure to warn ' +
-          'you about any risks.</p>' +
+        '<p class="hint">Tap each pet you have and I\'ll warn you about any plant that\'s toxic ' +
+          'to them.</p>' +
       '</div>' +
     '</div>';
 
@@ -293,8 +293,8 @@ window.ViewProfile = (function () {
               (nState === 'denied' ? ' disabled' : '') + ' ' +
               'style="width:18px;height:18px;accent-color:var(--leaf)">' +
             '<span style="flex:1;min-width:0"><span style="font-weight:600;font-size:14px">Care reminders</span>' +
-              '<span class="tiny muted" style="display:block">I\'ll nudge you whenever a plant needs you, ' +
-                'and stay quiet when nothing does.</span></span>' +
+              '<span class="tiny muted" style="display:block">I\'ll remind you at the hour you pick on any ' +
+                'day a plant needs water or a feed, and send nothing on other days.</span></span>' +
           '</label>' +
           (on
             /* The hour and its Set button share a row. Set starts inert and
@@ -313,13 +313,13 @@ window.ViewProfile = (function () {
                 '<button class="btn btn-sm" id="p-remind-set" disabled>Set</button>' +
               '</div>'
             : nState === 'denied'
-              ? '<p class="hint">Notifications are switched off for Sprout in your phone\'s settings. ' +
-                'That one is out of my hands — it lives alongside every other app\'s.</p>'
+              ? '<p class="hint">Notifications are off for Sprout in your phone\'s settings. ' +
+                'Turn them on there and I can send reminders.</p>'
               : '');
       } else {
         html +=
-          '<p class="hint" style="margin-top:0">Scheduled reminders come with the app. In a browser I can\'t ' +
-            'wake your phone, so here I only ever show one when you ask for it.</p>' +
+          '<p class="hint" style="margin-top:0">Scheduled reminders need the installed app. In a browser I ' +
+            'can\'t wake your phone, so I show one only when you ask.</p>' +
           '<p class="hint">' + UI.esc(remindPreview()) + '</p>' +
           (Notify.state() === 'unsupported'
             ? ''
@@ -356,8 +356,9 @@ window.ViewProfile = (function () {
               '<input type="checkbox" id="p-wsync"' + (settings.weatherSync ? ' checked' : '') + ' ' +
                 'style="width:18px;height:18px;accent-color:var(--leaf)">' +
               '<span style="flex:1;min-width:0"><span style="font-weight:600;font-size:14px">Weather-aware watering</span>' +
-                '<span class="tiny muted" style="display:block">Tick this and I\'ll keep an eye on the weather ' +
-                  'where you are, and adapt the plan to take better care of your plants.</span></span>' +
+                '<span class="tiny muted" style="display:block">I\'ll check the forecast for ' +
+                  UI.esc(prof.location.label) + ' and offer to stretch or shorten watering before a wet ' +
+                  'or dry spell.</span></span>' +
             '</label>' +
             '<div class="row" style="gap:8px;margin-top:12px">' +
               '<button class="btn btn-sm btn-soft" data-refresh="1">Refresh forecast</button>' +
@@ -370,8 +371,8 @@ window.ViewProfile = (function () {
               '<span class="fact-ico">' + UI.icon('pin') + '</span>' +
               '<div style="flex:1;min-width:0">' +
                 '<div style="font-weight:600">No location set</div>' +
-                '<p class="tiny muted" style="margin:2px 0 0">I work fine without it — you just lose the ' +
-                  'forecast suggestions.</p>' +
+                '<p class="tiny muted" style="margin:2px 0 0">Without one you get no forecast suggestions, ' +
+                  'and everything else still works.</p>' +
               '</div>' +
             '</div>' +
             '<button class="btn btn-block" data-loc="1" style="margin-top:12px">' + UI.icon('pin') +
@@ -393,8 +394,8 @@ window.ViewProfile = (function () {
             '<p class="hint">' +
               (Store.hemisphereIsGuess()
                 ? 'I\'ve guessed ' + (hemi === 'south' ? 'southern' : 'northern') +
-                  ' from your device\'s time zone. It decides your seasons, and which way your bright ' +
-                  'windows face — tap the other one if I have it wrong.'
+                  ' from your device\'s time zone, which sets your seasons and which way your bright ' +
+                  'windows face, so tap the other one if that\'s wrong.'
                 : 'Set by you. This decides your seasons, and which way your bright windows face.') +
             '</p>') +
       '</div>' +
@@ -478,7 +479,7 @@ window.ViewProfile = (function () {
         Notify.ask().then(function (result) {
           if (result !== 'granted') {
             UI.toast(result === 'denied'
-              ? (UI.isNative() ? 'Notifications are off for Sprout in your device settings'
+              ? (UI.isNative() ? 'Notifications are off in device settings'
                                : 'Your browser said no to notifications')
               : 'Reminders need permission', 'warn');
             App.refresh();
@@ -506,7 +507,8 @@ window.ViewProfile = (function () {
       });
       rset.addEventListener('click', function () {
         Store.updateSettings({ remindHour: Number(rhour.value) });
-        UI.toast('I\'ll check in then', 'leaf');
+        const h = Number(rhour.value);
+        UI.toast('Reminders set for ' + (h === 12 ? 'midday' : (h > 12 ? (h - 12) + ' pm' : h + ' am')), 'leaf');
         App.refresh();
       });
     }
@@ -524,7 +526,7 @@ window.ViewProfile = (function () {
     root.addEventListener('click', function (e) {
       if (e.target.closest('[data-remind-test]')) {
         const msg = Notify.todayMessage();
-        if (!msg) { UI.toast('Nothing is due today, so there is nothing to send', 'leaf'); return; }
+        if (!msg) { UI.toast('Nothing\'s due today', 'leaf'); return; }
         /* On the shell a toggle has already been through this. In a browser
            there is no toggle, so the button itself is the moment to ask. */
         Notify.ask().then(function (result) {
@@ -596,8 +598,8 @@ window.ViewProfile = (function () {
      interruption first. */
   function remindPreview() {
     const today = Notify.todayMessage();
-    if (today) return 'Today it would say: ' + today.title + '.';
-    return 'Nothing is due today, so today it would stay quiet.';
+    if (today) return 'Your reminder would read: ' + today.title + '.';
+    return 'Nothing is due today, so there\'d be no reminder.';
   }
 
   /* The end of the introduction, not a second one. Sprout says who it is
@@ -619,15 +621,16 @@ window.ViewProfile = (function () {
 
     const heard = [];
     if (count) {
-      heard.push(['leaf', UI.plural(count, 'plant') + ' in, each with its own routine already.']);
+      heard.push(['leaf', count === 1 ? '1 plant in, with its own routine already.'
+        : UI.plural(count, 'plant') + ' in, each with its own routine already.']);
     }
     if (pets.length) {
-      heard.push(['paw', 'I\'ll warn you about any plant that would hurt your ' + pets.join(' or ') + '.']);
+      heard.push(['paw', 'I\'ll warn you about any plant that\'s toxic to your ' + pets.join(' or ') + '.']);
     }
     /* A location answers the hemisphere as well, so the forecast line is the
        one worth saying when both are known. */
     if (prof.location && prof.location.label) {
-      heard.push(['pin', 'Watering follows the forecast for ' + prof.location.label + '.']);
+      heard.push(['pin', 'I\'ll offer to stretch or shorten watering before a wet or dry spell in ' + prof.location.label + '.']);
     } else if (prof.hemisphere) {
       heard.push(['sun', 'I\'m reading seasons and window light for the ' + prof.hemisphere + 'ern hemisphere.']);
     }
@@ -652,7 +655,7 @@ window.ViewProfile = (function () {
         (count
           ? '<button class="btn btn-ghost" id="w-skip">Show me today first</button>'
           : '<button class="btn btn-ghost" id="w-browse">Browse plants</button>' +
-            '<button class="link-btn center" id="w-skip">Let me look around first</button>') +
+            '<button class="link-btn center" id="w-skip">Look around first</button>') +
       '</div>';
 
     UI.openSheet(name ? 'Welcome, ' + name : 'Welcome to Sprout', body, function (root) {

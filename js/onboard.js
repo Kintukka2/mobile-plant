@@ -71,7 +71,7 @@ window.Onboard = (function () {
        last. Five questions in the first person from someone who has not yet
        said who they are, and then "Hi, I'm Sprout" on the sheet after them,
        was the right greeting in the wrong place. */
-    return '<p class="ob-lede">I\'m Sprout. A few quick questions, then we can start on your plants.</p>' +
+    return '<p class="ob-lede">I\'m Sprout. A few quick questions first, then on to your plants.</p>' +
       '<h2 class="ob-q">What should I call you?</h2>' +
       '<input class="ob-input" id="ob-name" type="text" maxlength="30" autocomplete="given-name" autocapitalize="words" placeholder="Your name" value="' + UI.attr(name) + '">' +
       '<div class="ob-actions"><button class="btn btn-lg" data-ob="next">Continue</button></div>';
@@ -88,7 +88,7 @@ window.Onboard = (function () {
            the same thing twice. */
         '<button type="button" class="chip ob-chip' + (petsNone && !pets.length ? ' is-on' : '') + '" data-ob-pets-none="1">None</button>' +
       '</div>' +
-      '<p class="ob-hint">I\'ll warn you before you add anything that would hurt them. A surprising number of the popular plants would.</p>' +
+      '<p class="ob-hint">I\'ll warn you about any plant that\'s toxic to them.</p>' +
       '<div class="ob-actions"><button class="btn btn-lg" data-ob="next">Continue</button></div>';
   }
 
@@ -98,7 +98,7 @@ window.Onboard = (function () {
       '<div class="ob-opts">' + EXPERIENCE.map(function (e) {
         return '<button type="button" class="ob-opt' + (e.key === cur ? ' is-on' : '') + '" data-ob-exp="' + e.key + '">' + UI.esc(e.label) + '</button>';
       }).join('') + '</div>' +
-      '<p class="ob-hint">There is no wrong answer.</p>';
+      '<p class="ob-hint">If you\'re new to plants, I\'ll suggest the easier ones first.</p>';
   }
 
   /* The plants the reader already has, by species and nothing else. The
@@ -119,7 +119,7 @@ window.Onboard = (function () {
 
   function speciesRows(q) {
     const list = ViewGreenhouse.searchSpecies(q).slice(0, q ? 8 : 6);
-    if (!list.length) return '<p class="ob-hint" style="margin:10px auto">No match. The closest relative will be near enough.</p>';
+    if (!list.length) return '<p class="ob-hint" style="margin:10px auto">No match: pick its closest relative instead.</p>';
     return list.map(function (sp) {
       const risk = Schedule.petRisk(sp);
       const n = added.filter(function (id) { const p = Store.getPlant(id); return p && p.speciesId === sp.id; }).length;
@@ -128,7 +128,7 @@ window.Onboard = (function () {
         '<span class="ob-sp-text"><span class="ob-sp-t">' + UI.esc(sp.common) + '</span>' +
           /* The pets answer pays off here, a step after it was given, and
              before the plant is in rather than after. */
-          (risk ? '<span class="ob-sp-warn">' + UI.icon('paw') + 'Not safe for your ' + UI.esc(risk.pets.join(' or ')) + '</span>'
+          (risk ? '<span class="ob-sp-warn">' + UI.icon('paw') + UI.esc(risk.headline) + '</span>'
                 : '<span class="ob-sp-d">' + UI.esc(sp.botanical) + '</span>') +
         '</span>' +
         '<span class="ob-sp-n">' + (n ? '\u00D7' + n : UI.icon('plus')) + '</span>' +
@@ -186,7 +186,7 @@ window.Onboard = (function () {
   function stepWatered() {
     const many = added.length > 1;
     return '<h2 class="ob-q">Watered any of these this week?</h2>' +
-      '<p class="ob-hint" style="margin-top:0">So the first waterings land on the right days rather than all on one. Leave any you\'re not sure about.</p>' +
+      '<p class="ob-hint" style="margin-top:0">I\'ll date each plant\'s first watering from your answer, and start any you leave blank today.</p>' +
       '<div class="ob-wt-list">' +
         (many ? wateredRow('all', 'All of them') : '') +
         added.map(function (id) {
@@ -247,7 +247,7 @@ window.Onboard = (function () {
 
   function stepLoc() {
     return '<h2 class="ob-q">Can I use your location?</h2>' +
-      '<p class="ob-hint" style="margin-top:0">For a local forecast, so I can offer to stretch or shorten watering before a wet or dry spell. I round it to about a kilometre and send that to Open-Meteo, nowhere else.</p>' +
+      '<p class="ob-hint" style="margin-top:0">I round it to about a kilometre and send it only to Open-Meteo, for a forecast that lets me offer to stretch or shorten watering before a wet or dry spell.</p>' +
       '<div class="ob-actions">' +
         '<button class="btn btn-lg" data-ob="locate">' + UI.icon('pin') + 'Use my location</button>' +
         /* A no here is the same no as the card on Today, so it holds there
@@ -326,7 +326,7 @@ window.Onboard = (function () {
     if (btn) btn.disabled = true;
     Weather.locateMe(function (err, place) {
       if (finished) return;
-      if (err) { note.textContent = err.message + ' You can set it later in Profile.'; if (btn) btn.disabled = false; return; }
+      if (err) { note.textContent = err.message + ' You can set it later on the You tab.'; if (btn) btn.disabled = false; return; }
       Store.updateProfile({ location: { label: place.label, lat: place.lat, lon: place.lon } });
       Store.setWeather(null);
       if (window.App && App.syncWeather) App.syncWeather(true);

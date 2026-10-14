@@ -185,11 +185,11 @@ const SPECS = {
       { t: 7.6, tap: { re: /Search by name/, sel: 'input' } },
       { t: 7.75, type: { text: 'monstera', dt: 0.08 } },
       { t: 9.0, tap: { re: /Monstera\s*Monstera deliciosa/, sel: 'button.pcard' }, push: true },
-      { t: 9.5, scroll: { re: /^\s*Not safe for your cats/, sel: '*', offset: 420, dur: 0.9 } },
+      { t: 9.5, scroll: { re: /^\s*(Mildly toxic|Toxic|Highly toxic) to your cats/, sel: '*', offset: 420, dur: 0.9 } },
       { t: 12.4, scroll: { re: /^\s*Toxicity\s*$/i, sel: 'h2,h3,.section-title', offset: 260, dur: 1.1 } }
     ],
     rings: [{ id: 'cats', t0: 10.4, t1: 12.4, rect: () => {
-      const el = [...document.querySelectorAll('.view *')].filter(e => e.offsetParent && /^\s*Not safe for your cats/.test(e.textContent)).sort((a, b) => a.textContent.length - b.textContent.length)[0];
+      const el = [...document.querySelectorAll('.view *')].filter(e => e.offsetParent && /^\s*(Mildly toxic|Toxic|Highly toxic) to your cats/.test(e.textContent)).sort((a, b) => a.textContent.length - b.textContent.length)[0];
       if (!el) return null; const box = el.closest('.nudge,.card') || el; const r = box.getBoundingClientRect(); return [r.left, r.top, r.width, r.height];
     } }, { id: 'tox', t0: 13.5, t1: 16.0, rect: () => {
       const w = [...document.querySelectorAll('.row-wrap')].find(e => /Cats:/.test(e.textContent));

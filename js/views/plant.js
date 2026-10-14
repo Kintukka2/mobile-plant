@@ -40,7 +40,7 @@ window.ViewPlant = (function () {
 
   function guard(params) {
     if (!plant(params)) {
-      UI.toast('That plant is no longer in your greenhouse', 'warn');
+      UI.toast('That plant isn\'t here any more', 'warn');
       App.go('/greenhouse');
       return false;
     }
@@ -175,7 +175,7 @@ window.ViewPlant = (function () {
        pills, so a colour means the same thing everywhere in the app. */
     let dueLine, dueCls;
     if (w.resting)        { dueLine = 'Resting'; dueCls = 'pill-grey'; }
-    else if (w.never)     { dueLine = 'Never watered — give it a drink today'; dueCls = 'pill-terra'; }
+    else if (w.never)     { dueLine = 'Never watered. Water it today'; dueCls = 'pill-terra'; }
     else if (w.days < 0)  { dueLine = UI.relDue(w.days); dueCls = 'pill-terra'; }
     else if (w.days === 0){ dueLine = 'Due today'; dueCls = 'pill-sun'; }
     else                  { dueLine = UI.relDue(w.days); dueCls = 'pill-mint'; }
@@ -221,7 +221,7 @@ window.ViewPlant = (function () {
             '</div>';
           }).join('') + '</div>'
         : '<hr class="divider"><p class="tiny muted" style="margin:0">' +
-          'This is the species baseline for ' + UI.esc(season.label.toLowerCase()) + ' — nothing about your setup shifts it.</p>') +
+          'The species baseline for ' + UI.esc(season.label.toLowerCase()) + '. Nothing in your setup changes it.</p>') +
 
       '<p class="hint">' + UI.esc(sp.water.note) + '</p>' +
 
@@ -400,8 +400,7 @@ window.ViewPlant = (function () {
 
     if (!logs.length) {
       return UI.empty('note', 'The diary is blank',
-        'Every watering you tick off lands here on its own. Add notes, photos and measurements too and you will ' +
-        'have a real record of how this plant has changed.',
+        'Every watering you tick off lands here on its own, along with any notes, photos and measurements you add.',
         '<button class="btn" data-quick="note">' + UI.icon('note') + 'Write the first entry</button>');
     }
 
@@ -490,13 +489,12 @@ window.ViewPlant = (function () {
        starting, which is the only thing an empty state can usefully do. */
     if (!shots.length) {
       return UI.empty('camera', 'No photographs yet',
-        'A photo every few weeks turns into a surprisingly satisfying record. A year of growth is obvious in ' +
-        'pictures long before it shows up in the numbers.',
+        'Take one every few weeks and a year of growth shows in the pictures long before it shows in the numbers.',
         '<button class="btn" data-quick="photo">' + UI.icon('camera') + 'Add the first photo</button>');
     }
 
     return '<p class="muted small" style="margin:0 2px 14px">' +
-        'A photo every few weeks turns into a surprisingly satisfying record. Photos are downscaled to save space.' +
+        'I downscale each photo to save space.' +
       '</p>' +
       '<div class="photo-grid">' +
         '<button class="photo-add" data-quick="photo">' + UI.icon('camera') + 'Add photo</button>' +
@@ -532,7 +530,7 @@ window.ViewPlant = (function () {
       html += '<div class="card">' + UI.lineChart([], unit) +
         '<div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--hair)">' +
           '<div style="font-family:var(--serif);font-size:18px;margin-bottom:6px">Your growth curve draws here</div>' +
-          '<p class="hint" style="margin:0">Measure from the soil to the highest growing point, or take the widest leaf, and log it every few weeks. Be consistent rather than precise — the shape of the curve is the interesting part. It shows whether a plant is happy where it stands: one that slows in a room is telling you about the light there, and one that surges after a repot has told you the pot was the problem.</p>' +
+          '<p class="hint" style="margin:0">Measure from the soil to the highest growing point, or across the widest leaf, the same way every few weeks.</p>' +
         '</div></div>';
       return html;
     }
@@ -550,9 +548,12 @@ window.ViewPlant = (function () {
         days > 0 ? 'Over ' + UI.plural(days, 'day') : 'First measurement') +
       (days >= 14 ? statCard('Pace', (perMonth >= 0 ? '+' : '') + Math.round(perMonth * 10) / 10 + ' ' + unit + '/mo',
         'Species is a ' + sp.growthRate + ' grower') : '') +
+      /* matureCm is a height, so the share of it only means something for a
+         height logged in cm. Divided into a width or a leaf count it printed
+         a progress figure that meant nothing. */
       (sp.matureCm ? statCard('Mature size', sp.matureCm >= 100
         ? (sp.matureCm / 100).toFixed(1).replace('.0', '') + 'm' : sp.matureCm + 'cm',
-        Math.round((last.value / sp.matureCm) * 100) + '% of the way there') : '') +
+        unit === 'cm' ? Math.round((last.value / sp.matureCm) * 100) + '% of its mature size' : '') : '') +
     '</div></div>';
 
     html += '<div class="section">' +
@@ -645,8 +646,8 @@ window.ViewPlant = (function () {
 
     if (!(sp.prop || []).length) {
       html += UI.empty('sprout', 'No propagation method recorded',
-        'This species is not usually propagated at home — it is either grown from tissue culture or from ' +
-        'offsets that take years to appear.');
+        'This species is rarely propagated at home, as it\'s grown from tissue culture or from offsets that ' +
+        'take years to appear.');
     } else {
       /* Timing advice, so it speaks in the nudge voice rather than as a card:
          emerald when the season is with you, champagne when it is not. */
@@ -656,8 +657,8 @@ window.ViewPlant = (function () {
           '<div class="nudge-t">' + UI.esc(growing ? 'Good time to propagate' : 'Not the season for it') + '</div>' +
           '<p class="nudge-p">' +
             (growing
-              ? 'It is ' + UI.esc(season.label.toLowerCase()) + ' — active growth means new plants take faster and rot less.'
-              : 'It is ' + UI.esc(season.label.toLowerCase()) + '. Anything started now is slow to take and more likely to rot. Wait for ' + next + ' if you can.') +
+              ? 'Active growth in ' + UI.esc(season.label.toLowerCase()) + ' means new plants take faster and rot less.'
+              : 'Anything started in ' + UI.esc(season.label.toLowerCase()) + ' is slow to take and more likely to rot, so wait for ' + next + ' if you can.') +
           '</p>' +
           /* The verdict is the answer most visits want; the method is a
              page of steps that only matters on the day. So the steps wait
@@ -685,8 +686,8 @@ window.ViewPlant = (function () {
           }).join('') + '</ol>' +
           '<div class="card-foot">' +
             '<button class="btn btn-sm btn-soft" data-prop="' + i + '">' +
-              UI.icon('sprout') + '<span class="btn-label">Log that I propagated ' +
-              UI.esc(Store.displayName(p)) + '</span></button>' +
+              UI.icon('sprout') + '<span class="btn-label">Log ' +
+              UI.esc(Store.displayName(p)) + '\'s propagation</span></button>' +
           '</div>' +
         '</div>';
       }).join('') + '</div>';
@@ -734,8 +735,8 @@ window.ViewPlant = (function () {
 
     const placeholders = {
       note: 'New leaf unfurling on the left side. Moved it 30cm back from the window.',
-      milestone: 'First flower! Third year with me.',
-      problem: 'Two lower leaves yellowing. Soil felt damp so I am holding off watering.',
+      milestone: 'First flower, in its third year with me.',
+      problem: 'Two lower leaves yellowing. Soil felt damp, so I\'m holding off watering.',
       repot: 'Moved up to an 18cm terracotta pot. Roots were circling badly.',
       prune: 'Took off the two longest vines and put the cuttings in water.',
       propagate: 'Three node cuttings in water on the kitchen windowsill.',
@@ -887,8 +888,8 @@ window.ViewPlant = (function () {
     const left = Store.storageUsage().photosLeft;
     if (left > 10) return;
     UI.toast(left
-      ? 'I\'ve room for about ' + UI.plural(left, 'more photo') + '. Deleting a few older ones frees some up'
-      : 'That was about the last photo I can fit. Deleting a few older ones frees some up', 'warn');
+      ? 'Room for about ' + UI.plural(left, 'more photo')
+      : 'Photo storage is about full', 'warn');
   }
 
   /* Add a photo straight into the diary. */
@@ -913,10 +914,9 @@ window.ViewPlant = (function () {
     UI.openSheet('Adjust watering',
       '<p class="muted small" style="margin:0 0 16px;line-height:1.6">' +
         (iv.resting
-          ? 'It\'s resting, so I have it down for no water at all' + (iv.until ? ' until ' + UI.esc(iv.until.toLowerCase()) : '') + '.'
-          : 'I make it every <strong>' + iv.days + ' days</strong> for this one.') + ' If you know your home runs ' +
-        'hotter, draughtier or damper than I\'m assuming, nudge it here — I\'ll keep the seasonal and pot ' +
-        'adjustments on top of whatever you choose.' +
+          ? 'It\'s resting, so I have it down for no water' + (iv.until ? ' until ' + UI.esc(iv.until.toLowerCase()) : '') + '.'
+          : 'I make it every <strong>' + iv.days + ' days</strong> for this one.') + ' If your home dries pots ' +
+        'faster or slower than I\'m assuming, shift it here and I\'ll keep the season and pot adjustments on top.' +
       '</p>' +
       '<div class="row-wrap" id="tw-opts">' + opts.map(function (o) {
         return '<button class="chip' + (p.waterOffset === o ? ' is-on' : '') + '" data-off="' + o + '">' +
@@ -948,7 +948,7 @@ window.ViewPlant = (function () {
         '<button class="btn btn-ghost" data-p="zoom">Open full size</button>' +
         (isCover
           ? '<button class="btn btn-soft" disabled>Already the cover photo</button>'
-          : '<button class="btn btn-soft" data-p="cover">Make this the cover photo</button>') +
+          : '<button class="btn btn-soft" data-p="cover">Set as cover photo</button>') +
         '<button class="btn btn-blood" data-p="del">Delete photo</button>' +
       '</div>',
       function (root) {

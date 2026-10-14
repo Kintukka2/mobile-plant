@@ -143,7 +143,7 @@ window.App = (function () {
     try { localStorage.setItem('sprout.theme', name); } catch (e) { /* non-fatal */ }
 
     renderThemeToggle();
-    if (announce) UI.toast(name === 'conservatory' ? 'Conservatory — daylight' : 'Viridium — nightfall');
+    if (announce) UI.toast(name === 'conservatory' ? 'Conservatory, for daylight' : 'Viridium, for nightfall');
   }
 
   /* The new palette spreads out in a circle from the button that asked for

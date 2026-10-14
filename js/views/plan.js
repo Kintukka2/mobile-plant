@@ -49,7 +49,7 @@ window.ViewPlan = (function () {
   let lockToastAt = 0;
   function lockedNudge(r) {
     const t = Date.now(); if (t - lockToastAt < 2500) return; lockToastAt = t;
-    UI.toast(r.name + ' is locked. Tap the lock to change it.', 'leaf');
+    UI.toast(r.name + ' is locked. Unlock to edit.', 'leaf');
   }
   let modesBound = false;
   /* Bound once for the life of the page rather than per mount: the view is
@@ -392,7 +392,7 @@ window.ViewPlan = (function () {
      with every one open the tray in step 4 sat a screen below the plan it
      is dragged onto. Now they are a dock on the stage and the panel shows
      one at a time, so whichever step is in hand sits right under the plan. */
-  const STEP_TITLE = { 1: 'Build your floorplan', 2: 'Manage rooms', 3: 'Which way is north?', 4: 'Add plants' };
+  const STEP_TITLE = { 1: 'Load a floorplan', 2: 'Draw your rooms', 3: 'Which way is north?', 4: 'Add plants' };
 
   /* Whether each step is finished, read from the plan itself rather than
      stored, so a tick can never disagree with what is on the grid. */
@@ -415,13 +415,13 @@ window.ViewPlan = (function () {
     if (n === 1) return stepOne();
     if (n === 2) {
       if (drawing) {
-        h += '<p class="hint" style="margin:0 0 10px">Tap each corner in turn. Tap the first corner again to close the room, or drag instead to draw a plain box.</p>' +
+        h += '<p class="hint" style="margin:0 0 10px">Tap each corner in turn and tap the first again to close the room, or drag to draw a box.</p>' +
           '<div class="row"><button class="btn btn-sm" id="pl-draw-finish"' + (drawing.pts.length < 3 ? ' disabled' : '') + '>Finish room</button>' +
           '<button class="btn btn-ghost btn-sm" id="pl-draw-undo"' + (!drawing.pts.length ? ' disabled' : '') + '>Undo corner</button>' +
           '<button class="btn btn-ghost btn-sm" id="pl-draw-cancel">Cancel</button></div>';
       } else {
         if (pl.backdrop) {
-          h += '<div class="plan-bd-done"><span>Finished tracing over the floorplan?</span><button class="btn btn-ghost btn-sm" id="pl-bd-finish">Done with the image</button></div>';
+          h += '<div class="plan-bd-done"><span>Finished tracing over the floorplan?</span><button class="btn btn-ghost btn-sm" id="pl-bd-finish">Remove the image</button></div>';
         }
         /* Step 2 has no button of its own. It had one, a hand's width from
            the stage's own Add a room, which was the same button twice; the
@@ -432,9 +432,9 @@ window.ViewPlan = (function () {
             if (r.shape) return '<button class="plan-row" data-sel-room="' + UI.attr(r.id) + '"><span class="plan-row-nm">' + UI.roomMark(r, 'mono-sm') + UI.esc(r.name) + (r.shape.outdoor ? ' <small>outdoors</small>' : '') + '</span>' + lightPill(Plan.roomRank(r)) + '</button>';
             return '<button class="plan-row is-undrawn" data-draw-room="' + UI.attr(r.id) + '"><span class="plan-row-nm">' + UI.roomMark(r, 'mono-sm') + UI.esc(r.name) + '</span>' + UI.pill('Draw it', 'grey', 'plus') + '</button>';
           }).join('') + '</div>';
-          if (undrawn.length) h += '<p class="hint">' + (undrawn.length === 1 ? 'One room was described rather than drawn. ' : undrawn.length + ' rooms were described rather than drawn. ') + 'Tap one to trace it and I\'ll read its light from the plan instead.</p>';
+          if (undrawn.length) h += '<p class="hint">' + (undrawn.length === 1 ? 'One room isn\'t' : undrawn.length + ' rooms aren\'t') + ' drawn yet: tap one to trace it and I\'ll read its light from the plan.</p>';
         } else {
-          h += '<p class="hint">Nothing drawn yet. Rooms snap to the grid; open one afterwards to name it, mark its windows and type its real size.</p>';
+          h += '<p class="hint">Nothing drawn yet. Rooms snap to the grid: tap one to name it and mark its windows, and set its real size with the ruler.</p>';
         }
       }
     } else if (n === 3) {
@@ -443,7 +443,7 @@ window.ViewPlan = (function () {
           '<span class="row" style="gap:10px"><svg class="plan-mini-rose" viewBox="-30 -30 60 60" data-open-compass="1" aria-hidden="true">' + compassRose(0, 0, 22, 'var(--bg-4)') + '</svg>' +
             (known ? UI.pill('North set · ' + Math.round(pl.north) + '°', 'mint') : UI.pill(pl.northConfirmed ? 'Hemisphere needed' : 'Not set yet', 'sun')) + '</span>' +
           '<button class="btn btn-sm' + (known ? ' btn-ghost' : '') + '" id="pl-open-compass">' + (known ? 'Change' : 'Set north') + '</button></div>' +
-        (known ? '' : '<p class="hint">I shade each room by its light only once north is confirmed. Tapping the compass on the plan opens the same dial.</p>');
+        (known ? '' : '<p class="hint">I\'ll shade each room by its light once north and your hemisphere are set; the compass on the plan opens the same dial.</p>');
     } else {
       const plants = Store.activePlants();
       const loose = plants.filter(function (p) { return !(p.pos && Plan.roomAt(p.pos.x, p.pos.y)); });
@@ -467,7 +467,7 @@ window.ViewPlan = (function () {
                 '<span style="min-width:0">' +
                   '<span class="dx-opt-t">' + UI.esc(x.sp.common) + '</span>' +
                   '<span class="dx-opt-d">Ideal for your ' + UI.esc(x.room.name) +
-                    (rl ? ' — ' + UI.esc(rl.label.toLowerCase()) : '') + '</span>' +
+                    (rl ? ' (' + UI.esc(rl.label.toLowerCase()) + ')' : '') + '</span>' +
                 '</span>' + UI.icon('chevron', 'muted') +
               '</button>';
             }).join('') + '</div>';
@@ -493,14 +493,14 @@ window.ViewPlan = (function () {
 
   /* Step 1: one choice, not a checkbox and four paragraphs. Without
      an image it is load one or skip; with one it is line it up and go and
-     trace. "Done" still means what it always has, finished with the image,
-     and it still drops the image, because that is the one thing here that
-     costs real storage. With an image loaded it is offered in step 2, where
+     trace. Finishing with the image drops it, because that is the one
+     thing here that costs real storage, so its button says "Remove the
+     image": "Done" hid that the image goes. With an image loaded it is offered in step 2, where
      the tracing happens, rather than here before any room exists. */
   function stepOne() {
     const pl = plan();
     if (pl.backdrop) {
-      return '<p class="hint plan-step-lede">Line the image up under the grid, then trace each room over it. It stays on this phone, and I\'ll drop it once you\'re done.</p>' +
+      return '<p class="hint plan-step-lede">Line the image up under the grid and trace each room over it; it stays on this device, and I\'ll remove it when you\'re done.</p>' +
         '<div class="grid-2"><label class="field" style="margin:0"><span class="label">Opacity</span><input class="input" id="pl-bd-op" type="range" min="0.1" max="1" step="0.05" value="' + pl.backdrop.opacity + '"></label>' +
         '<label class="field" style="margin:0"><span class="label">Size</span><input class="input" id="pl-bd-sc" type="range" min="0.3" max="2.5" step="0.02" value="' + pl.backdrop.scale + '"></label></div>' +
         '<div class="row plan-step-acts"><button class="btn btn-ghost btn-sm' + (tool === 'backdrop' ? ' is-on' : '') + '" id="pl-tool-bd">' + (tool === 'backdrop' ? 'Dragging the image' : 'Move the image') + '</button>' +
@@ -597,7 +597,7 @@ window.ViewPlan = (function () {
     /* What the four buttons are for, before the reader has to guess. Which
        way each one faces is step 3's business, so it is not raised here:
        asking for north mid-room only hurried people past the walls. */
-    if (!lk) h += '<p class="hint plan-walls-lede">Tap each side to tell me what\'s there: a wall, a window, or an opening into the next room, like a hallway. The numbers match the ones on the plan.</p>';
+    if (!lk) h += '<p class="hint plan-walls-lede">Tap each side to set it to a wall, a window, or an opening into the next room, like a hallway; the numbers match the plan.</p>';
     if (sh.outdoor) h += '<p class="hint" style="margin:0 0 10px">Open to the sky wherever nothing is built beyond.</p>';
     /* Each side is a three-way stepper, and says only what it is. The
        small print it used to carry repeated the plan (lengths), the label
@@ -661,7 +661,13 @@ window.ViewPlan = (function () {
         h += '<div class="plan-better"><p><b>A better spot</b>' + (s.room === r0 ? 'Closer to the light in here' + UI.esc(where) + '.' : 'Happier in the ' + UI.esc(s.room.name) + UI.esc(where) + '.') + '</p>' +
           '<button class="btn btn-sm" id="pl-move-plant" data-x="' + s.spot.x + '" data-y="' + s.spot.y + '">Move it there</button></div>';
       } else if (v.verdict === 'bad' || v.verdict === 'poor') {
-        h += '<div class="plan-better"><p><b>No better spot yet</b>A room with a window facing the light it wants would suit it.</p></div>';
+        /* Named from the species, since the light it wants is to hand. Bright
+           indirect is the one rung whose label has no noun, so it gets one:
+           "it wants bright indirect." stopped on an adjective. */
+        const want = sp && sp.light && LOOKUPS.LIGHT[sp.light.ideal] ? LOOKUPS.LIGHT[sp.light.ideal].label.toLowerCase() : '';
+        const wantText = !want ? '' : /(light|sun)$/.test(want) ? want : want + ' light';
+        h += '<div class="plan-better"><p><b>No better spot yet</b>Nowhere on your plan has light it likes yet' +
+          (wantText ? '; it wants ' + UI.esc(wantText) : '') + '.</p></div>';
       }
     }
     h += '<div class="plan-room-foot"><button class="btn btn-sm" id="pl-done-sel">Done</button>' +
@@ -683,7 +689,7 @@ window.ViewPlan = (function () {
   function openCompass() {
     const pl = plan(), guess = Store.hemisphereIsGuess();
     const body =
-      '<p class="hint" style="margin:0 0 14px">Turn the dial until N points the way north is in your home, as you look at the plan. A phone compass held flat against the plan is the quickest way to check.</p>' +
+      '<p class="hint" style="margin:0 0 14px">Turn the dial until N points the way north is in your home, as you look at the plan; a compass app is the quickest way to check.</p>' +
       '<div class="row" style="gap:14px;flex-wrap:nowrap;align-items:center">' + compassDial() +
         '<div class="stack" style="flex:1"><div class="plan-reading" id="pl-north-reading">' + Math.round(pl.north || 0) + '°</div>' +
         '<p class="hint" style="margin:0">Drag the dial. It settles in five-degree steps.</p></div></div>' +
@@ -793,7 +799,7 @@ window.ViewPlan = (function () {
     } else {
       if (loose.length) body += '<span class="label">Not on the plan yet</span><div class="stack" style="gap:6px;margin-bottom:14px">' + loose.map(row).join('') + '</div>';
       if (elsewhere.length) body += '<span class="label">In another room</span><div class="stack" style="gap:6px">' + elsewhere.map(row).join('') + '</div>';
-      body += '<p class="hint">Tap one and I\'ll stand it where the light in this room suits it best. You can drag it from there.</p>';
+      body += '<p class="hint">Tap one and I\'ll stand it where the light in this room suits it best, and you can drag it from there.</p>';
     }
     body += '<div class="row" style="gap:8px;margin-top:18px"><button class="btn btn-ghost" data-act="sheet-cancel" style="flex:1">Close</button><button class="btn" data-act="pl-quick-new" style="flex:1">' + UI.icon('plus') + 'Add new plant</button></div>';
     UI.openSheet('Add to ' + r.name, body, function (sheet) {
@@ -819,7 +825,7 @@ window.ViewPlan = (function () {
 
   function openDims(prefId) {
     const list = drawn();
-    if (!list.length) { UI.toast('Draw a room first and I\'ll size the plan from it', 'warn'); return; }
+    if (!list.length) { UI.toast('Draw a room first', 'warn'); return; }
     let cur = room(prefId) || room(plan().scaleFrom) || list[0];
     function tenth(v) { return Math.round(v * 10) / 10; }
     function estimates() {
@@ -832,7 +838,7 @@ window.ViewPlan = (function () {
     }
     const d0 = roomDims(cur);
     const body =
-      '<p class="hint" style="margin:0 0 14px">Measure one room and I\'ll scale the rest of the plan from it. Every room sits on the same grid, so one real size is enough.</p>' +
+      '<p class="hint" style="margin:0 0 14px">Measure one room and I\'ll scale every other room on the grid from it.</p>' +
       '<label class="field" style="margin:0 0 12px"><span class="label">The room you measured</span><select class="input" id="pl-dim-room">' +
         list.map(function (r) { return '<option value="' + UI.attr(r.id) + '"' + (r === cur ? ' selected' : '') + '>' + UI.esc(r.name) + '</option>'; }).join('') + '</select></label>' +
       '<div class="grid-2"><label class="field" style="margin:0"><span class="label">Width</span><input class="input" id="pl-dim-w" type="number" step="0.1" min="0.5" inputmode="decimal" value="' + tenth(d0.w) + '"></label>' +
@@ -860,9 +866,9 @@ window.ViewPlan = (function () {
      window and points at the compass rather than asking for north here and
      now: north is step 3, and the reader can finish their walls first. */
   function windowHelp() {
-    UI.openSheet('A window, noted',
-      '<p class="hint" style="margin:0 0 12px">Good call marking that window. How much light it brings in depends on which way it faces, and I can\'t work that out until I know where north is.</p>' +
-      '<p class="hint" style="margin:0 0 16px">Carry on with your walls if you like. North is step 3, and the compass on the plan is where you set it.</p>' +
+    UI.openSheet('Window marked',
+      '<p class="hint" style="margin:0 0 12px">How much light this window brings in depends on which way it faces, and I can\'t read that until I know where north is and which hemisphere you\'re in.</p>' +
+      '<p class="hint" style="margin:0 0 16px">Carry on with your walls; north is step 3, set from the compass on the plan.</p>' +
       '<div class="row" style="gap:8px"><button class="btn btn-sm" id="pl-wq-north">Set north now</button>' +
         '<button class="btn btn-sm btn-ghost" id="pl-wq-later">Later</button></div>',
       function (el) {
@@ -887,7 +893,7 @@ window.ViewPlan = (function () {
     UI.openSheet('Wall, window or opening?',
       row('background:var(--plan-wall-edge)', 'Wall', 'Solid, floor to ceiling. No light comes through. This is what every side starts as.') +
       row('background:var(--gold)', 'Window', 'Glass to the outside, a door with glass in it, or a skylight over this side. The light it gives depends on which way it faces, which is why north matters.') +
-      row('background:none;border:1.5px dashed var(--emerald-glow)', 'Opening', 'A doorway or a missing wall to the next room. The room borrows light through it from the room next door, one step dimmer, and only from that room\'s own windows — light crosses one doorway, it is not chained through the whole home.') +
+      row('background:none;border:1.5px dashed var(--emerald-glow)', 'Opening', 'A doorway or a missing wall to the next room. It borrows light from that room\'s own windows, one step dimmer, and never through a second doorway.') +
       '<p class="hint" style="margin:0">Tap a side\'s number on the plan, or its row in the panel, to cycle through the three.</p>');
   }
 
@@ -938,7 +944,7 @@ window.ViewPlan = (function () {
     root.querySelector('#pl-coach-drag').hidden = picking || !!unnamed;
     if (unnamed) {
       root.querySelector('#pl-coach-name-t').textContent = 'Name ' + unnamed.name + ' first?';
-      root.querySelector('#pl-coach-name-s').textContent = 'Before you add another, give ' + unnamed.name + ' a proper name. It\'ll be much easier to keep track of which plant lives where.';
+      root.querySelector('#pl-coach-name-s').textContent = 'Rename ' + unnamed.name + ' before you add another, so you can tell which plant lives where.';
     }
     const addRoom = root.querySelector('#pl-add-room');
     addRoom.hidden = !(mode === 'plan' && !drawing && !sel && list.length);
@@ -1076,7 +1082,7 @@ window.ViewPlan = (function () {
           cleanup();
           if (!ok) { Store.updatePlan({ backdrop: null }); return; }
           mode = 'plan'; tool = 'backdrop'; drawing = null; goStep(1); redraw();
-          UI.toast('Line it up, then trace your rooms over it', 'leaf');
+          UI.toast('Line it up, then trace over it', 'leaf');
         };
         img.onerror = function () { cleanup(); UI.toast('I could not read that image', 'warn'); };
         img.src = rd.result;
@@ -1132,7 +1138,7 @@ window.ViewPlan = (function () {
      ====================================================================== */
 
   function finishRoom(points) {
-    if (Math.abs(Plan.area2(points)) < 1) { UI.toast('That shape is too thin to be a room', 'warn'); drawing = null; redraw(); return; }
+    if (Math.abs(Plan.area2(points)) < 1) { UI.toast('Too thin for a room', 'warn'); drawing = null; redraw(); return; }
     const shape = Plan.normalise({ pts: points.map(function (p) { return { x: p.x, y: p.y }; }), win: points.map(function () { return WALL; }), outdoor: false });
     let r;
     if (drawing && drawing.forRoomId && room(drawing.forRoomId)) {
@@ -1216,10 +1222,10 @@ window.ViewPlan = (function () {
             '<div class="plan-coach-pick" id="pl-coach-pick">' +
               '<span class="plan-coach-ico" aria-hidden="true">' + UI.icon('upload') + '</span>' +
               '<div class="plan-coach-t">Got a floorplan?</div>' +
-              '<p class="plan-coach-s">Load a picture of it and trace over the top, which I\'d recommend. Or draw your rooms freehand.</p>' +
+              '<p class="plan-coach-s">Load a picture of it to trace over, which gets the shapes right, or draw your rooms freehand.</p>' +
               '<div class="plan-coach-acts">' +
                 '<button class="btn btn-sm" id="pl-coach-load">' + UI.icon('upload') + 'Load a floorplan</button>' +
-                '<button class="btn btn-sm btn-ghost" id="pl-coach-self">I\'ll do it myself</button>' +
+                '<button class="btn btn-sm btn-ghost" id="pl-coach-self">Draw freehand</button>' +
               '</div>' +
             '</div>' +
             /* Asked only on the way to a second room, never as the first
@@ -1517,7 +1523,7 @@ window.ViewPlan = (function () {
       if (t.closest('#pl-step1-next')) { if (!plan().backdrop && !plan().done) Store.updatePlan({ done: true }); pickStep(2); return; }
       if (t.closest('#pl-bd-finish')) { Store.updatePlan({ done: true, backdrop: null }); tool = 'select'; redraw(); UI.toast('Image removed. Your rooms stay.', 'leaf'); return; }
       if (t.closest('#pl-tool-bd')) { tool = tool === 'backdrop' ? 'select' : 'backdrop'; mode = 'plan'; redraw(); return; }
-      if (t.closest('#pl-bd-remove')) { Store.updatePlan({ backdrop: null }); tool = 'select'; redraw(); UI.toast('Backdrop removed. Your rooms stay.', 'leaf'); return; }
+      if (t.closest('#pl-bd-remove')) { Store.updatePlan({ backdrop: null }); tool = 'select'; redraw(); UI.toast('Image removed. Your rooms stay.', 'leaf'); return; }
       if (t.closest('#pl-open-compass') || t.closest('[data-open-compass]')) { openCompass(); return; }
       if (t.closest('#pl-back') || t.closest('#pl-done-sel')) { sel = null; redraw(); return; }
       if (t.closest('#pl-walls-help')) { wallsHelp(); return; }
@@ -1577,7 +1583,7 @@ window.ViewPlan = (function () {
       const t = e.target;
       if (t.id === 'pl-room-name') {
         const r = room(sel.id);
-        if (!t.value.trim()) { t.value = r.name; UI.toast('Every room needs a name, so I\'ve kept ' + r.name, 'leaf'); }
+        if (!t.value.trim()) { t.value = r.name; UI.toast('Kept the name ' + r.name, 'leaf'); }
         else t.value = r.name;
         return;
       }

@@ -260,7 +260,7 @@ window.Tour = (function () {
   const BEATS = [
     {
       short: 'The grid', title: 'The grid', dur: 2200,
-      body: 'Every square is half a metre. Draw your rooms at the size they really are and the readings that follow will mean something.',
+      body: 'Every square is half a metre. Draw each room at its real size, since every reading after this depends on it.',
       run: function (t) { st.grid = ease(t); }
     },
     {
@@ -277,7 +277,7 @@ window.Tour = (function () {
     },
     {
       short: 'Name it', title: 'Name it', dur: 3000,
-      body: 'Open a room and its heading is the name. Type over it and the plan keeps up with you.',
+      body: 'Open a room and type over its heading to rename it on the plan.',
       mock: function (t) {
         const n = 'Living room', k = Math.floor(seg(t, 0.15, 0.85) * n.length);
         return '<div class="tour-mock-label">Room</div>' +
@@ -338,7 +338,7 @@ window.Tour = (function () {
     },
     {
       short: 'North', title: 'Which way is north', dur: 4200, lit: 'compass',
-      body: 'Turn the dial until N points the way north is at your place. Until it\'s confirmed I leave every room unshaded rather than guess at it.',
+      body: 'Turn the dial until N points north in your home. Until it\'s set, I leave every room unshaded.',
       run: function (t) {
         st.north = lerp(0, -14, ease(Math.min(1, t / 0.5)));
         st.northSet = t > 0.5;
@@ -380,8 +380,8 @@ window.Tour = (function () {
       }
     },
     {
-      short: 'Done', title: 'That is a home, read for light', dur: 3400, last: true,
-      body: 'Each room\'s reading feeds the watering of everything standing in it, and I\'ll say so when a plant is in the wrong place. Your turn.',
+      short: 'Done', title: 'The whole flat, read for light', dur: 3400, last: true,
+      body: 'Each room\'s light reading feeds into the watering of every plant in it, and I\'ll tell you when a plant is in the wrong light.',
       run: function (t) { st.heat = 1 - ease(t); }
     }
   ];

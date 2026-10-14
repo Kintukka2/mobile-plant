@@ -133,7 +133,7 @@ window.ViewGreenhouse = (function () {
         ? '<div class="rcard-strip">' + dots +
           (plants.length > 6 ? '<span class="rcard-more">+' + (plants.length - 6) + '</span>' : '') +
           '</div>'
-        : '<div class="rcard-strip"><span class="rcard-more">Empty — tap to add a plant</span></div>') +
+        : '<div class="rcard-strip"><span class="rcard-more">Empty. Tap to add a plant.</span></div>') +
     '</button>';
   }
 
@@ -152,7 +152,7 @@ window.ViewGreenhouse = (function () {
     const body =
       '<div class="field"><input class="input input-search" id="sp-q" type="search" ' +
         'placeholder="Search ' + window.PLANT_DATA.length +
-          ' plants — &quot;monstera&quot;, &quot;fern&quot;" autocomplete="off"></div>' +
+          ' plants: &quot;monstera&quot;, &quot;fern&quot;" autocomplete="off"></div>' +
       '<div id="sp-list" class="stack" style="gap:6px;max-height:52vh;overflow-y:auto"></div>';
 
     UI.openSheet(heading || 'Which plant is it?', body, function (root) {
@@ -163,7 +163,7 @@ window.ViewGreenhouse = (function () {
         const results = searchSpecies(q).slice(0, 40);
         if (!results.length) {
           list.innerHTML = '<p class="muted small center" style="padding:18px 0">' +
-            'No match. Try a common name, or add the closest relative — the care will be near enough.</p>';
+            'No match. Try a common name, or add its closest relative, whose care will be near enough.</p>';
           return;
         }
         list.innerHTML = results.map(function (sp) {
@@ -209,7 +209,7 @@ window.ViewGreenhouse = (function () {
      fitting one particular box. */
   const NICK_MAX = 60;
   const NICK_WARN = 15;
-  const NICK_HINT = 'Named plants get looked after. No judgement from me.';
+  const NICK_HINT = 'I\'ll use it in place of the species name everywhere.';
 
   /* Step 2: the details. Also used for editing, when `plant` is supplied. */
   function plantForm(speciesId, plant, presetRoomId) {
@@ -228,7 +228,16 @@ window.ViewGreenhouse = (function () {
 
     const roomOpts = '<option value="">Not in a room yet</option>' +
       rooms.map(function (r) {
-        const suits = r.light >= 4 ? ' — ideal light' : r.light === 3 ? ' — will cope' : r.light === 0 ? ' — poor light' : '';
+        /* Each label names the reason behind the light score, read from
+           bestRoomsFor's own branches. Score 0 is a light the species
+           avoids, not a dim one: more than half the list avoids direct sun, so
+           "poor light" on a sunny room read as too dark, the opposite of
+           the trouble. -1 is a room with no window at all. */
+        const suits = r.light >= 4 ? ' (ideal light)'
+          : r.light === 3 ? ' (light it copes with)'
+          : r.light === 0 ? ' (wrong light for it)'
+          : r.light === -1 ? ' (no daylight)'
+          : '';
         return '<option value="' + UI.attr(r.room.id) + '"' + (r.room.id === chosenRoom ? ' selected' : '') + '>' +
           UI.esc(r.room.name + suits) + '</option>';
       }).join('');
@@ -243,7 +252,7 @@ window.ViewGreenhouse = (function () {
 
     function potHint(key, pending) {
       return pending
-        ? 'I\'ll assume a typical 15cm plastic pot with holes until you tell me otherwise.'
+        ? 'Until it\'s potted, I\'ll work from the pot shown above.'
         : potNote(key);
     }
 
@@ -264,11 +273,14 @@ window.ViewGreenhouse = (function () {
       (risk && !editing
         ? '<div class="nudge nudge-warn mb-3">' +
             '<span class="nudge-ico">' + UI.icon('paw') + '</span><div style="min-width:0">' +
-            '<div class="nudge-t">Not safe for your ' + UI.esc(risk.pets.join(' or ')) + '</div>' +
+            /* The heading names each pet's rung, built once in petRisk so
+               the add form, the species page and the introduction word it
+               the same way. "Not safe" said none of the levels. */
+            '<div class="nudge-t">' + UI.esc(risk.headline) + '</div>' +
             '<p class="nudge-p mb-0">' + UI.esc(risk.note) + '</p></div></div>'
         : '') +
 
-      '<label class="field"><span class="label">Give it a nickname?</span>' +
+      '<label class="field"><span class="label">Nickname (optional)</span>' +
         '<input class="input" id="f-nick" maxlength="' + NICK_MAX + '" placeholder="' + UI.attr(sp.common) + '" ' +
         'value="' + UI.attr(editing ? plant.nickname : '') + '">' +
         '<p class="hint" id="f-nick-hint">' + NICK_HINT + '</p>' +
@@ -276,7 +288,7 @@ window.ViewGreenhouse = (function () {
 
       '<label class="field"><span class="label">Which room will it live in?</span>' +
         '<select class="select" id="f-room">' + roomOpts + '</select>' +
-        (rooms.length ? '' : '<p class="hint">You have no rooms yet — you can add one later and move it in.</p>') +
+        (rooms.length ? '' : '<p class="hint">No rooms yet. You can add one later and move it in.</p>') +
       '</label>' +
 
       /* Open when editing, shut when adding. Editing means these values are
@@ -342,7 +354,7 @@ window.ViewGreenhouse = (function () {
           'value="' + UI.attr(editing ? (plant.lastWatered || '') : UI.toISO(UI.today())) + '">' +
         '</label>' +
       '</div>' +
-      '<p class="hint" style="margin-top:8px">Not sure? Let\'s get started now.</p>' +
+      '<p class="hint" style="margin-top:8px">Not sure of the dates? Leave them as they are and carry on.</p>' +
 
       /* Removing a plant used to live only at the very foot of its Care tab,
          under "What tends to go wrong", and a tester who looked everywhere
@@ -504,12 +516,23 @@ window.ViewGreenhouse = (function () {
        which is what every room looked like before this existed and still
        reads well in a strip. */
     const chosenIcon = editing ? (room.icon || '') : '';
+    /* Spoken names for the icon cells. The keys are code ("cloudSun",
+       "sunOff"), and a screen reader read them out as they stand. Kept
+       here rather than in LOOKUPS because this picker is the only place
+       an icon is named aloud; a key missing from the list falls back to
+       itself, so a new icon is never silent. */
+    const ICON_NAMES = {
+      sofa: 'Sofa', bed: 'Bed', hob: 'Hob', bath: 'Bath', book: 'Book',
+      stairs: 'Stairs', railing: 'Railing', glasshouse: 'Glasshouse',
+      cutlery: 'Cutlery', door: 'Door', parasol: 'Parasol', monitor: 'Monitor',
+      sun: 'Sun', cloudSun: 'Sun and cloud', cloud: 'Cloud', moon: 'Moon', sunOff: 'No sun'
+    };
     const iconCells =
       '<button type="button" class="ico-cell' + (chosenIcon ? '' : ' is-on') + '" data-icon="" ' +
-        'aria-label="No icon — use the initial">' + UI.monogram(editing ? room.name : 'A') + '</button>' +
+        'aria-label="No icon, use the initial">' + UI.monogram(editing ? room.name : 'A') + '</button>' +
       LOOKUPS.ROOM_ICONS.map(function (k) {
         return '<button type="button" class="ico-cell' + (chosenIcon === k ? ' is-on' : '') + '" ' +
-          'data-icon="' + k + '" aria-label="' + k + '">' + UI.icon(k) + '</button>';
+          'data-icon="' + k + '" aria-label="' + UI.attr(ICON_NAMES[k] || k) + '">' + UI.icon(k) + '</button>';
       }).join('');
 
     /* The '— bright' half of each option is a claim, and the claim inverts
@@ -562,8 +585,8 @@ window.ViewGreenhouse = (function () {
 
     const hemiAsk =
       '<div id="r-hemi-ask" style="margin-top:10px">' +
-        '<p class="hint" style="margin-bottom:8px">Before I can read these windows I need to know which ' +
-          'side of the equator you\'re on — it decides which way your bright windows face.</p>' +
+        '<p class="hint" style="margin-bottom:8px">Which side of the equator are you on? I need it to read ' +
+          'these windows, since it decides which way your bright ones face.</p>' +
         '<div class="row-wrap">' +
           '<button type="button" class="chip" data-room-hemi="north">Northern</button>' +
           '<button type="button" class="chip" data-room-hemi="south">Southern</button>' +
@@ -783,9 +806,9 @@ window.ViewGreenhouse = (function () {
         } else if (!northSet) {
           reading.textContent = 'Now turn the compass until N points north, and I\'ll read the light.';
         } else {
-          reading.textContent = LOOKUPS.aspectLabel(best.aspect) + ' — ' +
-            LOOKUPS.LIGHT[best.prof.light].short.toLowerCase() + '. ' + best.prof.note +
-            (reads.length > 1 ? ' (The brightest of ' + reads.length + ' windows.)' : '');
+          reading.textContent = LOOKUPS.aspectLabel(best.aspect) + ', ' +
+            LOOKUPS.LIGHT[best.prof.light].short.toLowerCase() + ' light. ' + best.prof.note +
+            (reads.length > 1 ? ' Read from the brightest of ' + reads.length + ' windows.' : '');
         }
         if (noWinBtn) { noWinBtn.classList.toggle('is-on', noWindows); noWinBtn.setAttribute('aria-pressed', String(noWindows)); }
       }
@@ -993,7 +1016,7 @@ window.ViewGreenhouse = (function () {
         '<button class="dx-opt" data-add="room" style="margin:0">' +
           '<span class="dx-opt-ico">' + UI.icon('home') + '</span><span>' +
             '<span class="dx-opt-t">A room</span>' +
-            '<span class="dx-opt-d">Tag it with its window aspect and I\'ll work out the light.</span>' +
+            '<span class="dx-opt-d">Mark its windows and point north, and I\'ll work out the light.</span>' +
           '</span></button>' +
       '</div>',
       function (root) {
@@ -1038,7 +1061,7 @@ window.ViewGreenhouse = (function () {
     if (params && (params.id === 'rooms' || params.id === 'plants')) tab = params.id;
 
     if (!rooms.length && !plants.length) {
-      /* "Room to grow", not "Your greenhouse is empty".
+      /* "Start with your home", not "Your greenhouse is empty".
 
          The topbar subtitle on this view already reads "Nothing growing here
          yet" when the count is zero, so the old heading stated the same fact
@@ -1050,9 +1073,10 @@ window.ViewGreenhouse = (function () {
          of the block before it reads any of the words.
 
          Since the subtitle has the condition covered, the heading is free to
-         do the more useful job of inviting rather than reporting. This one
-         also quietly names the organising idea of the view — rooms — which
-         the body copy immediately goes on to explain. */
+         do the more useful job of saying where to begin. It names the step
+         the button takes, tracing the home, so the heading, the body and
+         the button all point at the same first move. "Room to grow" did
+         this with a pun, and the voice keeps wordplay for the greeting. */
       /* The plan leads, because tracing a home is what makes the light real —
          but someone with three plants on a windowsill should not have to
          trace their flat before logging a watering, so the quick path stays
@@ -1062,12 +1086,12 @@ window.ViewGreenhouse = (function () {
          and it is this screen's own: the first visit here and the empty
          All plants tab below both wear it, while Today keeps new-growth, so
          the two tabs a newcomer opens first do not show the same picture. */
-      return UI.empty('sprout:greenhouse', 'Room to grow',
-        'Trace your home and I\'ll read the light in every room from its windows. Or start small with a single room, or a plant.',
+      return UI.empty('sprout:greenhouse', 'Start with your home',
+        'Trace your home and I\'ll read the light in every room from its windows.',
         '<div class="stack" style="gap:10px;align-items:center">' +
-          '<button class="btn" data-go="/plan">' + UI.icon('compass') + 'Create your greenhouse</button>' +
+          '<button class="btn" data-go="/plan">' + UI.icon('compass') + 'Trace your home</button>' +
           '<div class="row" style="gap:14px;justify-content:center">' +
-            '<button class="link-btn" data-open="room">or just add a room</button>' +
+            '<button class="link-btn" data-open="room">or add one room</button>' +
             '<button class="link-btn" data-open="plant">add a plant</button>' +
           '</div>' +
         '</div>');
@@ -1087,8 +1111,8 @@ window.ViewGreenhouse = (function () {
         ? /* The plan card sits above the rooms it draws. */
           '<button class="nudge is-link plan-card" data-go="/plan">' +
             '<span class="nudge-ico">' + UI.icon('grid') + '</span>' +
-            '<div class="grow"><div class="nudge-t">Update greenhouse</div>' +
-              '<p class="nudge-p mb-0">Map out your home using the planner</p></div>' +
+            '<div class="grow"><div class="nudge-t">Open the planner</div>' +
+              '<p class="nudge-p mb-0">Draw your rooms and windows and I\'ll read each room\'s light.</p></div>' +
             UI.icon('chevron', 'muted') +
           '</button>' +
           /* The plan is one thing and the rooms are many things; a hairline
@@ -1099,10 +1123,10 @@ window.ViewGreenhouse = (function () {
           '<button class="btn btn-soft btn-block" data-open="room" style="margin-top:12px">' +
             UI.icon('plus') + 'Add another room</button>'
         : UI.empty('home', 'No rooms yet',
-            'Rooms are how I work out light levels. Trace your home and I read them from the windows, or describe one room at a time.',
+            'Trace your home and I\'ll read each room\'s light from its windows, or add one room at a time.',
             '<div class="stack" style="gap:10px;align-items:center">' +
-              '<button class="btn" data-go="/plan">' + UI.icon('compass') + 'Create your greenhouse</button>' +
-              '<button class="link-btn" data-open="room">or just add a room</button>' +
+              '<button class="btn" data-go="/plan">' + UI.icon('compass') + 'Trace your home</button>' +
+              '<button class="link-btn" data-open="room">or add one room</button>' +
             '</div>');
 
       if (unassigned.length) {
@@ -1115,7 +1139,7 @@ window.ViewGreenhouse = (function () {
           '<div class="section-head"><h2 class="section-title">Not in a room yet</h2>' +
           '<span class="section-note">' + UI.plural(unassigned.length, 'plant') + '</span></div>' +
           '<div class="grid grid-plants">' + unassigned.map(plantCard).join('') + '</div>' +
-          '<p class="hint" style="padding:0 2px;margin-top:16px">Put these in a room and I can factor the light into their watering.</p>' +
+          '<p class="hint" style="padding:0 2px;margin-top:16px">Put these in a room and I\'ll adjust their watering for its light.</p>' +
         '</div>';
       }
     } else {
@@ -1127,7 +1151,7 @@ window.ViewGreenhouse = (function () {
           '</div>' +
           '<button class="btn btn-soft btn-block" data-open="plant" style="margin-top:12px">' +
             UI.icon('plus') + 'Add a plant</button>'
-        : UI.empty('sprout:greenhouse', 'No plants yet', 'Add your first and I\'ll build its care schedule from real species data.',
+        : UI.empty('sprout:greenhouse', 'No plants yet', 'Add your first and I\'ll build its care schedule from its species.',
             '<button class="btn" data-open="plant">Add a plant</button>');
     }
 

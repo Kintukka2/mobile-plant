@@ -14,15 +14,16 @@
 //         the voice zoning, so it never sits beside care data, toxicity
 //         or a diagnosis: frames on plant, discover and diagnose carry none.
 //
-// Copy rules: British English, no exclamation marks, one contraction a
-// line, and every privacy sentence true to native/store-privacy.md. No
+// Copy rules: the Voice section of CLAUDE.md. Headlines may have flair;
+// every claim, and every privacy sentence, stays true to the app and to
+// native/store-privacy.md. No
 // counts: the species list grows, so like the site the listing never says
 // how many there are or how many are pet safe. "These" points at the
 // pet-safe results on the screen instead, which stay true as the list does.
 (function (root) {
   const SETS = {
     a: { name: 'Final', note: 'The listing. Upload order matches native/store-listing.md.', frames: [
-      { screen: 'today', eyebrow: 'Every morning', head: 'A list that is short *because it\'s right.*', glow: 'leaf', layout: 'centre', sprout: 'corner' },
+      { screen: 'today', eyebrow: 'Every morning', head: 'Only the plants *that are due today.*', glow: 'leaf', layout: 'centre', sprout: 'corner' },
       { screen: 'greenhouse', eyebrow: 'Room by room', head: 'Care worked out from *where each plant lives.*', glow: 'leaf', layout: 'centre' },
       { screen: 'plan', eyebrow: 'Draw your home', head: 'It knows which rooms are bright, *because you showed it.*', glow: 'sun', layout: 'centre' },
       { screen: 'plant', eyebrow: 'Worth keeping', head: 'A record of the plant, *not just a reminder.*', glow: 'leaf', layout: 'centre' },

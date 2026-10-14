@@ -168,7 +168,7 @@ on a method that is not in the table.
 |---|---|---|
 | `light.ideal` | yes | One rung. Never `none`, which means no window at all. |
 | `light.tolerates` | | Rungs where it will cope. A room here gets "It will cope with…". |
-| `light.avoid` | | Rungs that harm it. A room here gets "…is specifically bad for this plant". |
+| `light.avoid` | | Rungs that harm it. A room here gets "…is bad for this plant". |
 | `light.note` | yes | What it does when the light is wrong in each direction. |
 
 **Rate every rung exactly once.** Between `ideal`, `tolerates` and `avoid`,

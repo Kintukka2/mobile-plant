@@ -42,7 +42,8 @@ experiments against it.
 ## Rules the copy keeps
 
 - The voice rules in `CLAUDE.md`: British English, no exclamation marks,
-  one contraction per line.
+  plain by default. Headlines may have flair; every claim under one stays
+  true to the app.
 - **Sprout's face on openers only.** The corner cut-out
   (`site/img/sprout-corner.webp`) is on each set's first frame. The
   closers on Today show the app's own resting plate. Nothing goes beside

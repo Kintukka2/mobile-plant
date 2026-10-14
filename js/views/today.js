@@ -23,8 +23,13 @@ window.ViewToday = (function () {
      instruction in a word a beginner has no way to cash in. Separating them
      lets the first be a plain calendar statement and the second an
      instruction in things you can buy. */
-  function seasonLine() {
+  /* The note is left off while the seasonal nudge is on screen, because
+     that nudge's text is the same note word for word, and reading one
+     sentence twice in a row on the same screen says the app has lost track
+     of what it just said. The phrase stays, so the line is never empty. */
+  function seasonLine(nudgeShown) {
     const sum = Schedule.summary();
+    if (nudgeShown) return sum.seasonPhrase || '';
     return (sum.seasonPhrase ? sum.seasonPhrase + ' ' : '') + sum.seasonMeta.note;
   }
 
@@ -41,7 +46,7 @@ window.ViewToday = (function () {
     });
   }
 
-  function greeting() {
+  function greeting(seasonNudge) {
     const s = Store.get().profile;
     const sum = Schedule.summary();
     const wrongLight = misplaced();
@@ -49,19 +54,23 @@ window.ViewToday = (function () {
 
     let line;
     if (!sum.plantCount) {
-      line = 'Add your first plant and I\'ll work out when it needs water, how much, and when to feed it.';
+      line = 'Once you add a plant, I\'ll work out when it needs water, how much, and when to feed it.';
     } else if (sum.thirstyCount) {
-      line = UI.plural(sum.thirstyCount, 'plant') + ' ' + (sum.thirstyCount === 1 ? 'is' : 'are') +
-             ' ready for a drink. Nothing dramatic — a late one is forgiven far more readily than an early one.';
+      /* thirstyCount is waterings already overdue, which tasks() sorts to
+         the top of the list, so the line can say where to look. */
+      line = UI.plural(sum.thirstyCount, 'plant') + ' ' +
+             (sum.thirstyCount === 1 ? 'is overdue for water, so it\'s' : 'are overdue for water, so they\'re') +
+             ' first in the list below.';
     } else if (sum.dueCount) {
       /* The count is on the section heading below, where it labels the list
          it belongs to. Opening the greeting with "2 jobs for today" made the
          first thing Sprout says every morning a tally of work owed — which
          is a rota, not a greeting. */
-      line = seasonLine();
+      line = seasonLine(seasonNudge);
     } else if (sum.soonCount) {
-      line = 'Nothing needs you today. ' + UI.plural(sum.soonCount, 'job') +
-             ' coming up over the next few days. ' + seasonLine();
+      /* Three days, because summary() counts tasks(3). */
+      line = 'Nothing\'s due today, and ' + UI.plural(sum.soonCount, 'job') + ' ' +
+             (sum.soonCount === 1 ? 'is' : 'are') + ' due in the next three days. ' + seasonLine(seasonNudge);
     } else if (wrongLight.length) {
       /* "Content" was a claim about light as well as water, and the plant
          page could be showing Wrong light underneath it (PrimeTestLab 7959,
@@ -70,14 +79,15 @@ window.ViewToday = (function () {
              (wrongLight.length === 1
                ? Store.displayName(wrongLight[0].plant) + ' is in the wrong light for it. '
                : wrongLight.length + ' plants are in the wrong light for them. ') +
-             seasonLine();
+             seasonLine(seasonNudge);
     } else {
-      line = 'Everything is watered, fed and content. ' + seasonLine();
+      line = 'Everything is watered and fed. ' + seasonLine(seasonNudge);
     }
+    line = line.trim();
 
     return '<div class="greeting-card">' +
       '<h2 class="greeting-hi">' + partOfDay() + UI.esc(name) + '</h2>' +
-      '<p class="greeting-line">' + UI.esc(line) + '</p>' +
+      (line ? '<p class="greeting-line">' + UI.esc(line) + '</p>' : '') +
       /* Three counts, and they have to be three counts. The third slot has
          been wrong twice. First it held a season glyph under the label
          SPRING — two figures and a pictogram, which never read as a set
@@ -91,9 +101,9 @@ window.ViewToday = (function () {
          Rooms is the honest third number. It is a count, it aligns, and it
          finishes the sentence the row is really making — seven want you
          today, across three rooms, out of nine. The season lost nothing:
-         the greeting line above already ends with the season's advice, and
-         on a seasonal turn the nudge below announces it by name, so putting
-         it here was the third time of saying it. */
+         the greeting line above ends with the season's advice, or on a
+         seasonal turn the nudge below gives it by name, so putting it here
+         was saying it twice. */
       (sum.plantCount ? '<div class="greeting-stats">' +
         /* Due today leads and stands apart. The three are not one kind of
            number: the first is a call to act today and the other two are
@@ -155,10 +165,13 @@ window.ViewToday = (function () {
     return Store.get().settings.dismissed || [];
   }
 
-  function nudges() {
-    const list = Weather.insights().filter(function (n) {
+  function visibleNudges() {
+    return Weather.insights().filter(function (n) {
       return dismissed().indexOf(n.id) === -1;
     });
+  }
+
+  function nudges(list) {
     if (!list.length) return '';
 
     pending = list;   // keep the closures around for the click handler
@@ -203,8 +216,9 @@ window.ViewToday = (function () {
         '</div>';
       }).join('') + '</div>' +
       (more > 0
-        ? '<p class="hint">' + UI.plural(more, 'more plant') + ' in the wrong light too. ' +
-          'Each one\'s page says why.</p>'
+        ? '<p class="hint">' + (more === 1
+            ? '1 more plant is in the wrong light too, and its page says why.'
+            : more + ' more plants are in the wrong light too, and each one\'s page says why.') + '</p>'
         : '') +
     '</div>';
   }
@@ -233,9 +247,11 @@ window.ViewToday = (function () {
     return '<div class="section"><div class="nudge">' +
       '<span class="nudge-ico">' + UI.icon('bell') + '</span>' +
       '<div class="grow" style="min-width:0">' +
-        '<div class="nudge-t">Want a reminder in the morning?</div>' +
-        '<p class="nudge-p">I can tell you at ' + hourLabel(hour) + ' on the days something needs water or food. ' +
-          'It\'s scheduled on this phone, never sent from a server.</p>' +
+        /* The hour, not "in the morning": Profile can move it to the
+           evening, and the ask has to match what a yes will do. */
+        '<div class="nudge-t">Want a reminder at ' + hourLabel(hour) + '?</div>' +
+        '<p class="nudge-p">I\'ll remind you on days a plant needs water or food, scheduled on this ' +
+          'device with nothing sent from a server.</p>' +
         '<div class="row" style="gap:8px;margin-top:12px">' +
           '<button class="btn" data-act="remind-on" style="flex:2">' + UI.icon('bell') + 'Remind me</button>' +
           '<button class="btn btn-ghost" data-act="remind-later" style="flex:1">Not now</button>' +
@@ -251,14 +267,15 @@ window.ViewToday = (function () {
     if (!plant) return '';
     const kind = LOOKUPS.TASKS[t.type];
 
-    const when = t.never
-      ? (t.type === 'water' ? 'Not watered yet — start today' : 'Not fed yet this season')
-      : UI.relDue(t.days);
+    /* Never means nothing has been logged, which is all the app knows: the
+       plant may well have been watered or fed before it arrived here. */
+    const when = t.never ? 'Due today, none logged yet' : UI.relDue(t.days);
 
     return '<div class="task' + (t.overdue ? ' is-overdue' : '') + '" ' +
         'data-task="' + UI.attr(t.plantId + ':' + t.type) + '">' +
       '<button class="task-check" data-done="' + UI.attr(t.plantId + ':' + t.type) + '" ' +
-        'aria-label="Mark ' + UI.attr(kind.label.toLowerCase()) + ' done">' + UI.icon('check') + '</button>' +
+        'aria-label="' + UI.attr('Mark ' + Store.displayName(plant) + ' as ' + kind.verb.toLowerCase()) + '">' +
+        UI.icon('check') + '</button>' +
       '<span class="task-thumb">' + UI.plantTile(Store.tilePhoto(plant), plant.id, Store.displayName(plant)) + '</span>' +
       '<div class="task-body" data-plant="' + UI.attr(plant.id) + '">' +
         '<div class="task-title">' + UI.esc(kind.label + ' ' + Store.displayName(plant)) + '</div>' +
@@ -310,10 +327,10 @@ window.ViewToday = (function () {
        No location nudge here either, though the populated path ends with
        one. One screen, one action. */
     if (!plants.length) {
-      return greeting() + '<div class="section">' +
+      return greeting(false) + '<div class="section">' +
         UI.empty('sprout:new-growth', 'No plants yet',
-          'I\'ve got care data for ' + window.PLANT_DATA.length + ' common houseplants — watering ' +
-            'intervals, light, feeding, toxicity and how to propagate them.',
+          'Pick from ' + window.PLANT_DATA.length + ' common houseplants and I\'ll tell you how to water, ' +
+            'light, feed and propagate yours, and whether it\'s toxic to pets or people.',
           '<button class="btn btn-lg" data-open="plant">' + UI.icon('plus') + 'Add your first plant</button>') +
       '</div>' + weatherStrip();
     }
@@ -323,7 +340,9 @@ window.ViewToday = (function () {
        headline of its own, so it now follows them — what needs doing today
        is the first thing past the greeting, and the weather explains it
        afterwards. */
-    let html = greeting() + nudges();
+    const shown = visibleNudges();
+    const seasonNudge = shown.some(function (n) { return n.id.indexOf('season-') === 0; });
+    let html = greeting(seasonNudge) + nudges(shown);
 
     const due = Schedule.tasks(0);
     const soon = Schedule.tasks(7).filter(function (t) { return t.days > 0; });
@@ -339,7 +358,7 @@ window.ViewToday = (function () {
             /* No exclamation mark, by the voice rule for anything that
                repeats — this line shows on every day nothing is due, and a
                cheer that fires daily stops being a cheer. */
-            '<p class="tiny muted mt-0">No plants are in need — great job.</p>' +
+            '<p class="tiny muted mt-0">No plant needs water or food today.</p>' +
           '</div>') +
     '</div>';
 
@@ -374,8 +393,8 @@ window.ViewToday = (function () {
         '<span class="nudge-ico">' + UI.icon('pin') + '</span>' +
         '<div class="grow" style="min-width:0">' +
           '<div class="nudge-t">Add your location</div>' +
-          '<p class="nudge-p">This will let me give you real advice, based on the weather ' +
-            'in your region.</p>' +
+          '<p class="nudge-p">I\'ll use your local forecast to warn you about cold nights and heat, ' +
+            'and to suggest watering changes for dry or wet spells.</p>' +
           /* The same button as the one in Profile, down to the icon and the
              words. Two different-looking controls for one action taught the
              reader that "Set up" and "Set my location" were two errands; the
@@ -435,7 +454,7 @@ window.ViewToday = (function () {
         Notify.ask().then(function (result) {
           if (result !== 'granted') {
             UI.toast(result === 'denied'
-              ? 'Notifications are off for Sprout in your device settings'
+              ? 'Turn on notifications in device settings'
               : 'Reminders need permission', 'warn');
             App.refresh();
             return;
@@ -449,14 +468,14 @@ window.ViewToday = (function () {
 
       if (e.target.closest('[data-act="remind-later"]')) {
         Store.updateSettings({ dismissed: dismissed().concat(REMIND_ASK) });
-        UI.toast('Profile has reminders whenever you want them.');
+        UI.toast('Reminders are in Profile any time');
         App.refresh();
         return;
       }
 
       if (e.target.closest('[data-act="later-location"]')) {
         Store.snoozeLocationAsk();
-        UI.toast('I\'ll ask again in a month. Profile has it any time before then.');
+        UI.toast('I\'ll ask again in a month');
         App.refresh();
         return;
       }

@@ -29,20 +29,20 @@ and the weather. Live since 12 October 2026. The previous line, "Plant care
 schedules built from real species data, your pots, weather, and home.", is
 the one to run against it in a Store listing experiment.
 
-## Full description — 2,881 / 4,000
+## Full description — 2,744 / 4,000
 
 ```
 Most plant apps ask how often you want reminding. Sprout works it out.
 
 A houseplant companion that sets plant care and watering reminders for each plant, from what it is and where it lives. Free, with no account, no ads and no subscription.
 
-Every plant care schedule starts from real care data for the species you own: warm and cool season watering intervals, a feeding cycle, ideal light and toxicity for some of the most common houseplants. Sprout then adjusts it for where each plant actually lives: pot size and material, drainage, how bright the room is, which way the window faces and the season where you live. A Monstera in a 24cm terracotta pot by a north window is not on the same cycle as one in a plastic pot in a dim corner, and Sprout does not pretend otherwise. Every schedule comes with the reason behind it.
+Every plant care schedule starts from care data for the species you own: warm and cool season watering intervals, a feeding cycle, ideal light and toxicity for some of the most common houseplants. Sprout then adjusts it for where each plant lives: pot size and material, drainage, how bright the room is, which way the window faces and the season where you live. A Monstera in a 24cm terracotta pot by a bright window dries out faster than one in a plastic pot in a dim corner, so it is watered sooner. Every schedule comes with the reason behind it.
 
 <b>Watering that follows the weather</b>
-Set a location and Sprout reads the local forecast. Before a hot, dry spell it offers to bring watering forward; before a wet week it offers to hold off. You approve every change.
+Set a location and Sprout reads the local forecast. Before a hot, dry week it offers to water two days sooner, and before a cool, wet spell two days later. You approve every change.
 
 <b>Draw your home, find the light</b>
-Group plants into rooms, or trace your actual floor plan, mark the windows and point north. Sprout works out which rooms are bright, which are dim and which borrow light through a doorway, then shows where each plant should stand and tells you when one is in the wrong light.
+Group plants into rooms, or trace your floor plan, mark the windows and point north. Sprout works out which rooms are bright, which are dim and which borrow light through a doorway, then shows where each plant should stand and tells you when one is in the wrong light.
 
 <b>A plant doctor for when something looks wrong</b>
 Yellow leaves, brown tips, drooping, sudden leaf drop, fungus gnats. Pick the symptom, answer a few questions about what else you are seeing, and Sprout ranks the likely causes, weighted by what your species is prone to. Each cause comes with clear steps for what to do about it.
@@ -51,16 +51,16 @@ Yellow leaves, brown tips, drooping, sudden leaf drop, fungus gnats. Pick the sy
 Tell Sprout you have cats or dogs and it flags what is toxic to them. Every plant is rated separately for cats, dogs and people, because the same plant is not equally risky to each. One tap in Discover shows the ones safe for both.
 
 <b>Find plants that suit your rooms</b>
-Browse the plant library with photos, care needs and toxicity for every species, and see which plants would thrive in the light you actually have.
+Browse the plant library with photos, care needs and toxicity for every species, and see which plants suit the light in your rooms.
 
 <b>A plant care journal worth keeping</b>
-Every plant gets a diary and a growth chart: photos, measurements, repotting, problems and milestones. Propagation guides show how to grow new plants from the ones you have. Watch a cutting become a plant.
+Every plant gets a diary and a growth chart: photos, measurements, repotting, problems and milestones. Propagation guides show how to grow new plants from the ones you have.
 
 <b>One reminder, only when it matters</b>
-At most one notification a day, and only on days something is actually due. Nothing due, nothing from Sprout.
+At most one notification a day, and only on days something is due.
 
 <b>Private by design</b>
-No sign-up, no server and no analytics. Your plants, photos, diary and schedule live on your phone and are never uploaded. The only thing that ever leaves is an approximate location, rounded to about a kilometre, sent to the weather service for your forecast. Nothing else, ever.
+No sign-up, no analytics and no server of Sprout's own. Your plants, photos, diary and schedule live on your phone and are never uploaded. The only thing that leaves is an approximate location, rounded to about a kilometre, sent to the weather service for your forecast.
 
 Works offline.
 ```
