@@ -117,7 +117,7 @@ window.Store = (function () {
       return true;
     } catch (e) {
       if (e && (e.name === 'QuotaExceededError' || e.code === 22)) {
-        UI.toast('Storage is full — try deleting some photos', 'warn');
+        UI.toast('Not saved. Storage is full.', 'warn');
       } else {
         console.error('Save failed:', e);
         UI.toast('Could not save changes', 'warn');
@@ -389,7 +389,7 @@ window.Store = (function () {
       localStorage.setItem(PHOTO_PREFIX + id, dataUrl);
       return id;
     } catch (e) {
-      UI.toast('Not enough storage space for that photo', 'warn');
+      UI.toast('No room to store that photo', 'warn');
       return null;
     }
   }
@@ -511,7 +511,7 @@ window.Store = (function () {
 
   function importAll(json) {
     const parsed = JSON.parse(json);
-    if (!parsed.state) throw new Error('That does not look like a Sprout backup file.');
+    if (!parsed.state) throw new Error('That file isn\'t one of my backups.');
     state = Object.assign(blankState(), parsed.state);
     if (Array.isArray(state.rooms)) nameBlankRooms(state.rooms);
     /* Each photo is written on its own so one that doesn't fit doesn't cost
@@ -547,9 +547,9 @@ window.Store = (function () {
      its spot, because the spot was a position in the old drawing. */
   function readPlan(json) {
     let parsed;
-    try { parsed = JSON.parse(json); } catch (e) { throw new Error('That file isn\'t a Sprout plan.'); }
+    try { parsed = JSON.parse(json); } catch (e) { throw new Error('That file isn\'t a home plan.'); }
     const st = parsed && parsed.state;
-    if (!st || !Array.isArray(st.rooms)) throw new Error('That file isn\'t a Sprout plan.');
+    if (!st || !Array.isArray(st.rooms)) throw new Error('That file isn\'t a home plan.');
     const rooms = st.rooms.filter(function (r) {
       return r && r.shape && Array.isArray(r.shape.pts) && r.shape.pts.length >= 3 && Array.isArray(r.shape.win);
     });

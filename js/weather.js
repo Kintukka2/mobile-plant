@@ -53,7 +53,7 @@ window.Weather = (function () {
      A hung request should not leave the UI in a loading state forever. */
   function fetchJSON(url, cb) {
     if (typeof fetch !== 'function') {
-      cb(new Error('This browser cannot fetch weather data.'));
+      cb(new Error('I can\'t fetch the weather on ' + UI.here() + '.'));
       return;
     }
 
@@ -64,7 +64,7 @@ window.Weather = (function () {
 
     fetch(url)
       .then(function (res) {
-        if (!res.ok) throw new Error('Weather service returned ' + res.status);
+        if (!res.ok) throw new Error('The weather service sent an error (' + res.status + ').');
         return res.json();
       })
       .then(function (data) {
@@ -164,7 +164,7 @@ window.Weather = (function () {
 
   function locateMe(cb) {
     if (!navigator.geolocation) {
-      cb(new Error('This browser does not support location lookup.'));
+      cb(new Error('I can\'t find your location on ' + UI.here() + ', so type your city instead.'));
       return;
     }
     navigator.geolocation.getCurrentPosition(
@@ -321,9 +321,9 @@ window.Weather = (function () {
         out.push({
           id: 'dry-spell',
           ico: 'thermo',
-          title: 'Dry spell ahead — ' + dry + ' days without meaningful rain',
-          text: 'Highs are averaging ' + Math.round(heat) + '°C. Warm dry air pulls moisture out of soil ' +
-                'and leaves noticeably faster, so let\'s shorten the gap between waterings by two days?',
+          title: dry + ' hot, dry days ahead',
+          text: 'Highs are averaging ' + Math.round(heat) + '°C and warm, dry air dries soil faster, ' +
+                'so I can shorten every plant\'s watering gap by two days.',
           action: 'Shorten by 2 days',
           apply: function () {
             plants.forEach(function (p) { Store.updatePlant(p.id, { waterOffset: -2 }); });
@@ -341,8 +341,8 @@ window.Weather = (function () {
           id: 'wet-spell',
           ico: 'rain',
           title: wet + ' days of rain coming',
-          text: 'Cool damp weather means higher indoor humidity and slower drying. Soil stays wet for longer, ' +
-                'which is exactly when overwatering happens. Shall I stretch the gap by two days?',
+          text: 'Cool, damp weather raises indoor humidity and slows drying, so I can stretch every ' +
+                'plant\'s watering gap by two days to avoid overwatering.',
           action: 'Stretch by 2 days',
           apply: function () {
             plants.forEach(function (p) { Store.updatePlant(p.id, { waterOffset: 2 }); });
@@ -359,8 +359,8 @@ window.Weather = (function () {
         id: 'reset-offset',
         ico: 'rotate',
         title: 'Weather has settled down',
-        text: 'There is still a weather adjustment running on ' + UI.plural(adjusted.length, 'plant') +
-              ', but the forecast has evened out. Shall I put them back to normal?',
+        text: 'The forecast has evened out, so I can put ' + UI.plural(adjusted.length, 'plant') +
+              ' back on ' + (adjusted.length === 1 ? 'its' : 'their') + ' usual watering schedule.',
         action: 'Reset schedules',
         apply: function () {
           adjusted.forEach(function (p) { Store.updatePlant(p.id, { waterOffset: 0 }); });
@@ -379,10 +379,14 @@ window.Weather = (function () {
         out.push({
           id: 'cold-warning',
           ico: 'snow',
-          title: 'Cold nights ahead — down to ' + Math.round(cold) + '°C',
-          text: UI.plural(tender.length, 'plant') + ' in your greenhouse would suffer below 12°C. ' +
-                'Move them back from windowsills overnight and draw the curtains between plant and glass — ' +
-                'the air against a cold pane is far colder than the room.',
+          title: 'Cold nights ahead, down to ' + Math.round(cold) + '°C',
+          /* One plant is named, since the list is in hand and a name says
+             which sill to clear faster than a count does. */
+          text: tender.length === 1
+            ? Store.displayName(tender[0]) + ' is damaged below 12°C, so move it off the windowsill ' +
+              'overnight and close the curtain between it and the cold glass.'
+            : tender.length + ' plants are damaged below 12°C, so move them off windowsills overnight ' +
+              'and close the curtains between them and the cold glass.',
           dismissable: true
         });
       }
@@ -393,9 +397,13 @@ window.Weather = (function () {
       out.push({
         id: 'heat-warning',
         ico: 'thermo',
-        title: 'Serious heat coming — around ' + Math.round(heat) + '°C',
-        text: 'Move plants back from windows where the sun magnifies through glass, and check the soil daily ' +
-              'rather than waiting for me. Do not mist in strong sun — droplets act as tiny lenses and scorch leaves.',
+        /* "Highs", because the figure is the week's average high, not one
+           day's temperature. The reasons this used to give (glass that
+           magnifies the sun, droplets that act as lenses) were both wrong,
+           so it gives the three instructions and no theory. */
+        title: 'Hot week ahead, highs around ' + Math.round(heat) + '°C',
+        text: 'Move plants back from sunny windows, check the soil daily rather than waiting for me, ' +
+              'and don\'t mist in strong sun.',
         dismissable: true
       });
     }
