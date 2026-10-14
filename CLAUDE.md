@@ -359,7 +359,7 @@ is why the southern list carries both spellings.
 `brand.html` is the design system written down: the mark and its stroke rule,
 the wordmark, both palettes with every token and what each hue is allowed to
 mean, the type scale, photo ratios, the voice, the character, and a record of
-the thirteen decisions that produced them with the reasoning for each.
+the fourteen decisions that produced them with the reasoning for each.
 
 It is **not part of the app**. It is deliberately absent from `sw.js`
 `ASSETS` and from `manifest.webmanifest` — it is a document for whoever is
@@ -380,41 +380,63 @@ the file an agent reads first.
 
 ## Voice
 
-Sprout speaks **as itself, in the first person**, as a knowledgeable friend
-rather than a system. It uses the reader's name where it has one.
+Sprout speaks **as itself, in the first person**, as someone who knows plants
+and tells you straight. It uses the reader's name in the greeting.
 
-It did not always. The app previously used three grammatical persons at once
-— "Shall I shorten…" in the nudges, "What should we call you?" in the welcome
-sheet, "What should Sprout call you?" in the profile — the last two being the
-same question on two screens. Committing to "I" is what resolved that.
+**Plain by default.** Warmth belongs in three places: the Today greeting
+heading, the welcome sheet and the rating thank-you. Everywhere else, say the
+useful thing and stop. This reverses the "unhurried" register of Decision 07
+in the brand guide; Decision 14 records why. An audit of every user-facing
+string in October 2026 found that the old rules governed tone and never
+length, so nearly every hint had grown a second sentence that carried no
+information, and 28 strings claimed things the code does not do.
 
-**The persona is zoned.** It speaks on conversational surfaces and goes quiet
-on reference ones:
+**Stakes decide the register, not the screen.** Anything about harm, health
+or money is plain wherever it appears, including a question in the
+introduction. Species care data, diagnosis explanations, treatment steps and
+toxicity notes carry no persona at all.
 
-| Zone | Voice | Where |
-| --- | --- | --- |
-| Conversation | First person, warm | Greetings, nudges, empty states, form hints, confirmations, toasts |
-| Reference | Plain, authoritative, no persona | Species care data, diagnosis explanations and treatment steps, toxicity notes |
+**The rules:**
 
-A knowledgeable friend reads you the label straight when it matters. A
-cheerful voice explaining which crystals burn a cat's mouth is worse than no
-persona at all. When in doubt about a string, ask whether it is *talking to*
-the reader or *telling them a fact* — the second one takes no personality.
+1. Lead with the fact the reader needs. The first sentence stands on its own.
+2. One sentence by default. A second only if it tells the reader something
+   new to know or do.
+3. Name a risk plainly: "toxic to cats", not "may be dangerous", and no drama.
+4. Say what the app does with a concrete verb: "I'll warn you", "I'll remind
+   you", "Water it today".
+5. Specific beats general: the plant's name, the number of days, the room.
+6. At most one em dash in a string, never as a dramatic pause. The species
+   and diagnosis data uses none.
+7. Leave out the tells: "not X but Y" setups, padded lists of three, stated
+   morals, sentences about the app itself, filler ("actually", "really",
+   "genuinely", "properly", "simply"), and instructions dressed as questions
+   ("let's …?").
+8. Length per surface: a hint is one sentence; a nudge is a title and one
+   sentence; an empty state is a title, one sentence and a button; a toast is
+   six words or fewer; a button is a verb and an object.
+9. Never claim more than the code does. If a string says the app does
+   something, the code does it. "Watering follows the forecast" shipped while
+   the app only offered a change the reader had to accept.
 
-**Rules that keep it from grating.** A greeting is read every morning, and
-warmth that lands in week one can wear out by week three:
+**Also:**
 
-- No exclamation marks in anything that repeats
-- One contraction per line, not none and not three
-- Never open two consecutive strings the same way
-- Never tell the reader off. The app is accountable, not them — "I'll only
-  ever be as right as what you tell me", not "guessing will give you a
-  confident wrong answer"
-- Say "Sprout" only when introducing itself. Everywhere else it is "I"
+- No exclamation marks in anything that repeats.
+- Say "Sprout" only when introducing itself. Everywhere else it is "I". The
+  marketing site and store listing name the product.
+- Two strings shown together never open the same way.
+- Never tell the reader off. Being direct is not telling off: say what to do.
+- Write it the way you would say it. Contractions are not counted.
+- British English.
+
+**Marketing is allowed flair in its headlines.** Headlines, taglines and
+screenshot captions on the site and in the store listing may use wordplay, a
+contrast or a hook ("Most plant apps ask how often you want reminding. This
+one works it out."). Their body copy, the FAQ and the listing's description
+follow the rules above, and rules 3 and 9 apply to every line: a headline can
+be playful, never untrue.
 
 Apostrophes inside single-quoted JS strings need escaping (\'). That is a
-syntax constraint, never a reason to write "I will" where "I'll" belongs —
-the stiffness is visible to the reader and the escape is not.
+syntax constraint, never a reason to write "I will" where "I'll" belongs.
 
 ## The character
 
