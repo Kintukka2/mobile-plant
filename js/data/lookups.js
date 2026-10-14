@@ -29,7 +29,7 @@ window.LOOKUPS = (function () {
       label: 'No natural light',
       short: 'None',
       ico: 'sunOff',
-      desc: 'No window at all. Nothing grows here for long without a lamp — see the note on rotating plants through.',
+      desc: 'No window at all. A plant lasts a week or two here, then needs a lit room or a grow lamp.',
       rank: 0
     },
     'low': {
@@ -79,32 +79,32 @@ window.LOOKUPS = (function () {
      hemisphere tables: a cupboard faces nowhere in either one. */
   const NO_WINDOW = {
     light: 'none',
-    note: 'No window, so no daylight at all. A plant can live here for a week or two at a time, but it has to go back to a lit room to recover — or sit under a grow lamp.'
+    note: 'No window, so no daylight at all. A plant can live here for a week or two at a time, but it has to go back to a lit room to recover, or sit under a grow lamp.'
   };
 
   // Light profile per aspect in the NORTHERN hemisphere.
   const ASPECT_NORTH = {
-    S:  { light: 'direct',          note: 'The brightest windows — long hours of direct sun. Great for cacti and citrus; scorches ferns.' },
+    S:  { light: 'direct',          note: 'The brightest windows, with long hours of direct sun. Suits cacti and citrus; scorches ferns.' },
     SE: { light: 'bright-indirect', note: 'Gentle direct morning sun, bright the rest of the day. Suits almost everything.' },
     SW: { light: 'direct',          note: 'Harsh hot afternoon sun. Sun-lovers thrive; tender leaves burn.' },
     E:  { light: 'bright-indirect', note: 'Soft morning sun then bright shade. The safest all-rounder for houseplants.' },
     W:  { light: 'direct',          note: 'Strong afternoon and evening sun, and it brings heat with it.' },
     NE: { light: 'medium',          note: 'Cool, soft light with a little early sun. Kind to ferns and calatheas.' },
     NW: { light: 'medium',          note: 'Moderate light with some late sun in summer.' },
-    N:  { light: 'low',             note: 'No direct sun at all. Only the genuinely shade-tolerant will be happy.' },
+    N:  { light: 'low',             note: 'No direct sun at all. Only shade-tolerant plants do well here.' },
     NONE: NO_WINDOW
   };
 
   // Southern hemisphere: north/south swap, east/west morning-vs-afternoon stays.
   const ASPECT_SOUTH = {
-    N:  { light: 'direct',          note: 'The brightest windows — long hours of direct sun. Great for cacti and citrus; scorches ferns.' },
+    N:  { light: 'direct',          note: 'The brightest windows, with long hours of direct sun. Suits cacti and citrus; scorches ferns.' },
     NE: { light: 'bright-indirect', note: 'Gentle direct morning sun, bright the rest of the day. Suits almost everything.' },
     NW: { light: 'direct',          note: 'Harsh hot afternoon sun. Sun-lovers thrive; tender leaves burn.' },
     E:  { light: 'bright-indirect', note: 'Soft morning sun then bright shade. The safest all-rounder for houseplants.' },
     W:  { light: 'direct',          note: 'Strong afternoon and evening sun, and it brings heat with it.' },
     SE: { light: 'medium',          note: 'Cool, soft light with a little early sun. Kind to ferns and calatheas.' },
     SW: { light: 'medium',          note: 'Moderate light with some late sun in summer.' },
-    S:  { light: 'low',             note: 'No direct sun at all. Only the genuinely shade-tolerant will be happy.' },
+    S:  { light: 'low',             note: 'No direct sun at all. Only shade-tolerant plants do well here.' },
     NONE: NO_WINDOW
   };
 
@@ -233,7 +233,7 @@ window.LOOKUPS = (function () {
   const HUMIDITY = {
     'low':      { label: 'Dry air is fine', ico: 'arid',     desc: 'Happy in normal, dry household air.' },
     'medium':   { label: 'Average humidity', ico: 'drop',     desc: 'Comfortable in typical indoor humidity, around 40–50%.' },
-    'high':     { label: 'Loves humidity', ico: 'droplets', desc: 'Wants 60%+ — group it with other plants, or try a bathroom.' }
+    'high':     { label: 'Loves humidity', ico: 'droplets', desc: 'Wants 60% or more. Group it with other plants, or try a bathroom.' }
   };
 
   /* ---------- Difficulty ----------
@@ -243,7 +243,7 @@ window.LOOKUPS = (function () {
   const DIFFICULTY = {
     'easy':   { label: 'Forgiving', ico: 'dial', desc: 'Hard to kill. Shrugs off a missed watering.' },
     'medium': { label: 'Steady hand', ico: 'dial', desc: 'Wants a routine, but tells you clearly when it\'s unhappy.' },
-    'hard':   { label: 'Fussy', ico: 'dial', desc: 'Particular about humidity, light or water. Rewarding once settled.' }
+    'hard':   { label: 'Fussy', ico: 'dial', desc: 'Particular about humidity, light or water.' }
   };
 
   /* ---------- Toxicity ----------
@@ -256,7 +256,7 @@ window.LOOKUPS = (function () {
      one place and contradicted in another is worse than no rule. One
      source, both readers. */
   const TOX = {
-    'safe':          { label: 'Pet safe',      variant: '',      ico: 'shield' },
+    'safe':          { label: 'Non-toxic',     variant: '',      ico: 'shield' },
     'mild':          { label: 'Mildly toxic',  variant: 'sun',   ico: 'warn'   },
     'toxic':         { label: 'Toxic',         variant: 'terra', ico: 'ban'    },
     'very-toxic':    { label: 'Highly toxic',  variant: 'blood', ico: 'skull'  }
@@ -342,7 +342,7 @@ window.LOOKUPS = (function () {
               phrase: { start: 'Spring is just starting.',
                         middle: 'It\'s the middle of spring.',
                         end: 'Spring is nearly over.' },
-              note: 'Expect thirstier plants, and it\'s time to start mixing plant food into the water again.' },
+              note: 'Start mixing plant food into the water again, and expect thirstier plants.' },
     summer: { label: 'Summer', ico: 'sun', growing: true,
               phrase: { start: 'Summer has just begun.',
                         middle: 'It\'s the middle of summer.',
@@ -357,14 +357,14 @@ window.LOOKUPS = (function () {
               phrase: { start: 'Winter is just starting.',
                         middle: 'It\'s the middle of winter.',
                         end: 'Winter is nearly over.' },
-              note: 'Expect very little growth — water sparingly and skip the plant food, because cold wet soil kills more houseplants than anything else.' }
+              note: 'Water sparingly and skip the plant food, because growth all but stops and cold, wet soil rots roots.' }
   };
 
   /* ---------- Pot materials affect drying speed ---------- */
   const POT_MATERIALS = {
     'plastic':   { label: 'Plastic',          dryFactor: 1.0,  note: 'Holds moisture well.' },
     'glazed':    { label: 'Glazed ceramic',   dryFactor: 1.0,  note: 'Holds moisture well.' },
-    'terracotta':{ label: 'Terracotta',       dryFactor: 0.78, note: 'Breathes and wicks water away — dries noticeably faster.' },
+    'terracotta':{ label: 'Terracotta',       dryFactor: 0.78, note: 'Breathes and wicks water away, so it dries noticeably faster.' },
     'concrete':  { label: 'Concrete',         dryFactor: 0.88, note: 'Slightly porous, dries a little faster.' },
     'metal':     { label: 'Metal',            dryFactor: 1.0,  note: 'Non-porous, but can cook roots in direct sun.' },
     'basket':    { label: 'Basket / fabric',  dryFactor: 0.7,  note: 'Very airy, dries out quickly.' }
@@ -416,7 +416,7 @@ window.LOOKUPS = (function () {
   const DRAINAGE = {
     'good':  { label: 'Has drainage holes', factor: 1.0 },
     'none':  { label: 'No drainage holes',  factor: 1.25,
-               note: 'Without drainage you must water less and more carefully — there is nowhere for excess water to go.' }
+               note: 'Without drainage you must water less and more carefully: there is nowhere for excess water to go.' }
   };
 
 
