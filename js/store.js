@@ -232,7 +232,10 @@ window.Store = (function () {
       nickname: data.nickname || '',
       roomId: data.roomId || null,
       pos: data.pos || null,               // { x, y } on the plan, in cells
-      acquired: data.acquired || UI.toISO(new Date()),
+      /* null, passed on purpose, means nobody knows: the introduction adds
+         plants the reader already had, and dating those today would tell the
+         feeding schedule they had only just come home. */
+      acquired: data.acquired === null ? null : (data.acquired || UI.toISO(new Date())),
       potCm: data.potCm || 15,
       potMaterial: data.potMaterial || 'plastic',
       drainage: data.drainage || 'good',

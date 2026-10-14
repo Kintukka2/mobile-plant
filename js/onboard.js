@@ -24,10 +24,24 @@ window.Onboard = (function () {
 
   const EXPERIENCE = LOOKUPS.EXPERIENCE, PETS = LOOKUPS.PETS;
 
-  const STEPS = ['name', 'pets', 'exp', 'hemi', 'loc'];
+  /* Location comes before the hemisphere, and a shared location answers
+     it: latitude decides the hemisphere (Store.updateProfile), so the
+     question is only asked of someone who said no or whose phone could not
+     find them. It is last for that reason, and the introduction ends a
+     step early when it is not needed. */
+  const STEPS = ['name', 'pets', 'exp', 'plants', 'loc', 'hemi'];
 
   let root = null, stage = null, dotsEl = null, backEl = null, skipEl = null,
       at = -1, finished = false, onDone = null, busy = false;
+
+  /* "None" is an answer, not an empty list, so it is remembered for the
+     length of the introduction: stepping back to the question shows it lit.
+     It saves the same thing as no pets, which is all the app needs. */
+  let petsNone = false;
+
+  /* The plants added on the plants step, so stepping back to it shows them
+     and a remove takes out the right one. */
+  let added = [];
 
   function shouldRun() {
     const s = Store.get().settings;
@@ -42,7 +56,7 @@ window.Onboard = (function () {
        last. Five questions in the first person from someone who has not yet
        said who they are, and then "Hi, I'm Sprout" on the sheet after them,
        was the right greeting in the wrong place. */
-    return '<p class="ob-lede">I\'m Sprout. Five quick questions, then we can start on your plants.</p>' +
+    return '<p class="ob-lede">I\'m Sprout. A few quick questions, then we can start on your plants.</p>' +
       '<h2 class="ob-q">What should I call you?</h2>' +
       '<input class="ob-input" id="ob-name" type="text" maxlength="30" autocomplete="given-name" autocapitalize="words" placeholder="Your name" value="' + UI.attr(name) + '">' +
       '<div class="ob-actions"><button class="btn btn-lg" data-ob="next">Continue</button></div>';
@@ -53,7 +67,12 @@ window.Onboard = (function () {
     return '<h2 class="ob-q">Any pets at home?</h2>' +
       '<div class="ob-chips">' + PETS.map(function (p) {
         return '<button type="button" class="chip ob-chip' + (pets.indexOf(p.key) !== -1 ? ' is-on' : '') + '" data-ob-pet="' + p.key + '">' + UI.icon(p.ico) + UI.esc(p.label) + '</button>';
-      }).join('') + '</div>' +
+      }).join('') +
+        /* A one-tap answer like the single choices, so it moves on by itself:
+           Continue under a "None" that has just been tapped would be asking
+           the same thing twice. */
+        '<button type="button" class="chip ob-chip' + (petsNone && !pets.length ? ' is-on' : '') + '" data-ob-pets-none="1">None</button>' +
+      '</div>' +
       '<p class="ob-hint">I\'ll warn you before you add anything that would hurt them. A surprising number of the popular plants would.</p>' +
       '<div class="ob-actions"><button class="btn btn-lg" data-ob="next">Continue</button></div>';
   }
@@ -65,6 +84,78 @@ window.Onboard = (function () {
         return '<button type="button" class="ob-opt' + (e.key === cur ? ' is-on' : '') + '" data-ob-exp="' + e.key + '">' + UI.esc(e.label) + '</button>';
       }).join('') + '</div>' +
       '<p class="ob-hint">There is no wrong answer.</p>';
+  }
+
+  /* The plants the reader already has, by species and nothing else. The
+     form's other questions (pot, room, dates) all have defaults, and a room
+     cannot be chosen before one exists, so the plants wait unplaced and
+     arrive in the plan's tray, ready to be dragged in once the home is
+     drawn. Asking here is what lets the rest of the first run fit the
+     answer: someone with plants is sent to place them, someone without is
+     sent to draw the home that tells me what would grow in it. */
+  function stepPlants() {
+    return '<h2 class="ob-q">Any plants already?</h2>' +
+      '<p class="ob-hint" style="margin-top:0">Add the ones you have and they\'ll be waiting when you draw your home.</p>' +
+      '<input class="ob-search" id="ob-sp" type="search" autocomplete="off" placeholder="Search ' + window.PLANT_DATA.length + ' plants">' +
+      '<div class="ob-sp-list" id="ob-sp-list">' + speciesRows('') + '</div>' +
+      '<div class="ob-sp-added" id="ob-sp-added">' + addedChips() + '</div>' +
+      '<div class="ob-actions">' + plantsButton() + '</div>';
+  }
+
+  function speciesRows(q) {
+    const list = ViewGreenhouse.searchSpecies(q).slice(0, q ? 8 : 6);
+    if (!list.length) return '<p class="ob-hint" style="margin:10px auto">No match. The closest relative will be near enough.</p>';
+    return list.map(function (sp) {
+      const risk = Schedule.petRisk(sp);
+      const n = added.filter(function (id) { const p = Store.getPlant(id); return p && p.speciesId === sp.id; }).length;
+      return '<button type="button" class="ob-sp-row' + (n ? ' is-on' : '') + '" data-ob-sp="' + UI.attr(sp.id) + '">' +
+        '<span class="dx-opt-thumb">' + UI.plantTile(Store.speciesPhoto(sp.id), sp.id, sp.common) + '</span>' +
+        '<span class="ob-sp-text"><span class="ob-sp-t">' + UI.esc(sp.common) + '</span>' +
+          /* The pets answer pays off here, a step after it was given, and
+             before the plant is in rather than after. */
+          (risk ? '<span class="ob-sp-warn">' + UI.icon('paw') + 'Not safe for your ' + UI.esc(risk.pets.join(' or ')) + '</span>'
+                : '<span class="ob-sp-d">' + UI.esc(sp.botanical) + '</span>') +
+        '</span>' +
+        '<span class="ob-sp-n">' + (n ? '\u00D7' + n : UI.icon('plus')) + '</span>' +
+      '</button>';
+    }).join('');
+  }
+
+  function addedChips() {
+    return added.map(function (id) {
+      const p = Store.getPlant(id);
+      if (!p) return '';
+      return '<button type="button" class="chip ob-chip is-on" data-ob-sp-remove="' + UI.attr(id) + '" aria-label="Remove ' + UI.attr(Store.displayName(p)) + '">' +
+        UI.esc(Store.displayName(p)) + UI.icon('x') + '</button>';
+    }).join('');
+  }
+
+  function plantsButton() {
+    return added.length
+      ? '<button class="btn btn-lg" data-ob="next">Continue with ' + UI.esc(UI.plural(added.length, 'plant')) + '</button>'
+      : '<button class="btn btn-ghost" data-ob="next">None yet</button>';
+  }
+
+  function syncPlants() {
+    const q = stage.querySelector('#ob-sp');
+    stage.querySelector('#ob-sp-list').innerHTML = speciesRows(q ? q.value : '');
+    stage.querySelector('#ob-sp-added').innerHTML = addedChips();
+    stage.querySelector('.ob-actions').innerHTML = plantsButton();
+  }
+
+  function addSpecies(id) {
+    /* Unknown, not today: these were already at home, so the date they
+       arrived is not the reader's to have to remember, and dating them today
+       would hold back their first feed as if they had just been bought. */
+    const p = Store.addPlant({ speciesId: id, acquired: null });
+    added.push(p.id);
+    syncPlants();
+  }
+
+  function removeSpecies(id) {
+    Store.deletePlant(id);
+    added = added.filter(function (x) { return x !== id; });
+    syncPlants();
   }
 
   function stepHemi() {
@@ -91,7 +182,7 @@ window.Onboard = (function () {
       '<p class="ob-hint ob-note" id="ob-loc-note" hidden></p>';
   }
 
-  const RENDER = { name: stepName, pets: stepPets, exp: stepExp, hemi: stepHemi, loc: stepLoc };
+  const RENDER = { name: stepName, pets: stepPets, exp: stepExp, plants: stepPlants, loc: stepLoc, hemi: stepHemi };
 
   /* ---------- Flow ---------- */
 
@@ -111,9 +202,9 @@ window.Onboard = (function () {
       stage.innerHTML = '<div class="ob-step">' + RENDER[STEPS[i]]() + '</div>';
       dots();
       backEl.hidden = i === 0;
-      /* On the last question "Not now" already is the skip, so a second
-         way out under it would only be a second word for the same tap. */
-      skipEl.hidden = i === STEPS.length - 1;
+      /* On the location question "Not now" already is the skip, so a
+         second way out under it would only be a second word for the tap. */
+      skipEl.hidden = STEPS[i] === 'loc';
       busy = false;
       const input = stage.querySelector('#ob-name');
       if (input) setTimeout(function () { input.focus(); }, 500);
@@ -201,7 +292,10 @@ window.Onboard = (function () {
         else if (a === 'back') back();
         else if (a === 'locate') locate();
         else if (a === 'finish') { if (STEPS[at] === 'name') saveName(); finish(); }
-        else if (a === 'loc-later') { Store.snoozeLocationAsk(); finish(); }
+        else if (a === 'loc-later') {
+          Store.snoozeLocationAsk();
+          if (Store.get().profile.hemisphere) finish(); else next();
+        }
         return;
       }
       const pet = t.closest('[data-ob-pet]');
@@ -210,8 +304,22 @@ window.Onboard = (function () {
         if (i === -1) pets.push(key); else pets.splice(i, 1);
         Store.updateProfile({ pets: pets });
         pet.classList.toggle('is-on', i === -1);
+        petsNone = false;
+        const none = stage.querySelector('[data-ob-pets-none]');
+        if (none) none.classList.remove('is-on');
         return;
       }
+      if (t.closest('[data-ob-pets-none]')) {
+        petsNone = true;
+        Store.updateProfile({ pets: [] });
+        stage.querySelectorAll('[data-ob-pet]').forEach(function (b) { b.classList.remove('is-on'); });
+        t.closest('[data-ob-pets-none]').classList.add('is-on');
+        advanceFrom(at); return;
+      }
+      const sp = t.closest('[data-ob-sp]');
+      if (sp) { addSpecies(sp.getAttribute('data-ob-sp')); return; }
+      const spOut = t.closest('[data-ob-sp-remove]');
+      if (spOut) { removeSpecies(spOut.getAttribute('data-ob-sp-remove')); return; }
       /* Single choices move on by themselves after a beat: a Continue button
          under a list of one-tap answers is a second tap for no reason. */
       const exp = t.closest('[data-ob-exp]');
@@ -226,6 +334,11 @@ window.Onboard = (function () {
         Store.updateProfile({ hemisphere: hemi.getAttribute('data-ob-hemi') });
         advanceFrom(at); return;
       }
+    });
+
+    root.addEventListener('input', function (e) {
+      if (e.target.id !== 'ob-sp') return;
+      stage.querySelector('#ob-sp-list').innerHTML = speciesRows(e.target.value);
     });
 
     root.addEventListener('keydown', function (e) {
