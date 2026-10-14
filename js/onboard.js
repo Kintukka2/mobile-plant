@@ -29,7 +29,12 @@ window.Onboard = (function () {
      question is only asked of someone who said no or whose phone could not
      find them. It is last for that reason, and the introduction ends a
      step early when it is not needed. */
-  const STEPS = ['name', 'pets', 'exp', 'plants', 'loc', 'hemi'];
+  const STEPS = ['name', 'pets', 'exp', 'plants', 'watered', 'loc', 'hemi'];
+
+  /* "Watered" follows the plants step only when there is something on it:
+     it asks about the plants just added, and with none it has nothing to
+     ask. Skipped in both directions and left out of the dots. */
+  function live(step) { return step !== 'watered' || added.length > 0; }
 
   let root = null, stage = null, dotsEl = null, backEl = null, skipEl = null,
       at = -1, finished = false, onDone = null, busy = false;
@@ -42,6 +47,16 @@ window.Onboard = (function () {
   /* The plants added on the plants step, so stepping back to it shows them
      and a remove takes out the right one. */
   let added = [];
+
+  /* Which answer each of those plants was given on the watered step, by
+     plant id, so stepping back to it shows them lit. No entry is "not
+     sure", which is also what a plant nobody answered for is. */
+  let wateredPick = {};
+  const WATERED = [
+    { key: 'today', label: 'Today',          ago: 0 },
+    { key: 'few',   label: 'A few days ago', ago: 3 },
+    { key: 'week',  label: 'About a week ago', ago: 7 }
+  ];
 
   function shouldRun() {
     const s = Store.get().settings;
@@ -141,6 +156,9 @@ window.Onboard = (function () {
     stage.querySelector('#ob-sp-list').innerHTML = speciesRows(q ? q.value : '');
     stage.querySelector('#ob-sp-added').innerHTML = addedChips();
     stage.querySelector('.ob-actions').innerHTML = plantsButton();
+    /* The first plant in brings the watered step into the run, and the
+       last one out takes it away again, so the dots follow. */
+    dots();
   }
 
   function addSpecies(id) {
@@ -155,7 +173,64 @@ window.Onboard = (function () {
   function removeSpecies(id) {
     Store.deletePlant(id);
     added = added.filter(function (x) { return x !== id; });
+    delete wateredPick[id];
     syncPlants();
+  }
+
+  /* Added with no last watering, every plant from the step before would
+     be due today, so a reader with eight plants opened Today to sixteen
+     jobs and an instruction to water things they watered yesterday. Three
+     rough answers are enough to spread the first waterings over the days
+     they really fall on; a plant left unanswered keeps "start today",
+     which is the honest schedule for one nobody can date. */
+  function stepWatered() {
+    const many = added.length > 1;
+    return '<h2 class="ob-q">Watered any of these this week?</h2>' +
+      '<p class="ob-hint" style="margin-top:0">So the first waterings land on the right days rather than all on one. Leave any you\'re not sure about.</p>' +
+      '<div class="ob-wt-list">' +
+        (many ? wateredRow('all', 'All of them') : '') +
+        added.map(function (id) {
+          const p = Store.getPlant(id);
+          return p ? wateredRow(id, Store.displayName(p)) : '';
+        }).join('') +
+      '</div>' +
+      '<div class="ob-actions"><button class="btn btn-lg" data-ob="next">Continue</button></div>';
+  }
+
+  function wateredRow(id, name) {
+    const cur = id === 'all' ? allPick() : wateredPick[id];
+    return '<div class="ob-wt-row' + (id === 'all' ? ' is-all' : '') + '">' +
+      '<span class="ob-wt-nm">' + UI.esc(name) + '</span>' +
+      '<div class="ob-wt-opts">' + WATERED.map(function (w) {
+        return '<button type="button" class="chip ob-chip' + (cur === w.key ? ' is-on' : '') + '" ' +
+          'data-ob-wt="' + UI.attr(id) + '" data-ob-wt-k="' + w.key + '">' + UI.esc(w.label) + '</button>';
+      }).join('') + '</div>' +
+    '</div>';
+  }
+
+  /* The "All of them" row is lit only while every plant shares an answer. */
+  function allPick() {
+    const first = wateredPick[added[0]];
+    return first && added.every(function (id) { return wateredPick[id] === first; }) ? first : null;
+  }
+
+  function setWatered(id, key) {
+    const ids = id === 'all' ? added.slice() : [id];
+    /* Tapping the lit answer again clears it, back to "not sure". */
+    const clear = (id === 'all' ? allPick() : wateredPick[id]) === key;
+    const w = WATERED.filter(function (x) { return x.key === key; })[0];
+    ids.forEach(function (pid) {
+      if (clear) {
+        delete wateredPick[pid];
+        Store.updatePlant(pid, { lastWatered: null });
+      } else {
+        wateredPick[pid] = key;
+        Store.updatePlant(pid, { lastWatered: UI.toISO(UI.addDays(UI.today(), -w.ago)) });
+      }
+    });
+    stage.querySelector('.ob-wt-list').innerHTML =
+      (added.length > 1 ? wateredRow('all', 'All of them') : '') +
+      added.map(function (pid) { const p = Store.getPlant(pid); return p ? wateredRow(pid, Store.displayName(p)) : ''; }).join('');
   }
 
   function stepHemi() {
@@ -182,12 +257,13 @@ window.Onboard = (function () {
       '<p class="ob-hint ob-note" id="ob-loc-note" hidden></p>';
   }
 
-  const RENDER = { name: stepName, pets: stepPets, exp: stepExp, plants: stepPlants, loc: stepLoc, hemi: stepHemi };
+  const RENDER = { name: stepName, pets: stepPets, exp: stepExp, plants: stepPlants, watered: stepWatered, loc: stepLoc, hemi: stepHemi };
 
   /* ---------- Flow ---------- */
 
   function dots() {
     dotsEl.innerHTML = STEPS.map(function (s, i) {
+      if (!live(s)) return '';
       return '<span class="ob-dot' + (i === at ? ' is-on' : i < at ? ' is-done' : '') + '"></span>';
     }).join('');
   }
@@ -216,7 +292,9 @@ window.Onboard = (function () {
   }
 
   function next() {
-    if (at + 1 >= STEPS.length) finish(); else go(at + 1);
+    let i = at + 1;
+    while (i < STEPS.length && !live(STEPS[i])) i++;
+    if (i >= STEPS.length) finish(); else go(i);
   }
 
   /* Answers are already saved, so stepping back only re-asks: the step
@@ -224,7 +302,9 @@ window.Onboard = (function () {
   function back() {
     if (!root || finished || busy || at <= 0) return;
     if (STEPS[at] === 'name') saveName();
-    go(at - 1);
+    let i = at - 1;
+    while (i > 0 && !live(STEPS[i])) i--;
+    go(i);
   }
 
   function saveName() {
@@ -316,6 +396,8 @@ window.Onboard = (function () {
         t.closest('[data-ob-pets-none]').classList.add('is-on');
         advanceFrom(at); return;
       }
+      const wt = t.closest('[data-ob-wt]');
+      if (wt) { setWatered(wt.getAttribute('data-ob-wt'), wt.getAttribute('data-ob-wt-k')); return; }
       const sp = t.closest('[data-ob-sp]');
       if (sp) { addSpecies(sp.getAttribute('data-ob-sp')); return; }
       const spOut = t.closest('[data-ob-sp-remove]');

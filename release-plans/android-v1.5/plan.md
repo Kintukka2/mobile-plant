@@ -88,9 +88,10 @@ from a clean origin, every phase screenshotted.
 | --- | --- | --- |
 | 1. Splash | Wordmark, 2.3 s floor | None needed |
 | 2. The questions | Sprout asked in the first person and only said who it was on the sheet after them | The first question opens with "I'm Sprout. A few quick questions, then we can start on your plants." |
-| 2. The questions | The hemisphere was asked even of someone about to share a location, whose latitude answers it | Location now comes before it, and the hemisphere is asked only after "Not now" or a failed lookup. Order: name, pets, experience, plants, location, hemisphere |
+| 2. The questions | The hemisphere was asked even of someone about to share a location, whose latitude answers it | Location now comes before it, and the hemisphere is asked only after "Not now" or a failed lookup. Order: name, pets, experience, plants, watered (only with plants), location, hemisphere |
 | 2. The questions | Pets had no "None"; the only way to say so was Continue with nothing ticked | A **None** chip, which clears the others and moves on by itself like the one-tap answers |
 | 2. The questions | No way to bring plants already at home | **Any plants already?** Search the species, tap to add (again for a second of the same), remove from the chips. Each is added by species alone, unplaced, with its acquired date unknown so it is not treated as just bought. A plant that would hurt the reader's pets says so in the list |
+| 2. The questions | Plants from that step had no last watering, so every one was due a drink on the first morning | **Watered any of these this week?** follows it, only when something was added: Today, A few days ago (3) or About a week ago (7) per plant, with an "All of them" row when there are two or more. Unanswered stays "start today". Tapping a lit answer clears it |
 | 2. The questions | No way back. Experience and hemisphere move on by themselves after a beat, so a mis-tap on the hemisphere (which flips every light reading and every season) stuck until Profile | A back arrow beside the wordmark from the second question on; Android's Back steps back a question too (and does nothing on the first). The automatic move-on is tied to its own question, so a quick Back is never overridden |
 | 2. The questions | "Skip the rest" under "Not now"; the device's hemisphere hint and the skip were at `--ink-4`, almost invisible | Skip hidden on the location question; both raised to `--ink-3` |
 | 3. Welcome sheet | A second introduction ("Hi, I'm Sprout…") in one long paragraph | Now the end of the introduction: "Welcome, Dan" and one line per answer that changed something (plants, pets, forecast or hemisphere). **Draw my home** leads either way, framed by the plants answer: with plants, "drag each one to where it stands"; without, "then I can suggest plants that will do well in each one", with **Browse plants** beside it |
@@ -107,6 +108,8 @@ from a clean origin, every phase screenshotted.
 | First question | Lede above it, no back arrow |
 | Pets: None, then Back | Pets saved as `[]`, moved on by itself; None still lit on return |
 | Plants: Monstera, Snake Plant twice, remove one | Two plants, both `acquired: null` and due a feed as established plants; Snake Plant marked "Not safe for your cats"; button "Continue with 2 plants" |
+| Watered: All of them a week ago, Monstera today, Pothos cleared | Monstera due in 8 days, Snake Plant in 11, Pothos today; All of them unlit; answers lit again after Back and forward |
+| No plants added | Watered skipped forwards and back; six dots instead of seven |
 | Location: Not now | Hemisphere asked next, skip shown again |
 | Location shared (lookup stubbed to Sydney) | Introduction ends without asking the hemisphere; hemisphere `south` from latitude |
 | Welcome with plants | "2 plants in…", Draw my home, Show me today first; the plants in step 4's tray |
@@ -139,4 +142,4 @@ questions.
 
 - [x] `CACHE` in `sw.js`: `sprout-v81-viridium` for S-04,
       `sprout-v92-viridium` for Import a home plan,
-      `sprout-v102-viridium` for the first-run review.
+      `sprout-v103-viridium` for the first-run review.

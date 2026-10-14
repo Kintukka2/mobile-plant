@@ -753,6 +753,16 @@ img { max-width: 100%; display: block; }
 .ob-sp-added .chip svg { width: 12px; height: 12px; margin: 0 -2px 0 4px; }
 .ob-sp-added + .ob-actions, .ob-sp-list + .ob-sp-added:empty + .ob-actions { margin-top: 18px; }
 
+/* The watered step: one row per plant just added, the answers under its
+   name so three of them fit at phone width. */
+.ob-wt-list { width: 100%; max-width: 380px; max-height: 42vh; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; margin-top: 18px; }
+.ob-wt-row { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+.ob-wt-row.is-all { padding-bottom: 14px; border-bottom: 1px solid var(--hair); }
+.ob-wt-nm { font-family: var(--serif); font-size: 17px; color: var(--ink); }
+.ob-wt-row.is-all .ob-wt-nm { font-family: var(--sans); font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-3); }
+.ob-wt-opts { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.ob-wt-opts .ob-chip { padding: 8px 13px; font-size: 12.5px; }
+
 @keyframes obIn {
   from { opacity: 0; transform: translateY(18px); filter: blur(6px); }
   to   { opacity: 1; transform: none; filter: blur(0); }
