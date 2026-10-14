@@ -362,8 +362,7 @@ window.ViewSpecies = (function () {
           '<span class="nudge-ico">' + UI.icon('skull') + '</span><div style="min-width:0">' +
             /* Names the rung, read from LOOKUPS.TOX like the pills below, so
                a sore mouth and a failing liver no longer share one heading. */
-            '<div class="nudge-t">' + UI.esc(LOOKUPS.TOX[risk.worst].label) + ' to your ' +
-              UI.esc(risk.pets.join(' or ')) + '</div>' +
+            '<div class="nudge-t">' + UI.esc(risk.headline) + '</div>' +
             '<p class="nudge-p" style="margin:0">' + UI.esc(risk.note) + '</p>' +
           '</div>' +
         '</div>' +

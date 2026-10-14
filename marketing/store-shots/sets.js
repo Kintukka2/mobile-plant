@@ -14,8 +14,9 @@
 //         the voice zoning, so it never sits beside care data, toxicity
 //         or a diagnosis: frames on plant, discover and diagnose carry none.
 //
-// Copy rules: British English, no exclamation marks, one contraction a
-// line, and every privacy sentence true to native/store-privacy.md. No
+// Copy rules: the Voice section of CLAUDE.md. Headlines may have flair;
+// every claim, and every privacy sentence, stays true to the app and to
+// native/store-privacy.md. No
 // counts: the species list grows, so like the site the listing never says
 // how many there are or how many are pet safe. "These" points at the
 // pet-safe results on the screen instead, which stay true as the list does.

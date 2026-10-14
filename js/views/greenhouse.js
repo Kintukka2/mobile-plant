@@ -273,12 +273,10 @@ window.ViewGreenhouse = (function () {
       (risk && !editing
         ? '<div class="nudge nudge-warn mb-3">' +
             '<span class="nudge-ico">' + UI.icon('paw') + '</span><div style="min-width:0">' +
-            /* The heading names the rung, read from LOOKUPS.TOX so it wears
-               the same word as the chip on the species page. Every rating
-               petRisk returns is a level of toxicity, and "not safe" said
-               none of them. */
-            '<div class="nudge-t">' + UI.esc(LOOKUPS.TOX[risk.worst].label) + ' to your ' +
-              UI.esc(risk.pets.join(' or ')) + '</div>' +
+            /* The heading names each pet's rung, built once in petRisk so
+               the add form, the species page and the introduction word it
+               the same way. "Not safe" said none of the levels. */
+            '<div class="nudge-t">' + UI.esc(risk.headline) + '</div>' +
             '<p class="nudge-p mb-0">' + UI.esc(risk.note) + '</p></div></div>'
         : '') +
 

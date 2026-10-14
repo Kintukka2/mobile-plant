@@ -128,7 +128,7 @@ window.Onboard = (function () {
         '<span class="ob-sp-text"><span class="ob-sp-t">' + UI.esc(sp.common) + '</span>' +
           /* The pets answer pays off here, a step after it was given, and
              before the plant is in rather than after. */
-          (risk ? '<span class="ob-sp-warn">' + UI.icon('paw') + 'Not safe for your ' + UI.esc(risk.pets.join(' or ')) + '</span>'
+          (risk ? '<span class="ob-sp-warn">' + UI.icon('paw') + UI.esc(risk.headline) + '</span>'
                 : '<span class="ob-sp-d">' + UI.esc(sp.botanical) + '</span>') +
         '</span>' +
         '<span class="ob-sp-n">' + (n ? '\u00D7' + n : UI.icon('plus')) + '</span>' +

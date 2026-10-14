@@ -580,14 +580,32 @@ window.Schedule = (function () {
       return order[r.rating] > order[acc.rating] ? r : acc;
     }, risks[0]);
 
-    /* The names feed "Not safe for your cats or dogs". "Other" would read as
-       "your other", so once it is in the mix the line says "your pets". */
-    const names = risks.some(function (r) { return r.pet === 'other'; }) ? ['pets'] : risks.map(function (r) { return r.pet; });
+    /* "Other" would read as "your other", so once it is in the mix the
+       line says "your pets". */
+    const other = risks.some(function (r) { return r.pet === 'other'; });
+    const names = other ? ['pets'] : risks.map(function (r) { return r.pet; });
+
+    /* The warning every screen shows, built here so the add form, the
+       species page and the introduction can never word it differently.
+       Each pet gets its own level: a plant toxic to cats and only mildly
+       toxic to dogs says so, rather than calling it toxic to both. */
+    function label(rating, lower) {
+      const l = LOOKUPS.TOX[rating].label;
+      return lower ? l.charAt(0).toLowerCase() + l.slice(1) : l;
+    }
+    let headline;
+    if (other || risks.every(function (r) { return r.rating === worst.rating; })) {
+      headline = label(worst.rating) + ' to your ' + names.join(' and ');
+    } else {
+      headline = risks.slice().sort(function (a, b) { return order[b.rating] - order[a.rating]; })
+        .map(function (r, i) { return label(r.rating, i > 0) + ' to your ' + r.pet; }).join(', ');
+    }
 
     return {
       risks: risks,
       worst: worst.rating,
       pets: names,
+      headline: headline,
       note: sp.tox.note
     };
   }

@@ -607,7 +607,7 @@ body { padding-bottom: 80px; }
   <div class="g-plate">
     <div class="g-plate-lab">Toxicity, as rendered by LOOKUPS.TOX</div>
     <div class="g-plate-row">
-      <span class="pill"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2 19 6v5.4c0 4.2-2.9 7.2-7 9.4-4.1-2.2-7-5.2-7-9.4V6Z"/><path d="M9 12.2l2.2 2.2L15.4 10"/></svg>Cats: Pet safe</span>
+      <span class="pill"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2 19 6v5.4c0 4.2-2.9 7.2-7 9.4-4.1-2.2-7-5.2-7-9.4V6Z"/><path d="M9 12.2l2.2 2.2L15.4 10"/></svg>Cats: Non-toxic</span>
       <span class="pill pill-sun"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19Z"/><path d="M12 10v4.5M12 17.4v.1"/></svg>Cats: Mildly toxic</span>
       <span class="pill pill-terra"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M6.4 17.6 17.6 6.4"/></svg>Cats: Toxic</span>
       <span class="pill pill-blood"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a7.5 7.5 0 0 1 7.5 7.5c0 2.6-1.3 3.8-2 4.6-.5.6-.5 1.4-.5 2.4a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 7 17.5c0-1 0-1.8-.5-2.4-.7-.8-2-2-2-4.6A7.5 7.5 0 0 1 12 3Z"/><circle cx="9.3" cy="11" r="1.3"/><circle cx="14.7" cy="11" r="1.3"/></svg>Cats: Highly toxic</span>
@@ -902,50 +902,55 @@ body { padding-bottom: 80px; }
 <section class="g-sec" id="voice">
   <div class="g-sec-head"><span class="g-no">08</span><h2 class="g-h2">Voice</h2></div>
 
-  <p class="g-p">Sprout speaks <b>as itself, in the first person</b>, as a
-  knowledgeable friend rather than a system. It uses the reader's name where it
-  has one.</p>
+  <p class="g-p">Sprout speaks <b>as itself, in the first person</b>, as
+  someone who knows plants and tells you straight. It uses the reader's name in
+  the greeting.</p>
 
-  <p class="g-p">It did not always. The app ran three grammatical persons at
-  once &mdash; &ldquo;Shall I shorten&hellip;&rdquo; in the nudges,
-  &ldquo;What should we call you?&rdquo; in the welcome sheet, &ldquo;What
-  should Sprout call you?&rdquo; in the profile &mdash; the last two being the
-  same question asked on two screens in two voices. Committing to
-  &ldquo;I&rdquo; is what resolved it.</p>
+  <p class="g-p">Committing to &ldquo;I&rdquo; resolved an app that once ran
+  three grammatical persons at once, &ldquo;What should we call you?&rdquo; on
+  one screen and &ldquo;What should Sprout call you?&rdquo; on another. What it
+  did not settle was how much to say. Decision 07 asked for an unhurried voice,
+  and nearly every hint grew a second sentence that carried no information.
+  Decision 14 reversed it.</p>
 
-  <h3 class="g-h3">The persona is zoned</h3>
+  <h3 class="g-h3">Plain by default</h3>
 
   <div class="g-tw">
     <table class="g-t">
-      <thead><tr><th>Zone</th><th>Voice</th><th>Where</th></tr></thead>
+      <thead><tr><th>Where</th><th>Voice</th></tr></thead>
       <tbody>
-        <tr><td>Conversation</td><td>First person, warm</td><td>Greetings, nudges, empty states, form hints, confirmations, toasts</td></tr>
-        <tr><td>Reference</td><td>Plain, authoritative, no persona</td><td>Species care data, diagnosis explanations and treatment steps, toxicity notes</td></tr>
+        <tr><td>Today greeting heading, welcome sheet, rating thank-you</td><td>First person, warm</td></tr>
+        <tr><td>Everything else in the app</td><td>First person, plain: the useful thing, then stop</td></tr>
+        <tr><td>Species care data, diagnoses, treatments, toxicity notes</td><td>Plain, no persona</td></tr>
+        <tr><td>Marketing headlines, taglines, screenshot captions</td><td>Flair allowed; body copy plain</td></tr>
       </tbody>
     </table>
   </div>
 
-  <p class="g-rule"><b>A knowledgeable friend reads you the label straight when
-  it matters.</b> A cheerful voice explaining which crystals burn a cat's mouth
-  is worse than no persona at all. When in doubt about a string, ask whether it
-  is <i>talking to</i> the reader or <i>telling them a fact</i> &mdash; the
-  second one takes no personality.</p>
+  <p class="g-rule"><b>Stakes decide the register, not the screen.</b>
+  Anything about harm, health or money is plain wherever it appears, a
+  question in the introduction included. A headline can be playful, never
+  untrue.</p>
 
-  <h3 class="g-h3">Rules that keep it from grating</h3>
-
-  <p class="g-p">A greeting is read every morning, and warmth that lands in
-  week one can wear out by week three.</p>
+  <h3 class="g-h3">The rules</h3>
 
   <div class="g-tw">
     <table class="g-t">
       <thead><tr><th>Rule</th><th>Because</th></tr></thead>
       <tbody>
-        <tr><td>No exclamation marks in anything that repeats</td><td>Enthusiasm on a loop reads as a machine performing enthusiasm</td></tr>
-        <tr><td>One contraction per line &mdash; not none, not three</td><td>None is stiff; three is a performance of casualness</td></tr>
-        <tr><td>Never open two consecutive strings the same way</td><td>Two &ldquo;Looks like&hellip;&rdquo; in a row is where the seams show</td></tr>
-        <tr><td>Never tell the reader off</td><td>The app is accountable, not them</td></tr>
-        <tr><td>Say &ldquo;Sprout&rdquo; only when introducing itself</td><td>Everywhere else it is &ldquo;I&rdquo;. A narrator who keeps using their own name is not in the room</td></tr>
-        <tr><td>British English throughout</td><td>Matches the existing copy</td></tr>
+        <tr><td>Lead with the fact the reader needs</td><td>The first sentence is the one that gets read</td></tr>
+        <tr><td>One sentence by default</td><td>A second earns its place only by telling the reader something new</td></tr>
+        <tr><td>Name a risk plainly: &ldquo;toxic to cats&rdquo;</td><td>&ldquo;May be dangerous&rdquo; says neither how nor how much</td></tr>
+        <tr><td>Say what the app does with a concrete verb</td><td>&ldquo;I'll warn you&rdquo; is a promise the reader can hold it to</td></tr>
+        <tr><td>Specific beats general</td><td>The plant's name, the number of days, the room</td></tr>
+        <tr><td>At most one em dash, never as a pause; none in the data</td><td>The dramatic pause is the commonest tell of generated copy</td></tr>
+        <tr><td>No setups, morals, filler or questions that are really instructions</td><td>They make a string longer without making it say more</td></tr>
+        <tr><td>A hint is one sentence; a toast six words</td><td>Each surface has a length the reader expects</td></tr>
+        <tr><td>Never claim more than the code does</td><td>&ldquo;Watering follows the forecast&rdquo; shipped while the app only offered a change</td></tr>
+        <tr><td>No exclamation marks in anything that repeats</td><td>Enthusiasm on a loop reads as a machine performing it</td></tr>
+        <tr><td>Say &ldquo;Sprout&rdquo; only when introducing itself</td><td>Everywhere else it is &ldquo;I&rdquo;. The site and listing name the product</td></tr>
+        <tr><td>Never tell the reader off</td><td>Being direct is not telling off: say what to do</td></tr>
+        <tr><td>British English</td><td>Matches the existing copy</td></tr>
       </tbody>
     </table>
   </div>
@@ -953,44 +958,43 @@ body { padding-bottom: 80px; }
   <div class="g-note"><b>A syntax note that is not a voice note.</b>
   Apostrophes inside single-quoted JS strings need escaping as <code>\'</code>.
   That is never a reason to write &ldquo;I will&rdquo; where &ldquo;I'll&rdquo;
-  belongs &mdash; the stiffness is visible to the reader and the escape is not.
-  Every contraction in the app was written as <code>\'</code> for this reason.</div>
+  belongs. Contractions are no longer counted: write it the way you would say it.</div>
 
   <h3 class="g-h3">The same strings, before and after</h3>
 
   <div class="g-voice">
-    <div class="g-voice-h">Greeting &middot; Today &middot; conversation zone</div>
-    <div class="g-voice-row is-old"><div class="g-voice-tag">Was</div><div class="g-voice-txt">Two plants are overdue. Nothing dramatic &mdash; most plants forgive a late drink far more readily than an early one.</div></div>
-    <div class="g-voice-row is-ship"><div class="g-voice-tag">Ships</div><div class="g-voice-txt"><b style="display:block;font-family:var(--display);font-weight:500;font-size:14px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px">Good morning, Dan</b>2 plants are ready for a drink. Nothing dramatic &mdash; a late one is forgiven far more readily than an early one.</div></div>
+    <div class="g-voice-h">Greeting &middot; Today</div>
+    <div class="g-voice-row is-old"><div class="g-voice-tag">Was</div><div class="g-voice-txt">2 plants are ready for a drink. Nothing dramatic &mdash; a late one is forgiven far more readily than an early one.</div></div>
+    <div class="g-voice-row is-ship"><div class="g-voice-tag">Ships</div><div class="g-voice-txt"><b style="display:block;font-family:var(--display);font-weight:500;font-size:14px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px">Good morning, Dan</b>2 plants are overdue for water, so they're first in the list below.</div></div>
   </div>
 
   <div class="g-voice">
-    <div class="g-voice-h">Weather nudge &middot; conversation zone</div>
-    <div class="g-voice-row is-old"><div class="g-voice-tag">Was</div><div class="g-voice-txt">Highs are averaging 26&deg;C. Warm dry air pulls moisture out of soil and leaves noticeably faster. Shall I shorten watering intervals by 2 days across your greenhouse?</div></div>
-    <div class="g-voice-row is-ship"><div class="g-voice-tag">Ships</div><div class="g-voice-txt">Highs are averaging 26&deg;C. Warm dry air pulls moisture out of soil and leaves noticeably faster, so let's shorten the gap between waterings by two days?</div></div>
+    <div class="g-voice-h">Introduction &middot; pets &middot; stakes decide the register</div>
+    <div class="g-voice-row is-old"><div class="g-voice-tag">Was</div><div class="g-voice-txt">I'll warn you before you add anything that would hurt them. A surprising number of the popular plants would.</div></div>
+    <div class="g-voice-row is-ship"><div class="g-voice-tag">Ships</div><div class="g-voice-txt">I'll warn you about any plant that's toxic to them.</div></div>
   </div>
 
   <div class="g-voice">
-    <div class="g-voice-h">Welcome sheet &middot; the one place it says its name</div>
-    <div class="g-voice-row is-old"><div class="g-voice-tag">Was</div><div class="g-voice-txt">Sprout is a home for your houseplants. Tell it what you have and where they live, and it works out when each one needs watering.</div></div>
-    <div class="g-voice-row is-ship"><div class="g-voice-tag">Ships</div><div class="g-voice-txt">Hi, I'm Sprout, and this is a home for your houseplants. Tell me what you have and which room they are in, and we can work out a routine around what each one actually needs.</div></div>
+    <div class="g-voice-h">Weather nudge</div>
+    <div class="g-voice-row is-old"><div class="g-voice-tag">Was</div><div class="g-voice-txt">Highs are averaging 26&deg;C. Warm dry air pulls moisture out of soil and leaves noticeably faster, so let's shorten the gap between waterings by two days?</div></div>
+    <div class="g-voice-row is-ship"><div class="g-voice-tag">Ships</div><div class="g-voice-txt"><b style="display:block;font-family:var(--display);font-weight:500;font-size:14px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px">7 hot, dry days ahead</b>Highs are averaging 26&deg;C and warm, dry air dries soil faster, so I can shorten every plant's watering gap by two days.</div></div>
   </div>
 
   <div class="g-voice">
-    <div class="g-voice-h">Profile field &middot; the same question, once</div>
-    <div class="g-voice-row is-old"><div class="g-voice-tag">Was</div><div class="g-voice-txt">What should we call you? &nbsp;/&nbsp; What should Sprout call you?</div></div>
-    <div class="g-voice-row is-ship"><div class="g-voice-tag">Ships</div><div class="g-voice-txt">What should I call you?</div></div>
+    <div class="g-voice-h">Introduction &middot; the one place it says its name</div>
+    <div class="g-voice-row is-old"><div class="g-voice-tag">Was</div><div class="g-voice-txt">Hi, I'm Sprout, and this is a home for your houseplants. Tell me what you have and which room they are in, and we can work out a routine around what each one actually needs.</div></div>
+    <div class="g-voice-row is-ship"><div class="g-voice-tag">Ships</div><div class="g-voice-txt">I'm Sprout. A few quick questions first, then on to your plants.</div></div>
   </div>
 
   <div class="g-voice">
-    <div class="g-voice-h">Diagnose hint &middot; accountability, not scolding</div>
-    <div class="g-voice-row is-old"><div class="g-voice-tag">Was</div><div class="g-voice-txt">Be honest here. Guessing will give you a confident wrong answer.</div></div>
-    <div class="g-voice-row is-ship"><div class="g-voice-tag">Ships</div><div class="g-voice-txt">Have a proper look before you answer &mdash; finger in the soil, turn a leaf over, tip it out of the pot if you can. I'll only ever be as right as what you tell me.</div></div>
+    <div class="g-voice-h">Diagnose hint &middot; an instruction, not a sentence about the app</div>
+    <div class="g-voice-row is-old"><div class="g-voice-tag">Was</div><div class="g-voice-txt">Have a proper look before you answer &mdash; finger in the soil, turn a leaf over, tip it out of the pot if you can. I'll only ever be as right as what you tell me.</div></div>
+    <div class="g-voice-row is-ship"><div class="g-voice-tag">Ships</div><div class="g-voice-txt">Feel the soil and look under a leaf before you tick, and tip it out of the pot if you can.</div></div>
   </div>
 
   <div class="g-voice">
-    <div class="g-voice-h">Treatment step &middot; reference zone &mdash; unchanged on purpose</div>
-    <div class="g-voice-row is-ship"><div class="g-voice-tag">Ships</div><div class="g-voice-txt">Waterlogged soil has driven the oxygen out of the root zone. Tip the plant out, cut away any root that is brown and soft, and repot into fresh open mix.</div></div>
+    <div class="g-voice-h">Treatment step &middot; reference &middot; plain already</div>
+    <div class="g-voice-row is-ship"><div class="g-voice-tag">Ships</div><div class="g-voice-txt">Stop watering completely and let the soil dry until the top 5cm are dry to your finger.</div></div>
   </div>
 </section>
 
