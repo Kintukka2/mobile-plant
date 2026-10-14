@@ -12,6 +12,11 @@
    the last answer is in. Every answer is saved as it is given, so leaving
    half way keeps what was said, and every one of them is editable in
    Profile afterwards — this is the same data with a better first asking.
+
+   There is a way back. Two of the answers move on by themselves, and one of
+   those is the hemisphere, which inverts every light reading and every
+   season when it is wrong: a mis-tap that could not be undone until the
+   reader found it in Profile was the costliest thing on this screen.
    ========================================================================== */
 
 window.Onboard = (function () {
@@ -21,7 +26,8 @@ window.Onboard = (function () {
 
   const STEPS = ['name', 'pets', 'exp', 'hemi', 'loc'];
 
-  let root = null, stage = null, dotsEl = null, at = -1, finished = false, onDone = null, busy = false;
+  let root = null, stage = null, dotsEl = null, backEl = null, skipEl = null,
+      at = -1, finished = false, onDone = null, busy = false;
 
   function shouldRun() {
     const s = Store.get().settings;
@@ -32,7 +38,12 @@ window.Onboard = (function () {
 
   function stepName() {
     const name = Store.get().profile.name || '';
-    return '<h2 class="ob-q">What should I call you?</h2>' +
+    /* The introduction comes before the first question, not after the
+       last. Five questions in the first person from someone who has not yet
+       said who they are, and then "Hi, I'm Sprout" on the sheet after them,
+       was the right greeting in the wrong place. */
+    return '<p class="ob-lede">I\'m Sprout. Five quick questions, then we can start on your plants.</p>' +
+      '<h2 class="ob-q">What should I call you?</h2>' +
       '<input class="ob-input" id="ob-name" type="text" maxlength="30" autocomplete="given-name" autocapitalize="words" placeholder="Your name" value="' + UI.attr(name) + '">' +
       '<div class="ob-actions"><button class="btn btn-lg" data-ob="next">Continue</button></div>';
   }
@@ -99,6 +110,10 @@ window.Onboard = (function () {
       at = i;
       stage.innerHTML = '<div class="ob-step">' + RENDER[STEPS[i]]() + '</div>';
       dots();
+      backEl.hidden = i === 0;
+      /* On the last question "Not now" already is the skip, so a second
+         way out under it would only be a second word for the same tap. */
+      skipEl.hidden = i === STEPS.length - 1;
       busy = false;
       const input = stage.querySelector('#ob-name');
       if (input) setTimeout(function () { input.focus(); }, 500);
@@ -111,6 +126,14 @@ window.Onboard = (function () {
 
   function next() {
     if (at + 1 >= STEPS.length) finish(); else go(at + 1);
+  }
+
+  /* Answers are already saved, so stepping back only re-asks: the step
+     renders with what was chosen lit, and choosing again overwrites it. */
+  function back() {
+    if (!root || finished || busy || at <= 0) return;
+    if (STEPS[at] === 'name') saveName();
+    go(at - 1);
   }
 
   function saveName() {
@@ -141,6 +164,13 @@ window.Onboard = (function () {
     });
   }
 
+  /* Single choices move on by themselves after a beat. The beat is bound
+     to the step it was given on, so a Back tapped inside it is not undone
+     by the advance landing a moment later. */
+  function advanceFrom(step) {
+    setTimeout(function () { if (at === step) next(); }, 460);
+  }
+
   /* ---------- Mount ---------- */
 
   function start(splash, done) {
@@ -151,6 +181,7 @@ window.Onboard = (function () {
     root = document.createElement('div');
     root.className = 'ob';
     root.innerHTML =
+      '<button class="ob-back" data-ob="back" aria-label="Back" hidden>' + UI.icon('back') + '</button>' +
       '<div class="ob-brand" aria-hidden="true">Sprout</div>' +
       '<div class="ob-stage" id="ob-stage"></div>' +
       '<div class="ob-dots" id="ob-dots"></div>' +
@@ -158,6 +189,8 @@ window.Onboard = (function () {
     splash.appendChild(root);
     stage = root.querySelector('#ob-stage');
     dotsEl = root.querySelector('#ob-dots');
+    backEl = root.querySelector('.ob-back');
+    skipEl = root.querySelector('.ob-skip');
 
     root.addEventListener('click', function (e) {
       const t = e.target;
@@ -165,6 +198,7 @@ window.Onboard = (function () {
       if (act) {
         const a = act.getAttribute('data-ob');
         if (a === 'next') { if (STEPS[at] === 'name') saveName(); next(); }
+        else if (a === 'back') back();
         else if (a === 'locate') locate();
         else if (a === 'finish') { if (STEPS[at] === 'name') saveName(); finish(); }
         else if (a === 'loc-later') { Store.snoozeLocationAsk(); finish(); }
@@ -184,13 +218,13 @@ window.Onboard = (function () {
       if (exp) {
         stage.querySelectorAll('[data-ob-exp]').forEach(function (b) { b.classList.toggle('is-on', b === exp); });
         Store.updateProfile({ experience: exp.getAttribute('data-ob-exp') });
-        setTimeout(next, 460); return;
+        advanceFrom(at); return;
       }
       const hemi = t.closest('[data-ob-hemi]');
       if (hemi) {
         stage.querySelectorAll('[data-ob-hemi]').forEach(function (b) { b.classList.toggle('is-on', b === hemi); b.classList.remove('is-hinted'); });
         Store.updateProfile({ hemisphere: hemi.getAttribute('data-ob-hemi') });
-        setTimeout(next, 460); return;
+        advanceFrom(at); return;
       }
     });
 
@@ -202,5 +236,8 @@ window.Onboard = (function () {
     setTimeout(function () { go(0); }, 420);
   }
 
-  return { shouldRun: shouldRun, start: start };
+  /* app.js hands Android's Back button here while the introduction is up. */
+  function isOpen() { return !!root && !finished; }
+
+  return { shouldRun: shouldRun, start: start, back: back, isOpen: isOpen };
 })();

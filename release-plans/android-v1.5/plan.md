@@ -78,6 +78,38 @@ a file, then a sheet that says what will change before anything does
 | Store full | "Storage is full" and the garden is as it was |
 | From the empty plan's link | Same as from Settings, arriving on the plan |
 
+### The first run, reviewed end to end
+
+**From:** the owner, before production: walk a new reader's first session
+phase by phase and close the gaps. Walked in headless Chromium at 430×932
+from a clean origin, every phase screenshotted.
+
+| Phase | What a new reader met | Change |
+| --- | --- | --- |
+| 1. Splash | Wordmark, 2.3 s floor | None needed |
+| 2. Five questions | Sprout asked in the first person and only said who it was on the sheet after them | The first question opens with "I'm Sprout. Five quick questions, then we can start on your plants." |
+| 2. Five questions | No way back. Experience and hemisphere move on by themselves after a beat, so a mis-tap on the hemisphere (which flips every light reading and every season) stuck until Profile | A back arrow beside the wordmark from the second question on; Android's Back steps back a question too (and does nothing on the first). The automatic move-on is tied to its own question, so a quick Back is never overridden |
+| 2. Five questions | "Skip the rest" under "Not now" on the last question; the device's hemisphere hint and the skip were at `--ink-4`, almost invisible | Skip hidden on the last question; both raised to `--ink-3` |
+| 3. Welcome sheet | A second introduction ("Hi, I'm Sprout…") in one long paragraph, and the experience answer did nothing anywhere in the app | Now the end of the introduction: "Welcome, Dan", one line per answer that changed something (pets, hemisphere, forecast), and the experience answer decides which step comes first. *Completely new* and *Figuring it out* get **Add my first plant** first; everyone else, and anyone who skipped it, gets **Draw my home** first, as before. Both are always there |
+| 4. First plant | The first job a new reader ever got was "Fertilise", for a plant the form dates as bought today | A plant with no feed recorded waits one feed interval from the day it was acquired; the feeding card says "first feed once it has settled in". A plant that has been home longer is due as before |
+| 5. Reminders | Off by default, and switched on only in Profile. Nothing on the way through mentioned them | On the native shell, once there is a plant, Today asks "Want a reminder in the morning?" under the day's jobs. **Remind me** asks the OS, the same way Profile's switch does; **Not now** is kept for good and Profile keeps the switch. Hidden once the OS has refused |
+
+**Checked in headless Chromium:**
+
+| Case | Result |
+| --- | --- |
+| First question | Lede above it, no back arrow |
+| Tap Northern, Back, tap Southern | Hemisphere saved as `south` |
+| Last question | Back arrow shown, "Skip the rest" hidden |
+| Experience *Completely new* | Welcome leads with Add my first plant; tapping it lands on Today with the species sheet open |
+| Experience *I have a green thumb* | Welcome leads with Draw my home; tapping it lands on the plan |
+| Monstera added today | Feed due in 28 days, `settling`; Today shows nothing due |
+| Today with the native shell stubbed | Reminder ask shown; Not now hides it and records `remind-ask` |
+
+Still to check on a device: the reminder ask's Remind me opening Android's
+notification permission dialog on 13 and up, and Back stepping through the
+questions.
+
 ## Production switches
 
 - [ ] `js/rate.js`: `LIVE = true`. Closed testers are paid, so it stayed
@@ -86,7 +118,9 @@ a file, then a sheet that says what will change before anything does
 - [ ] Device check: the 1.4 items (Back closing the diary sheet, the room
       name coming back, Remove this plant), editing a diary entry, and
       Import a home plan from a file saved on the phone (the system file
-      picker opens, the sheet reads it, the plan arrives).
+      picker opens, the sheet reads it, the plan arrives), and the first
+      run: Back through the questions, and Today's reminder ask opening the
+      notification permission dialog on Android 13 and up.
 - [ ] Play Console before the first production release: store listing,
       Data safety (including whether the In-App Review library needs
       declaring), content rating, countries.
@@ -95,4 +129,5 @@ a file, then a sheet that says what will change before anything does
 ## Release housekeeping
 
 - [x] `CACHE` in `sw.js`: `sprout-v81-viridium` for S-04,
-      `sprout-v92-viridium` for Import a home plan.
+      `sprout-v92-viridium` for Import a home plan,
+      `sprout-v101-viridium` for the first-run review.

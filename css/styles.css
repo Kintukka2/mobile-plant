@@ -644,6 +644,21 @@ img { max-width: 100%; display: block; }
   color: var(--ink-3);
   animation: obIn 900ms var(--ease) 260ms both;
 }
+/* Level with the wordmark, at the edge a back arrow is looked for. */
+.ob-back {
+  position: absolute; top: calc(env(safe-area-inset-top, 0px) + 9vh - 14px); left: 14px;
+  width: 44px; height: 44px; display: grid; place-items: center;
+  background: none; border: 0; border-radius: 50%; color: var(--ink-3); cursor: pointer;
+  animation: obIn 600ms var(--ease) both;
+}
+.ob-back[hidden], .ob-skip[hidden] { display: none; }
+.ob-back svg { width: 20px; height: 20px; }
+.ob-back:active { background: var(--glass); }
+.ob-lede {
+  font-family: var(--sans); font-size: 13.5px; line-height: 1.55;
+  color: var(--ink-3); text-align: center; text-wrap: balance;
+  max-width: 34ch; margin: 0 auto 14px;
+}
 .ob-stage { width: 100%; max-width: 420px; }
 .ob-step { display: flex; flex-direction: column; align-items: center; width: 100%; }
 .ob-step > * { animation: obIn 720ms var(--ease) both; }
@@ -692,7 +707,9 @@ img { max-width: 100%; display: block; }
   cursor: pointer;
   transition: border-color var(--dur-1) var(--ease), background var(--dur-1) var(--ease), transform var(--dur-1) var(--ease);
 }
-.ob-opt small { font-family: var(--sans); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-4); }
+/* ink-3, not ink-4: this is the one line on the screen that helps answer
+   the question, and at ink-4 it was all but invisible on the deep field. */
+.ob-opt small { font-family: var(--sans); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3); }
 .ob-opt.is-hinted { border-color: var(--hair-3); }
 .ob-opt.is-on { border-color: var(--mint); background: var(--mint-wash); }
 .ob-opt.is-on small { color: var(--mint); }
@@ -705,7 +722,7 @@ img { max-width: 100%; display: block; }
   position: absolute; bottom: calc(env(safe-area-inset-bottom, 0px) + 4.5vh);
   background: none; border: 0; padding: 8px 12px;
   font-family: var(--sans); font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--ink-4); cursor: pointer;
+  color: var(--ink-3); cursor: pointer;
   animation: obIn 900ms var(--ease) 600ms both;
 }
 @keyframes obIn {
@@ -717,7 +734,7 @@ img { max-width: 100%; display: block; }
   to   { opacity: 0; transform: translateY(-14px); filter: blur(6px); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ob-step > *, .ob-step.is-leaving > *, .ob-brand, .ob-dots, .ob-skip { animation: none; }
+  .ob-step > *, .ob-step.is-leaving > *, .ob-brand, .ob-dots, .ob-skip, .ob-back { animation: none; }
 }
 
 .splash-inner { text-align: center; padding: 0 28px; }
@@ -4181,6 +4198,11 @@ img { max-width: 100%; display: block; }
    under it: a 96px plate above a paragraph left a column of empty sheet
    beside it and pushed the buttons below the fold on a phone. */
 .welcome-sprout { float: left; margin: 4px 16px 6px 0; }
+/* What the introduction's answers changed, one line each, so the questions
+   are seen to have been worth answering. */
+.welcome-heard { padding: 12px 14px; border: 1px solid var(--hair); border-radius: var(--r); background: var(--glass); }
+.welcome-heard-row { gap: 10px; flex-wrap: nowrap; align-items: flex-start; color: var(--ink-2); }
+.welcome-heard-row svg { flex: none; width: 16px; height: 16px; margin-top: 2px; color: var(--mint); }
 
 .empty h3 {
   font-family: var(--display);

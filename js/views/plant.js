@@ -268,7 +268,10 @@ window.ViewPlant = (function () {
             : '<div style="font-family:var(--serif);font-size:22px;margin-top:3px">Every ' +
                 sp.fert.everyDays + ' days</div>' +
               '<div class="muted small" style="margin-top:2px">' + UI.esc(sp.fert.type) +
-                ', at ' + UI.esc(sp.fert.strength) + ' strength</div>') +
+                ', at ' + UI.esc(sp.fert.strength) + ' strength' +
+                /* Said, so a new plant's first feed weeks away reads as a
+                   decision rather than a schedule that forgot it. */
+                (f && f.settling ? ' · first feed once it has settled in' : '') + '</div>') +
         '</div>' +
         '<span class="pill ' + fCls + ' pill-lg">' + UI.esc(fLine) + '</span>' +
       '</div>' +

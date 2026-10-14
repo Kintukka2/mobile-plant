@@ -292,7 +292,22 @@ window.Schedule = (function () {
       };
     }
     const interval = sp.fert.everyDays;
-    if (!plant.lastFertilised) return { days: 0, never: true, interval: interval, dormant: false };
+    if (!plant.lastFertilised) {
+      /* A plant that has only just come home is not fed on its first day.
+         Nursery compost carries fertiliser, a move is a shock, and feeding
+         roots that are settling in is how they burn. It also made the very
+         first job a new reader was ever handed "Fertilise" a plant bought
+         that morning, since the form dates it today. So one feed interval
+         from the day it arrived, then the usual rhythm. Feeding late costs
+         nothing; a plant that has been here longer is due as before. */
+      const got = UI.fromISO(plant.acquired);
+      const first = got ? UI.addDays(got, interval) : null;
+      if (first && first > UI.today()) {
+        return { days: UI.daysBetween(UI.today(), first), never: false, settling: true,
+                 interval: interval, nextDate: first, dormant: false };
+      }
+      return { days: 0, never: true, interval: interval, dormant: false };
+    }
     const last = UI.fromISO(plant.lastFertilised);
     if (!last) return { days: 0, never: true, interval: interval, dormant: false };
     const next = UI.addDays(last, interval);

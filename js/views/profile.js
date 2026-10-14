@@ -600,22 +600,60 @@ window.ViewProfile = (function () {
     return 'Nothing is due today, so today it would stay quiet.';
   }
 
+  /* The end of the introduction, not a second one. Sprout says who it is
+     above the first question now, so this sheet's job is to show that the
+     answers were heard — each line is something the app will now do
+     differently because of one — and to hand over to a first step.
+
+     Which step leads is the one thing the experience answer decides. Tracing
+     a home is the planner's strength and the right door for someone who
+     already keeps plants; for someone completely new or still finding their
+     feet it is a four-step job standing between them and the first schedule,
+     so they are offered the one plant first and the plan beside it. A
+     skipped answer keeps the planner's lead, the order the greenhouse
+     itself takes. */
   function welcomeSheet() {
-    const name = (Store.get().profile.name || '').trim();
+    const prof = Store.get().profile;
+    const name = (prof.name || '').trim();
+    const pets = (prof.pets || []).filter(function (k) { return k === 'cats' || k === 'dogs'; });
+    const plantFirst = prof.experience === 'new' || prof.experience === 'some';
+
+    const heard = [];
+    if (pets.length) {
+      heard.push(['paw', 'I\'ll warn you about any plant that would hurt your ' + pets.join(' or ') + '.']);
+    }
+    if (prof.hemisphere) {
+      heard.push(['sun', 'I\'m reading seasons and window light for the ' + prof.hemisphere + 'ern hemisphere.']);
+    }
+    if (prof.location && prof.location.label) {
+      heard.push(['pin', 'Watering follows the forecast for ' + prof.location.label + '.']);
+    }
+
+    const plantBtn = '<button class="btn' + (plantFirst ? ' btn-lg' : ' btn-ghost') + '" id="w-plant">' +
+      UI.icon('plus') + 'Add my first plant</button>';
+    const planBtn = '<button class="btn' + (plantFirst ? ' btn-ghost' : ' btn-lg') + '" id="w-go">' +
+      'Draw my home</button>';
+
     const body =
       UI.sprout('base', 'is-small welcome-sprout') +
-      '<p class="muted" style="margin:0 0 18px;line-height:1.65">' +
-        'Hi' + (name ? ' ' + UI.esc(name) : '') + ', I\'m Sprout, and this is a home for your houseplants. Tell me what you have and which room ' +
-        'they are in, and we can work out a routine around what each one actually needs — the species\' own ' +
-        'requirements, adjusted for your pot, your light and the season you are really in.' +
+      '<p class="muted" style="margin:0 0 14px;line-height:1.65">' +
+        (plantFirst
+          ? 'Start with one plant you have. I\'ll give it a routine built from its species, its pot, its room and the season you are really in.'
+          : 'Trace your rooms and mark the windows, and I can read the light in each one. Every plant\'s routine is built from that, its pot and the season.') +
       '</p>' +
+      (heard.length
+        ? '<div class="stack welcome-heard" style="gap:8px;clear:both">' + heard.map(function (h) {
+            return '<div class="row welcome-heard-row">' + UI.icon(h[0]) +
+              '<span class="small">' + UI.esc(h[1]) + '</span></div>';
+          }).join('') + '</div>'
+        : '') +
 
       '<div class="stack" style="gap:8px;margin-top:18px;clear:both">' +
-        '<button class="btn btn-lg" id="w-go">Set up my greenhouse</button>' +
-        '<button class="btn btn-ghost" id="w-skip">Let me look around first</button>' +
+        (plantFirst ? plantBtn + planBtn : planBtn + plantBtn) +
+        '<button class="link-btn center" id="w-skip">Let me look around first</button>' +
       '</div>';
 
-    UI.openSheet('Welcome to Sprout', body, function (root) {
+    UI.openSheet(name ? 'Welcome, ' + name : 'Welcome to Sprout', body, function (root) {
       function save() {
         Store.updateSettings({ seenWelcome: true });
       }
@@ -629,6 +667,15 @@ window.ViewProfile = (function () {
         save();
         UI.closeSheet();
         App.go('/plan');
+      });
+
+      /* Today first, so the plant page the form lands on has Today behind
+         it on Back rather than a page the reader never chose. */
+      root.querySelector('#w-plant').addEventListener('click', function () {
+        save();
+        UI.closeSheet();
+        App.go('/today');
+        setTimeout(function () { ViewGreenhouse.addPlantSheet(null); }, 360);
       });
 
       root.querySelector('#w-skip').addEventListener('click', function () {
