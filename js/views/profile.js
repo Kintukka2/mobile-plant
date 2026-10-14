@@ -621,10 +621,11 @@ window.ViewProfile = (function () {
 
     const heard = [];
     if (count) {
-      heard.push(['leaf', UI.plural(count, 'plant') + ' in, each with its own routine already.']);
+      heard.push(['leaf', count === 1 ? '1 plant in, with its own routine already.'
+        : UI.plural(count, 'plant') + ' in, each with its own routine already.']);
     }
     if (pets.length) {
-      heard.push(['paw', 'I\'ll warn you about any plant that would hurt your ' + pets.join(' or ') + '.']);
+      heard.push(['paw', 'I\'ll warn you about any plant that\'s toxic to your ' + pets.join(' or ') + '.']);
     }
     /* A location answers the hemisphere as well, so the forecast line is the
        one worth saying when both are known. */

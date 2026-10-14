@@ -29,7 +29,7 @@ originals sample for sample (identical length, differing by no more than 16-bit 
 
 ## Writing for her
 
-She is Sprout, so the voice rules in `CLAUDE.md` apply: first person, one contraction per line,
+She is Sprout, so the voice rules in `CLAUDE.md` apply: first person, plain by default,
 "Sprout" only when introducing itself. What she says and what goes on screen are separate
 strings in `marketing/reels/build/script.json`: punctuation steers her delivery (a trailing `!` lifts a line,
 `...` slows one), while the caption keeps the house style. She says URLs best spelt out:

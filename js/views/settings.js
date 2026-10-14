@@ -255,8 +255,10 @@ window.ViewSettings = (function () {
             (usage.pctUsed > 85 ? 'var(--terra)' : 'var(--leaf)') + '"></div>' +
         '</div>' +
         '<p class="hint">There\'s room for about ' + UI.plural(usage.photosLeft, 'more photo') + '. ' +
-          UI.plural(usage.photoCount, 'photo') + (usage.photoCount === 1 ? ' takes ' : ' take ') +
-          'up ' + usage.photoMB + 'MB, each shrunk to about 1000px to fit.' +
+          (usage.photoCount
+            ? UI.plural(usage.photoCount, 'photo') + (usage.photoCount === 1 ? ' takes ' : ' take ') +
+              'up ' + usage.photoMB + 'MB, each shrunk to about 1000px to fit.'
+            : 'Each one is shrunk to about 1000px to fit.') +
           (usage.pctUsed > 85 ? ' <strong>Deleting a few older photos frees some up.</strong>' : '') +
         '</p>' +
       '</div>' +
