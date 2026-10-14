@@ -152,23 +152,12 @@ window.ViewDiscover = (function () {
 
     /* Personalised shortlist: what suits the rooms they actually have. */
     if (!query && filter === 'all' && rooms.length) {
-      const owned = Store.activePlants().map(function (p) { return p.speciesId; });
-      const picks = [];
-
-      rooms.forEach(function (room) {
-        const best = window.PLANT_DATA.filter(function (sp) {
-          return sp.light.ideal === room.light &&
-                 owned.indexOf(sp.id) === -1 &&
-                 picks.every(function (x) { return x.sp.id !== sp.id; }) &&
-                 (!Schedule.petRisk(sp));
-        }).slice(0, 2);
-        best.forEach(function (sp) { picks.push({ sp: sp, room: room }); });
-      });
+      const picks = Schedule.roomMatches(5);
 
       if (picks.length) {
         html += '<div class="section" id="dc-recs" style="margin-top:0">' +
           '<div class="section-head"><h2 class="section-title">Good matches for your rooms</h2></div>' +
-          '<div class="stack" style="gap:8px">' + picks.slice(0, 5).map(function (x) {
+          '<div class="stack" style="gap:8px">' + picks.map(function (x) {
             const rl = LOOKUPS.LIGHT[x.room.light];
             return '<button class="dx-opt" data-species="' + UI.attr(x.sp.id) + '" style="margin:0">' +
               /* The photograph, as on every other species row: the initial

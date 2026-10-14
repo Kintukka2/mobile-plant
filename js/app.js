@@ -104,8 +104,11 @@ window.App = (function () {
       return;
     }
 
-    /* The introduction has no way back by design, and a page changing
-       under it would be found only once it finished. */
+    /* The introduction steps back a question at a time, and on the first
+       one Back does nothing: a page changing under it would be found only
+       once it finished, and leaving the app from a name field is not what
+       anyone pressing Back there means. */
+    if (window.Onboard && Onboard.isOpen()) { Onboard.back(); return; }
     if (document.querySelector('.ob')) return;
 
     if (UI.sheetIsOpen()) { UI.closeSheet(); return; }

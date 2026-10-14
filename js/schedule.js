@@ -292,7 +292,33 @@ window.Schedule = (function () {
       };
     }
     const interval = sp.fert.everyDays;
-    if (!plant.lastFertilised) return { days: 0, never: true, interval: interval, dormant: false };
+    if (!plant.lastFertilised) {
+      /* A plant that has only just come home is not fed on its first day.
+         Nursery compost carries fertiliser, a move is a shock, and feeding
+         roots that are settling in is how they burn. It also made the very
+         first job a new reader was ever handed "Fertilise" a plant bought
+         that morning, since the form dates it today. So one feed interval
+         from the day it arrived, then the usual rhythm. Feeding late costs
+         nothing; a plant that has been here longer is due as before. */
+      const got = UI.fromISO(plant.acquired);
+      const first = got ? UI.addDays(got, interval) : null;
+      if (first && first > UI.today()) {
+        return { days: UI.daysBetween(UI.today(), first), never: false, settling: true,
+                 interval: interval, nextDate: first, dormant: false };
+      }
+      /* A plant with no arrival date was already at home when the reader
+         added it in the introduction, so it is settled and owed a feed. But
+         every one of them owed it on the first morning made day one a list
+         of feeds on top of the waterings, so the first is held a week from
+         the day it was added. After that it is due as any other. */
+      const added = !got ? UI.fromISO(plant.createdAt) : null;
+      const held = added ? UI.addDays(added, 7) : null;
+      if (held && held > UI.today()) {
+        return { days: UI.daysBetween(UI.today(), held), never: false, held: true,
+                 interval: interval, nextDate: held, dormant: false };
+      }
+      return { days: 0, never: true, interval: interval, dormant: false };
+    }
     const last = UI.fromISO(plant.lastFertilised);
     if (!last) return { days: 0, never: true, interval: interval, dormant: false };
     const next = UI.addDays(last, interval);
@@ -482,6 +508,38 @@ window.Schedule = (function () {
   /* ---------- Pet safety ---------- */
 
   /* Warn if a species is toxic to a pet the user actually owns. */
+  /* Species that would thrive in the rooms the reader actually has: an
+     ideal light match per room, none they already grow, none that would
+     hurt their pets. Two per room so one bright room does not take the
+     whole list. Read by Discover's shortlist and by the plan once it can
+     say how much light each room gets, so the two always agree.
+
+     The experience answer orders the candidates: someone completely new or
+     still finding their feet sees the forgiving ones first, because the
+     first plant a beginner brings home is the one that decides whether
+     there is a second. */
+  function roomMatches(limit) {
+    const rooms = Store.get().rooms.filter(function (r) { return !!r.light && r.light !== 'none'; });
+    const owned = Store.activePlants().map(function (p) { return p.speciesId; });
+    const exp = Store.get().profile.experience;
+    const gentle = exp === 'new' || exp === 'some';
+    const RANK = { easy: 0, medium: 1, hard: 2 };
+    const pool = window.PLANT_DATA.slice();
+    if (gentle) {
+      pool.sort(function (a, b) { return (RANK[a.difficulty] || 0) - (RANK[b.difficulty] || 0); });
+    }
+    const picks = [];
+    rooms.forEach(function (room) {
+      pool.filter(function (sp) {
+        return sp.light.ideal === room.light &&
+               owned.indexOf(sp.id) === -1 &&
+               picks.every(function (x) { return x.sp.id !== sp.id; }) &&
+               !petRisk(sp);
+      }).slice(0, 2).forEach(function (sp) { picks.push({ sp: sp, room: room }); });
+    });
+    return picks.slice(0, limit || 5);
+  }
+
   function petRisk(sp) {
     const pets = Store.get().profile.pets || [];
     if (!pets.length || !sp || !sp.tox) return null;
@@ -548,7 +606,7 @@ window.Schedule = (function () {
     currentSeason: currentSeason, isGrowingSeason: isGrowingSeason,
     potVolumeL: potVolumeL, wateringInterval: wateringInterval, waterAmount: waterAmount,
     waterMethod: waterMethod, speciesMethod: speciesMethod,
-    waterDue: waterDue, fertiliseDue: fertiliseDue,
+    waterDue: waterDue, fertiliseDue: fertiliseDue, roomMatches: roomMatches,
     tasks: tasks, overdueCount: overdueCount,
     lightMatch: lightMatch, bestRoomsFor: bestRoomsFor, petRisk: petRisk,
     summary: summary

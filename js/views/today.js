@@ -209,6 +209,41 @@ window.ViewToday = (function () {
     '</div>';
   }
 
+  /* ---------- Reminders ----------
+     Reminders are why the store app exists, and they start off: the switch
+     lived only in Profile, three screens from anywhere a new reader goes,
+     so a garden could be set up with care and then never once be called
+     back to. This asks in the place it means something — under the first
+     list of jobs, once there is a plant to be reminded about — and only on
+     the native shell, the one runtime that can deliver one. Asked once: a
+     no is kept, and Profile has the switch from then on. Hidden while the
+     operating system has already said no, because a button that can only
+     produce a refusal is not an offer. */
+  const REMIND_ASK = 'remind-ask';
+
+  function hourLabel(h) {
+    return (h % 12 || 12) + (h < 12 ? 'am' : 'pm');
+  }
+
+  function remindAsk() {
+    const s = Store.get().settings;
+    if (!window.Notify || !Notify.isNative() || s.remind) return '';
+    if (dismissed().indexOf(REMIND_ASK) !== -1 || Notify.state() === 'denied') return '';
+    const hour = typeof s.remindHour === 'number' ? s.remindHour : 8;
+    return '<div class="section"><div class="nudge">' +
+      '<span class="nudge-ico">' + UI.icon('bell') + '</span>' +
+      '<div class="grow" style="min-width:0">' +
+        '<div class="nudge-t">Want a reminder in the morning?</div>' +
+        '<p class="nudge-p">I can tell you at ' + hourLabel(hour) + ' on the days something needs water or food. ' +
+          'It\'s scheduled on this phone, never sent from a server.</p>' +
+        '<div class="row" style="gap:8px;margin-top:12px">' +
+          '<button class="btn" data-act="remind-on" style="flex:2">' + UI.icon('bell') + 'Remind me</button>' +
+          '<button class="btn btn-ghost" data-act="remind-later" style="flex:1">Not now</button>' +
+        '</div>' +
+      '</div>' +
+    '</div></div>';
+  }
+
   /* ---------- Tasks ---------- */
 
   function taskRow(t) {
@@ -308,6 +343,7 @@ window.ViewToday = (function () {
           '</div>') +
     '</div>';
 
+    html += remindAsk();
     html += lightSection();
     html += weatherStrip();
 
@@ -390,6 +426,31 @@ window.ViewToday = (function () {
 
       if (e.target.closest('[data-act="set-location"]')) {
         ViewProfile.locationSheet();
+        return;
+      }
+
+      if (e.target.closest('[data-act="remind-on"]')) {
+        /* The same path as Profile's switch, so the two can never disagree
+           about what a yes or a refusal leaves behind. */
+        Notify.ask().then(function (result) {
+          if (result !== 'granted') {
+            UI.toast(result === 'denied'
+              ? 'Notifications are off for Sprout in your device settings'
+              : 'Reminders need permission', 'warn');
+            App.refresh();
+            return;
+          }
+          Store.updateSettings({ remind: true });
+          UI.toast('Reminders on. Profile has the time.', 'leaf');
+          App.refresh();
+        });
+        return;
+      }
+
+      if (e.target.closest('[data-act="remind-later"]')) {
+        Store.updateSettings({ dismissed: dismissed().concat(REMIND_ASK) });
+        UI.toast('Profile has reminders whenever you want them.');
+        App.refresh();
         return;
       }
 

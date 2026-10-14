@@ -600,22 +600,62 @@ window.ViewProfile = (function () {
     return 'Nothing is due today, so today it would stay quiet.';
   }
 
+  /* The end of the introduction, not a second one. Sprout says who it is
+     above the first question, so this sheet's job is to show that the
+     answers were heard — each line is something the app now does
+     differently because of one — and to hand over to the next step.
+
+     The plan leads either way, because it is the thing no other plant app
+     does, but what it is for depends on the plants question. With plants
+     already in, it is where they go: each waits in the plan's tray to be
+     dragged to where it stands. Without, it is how I learn what would grow
+     there, and step 4 of the plan suggests species for each room's light
+     once north is set. */
   function welcomeSheet() {
-    const name = (Store.get().profile.name || '').trim();
+    const prof = Store.get().profile;
+    const name = (prof.name || '').trim();
+    const pets = (prof.pets || []).filter(function (k) { return k === 'cats' || k === 'dogs'; });
+    const count = Store.activePlants().length;
+
+    const heard = [];
+    if (count) {
+      heard.push(['leaf', UI.plural(count, 'plant') + ' in, each with its own routine already.']);
+    }
+    if (pets.length) {
+      heard.push(['paw', 'I\'ll warn you about any plant that would hurt your ' + pets.join(' or ') + '.']);
+    }
+    /* A location answers the hemisphere as well, so the forecast line is the
+       one worth saying when both are known. */
+    if (prof.location && prof.location.label) {
+      heard.push(['pin', 'Watering follows the forecast for ' + prof.location.label + '.']);
+    } else if (prof.hemisphere) {
+      heard.push(['sun', 'I\'m reading seasons and window light for the ' + prof.hemisphere + 'ern hemisphere.']);
+    }
+
     const body =
       UI.sprout('base', 'is-small welcome-sprout') +
-      '<p class="muted" style="margin:0 0 18px;line-height:1.65">' +
-        'Hi' + (name ? ' ' + UI.esc(name) : '') + ', I\'m Sprout, and this is a home for your houseplants. Tell me what you have and which room ' +
-        'they are in, and we can work out a routine around what each one actually needs — the species\' own ' +
-        'requirements, adjusted for your pot, your light and the season you are really in.' +
+      '<p class="muted" style="margin:0 0 14px;line-height:1.65">' +
+        (count
+          ? 'Now draw your home and drag ' + (count === 1 ? 'it' : 'each one') + ' to where it stands. I\'ll read the light ' +
+            (count === 1 ? 'it gets' : 'each gets') + ' from the windows and tell you if a spot is wrong.'
+          : 'Draw your home and mark the windows, and I\'ll read the light in every room. Then I can suggest plants that will do well in each one.') +
       '</p>' +
+      (heard.length
+        ? '<div class="stack welcome-heard" style="gap:8px;clear:both">' + heard.map(function (h) {
+            return '<div class="row welcome-heard-row">' + UI.icon(h[0]) +
+              '<span class="small">' + UI.esc(h[1]) + '</span></div>';
+          }).join('') + '</div>'
+        : '') +
 
       '<div class="stack" style="gap:8px;margin-top:18px;clear:both">' +
-        '<button class="btn btn-lg" id="w-go">Set up my greenhouse</button>' +
-        '<button class="btn btn-ghost" id="w-skip">Let me look around first</button>' +
+        '<button class="btn btn-lg" id="w-go">Draw my home</button>' +
+        (count
+          ? '<button class="btn btn-ghost" id="w-skip">Show me today first</button>'
+          : '<button class="btn btn-ghost" id="w-browse">Browse plants</button>' +
+            '<button class="link-btn center" id="w-skip">Let me look around first</button>') +
       '</div>';
 
-    UI.openSheet('Welcome to Sprout', body, function (root) {
+    UI.openSheet(name ? 'Welcome, ' + name : 'Welcome to Sprout', body, function (root) {
       function save() {
         Store.updateSettings({ seenWelcome: true });
       }
@@ -629,6 +669,13 @@ window.ViewProfile = (function () {
         save();
         UI.closeSheet();
         App.go('/plan');
+      });
+
+      const browse = root.querySelector('#w-browse');
+      if (browse) browse.addEventListener('click', function () {
+        save();
+        UI.closeSheet();
+        App.go('/discover');
       });
 
       root.querySelector('#w-skip').addEventListener('click', function () {

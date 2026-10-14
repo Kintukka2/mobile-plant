@@ -451,7 +451,29 @@ window.ViewPlan = (function () {
         /* A button rather than "add one in the greenhouse": the planner
            preview has no greenhouse to send anyone to, and in the app the
            walk there and back lost the step the reader was on. */
-        h += '<p class="hint">No plants yet. Add one and I\'ll show you where it should stand.</p>';
+        /* With the light read, the plan has something to offer before it
+           has a plant to place: species that would do well in the rooms
+           just drawn. This is the reader with nothing yet, who drew a home
+           first, and the plan is the reason the suggestion can be specific
+           rather than a list of popular plants. App only: the planner
+           preview has no species pages, so it keeps the plain line. */
+        const picks = Plan.known() && window.ViewDiscover ? Schedule.roomMatches(4) : [];
+        if (picks.length) {
+          h += '<p class="hint plan-step-lede">Now I know the light in your rooms, these would do well here.</p>' +
+            '<div class="stack" style="gap:6px;margin-top:10px">' + picks.map(function (x) {
+              const rl = LOOKUPS.LIGHT[x.room.light];
+              return '<button class="dx-opt" data-pl-species="' + UI.attr(x.sp.id) + '" style="margin:0">' +
+                '<span class="dx-opt-thumb">' + UI.plantTile(Store.speciesPhoto(x.sp.id), x.sp.id, x.sp.common) + '</span>' +
+                '<span style="min-width:0">' +
+                  '<span class="dx-opt-t">' + UI.esc(x.sp.common) + '</span>' +
+                  '<span class="dx-opt-d">Ideal for your ' + UI.esc(x.room.name) +
+                    (rl ? ' — ' + UI.esc(rl.label.toLowerCase()) : '') + '</span>' +
+                '</span>' + UI.icon('chevron', 'muted') +
+              '</button>';
+            }).join('') + '</div>';
+        } else {
+          h += '<p class="hint">No plants yet. Add one and I\'ll show you where it should stand.</p>';
+        }
       } else if (loose.length) {
         /* The instruction comes first: it is read before the chips it is
            about, and it sits nearer the plan they are dragged onto. */
@@ -1308,6 +1330,8 @@ window.ViewPlan = (function () {
       if (e.target.closest('.plan-tools [data-open-compass]')) { openCompass(); return; }
       if (e.target.closest('[data-open-dims]')) { openDims(sel && sel.type === 'room' ? sel.id : null); return; }
       if (e.target.closest('#pl-add-plant')) { ViewGreenhouse.addPlantSheet(null); return; }
+      const plSp = e.target.closest('[data-pl-species]');
+      if (plSp) { App.go('/species/' + plSp.getAttribute('data-pl-species')); return; }
       if (e.target.closest('#pl-import')) { ViewSettings.importPlan(); return; }
       if (e.target.closest('#pl-quick-add')) { if (sel && sel.type === 'room') quickAdd(room(sel.id)); return; }
       if (e.target.closest('[data-tip-done]')) { Store.updateSettings({ reshapeTipDone: true }); syncOverlays(); return; }
