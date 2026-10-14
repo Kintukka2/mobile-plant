@@ -104,10 +104,10 @@ window.Notify = (function () {
      needs to be. Water and feed falling on the same day make one line, not
      two notifications.
 
-     The one-contraction-a-line rule bends here on purpose: a five-word
-     title has nowhere natural to put one, and "Monny's thirsty" breaks on
-     every plant whose name already ends in s. The warmth is carried by
-     naming the plant instead. */
+     Each title leads with the job as a verb, because a lock screen is
+     read for what to do, and the plant's name after it keeps the line
+     specific. "Monny's thirsty" also broke on every plant whose name
+     already ends in s; "Water Monny today" has nothing to break. */
   function compose(water, feed) {
     if (!water.length && !feed.length) return null;
     const all = water.concat(feed.filter(function (n) { return water.indexOf(n) === -1; }));
@@ -117,14 +117,14 @@ window.Notify = (function () {
          instead — "one to water and one to feed" — reads as two plants, and
          then the reader goes looking for the other one. */
       title = all.length === 1
-        ? all[0] + ' wants water and a feed'
+        ? 'Water and feed ' + all[0] + ' today'
         : cap(num(water.length)) + ' to water and ' + num(feed.length) + ' to feed';
     } else if (water.length) {
-      title = water.length === 1 ? water[0] + ' is thirsty today'
-                                 : cap(num(water.length)) + ' of your plants are thirsty';
+      title = water.length === 1 ? 'Water ' + water[0] + ' today'
+                                 : 'Water ' + num(water.length) + ' plants today';
     } else {
-      title = feed.length === 1 ? feed[0] + ' is due a feed'
-                                : cap(num(feed.length)) + ' of your plants are due a feed';
+      title = feed.length === 1 ? 'Feed ' + feed[0] + ' today'
+                                : 'Feed ' + num(feed.length) + ' plants today';
     }
     /* No body for a single plant: the title already said its name, and a
        notification that repeats itself reads as a mistake. */

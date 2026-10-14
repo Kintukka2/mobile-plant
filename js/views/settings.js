@@ -108,15 +108,15 @@ window.ViewSettings = (function () {
       const reader = new FileReader();
       reader.onload = function () {
         UI.confirmSheet('Restore this backup?',
-          'Everything I\'m holding now will be replaced by the contents of ' + file.name + '.',
+          'This replaces everything on ' + UI.here() + ' with the contents of ' + file.name + '.',
           'Restore', function () {
             try {
               const r = Store.importAll(reader.result);
               /* A failed save has already said so, in Store.save. Saying
                  "restored" after it would contradict the toast above. */
               if (r.saved && r.photosDropped) {
-                UI.toast('Backup restored, but ' + UI.plural(r.photosDropped, 'photo') +
-                         ' didn\'t fit. Free some space and restore again', 'warn');
+                UI.toast('Restored without ' + UI.plural(r.photosDropped, 'photo') +
+                         '. Free space and restore again', 'warn');
               } else if (r.saved) {
                 UI.toast('Backup restored', 'leaf');
               }
@@ -212,7 +212,7 @@ window.ViewSettings = (function () {
         UI.closeSheet();
         // A failed save has already said so, in Store.save.
         if (!r.saved) return;
-        UI.toast('Your home plan is in' + (r.plants ? ', with ' + UI.plural(r.plants, 'plant') : ''), 'leaf');
+        UI.toast('Plan imported' + (r.plants ? ' with ' + UI.plural(r.plants, 'plant') : ''), 'leaf');
         /* A fresh arrival even from the plan's own link, where go() would
            be a no-op: arriving resets the plan's undo history, which
            should not reach back across a whole plan being replaced. */
@@ -254,9 +254,9 @@ window.ViewSettings = (function () {
           '<div style="height:100%;width:' + usage.pctUsed + '%;border-radius:99px;background:' +
             (usage.pctUsed > 85 ? 'var(--terra)' : 'var(--leaf)') + '"></div>' +
         '</div>' +
-        '<p class="hint">' + usage.photoMB + 'MB of that is ' + UI.plural(usage.photoCount, 'photo') + '. ' +
-          'Space here is tight, so I shrink each photo to about 1000px before saving it. ' +
-          'There\'s room for about ' + UI.plural(usage.photosLeft, 'more photo') + '.' +
+        '<p class="hint">There\'s room for about ' + UI.plural(usage.photosLeft, 'more photo') + '. ' +
+          UI.plural(usage.photoCount, 'photo') + (usage.photoCount === 1 ? ' takes ' : ' take ') +
+          'up ' + usage.photoMB + 'MB, each shrunk to about 1000px to fit.' +
           (usage.pctUsed > 85 ? ' <strong>Deleting a few older photos frees some up.</strong>' : '') +
         '</p>' +
       '</div>' +
@@ -289,8 +289,9 @@ window.ViewSettings = (function () {
     html += '<div class="section">' +
       '<div class="section-head"><h2 class="section-title">Home plan</h2></div>' +
       '<div class="card">' +
-        '<p class="small muted" style="margin:0 0 12px;line-height:1.6">Drew your home in the planner at ' +
-          'sproutevergreen.app? I\'ll bring in the rooms, windows and north, and leave your plants and diary as they are.</p>' +
+        '<p class="small muted" style="margin:0 0 12px;line-height:1.6">I\'ll bring in the rooms, windows ' +
+          'and north from a plan drawn at sproutevergreen.app/planner. Your plants and diary stay, but placed ' +
+          'plants come off the plan until you drag them back.</p>' +
         '<button class="btn btn-soft btn-block" data-import-plan="1">' + UI.icon('download') + 'Import a home plan</button>' +
       '</div>' +
     '</div>';
@@ -303,8 +304,8 @@ window.ViewSettings = (function () {
           'I carry care data for ' + window.PLANT_DATA.length + ' species and a diagnostic model built from ' +
           Object.keys(PROBLEM_DATA.SYMPTOMS).length + ' symptoms and ' +
           Object.keys(PROBLEM_DATA.CAUSES).length + ' causes. Watering intervals start from the species ' +
-          'baseline, then shift for season, room light, pot size, pot material, drainage and your local ' +
-          'forecast. I show you every adjustment on the plant\'s Care tab, so you can disagree with me.' +
+          'baseline, then shift for season, room light, pot size, pot material, drainage and any forecast ' +
+          'change you accept. I list every adjustment on the plant\'s Care tab.' +
         '</p>' +
       '</div>' +
       '<button class="btn btn-blood btn-block" data-reset="1" style="margin-top:12px">' +

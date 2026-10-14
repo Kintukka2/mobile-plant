@@ -116,15 +116,14 @@ window.Rate = (function () {
   function tally() {
     const plants = Store.activePlants().length;
     const waters = Store.get().logs.filter(function (l) { return l.kind === 'water'; }).length;
-    if (!plants) return 'A small favour';
-    return count(plants, 'plant', 'plants') + (waters ? ' · ' + count(waters, 'watering', 'waterings') : ' and counting');
+    if (!plants) return 'No plants yet';
+    return count(plants, 'plant', 'plants') + (waters ? ' · ' + count(waters, 'watering', 'waterings') : '');
   }
 
   function name() { return (Store.get().profile.name || '').trim(); }
 
   function askText() {
-    const n = name();
-    return (n ? UI.esc(n) + ', a' : 'A') + ' rating is how other plant people find me. It takes a moment, and it means more than you\'d think.';
+    return 'A rating takes a moment and helps other plant people find me.';
   }
 
   function thanksTitle() {
@@ -219,13 +218,13 @@ window.Rate = (function () {
       '</div>' +
       '<div class="rate-intro">' +
         '<p class="rate-eyebrow">' + UI.esc(tally()) + '</p>' +
-        '<h2 class="rate-title" id="rate-title">Help me grow</h2>' +
+        '<h2 class="rate-title" id="rate-title">Rate me in the store</h2>' +
         '<p class="rate-text" id="rate-text">' + askText() + '</p>' +
       '</div>' +
       '<div class="rate-hero">' + laurel() + '<div class="rate-stage">' + frame() + '</div></div>' +
       '<div class="rate-actions">' +
         '<button class="btn btn-lg btn-block rate-cta" type="button" data-rate="cta">' + UI.icon('star') + '<span class="btn-label" id="rate-cta-label">Leave a rating</span></button>' +
-        '<button class="rate-alt" type="button" data-rate="store" hidden>No sheet appeared? Open the store page</button>' +
+        '<button class="rate-alt" type="button" data-rate="store" hidden>Open the store page</button>' +
       '</div>';
   }
 
