@@ -22,7 +22,7 @@
 (function (root) {
   const SETS = {
     a: { name: 'Final', note: 'The listing. Upload order matches native/store-listing.md.', frames: [
-      { screen: 'today', eyebrow: 'Every morning', head: 'A list that is short *because it\'s right.*', glow: 'leaf', layout: 'centre', sprout: 'corner' },
+      { screen: 'today', eyebrow: 'Every morning', head: 'Only the plants *that are due today.*', glow: 'leaf', layout: 'centre', sprout: 'corner' },
       { screen: 'greenhouse', eyebrow: 'Room by room', head: 'Care worked out from *where each plant lives.*', glow: 'leaf', layout: 'centre' },
       { screen: 'plan', eyebrow: 'Draw your home', head: 'It knows which rooms are bright, *because you showed it.*', glow: 'sun', layout: 'centre' },
       { screen: 'plant', eyebrow: 'Worth keeping', head: 'A record of the plant, *not just a reminder.*', glow: 'leaf', layout: 'centre' },
