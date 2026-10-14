@@ -131,7 +131,7 @@ window.ViewDiscover = (function () {
 
   function title() { return 'Discover'; }
   function sub() {
-    return 'Search through the list of ' + window.PLANT_DATA.length + ' plants that I can help you with.';
+    return window.PLANT_DATA.length + ' species I know how to care for';
   }
 
   function render() {
@@ -197,9 +197,8 @@ window.ViewDiscover = (function () {
                first time a species is added, and it goes wrong in the most
                embarrassing place, which is the screen apologising for not
                having what you searched for. */
-            'Try a different search, or clear the filter. I cover ' + window.PLANT_DATA.length +
-            ' of the most common houseplants — if yours is missing, its closest relative will ' +
-            'usually want near-identical care.',
+            'Try another word or clear the filter. If your plant isn\'t among my ' + window.PLANT_DATA.length +
+            ', its closest relative usually needs much the same care.',
             '<button class="btn btn-ghost" data-reset="1">Clear filters</button>')) +
     '</div>';
 
@@ -343,7 +342,9 @@ window.ViewSpecies = (function () {
 
     if (owned.length) {
       html += '<p class="hint" style="padding:0 2px">' +
-        'You already have ' + UI.plural(owned.length, 'of these') + ': ' +
+        /* A bare count, not UI.plural: "of these" has no plural form, and
+           the default 's' printed "2 of theses". */
+        'You already have ' + owned.length + ' of these: ' +
         owned.map(function (p) {
           return '<button class="link-btn tiny" data-plant="' + UI.attr(p.id) + '">' +
             UI.esc(Store.displayName(p)) + '</button>';
@@ -359,7 +360,10 @@ window.ViewSpecies = (function () {
            light-only palette. */
         '<div class="nudge nudge-alert">' +
           '<span class="nudge-ico">' + UI.icon('skull') + '</span><div style="min-width:0">' +
-            '<div class="nudge-t">Not safe for your ' + UI.esc(risk.pets.join(' or ')) + '</div>' +
+            /* Names the rung, read from LOOKUPS.TOX like the pills below, so
+               a sore mouth and a failing liver no longer share one heading. */
+            '<div class="nudge-t">' + UI.esc(LOOKUPS.TOX[risk.worst].label) + ' to your ' +
+              UI.esc(risk.pets.join(' or ')) + '</div>' +
             '<p class="nudge-p" style="margin:0">' + UI.esc(risk.note) + '</p>' +
           '</div>' +
         '</div>' +
@@ -381,7 +385,7 @@ window.ViewSpecies = (function () {
         : ['wheat', 'Feeding', 'Every ' + s.fert.everyDays + ' days at ' + s.fert.strength + ' strength',
            s.fert.type + '. ' + (s.fert.seasons
              ? 'In ' + s.fert.seasons.join(' and ') + ' only, while it grows'
-             : 'Growing season only') + ' — feeding a dormant plant simply builds up salt in the soil.'],
+             : 'Growing season only') + ', since feed given to a resting plant builds up as salt in the soil.'],
       hum ? [hum.ico, 'Humidity', hum.label, hum.desc] : null,
       ['thermo', 'Temperature', s.idealC[0] + '–' + s.idealC[1] + '°C', 'Never below ' + s.minC + '°C.'],
       ['pot', 'Soil', s.soil, ''],
@@ -434,7 +438,7 @@ window.ViewSpecies = (function () {
     /* --- Toxicity in full, regardless of what pets they own --- */
     html += '<div class="section">' +
       '<div class="section-head"><h2 class="section-title">Toxicity</h2>' +
-        '<span class="section-note">ASPCA ratings</span></div>' +
+        '<span class="section-note">ASPCA scale for pets</span></div>' +
       '<div class="card">' +
         '<div class="row-wrap">' +
           toxPill('paw', 'Cats', s.tox.cats) +
@@ -474,7 +478,7 @@ window.ViewSpecies = (function () {
         '<div class="card">' +
           '<div class="row-wrap">' +
             UI.pill('Sow in ' + s.seed.sowSeason, 'grey', 'calendar') +
-            UI.pill(s.seed.germDays, 'grey', 'sprout') +
+            UI.pill('Germinates in ' + s.seed.germDays, 'grey', 'sprout') +
             UI.pill(s.seed.depthMm + 'mm deep', 'grey', 'ruler') +
           '</div>' +
           '<ol class="dx-steps">' + s.seed.steps.map(function (x) {

@@ -42,7 +42,7 @@ window.ViewDiagnose = (function () {
   }
 
   function sub(params) {
-    if (!params.id) return 'Something looking off? Let\'s work it out';
+    if (!params.id) return 'Pick a plant and I\'ll rank the likely causes';
     if (!params.extra) return 'What do you notice?';
     const s = PROBLEM_DATA.SYMPTOMS[params.extra];
     return s ? s.label : '';
@@ -53,7 +53,7 @@ window.ViewDiagnose = (function () {
   /* Both of the last two steps are addressed by a symptom id in the URL, so
      both can be reached with one that no longer resolves. */
   function unknownSymptom() {
-    return UI.empty('info', 'Unknown symptom', 'Let\'s start again.',
+    return UI.empty('info', 'Unknown symptom', 'I don\'t have that symptom on my list.',
       '<button class="btn" data-restart="1">Start over</button>');
   }
 
@@ -65,8 +65,7 @@ window.ViewDiagnose = (function () {
     const plants = Store.activePlants();
 
     let html = '<p class="muted small" style="margin:0 2px 16px;line-height:1.6">' +
-      'Which one is struggling? I weight the likely causes towards what that species is actually prone to — ' +
-      'a fern with crispy edges is a different problem from a cactus with crispy edges.' +
+      'Choose the one that\'s struggling and I\'ll weight the likely causes towards what its species is prone to.' +
     '</p>';
 
     if (plants.length) {
@@ -108,13 +107,13 @@ window.ViewDiagnose = (function () {
       }).join('') + '</div>';
     } else {
       /* The diagnose scene, magnifying glass over a seedling, rather than
-         concerned: the line beside it says we can still work it out, and a
+         concerned: the line beside it says I can still work it out, and a
          worried face under that sentence contradicted it. This is the step
          before any answer exists, so the face is still in the conversation
          zone; the results that follow never carry one. */
       html += UI.empty('sprout:diagnose', 'No plants added yet',
-        'We can still work through it — I just won\'t be able to weight the causes towards a particular ' +
-        'species.', '<button class="btn btn-ghost" data-open="plant">Add a plant</button>');
+        'I can still work through it, but I won\'t be able to weight the causes towards a species.',
+        '<button class="btn btn-ghost" data-open="plant">Add a plant</button>');
     }
 
     /* Held off the list by an "or", because it is not another plant. At the
@@ -127,8 +126,8 @@ window.ViewDiagnose = (function () {
       '<button class="dx-opt" data-dx-plant="any" style="margin:0;width:100%">' +
         '<span class="dx-opt-ico">' + UI.icon('search') + '</span>' +
         '<span style="min-width:0">' +
-          '<span class="dx-opt-t">A plant I have not added</span>' +
-          '<span class="dx-opt-d">We\'ll work it out without species-specific weighting.</span>' +
+          '<span class="dx-opt-t">A plant you haven\'t added</span>' +
+          '<span class="dx-opt-d">I\'ll work it out without weighting for a species.</span>' +
         '</span>' + UI.icon('chevron', 'muted') +
       '</button>' +
     '</div>';
@@ -213,8 +212,8 @@ window.ViewDiagnose = (function () {
        that has to appear mid-filter therefore has to be there already. */
     html += '<div id="dx-none" hidden>' +
       UI.empty('search', 'Nothing matches that',
-        'Try a plainer word — "yellow", "spots", "wilting", "sticky". Or clear the box and read the ' +
-        'whole list, which is short enough to browse.',
+        'Try a plainer word, like "yellow", "spots", "wilting" or "sticky", or clear the box to see the ' +
+        'whole list.',
         '<button class="btn btn-ghost" data-dx-clear="1">Clear search</button>') +
     '</div>';
 
@@ -285,9 +284,8 @@ window.ViewDiagnose = (function () {
            list is multiple-choice. */
         '<span class="section-note">' + (clues.length ? clues.length + ' selected' : 'optional') + '</span>' +
       '</div>' +
-      '<p class="hint" style="padding:0 2px;margin:0 0 10px">Have a proper look before you answer — finger in ' +
-        'the soil, turn a leaf over, tip it out of the pot if you can. I\'ll only ever be as right as what ' +
-        'you tell me.</p>' +
+      '<p class="hint" style="padding:0 2px;margin:0 0 10px">Feel the soil and look under a leaf before you ' +
+        'tick, and tip it out of the pot if you can.</p>' +
       '<div class="stack" style="gap:8px">' + (symptom.clues || []).map(function (id) {
         const c = PROBLEM_DATA.CLUES[id];
         if (!c) return '';
@@ -338,11 +336,11 @@ window.ViewDiagnose = (function () {
           '<p class="small muted" style="margin:3px 0 0">' +
             (ticked.length
               ? UI.esc(ticked.join(' · '))
-              : 'No clues ticked — this is the symptom on its own.') +
+              : 'No clues ticked, so this ranks the symptom on its own.') +
           '</p>' +
         '</div>' +
       '</div>' +
-      '<button class="btn btn-ghost btn-sm btn-block" data-reclue="1">Change what I noticed</button>' +
+      '<button class="btn btn-ghost btn-sm btn-block" data-reclue="1">Change the clues</button>' +
     '</div>';
 
     /* --- Ranked causes --- */
@@ -388,16 +386,16 @@ window.ViewDiagnose = (function () {
           return '<div class="small">' + UI.esc(pair[0]) +
             ' <span class="muted">and</span> ' + UI.esc(pair[1]) + '</div>';
         }).join('') + '</div>' +
-        '<p class="hint" style="margin-top:10px">Each one points to different causes, so this ranking is ' +
-          'less certain than usual. Checking the plant again and changing one of them gives a firmer result.</p>' +
+        '<p class="hint" style="margin-top:10px">They point to different causes, so this ranking is less ' +
+          'certain; check the plant again and change one for a firmer result.</p>' +
         '<button class="btn btn-ghost btn-sm btn-block" data-reclue="1" style="margin-top:12px">Change an answer</button>' +
       '</div>';
     }
 
     if (!ranked.length) {
       html += UI.empty('info', 'Nothing fits',
-        'Between them, those clues rule out every usual cause for this symptom — which is rare enough that ' +
-        'one of them may not be right. Try unticking whichever you were least sure about.');
+        'Those clues rule out every usual cause for this symptom, so try unticking the one you\'re least ' +
+        'sure of.');
     } else {
       html += '<div class="stack" style="gap:14px">' + ranked.map(function (r, i) {
         const c = r.cause;
@@ -462,7 +460,7 @@ window.ViewDiagnose = (function () {
     /* --- Follow-up actions --- */
     html += '<div class="section"><div class="stack" style="gap:8px">' +
       (p ? '<button class="btn btn-soft" data-log="1">' + UI.icon('note') +
-        '<span class="btn-label">Log this in ' + UI.esc(Store.displayName(p)) + '\'s diary</span></button>' : '') +
+        '<span class="btn-label">Save to ' + UI.esc(Store.displayName(p)) + '\'s diary</span></button>' : '') +
       '<button class="btn btn-ghost" data-restart="1">Diagnose something else</button>' +
     '</div></div>';
 
@@ -510,9 +508,10 @@ window.ViewDiagnose = (function () {
         }).join('') +
       '</div>' +
       /* Accountable, not accusing: the reader is looking at the plant and
-         the app is not, so the app is the one that might have this wrong. */
-      '<p class="hint" style="margin:0 0 20px">Have another look if you can. I\'ll go on either ' +
-        'way — I would just rather be right.</p>' +
+         the app is not, so the line says what going on costs (a less
+         certain result) rather than who might have it wrong. */
+      '<p class="hint" style="margin:0 0 20px">Have another look if you can, or diagnose anyway and ' +
+        'I\'ll mark the result as less certain.</p>' +
       '<div class="row" style="gap:8px">' +
         '<button class="btn btn-ghost" data-act="sheet-cancel" style="flex:1">Check again</button>' +
         '<button class="btn" data-act="clash-go" style="flex:1">Diagnose anyway</button>' +
@@ -603,7 +602,7 @@ window.ViewDiagnose = (function () {
       /* Explicitly back to the checklist rather than history.back(): the
          arrow means "leave this", and history is only step 3 if that is
          where they came from. Arriving on the causes page from a stale link
-         would otherwise send "Change what I noticed" to whatever they were
+         would otherwise send "Change the clues" to whatever they were
          reading before. */
       if (e.target.closest('[data-reclue]')) { App.go(cluesPath(params)); return; }
 

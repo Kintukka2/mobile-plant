@@ -36,7 +36,7 @@ window.ViewDiary = (function () {
 
     if (!logs.length) {
       return UI.empty('note', 'The diary is blank',
-        'Every watering you tick off lands here on its own, alongside anything you write on a plant\'s own diary.',
+        'Every watering you tick off lands here on its own, beside anything you write in a plant\'s diary.',
         '<button class="btn" data-goto="/greenhouse/plants">Go to your plants</button>');
     }
 
