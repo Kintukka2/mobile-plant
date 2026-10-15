@@ -42,7 +42,7 @@ window.ViewDiagnose = (function () {
   }
 
   function sub(params) {
-    if (!params.id) return 'Pick a plant and I\'ll rank the likely causes';
+    if (!params.id) return 'Let\'s figure out what\'s wrong with it';
     if (!params.extra) return 'What do you notice?';
     const s = PROBLEM_DATA.SYMPTOMS[params.extra];
     return s ? s.label : '';
@@ -64,9 +64,10 @@ window.ViewDiagnose = (function () {
   function stepPlant() {
     const plants = Store.activePlants();
 
-    let html = '<p class="muted small" style="margin:0 2px 16px;line-height:1.6">' +
-      'Choose the one that\'s struggling and I\'ll weight the likely causes towards what its species is prone to.' +
-    '</p>';
+    /* No intro line above the list: the subtitle under the title already
+       says what this step is for, and a second sentence saying it again,
+       in terms of how the ranking works, was the first thing a reader met. */
+    let html = '';
 
     if (plants.length) {
       html += '<div class="stack" style="gap:8px">' + plants.map(function (p) {
@@ -107,12 +108,13 @@ window.ViewDiagnose = (function () {
       }).join('') + '</div>';
     } else {
       /* The diagnose scene, magnifying glass over a seedling, rather than
-         concerned: the line beside it says I can still work it out, and a
-         worried face under that sentence contradicted it. This is the step
-         before any answer exists, so the face is still in the conversation
-         zone; the results that follow never carry one. */
-      html += UI.empty('sprout:diagnose', 'No plants added yet',
-        'I can still work through it, but I won\'t be able to weight the causes towards a species.',
+         concerned: nothing has gone wrong yet, and a worried face over an
+         invitation contradicted it. This is the step before any answer
+         exists, so the face is still in the conversation zone; the results
+         that follow never carry one. The line says what adding a plant
+         gets the reader; the option below covers going on without one. */
+      html += UI.empty('sprout:diagnose', 'No plants yet',
+        'Add a plant and I can let you know the likely causes it might be sick.',
         '<button class="btn btn-ghost" data-open="plant">Add a plant</button>');
     }
 
