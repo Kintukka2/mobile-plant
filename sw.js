@@ -81,8 +81,10 @@
    its sample home; the introduction's counted plant rows and calendar.
 
    v107: the hand-over's six plant pictures, img/guide/, cached up front so
-   a first run with no signal does not draw empty circles. */
-const CACHE = 'sprout-v107-viridium';
+   a first run with no signal does not draw empty circles.
+
+   v108: the watered question asks when, not whether this week. */
+const CACHE = 'sprout-v108-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is
