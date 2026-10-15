@@ -404,9 +404,17 @@ window.ViewPlan = (function () {
     return plants.length > 0 && plants.every(function (p) { return p.pos && Plan.roomAt(p.pos.x, p.pos.y); });
   }
   function firstOpenStep() { for (let n = 1; n <= 4; n++) if (!stepDone(n)) return n; return 4; }
+  /* The first trace on an empty grid, with no picture under it, opens on
+     "Got a floorplan?" before any corner is placed. That card is step 1's
+     question, so while it is up the dock and the panel say step 1 as well:
+     they said step 2 underneath a card asking step 1. */
+  function askingForFloorplan() {
+    return !!(drawing && !drawing.picked && !drawing.forRoomId && !drawing.pts.length &&
+      !drawn().length && !plan().backdrop);
+  }
   /* Drawing a room lives in step 2, whatever the dock says: the Finish and
      Undo buttons are there. */
-  function curStep() { if (drawing) return 2; return ui.step || firstOpenStep(); }
+  function curStep() { if (drawing) return askingForFloorplan() ? 1 : 2; return ui.step || firstOpenStep(); }
   function goStep(n) { ui.step = Math.max(1, Math.min(4, n)); }
 
   function stepBody(n) {
@@ -948,7 +956,7 @@ window.ViewPlan = (function () {
        starts on the grid, so that is where the eye already is. It goes at
        the first touch, and pointer-events: none lets that touch through. */
     const coaching = mode === 'plan' && drawing && !drawing.pts.length && !(drag && drag.kind === 'draw');
-    const picking = coaching && !drawing.picked && !drawing.forRoomId && !list.length && !plan().backdrop;
+    const picking = coaching && askingForFloorplan();
     const unnamed = coaching && list.length && !drawing.nameChecked && !drawing.forRoomId && !Store.get().settings.nameNudgeOff ? unnamedRoom() : null;
     root.querySelector('#pl-coach').hidden = !coaching || (!picking && !unnamed && !!Store.get().settings.dragCoachOff);
     root.querySelector('#pl-coach-pick').hidden = !picking;
@@ -1369,7 +1377,15 @@ window.ViewPlan = (function () {
       if (e.target.closest('#pl-full')) { ui.full = !ui.full; syncOverlays(); drawCanvas(); return; }
       if (e.target.closest('#pl-trace')) { startTracing(); return; }
       if (e.target.closest('#pl-coach-load')) { pickBackdrop(); return; }
-      if (e.target.closest('#pl-coach-self')) { if (drawing) drawing.picked = true; syncOverlays(); return; }
+      /* Drawing freehand is step 1 answered, the same as the panel's "Next:
+         Draw your rooms", so it takes step 1's tick on the way to step 2. A
+         full redraw, not just the overlays, so the dock and panel move too. */
+      if (e.target.closest('#pl-coach-self')) {
+        if (drawing) drawing.picked = true;
+        if (!plan().backdrop && !plan().done) Store.updatePlan({ done: true });
+        redraw();
+        return;
+      }
       if (e.target.closest('#pl-coach-off')) { Store.updateSettings({ dragCoachOff: true }); syncOverlays(); return; }
       /* Naming goes through the room's own form, with the name field ready.
          The trace stays open underneath, so saving lands straight on the
@@ -1614,6 +1630,9 @@ window.ViewPlan = (function () {
      plant, and of full screen, where there is no panel to show the step. */
   function pickStep(n) {
     if (drawing && n !== 2) { drawing = null; tool = 'select'; }
+    /* Choosing step 2 while "Got a floorplan?" is up answers it: without
+       this, askingForFloorplan() held the dock on step 1 after the tap. */
+    if (drawing && n === 2) drawing.picked = true;
     sel = null; goStep(n);
     if (ui.full) ui.full = false;
     redraw();
