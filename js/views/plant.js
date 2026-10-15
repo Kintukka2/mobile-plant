@@ -860,7 +860,7 @@ window.ViewPlant = (function () {
           return;
         }
 
-        Store.addLog({
+        const added = Store.addLog({
           plantId: p.id, kind: kind, date: date, text: text,
           value: value, unit: unit, photoId: photoId
         });
@@ -869,6 +869,9 @@ window.ViewPlant = (function () {
         UI.toast('Added to the diary', 'leaf');
         if (photoId) warnIfLow();
         App.refresh();
+        /* A milestone, a measurement up on the last, a cutting, a repot or
+           a photo: Rate decides which of them count. Edits never do. */
+        if (window.Rate) Rate.moment('log', { log: added });
       });
     });
   }
@@ -876,9 +879,10 @@ window.ViewPlant = (function () {
   /* Log watering / feeding with a single tap, but let the date be corrected. */
   function quickCare(p, kind) {
     const verb = LOOKUPS.TASKS[kind] ? LOOKUPS.TASKS[kind].verb : 'Logged';
-    Store.addLog({ plantId: p.id, kind: kind, date: UI.toISO(UI.today()) });
+    const log = Store.addLog({ plantId: p.id, kind: kind, date: UI.toISO(UI.today()) });
     UI.toast(verb + ' ' + Store.displayName(p), 'leaf');
     App.refresh();
+    if (window.Rate) Rate.moment('log', { log: log });
   }
 
   /* Settings was the only place that said space was running out, and nobody
@@ -897,12 +901,13 @@ window.ViewPlant = (function () {
     Photos.pick(function (dataUrl) {
       const id = Store.savePhoto(dataUrl);
       if (!id) return;
-      Store.addLog({ plantId: p.id, kind: 'photo', photoId: id, date: UI.toISO(UI.today()) });
+      const log = Store.addLog({ plantId: p.id, kind: 'photo', photoId: id, date: UI.toISO(UI.today()) });
       // The first photo becomes the cover automatically.
       if (!p.coverPhotoId) Store.updatePlant(p.id, { coverPhotoId: id });
       UI.toast('Photo saved', 'leaf');
       warnIfLow();
       App.refresh();
+      if (window.Rate) Rate.moment('log', { log: log });
     });
   }
 

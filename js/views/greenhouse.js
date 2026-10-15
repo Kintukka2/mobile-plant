@@ -451,6 +451,9 @@ window.ViewGreenhouse = (function () {
           UI.closeSheet();
           UI.toast(Store.displayName(created) + ' is in your greenhouse', 'leaf');
           App.go('/plant/' + created.id);
+          /* A plant a week or more after the last one. window.Rate is
+             checked because planner.html loads this file without it. */
+          if (window.Rate) Rate.moment('plant', { plant: created, to: '/plant/' + created.id });
         }
       });
     });
@@ -935,19 +938,30 @@ window.ViewGreenhouse = (function () {
         else if (!editing) { data.light = null; data.aspect = null; }
         if (northTouched) Store.updatePlan({ north: north, northConfirmed: true });
 
+        /* A room whose light the form has just worked out, from a window
+           and the dial, is a good moment; Rate checks that it was. */
         if (editing) {
-          Store.updateRoom(room.id, data);
+          /* updateRoom() writes into this same object, so the shape it had
+             is kept aside first, for Rate to see what the edit changed. */
+          const before = { shape: room.shape };
+          const updated = Store.updateRoom(room.id, data);
           if (shape) Plan.sync();
           UI.closeSheet();
           UI.toast('Room updated', 'leaf');
           App.refresh();
+          if (window.Rate) Rate.moment('room', { room: updated, before: before });
         } else {
           const created = Store.addRoom(data);
           if (shape) Plan.sync();
           UI.closeSheet();
-          if (onCreated) { onCreated(created); return; }
+          if (onCreated) {
+            onCreated(created);
+            if (window.Rate) Rate.moment('room', { room: created });
+            return;
+          }
           UI.toast(created.name + ' added', 'leaf');
           App.go('/room/' + created.id);
+          if (window.Rate) Rate.moment('room', { room: created, to: '/room/' + created.id });
         }
       });
     });

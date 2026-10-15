@@ -495,18 +495,27 @@ pose means a WebP at 360×360, an entry in `SPROUT_POSES` in `js/ui.js`, an
 ASSETS line, and a `CACHE` bump. Make every new pose from `sprout-base.png`, or
 the character drifts.
 
-**The rating screen** (`Rate.open()`, `js/rate.js`) has one trigger: the
-tap on Today that clears the day's last task, while "All caught up" is on
-screen. **It is switched off (`LIVE = false`) until the production
-release:** closed testers are paid, and Play can strip ratings from paid
-testers and penalise the listing. Flip it in the production build only.
-When it is on, `Rate.maybeAsk()` decides, from `POLICY` at the top of the
-file: native only, a week since install, ten care actions over three days
-and two plants, no diagnosis in the last fortnight, ninety days between
-asks, three asks ever, and never again after the button is tapped. The
-count lives in `settings.rating`. `Rate.eligible()` in the console says why
-a device is or is not being asked, and `?rate` on the URL opens the screen
-for review without counting. It asks once, through
+**The rating screen** (`Rate.open()`, `js/rate.js`) is asked for at good
+moments, which the screens report through `Rate.moment(name, detail)`:
+saving a milestone, a cutting or a repot, a measurement bigger than the
+plant's last in the same unit, a plant's first photo or one a fortnight
+after its last, the first care a plant gets after 30 days in Sprout, the
+Today tap that clears the day, a plant added a week or more after the last,
+a room whose first window the room form has just marked (with north
+settled), leaving the plan after changing it with its light map showing
+(`App.render()` reports that one), and importing a home plan. `MOMENTS` in
+the file decides whether an event counts; `eligible()` whether the reader
+can be asked: native only, never in the guided tour's sample home, a
+fortnight since the last ask, and never again after the button is tapped.
+There is deliberately no wait after install, no minimum garden and no cap
+on asks: the moments already say the reader is engaged, and a reader who
+installs Sprout for one thing and does it may never have another moment
+like it. **`LIVE` is on**, for the production release; it was off through
+closed testing because those testers were paid, and Play can strip ratings
+from paid testers and penalise the listing, so turn it off for any build
+that goes to a paid test track. The count lives in `settings.rating`.
+`Rate.eligible()` and `Rate.moment()` in the console both say why, and
+`?rate` on the URL opens the screen for review without counting. It asks through
 the store's own review sheet, and never asks whether the reader is enjoying
 the app first: both stores forbid an opinion question in front of the rating
 prompt, and routing only the happy ones to the stars is review gating. The
