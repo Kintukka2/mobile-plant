@@ -594,6 +594,9 @@ img { max-width: 100%; display: block; }
   border-bottom: 1px solid transparent;
   transition: border-color var(--dur-1) var(--ease), color var(--dur-1) var(--ease);
 }
+/* The empty greenhouse's way round the planner: a long line, so it wraps as
+   an even pair rather than leaving "plant" on its own. */
+.link-btn.is-skip { text-wrap: balance; max-width: 30ch; line-height: 1.5; }
 .link-btn:hover { color: var(--mint-2); border-bottom-color: var(--hair-3); }
 
 .sr {
