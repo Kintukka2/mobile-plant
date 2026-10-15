@@ -18,7 +18,7 @@ property that makes this project what it is.
 - **Classic `<script>` tags.** Not `type="module"`.
 - **Globals are the module system.** Each file assigns exactly one namespace:
   `UI`, `Store`, `Schedule`, `Plan`, `Weather`, `Photos`, `Onboard`, `Tour`,
-  `Notify`, `Rate`,
+  `Notify`, `Rate`, `Guide`,
   `PLANT_DATA`, `PROBLEM_DATA`, `LOOKUPS`, `App`, and one `View*` per screen.
 - **Load order in `index.html` is the dependency graph.** Data and utilities
   first, views next, router last.
@@ -460,13 +460,16 @@ Brand guide section 09 and Decision 13 are the full rule. The short version:
 - **The face follows the voice zoning.** It appears only on conversation
   surfaces, never beside species care data, a diagnosis result, a treatment
   step or a toxicity note.
-- **Seven placements, named, not spread.** Welcome sheet (`base`), "No
+- **Eight placements, named, not spread.** Welcome sheet (`base`), "No
   plants yet" on Today (`new-growth`), Greenhouse empty, on the first visit
   and with rooms but no plants (`greenhouse`), the plan's "Nothing drawn yet"
   invitation (`home-planner`, dropped below 720px of viewport height so the
   buttons keep the grid), "All caught up" (`resting`), Diagnose with no
-  plants (`diagnose`), and the rating screen (`new-growth`, crossfading to
-  `excited` once tapped, `js/rate.js`). `watering` is marketing only for now.
+  plants (`diagnose`), the rating screen (`new-growth`, crossfading to
+  `excited` once tapped, `js/rate.js`), and the guided tour's hand-over
+  (`base`, crossfading to `home-planner` as the sample home is drawn,
+  `js/guide.js`); the tour's cards carry none, since each sits beside care
+  data. `watering` is marketing only for now.
   Every other empty state keeps its hairline ring. A face on all of them is
   furniture.
 - **Framed, or anchored to a corner.** The art carries its own ground and is
@@ -508,6 +511,35 @@ in-app sheet comes from `@capacitor-community/in-app-review` in `native/`
 so it never plays behind the card while the reader is still choosing. If the
 sheet call fails the button opens the Play listing instead, and on the web
 the screen only says thank you.
+
+## Navigation and the guided tour
+
+**Four tabs:** Today, Greenhouse, Discover, Diagnose. You is not a tab: it
+holds answers given once and settings changed rarely, so it opens from the
+round button beside Add in Today's top bar, and from the foot of the
+sidebar on a wide screen. It has a Back button, which lands on Today when
+there is no history, and while it is open the tab bar lights Today.
+
+**The guided tour is `Guide` (`js/guide.js`),** not `Tour`, which is the
+planner's own walkthrough. The welcome sheet offers it ("Show me around",
+or "Let me look around first"), and You offers it again behind the
+question mark beside its settings. It is a hand-over animation (Sprout
+says what is about to happen while a floor plan of the sample home draws
+itself), then five cards: one per tab, then the reader's own plan, where
+Finish the tour lets the rating screen's leaves go and leaves them on the
+empty plan, which offers its own walkthrough. The overlay only dims, frames
+and talks; every page under it is the real one.
+
+**The sample home is never stored.** `Store.beginSample(state)` swaps it in
+and keeps the reader's state object aside; while it is showing, `save()`
+writes nothing, photos are neither stored nor deleted, and `Notify.sync()`
+refuses to build a digest. `Store.endSample()` puts the reader's object
+back and rebuilds their digest. So no reminder is ever scheduled for a
+sample plant, no other tab sees one, and an app closed mid-tour reopens on
+the reader's own garden. Anything new that writes outside `save()` (a new
+localStorage key, IndexedDB, a plugin) has to check `Store.inSample()`
+too, or the sample leaks. The tour ends the sample as it reaches the plan,
+and on every way out (Esc and Android's Back go to that last card).
 
 ## Type
 
@@ -553,6 +585,9 @@ Claims about this are load-bearing — see the note at the end of this section.
 | `sprout.theme` | Selected theme |
 | `sprout.photo.*` | One resized JPEG data URL per photo |
 | `sprout-planner.v1` | The planner preview's plan (`planner.html` only) |
+
+The guided tour's sample home is in none of these: it lives in memory only,
+behind `Store.beginSample()` (see Navigation and the guided tour).
 
 One thing is **not** in localStorage, and cannot be. `js/notify.js` writes a
 reminder digest to IndexedDB (`sprout` → `kv` → `digest.v1`) on every save:
