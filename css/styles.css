@@ -5925,9 +5925,11 @@ html.plan-full .tabbar { visibility: hidden; }
 .gd-hole {
   position: absolute; left: 50%; top: 50%; width: 0; height: 0;
   border-radius: 10px;
-  /* A light veil, not a blackout: enough to say where to look, while the
-     rest of the page stays readable, so it still says where the tour is. */
-  box-shadow: 0 0 0 200vmax rgba(3, 9, 7, 0.26);
+  /* A veil, not a blackout: enough to say where to look, while the rest of
+     the page stays readable, so it still says where the tour is. It was
+     0.26, which over Viridium's near-black barely registered: the frame
+     was the only thing marking the target, and the eye had to find it. */
+  box-shadow: 0 0 0 200vmax rgba(3, 9, 7, 0.5);
   outline: 2px solid var(--mint);
   outline-offset: 0;
   /* In-out rather than the app's expo-out: the light travels between two
@@ -5940,7 +5942,7 @@ html.plan-full .tabbar { visibility: hidden; }
    frame instead of easing after it, which is what made it lag and wobble. */
 .gd-hole.is-track { transition: none; }
 .gd-hole.is-none { outline-color: transparent; }
-:root[data-theme="conservatory"] .gd-hole { box-shadow: 0 0 0 200vmax rgba(20, 34, 28, 0.2); }
+:root[data-theme="conservatory"] .gd-hole { box-shadow: 0 0 0 200vmax rgba(20, 34, 28, 0.32); }
 /* On arrival the whole screen is lit, with no ring, so the page is seen
    whole before anything on it is pointed at. */
 .gd-hole.is-open { outline-color: transparent; border-radius: 0; }
