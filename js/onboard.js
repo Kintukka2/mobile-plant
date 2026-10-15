@@ -204,7 +204,9 @@ window.Onboard = (function () {
      schedule for one nobody can date. */
   function stepWatered() {
     const many = added.length > 1;
-    return '<h2 class="ob-q">Watered any of these this week?</h2>' +
+    /* A question about the date itself, since the calendar goes back sixty
+       days; it used to ask about "this week" over the same picker. */
+    return '<h2 class="ob-q">When did you last water ' + (many ? 'these' : 'it') + '?</h2>' +
       '<p class="ob-hint" style="margin-top:0">I\'ll start each plant\'s care schedule from your answer. If you can\'t remember, I\'ll start today.</p>' +
       '<div class="ob-wt-list">' +
         (many ? wateredRow('all', 'All of them') : '') +
