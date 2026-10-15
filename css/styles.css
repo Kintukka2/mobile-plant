@@ -594,6 +594,9 @@ img { max-width: 100%; display: block; }
   border-bottom: 1px solid transparent;
   transition: border-color var(--dur-1) var(--ease), color var(--dur-1) var(--ease);
 }
+/* The empty greenhouse's way round the planner: a long line, so it wraps as
+   an even pair rather than leaving "plant" on its own. */
+.link-btn.is-skip { text-wrap: balance; max-width: 30ch; line-height: 1.5; }
 .link-btn:hover { color: var(--mint-2); border-bottom-color: var(--hair-3); }
 
 .sr {
@@ -625,7 +628,7 @@ img { max-width: 100%; display: block; }
 .splash-inner.is-quiet { opacity: 0; transform: translateY(-12px); pointer-events: none; }
 
 /* ---- First-run introduction, on the splash ----
-   Same field, same face. A small wordmark keeps the scene continuous while
+   Same field, same face. The small sprig keeps the scene continuous while
    the questions take the centre one at a time; the dots and the skip sit
    low and quiet so the question is the only thing at eye level. */
 .ob {
@@ -638,13 +641,12 @@ img { max-width: 100%; display: block; }
 }
 .ob.is-leaving { opacity: 0; pointer-events: none; }
 .ob-brand {
-  position: absolute; top: calc(env(safe-area-inset-top, 0px) + 9vh);
-  font-family: var(--display); font-weight: 500; font-size: 13px;
-  letter-spacing: 0.34em; text-indent: 0.34em; text-transform: uppercase;
-  color: var(--ink-3);
+  position: absolute; top: calc(env(safe-area-inset-top, 0px) + 9vh - 7px);
+  line-height: 0; color: var(--emerald-glow);
   animation: obIn 900ms var(--ease) 260ms both;
 }
-/* Level with the wordmark, at the edge a back arrow is looked for. */
+.ob-brand svg { width: 30px; height: 30px; }
+/* Level with the sprig, at the edge a back arrow is looked for. */
 .ob-back {
   position: absolute; top: calc(env(safe-area-inset-top, 0px) + 9vh - 14px); left: 14px;
   width: 44px; height: 44px; display: grid; place-items: center;
@@ -734,35 +736,94 @@ img { max-width: 100%; display: block; }
 }
 .ob-search:focus { border-color: var(--mint); }
 .ob-sp-list { width: 100%; max-width: 360px; max-height: 30vh; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+/* A row counts its own plants, with a minus and a plus; tapping the row
+   itself adds one. There used to be a chip per plant under the list, and
+   enough of them pushed the question off the top of the screen. */
 .ob-sp-row {
-  display: flex; align-items: center; gap: 12px; width: 100%; padding: 7px 12px 7px 7px;
+  display: flex; align-items: center; gap: 12px; width: 100%; padding: 0 8px 0 0;
   border: 1px solid var(--hair); border-radius: var(--r); background: none; color: var(--ink);
-  text-align: left; cursor: pointer;
   transition: border-color var(--dur-1) var(--ease), background var(--dur-1) var(--ease);
 }
 .ob-sp-row.is-on { border-color: var(--mint); background: var(--mint-wash); }
+.ob-sp-main {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px;
+  padding: 7px 0 7px 7px; border: 0; background: none; color: inherit; text-align: left; cursor: pointer;
+}
 .ob-sp-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .ob-sp-t { font-family: var(--serif); font-size: 17px; line-height: 1.2; }
 .ob-sp-d { font-family: var(--serif); font-style: italic; font-size: 13px; color: var(--ink-3); }
-.ob-sp-warn { display: inline-flex; align-items: center; gap: 5px; font-family: var(--sans); font-size: 11.5px; color: var(--terra); }
-.ob-sp-warn svg { width: 12px; height: 12px; }
-.ob-sp-n { flex: none; font-family: var(--sans); font-size: 13px; color: var(--mint); }
-.ob-sp-n svg { width: 16px; height: 16px; color: var(--ink-3); }
-.ob-sp-added { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; max-width: 360px; margin-top: 12px; }
-.ob-sp-added:empty { display: none; }
-.ob-sp-added .chip svg { width: 12px; height: 12px; margin: 0 -2px 0 4px; }
-.ob-sp-added + .ob-actions, .ob-sp-list + .ob-sp-added:empty + .ob-actions { margin-top: 18px; }
+.ob-sp-n { flex: none; display: inline-flex; align-items: center; gap: 6px; }
+.ob-sp-step {
+  width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; cursor: pointer;
+  border: 1px solid var(--hair-2); background: none; color: var(--ink-2);
+  transition: border-color var(--dur-1) var(--ease), color var(--dur-1) var(--ease), background var(--dur-1) var(--ease);
+}
+.ob-sp-step svg { width: 14px; height: 14px; }
+.ob-sp-step:hover { border-color: var(--mint); color: var(--mint); }
+.ob-sp-row.is-on .ob-sp-step { border-color: rgba(63, 190, 139, 0.45); color: var(--mint); }
+.ob-sp-count { min-width: 26px; text-align: center; font-family: var(--sans); font-size: 13px; color: var(--mint); font-variant-numeric: tabular-nums; }
+.ob-sp-list + .ob-actions { margin-top: 18px; }
 
-/* The watered step: one row per plant just added, the answers under its
-   name so three of them fit at phone width. */
+/* The watered step: one row per plant just added, each a field that opens
+   Sprout's own calendar. The field is the onboarding's choice button with
+   a calendar mark; the calendar is a card in the app's surfaces, with the
+   month in the display face and the chosen day on the emerald the palette
+   keeps for the primary action. */
 .ob-wt-list { width: 100%; max-width: 380px; max-height: 42vh; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; margin-top: 18px; }
 .ob-wt-row { display: flex; flex-direction: column; align-items: center; gap: 7px; }
 .ob-wt-row.is-all { padding-bottom: 14px; border-bottom: 1px solid var(--hair); }
 .ob-wt-nm { font-family: var(--serif); font-size: 17px; color: var(--ink); }
 .ob-wt-row.is-all .ob-wt-nm { font-family: var(--sans); font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-3); }
-.ob-wt-opts { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
-.ob-wt-opts .ob-chip { padding: 8px 13px; font-size: 12.5px; }
+.ob-wt-field {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; max-width: 240px; padding: 11px 16px; border-radius: 10px; cursor: pointer;
+  border: 1px solid var(--hair-2); background: rgba(255, 255, 255, 0.02);
+  font-family: var(--sans); font-size: 13.5px; letter-spacing: 0.04em; color: var(--ink-3);
+  transition: border-color var(--dur-1) var(--ease), color var(--dur-1) var(--ease), background var(--dur-1) var(--ease);
+}
+.ob-wt-field svg { width: 16px; height: 16px; flex: none; }
+.ob-wt-field:hover { border-color: rgba(63, 190, 139, 0.45); color: var(--ink-2); }
+.ob-wt-field.is-set { border-color: rgba(63, 190, 139, 0.6); background: var(--mint-wash); color: var(--mint); }
 
+.ob-cal {
+  position: absolute; inset: 0; z-index: 5; display: flex; align-items: flex-end; justify-content: center;
+  padding: 16px 16px calc(env(safe-area-inset-bottom, 0px) + 20px);
+  background: rgba(3, 9, 7, 0.42); opacity: 0;
+  transition: opacity 240ms var(--ease-io);
+}
+.ob-cal.is-on { opacity: 1; }
+.ob-cal-card {
+  width: 100%; max-width: 360px; box-sizing: border-box; padding: 18px 18px 12px;
+  background: var(--bg-2); border: 1px solid var(--hair-2); border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(63, 190, 139, 0.08);
+  transform: translateY(18px); transition: transform 320ms var(--ease);
+}
+.ob-cal.is-on .ob-cal-card { transform: none; }
+.ob-cal-for { margin: 0 0 4px; text-align: center; font-family: var(--sans); font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mint); }
+.ob-cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.ob-cal-m { margin: 0; font-family: var(--display); font-weight: 200; font-size: 30px; letter-spacing: 0.02em; color: var(--ink); }
+.ob-cal-m span { color: var(--ink-3); }
+.ob-cal-nav {
+  width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; cursor: pointer;
+  border: 1px solid var(--hair-2); background: none; color: var(--ink-2);
+}
+.ob-cal-nav svg { width: 16px; height: 16px; }
+.ob-cal-nav.is-next svg { transform: scaleX(-1); }
+.ob-cal-nav:disabled { opacity: 0.3; cursor: default; }
+.ob-cal-wk, .ob-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.ob-cal-wk span { text-align: center; font-family: var(--sans); font-size: 10px; letter-spacing: 0.16em; color: var(--ink-4); padding-bottom: 6px; }
+.ob-cal-d {
+  aspect-ratio: 1; border: 1px solid transparent; border-radius: 50%; background: none; cursor: pointer;
+  font-family: var(--serif); font-size: 17px; color: var(--ink); font-variant-numeric: lining-nums;
+  transition: background var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease), color var(--dur-1) var(--ease);
+}
+.ob-cal-d:hover:not(:disabled) { background: var(--mint-wash); }
+.ob-cal-d.is-today { border-color: rgba(63, 190, 139, 0.55); color: var(--mint); }
+.ob-cal-d.is-on { background: radial-gradient(circle at 50% 30%, var(--emerald-glow), var(--emerald-lit) 60%, var(--emerald)); border-color: transparent; color: var(--btn-ink); box-shadow: 0 0 18px rgba(63, 190, 139, 0.35); }
+.ob-cal-d:disabled { color: var(--ink-4); opacity: 0.35; cursor: default; }
+.ob-cal-foot { display: flex; justify-content: space-between; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--hair); }
+.ob-cal-link { background: none; border: 0; padding: 8px 6px; cursor: pointer; font-family: var(--sans); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-3); }
+.ob-cal-link:hover { color: var(--mint); }
 @keyframes obIn {
   from { opacity: 0; transform: translateY(18px); filter: blur(6px); }
   to   { opacity: 1; transform: none; filter: blur(0); }
@@ -773,6 +834,7 @@ img { max-width: 100%; display: block; }
 }
 @media (prefers-reduced-motion: reduce) {
   .ob-step > *, .ob-step.is-leaving > *, .ob-brand, .ob-dots, .ob-skip, .ob-back { animation: none; }
+  .ob-cal, .ob-cal-card { transition: none; }
 }
 
 .splash-inner { text-align: center; padding: 0 28px; }
@@ -1438,6 +1500,9 @@ img { max-width: 100%; display: block; }
   transition: color var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease),
               background var(--dur-1) var(--ease), transform var(--dur-1) var(--ease);
 }
+/* You, in Today's top bar: round, so it reads as a person beside the square
+   actions. */
+.icon-btn.is-round { border-radius: 50%; }
 .icon-btn svg { width: 17px; height: 17px; stroke-width: 1.4; }
 .icon-btn:hover { color: var(--ink); border-color: var(--hair-3); background: var(--glass-2); }
 .icon-btn:active { transform: scale(0.94); }
@@ -5837,3 +5902,243 @@ html.plan-full .tabbar { visibility: hidden; }
   .sheet-backdrop.is-closing .sheet { animation: slideDown var(--dur-1) var(--ease-io) both; }
   .toast-wrap { bottom: 26px; }
 }
+
+/* ==========================================================================
+   The guided tour (js/guide.js)
+   --------------------------------------------------------------------------
+   Built from the app's own tokens, so it follows Viridium and Conservatory
+   without a palette of its own. The overlay sits above sheets (180) and
+   below toasts (190); the hand-over sits above the overlay; the leaves are
+   on top of both.
+   ========================================================================== */
+
+.gd { position: fixed; inset: 0; z-index: 185; pointer-events: none; }
+.gd.is-on { pointer-events: auto; }
+
+/* Catches every tap that is not on the card, so the page underneath only
+   moves when the tour moves it. */
+.gd-block { position: absolute; inset: 0; }
+
+/* The lit window. Its own shadow is the dimming, so the hole and the dark
+   are one element and glide together from target to target. */
+.gd-hole {
+  position: absolute; left: 50%; top: 50%; width: 0; height: 0;
+  border-radius: 10px;
+  /* A light veil, not a blackout: enough to say where to look, while the
+     rest of the page stays readable, so it still says where the tour is. */
+  box-shadow: 0 0 0 200vmax rgba(3, 9, 7, 0.26);
+  outline: 2px solid var(--mint);
+  outline-offset: 0;
+  /* In-out rather than the app's expo-out: the light travels between two
+     places, and a move that starts at full speed reads as a jump. */
+  transition: left 460ms var(--ease-io), top 460ms var(--ease-io), width 460ms var(--ease-io),
+              height 460ms var(--ease-io), border-radius 460ms var(--ease-io), outline-color 280ms var(--ease-io);
+  pointer-events: none;
+}
+/* While the page scrolls under it, the light follows the target frame by
+   frame instead of easing after it, which is what made it lag and wobble. */
+.gd-hole.is-track { transition: none; }
+.gd-hole.is-none { outline-color: transparent; }
+:root[data-theme="conservatory"] .gd-hole { box-shadow: 0 0 0 200vmax rgba(20, 34, 28, 0.2); }
+/* On arrival the whole screen is lit, with no ring, so the page is seen
+   whole before anything on it is pointed at. */
+.gd-hole.is-open { outline-color: transparent; border-radius: 0; }
+.gd-hole::after {
+  content: ''; position: absolute; inset: -6px; border-radius: inherit;
+  border: 1px solid var(--mint); opacity: 0;
+}
+.gd-hole.is-pulse::after { animation: gdPulse 1200ms var(--ease) 1; }
+@keyframes gdPulse { 0% { opacity: 0.5; transform: scale(0.99); } 100% { opacity: 0; transform: scale(1.04); } }
+
+/* The coach. Docked to whichever side of the lit window has room. */
+.gd-card {
+  position: absolute; left: 12px; right: 12px;
+  max-width: 420px; margin: 0 auto;
+  background: var(--bg-2); border: 1px solid var(--hair-2); border-radius: 14px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  padding: 18px 20px 16px;
+  transition: opacity 300ms var(--ease), transform 360ms var(--ease), top 420ms var(--ease-io);
+}
+/* Leaving is quicker than arriving, and moves nothing but its opacity and a
+   few pixels. `top` is left out on purpose: the card is placed for the next
+   stop while it is invisible, so it never slides across the screen. */
+.gd-card.is-out {
+  opacity: 0; transform: translateY(10px); pointer-events: none;
+  transition: opacity 150ms var(--ease-io), transform 150ms var(--ease-io);
+}
+.gd-card.is-center { top: 50% !important; transform: translateY(-50%); }
+.gd-card.is-center.is-out { transform: translateY(calc(-50% + 10px)); }
+
+/* The four tabs and the plan, lit as the tour reaches each: the tour is
+   teaching the navigation as much as the screens. Each mark is a button
+   that jumps to that page's card. */
+.gd-route { display: flex; align-items: center; gap: 6px; margin-bottom: 16px; }
+.gd-r {
+  width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%;
+  color: var(--ink-4); border: 1px solid transparent;
+  transition: color 300ms var(--ease), border-color 300ms var(--ease), background 300ms var(--ease);
+}
+.gd-r svg { width: 14px; height: 14px; }
+.gd-r.is-done { color: var(--ink-3); }
+.gd-r.is-on { color: var(--mint); border-color: var(--mint); background: var(--mint-wash); }
+.gd-route-gap { flex: 1; height: 1px; background: var(--hair); }
+.gd-count { font-family: var(--sans); font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 6px; }
+
+.gd-title {
+  font-family: var(--display); font-weight: 500; font-size: 21px; letter-spacing: 0.04em;
+  line-height: 1.2; color: var(--ink); margin: 0 0 10px; text-wrap: balance;
+}
+.gd-body { font-family: var(--serif); font-size: 17px; line-height: 1.45; color: var(--ink-2); margin: 0; max-width: 46ch; }
+
+.gd-bar { display: flex; align-items: center; gap: 8px; margin-top: 18px; clear: both; }
+.gd-bar .grow { flex: 1; }
+.gd-skip {
+  background: none; border: 0; padding: 6px 2px; cursor: pointer;
+  font-family: var(--sans); font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-3);
+}
+.gd-meter { height: 2px; background: var(--hair); border-radius: 2px; margin-top: 16px; overflow: hidden; }
+.gd-meter i { display: block; height: 100%; background: var(--mint); transition: width 420ms var(--ease); }
+
+/* A fingertip, so the tour's tap on a tab is seen to be a tap on the real
+   control. */
+.gd-finger {
+  position: absolute; left: 0; top: 0; width: 34px; height: 34px; margin: -17px 0 0 -17px;
+  border-radius: 50%; background: rgba(255, 255, 255, 0.22); border: 1.5px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  /* Same curve and length as the light, so the two arrive together. */
+  transition: transform 460ms var(--ease-io), opacity 220ms var(--ease-io);
+  pointer-events: none;
+}
+.gd-finger.is-snap { transition: none; }
+.gd-finger.is-on { opacity: 1; }
+.gd-finger::after {
+  content: ''; position: absolute; inset: -2px; border-radius: 50%; border: 2px solid var(--mint); opacity: 0;
+}
+.gd-finger.is-press { background: rgba(255, 255, 255, 0.4); }
+.gd-finger.is-press::after { animation: gdTap 520ms var(--ease) both; }
+@keyframes gdTap { 0% { opacity: 0.9; transform: scale(0.6); } 100% { opacity: 0; transform: scale(2.2); } }
+
+/* The page's name, shown on arrival, just above the tab bar the tap came
+   from rather than over the page's own title. */
+.gd-chip {
+  position: absolute; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 92px);
+  transform: translate(-50%, 8px); opacity: 0;
+  padding: 9px 18px; border-radius: 999px;
+  background: var(--bg-2); border: 1px solid var(--mint); color: var(--mint);
+  font-family: var(--sans); font-size: 11.5px; letter-spacing: 0.22em; text-transform: uppercase;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  transition: opacity 280ms var(--ease), transform 320ms var(--ease);
+  pointer-events: none; white-space: nowrap;
+}
+.gd-chip.is-on { opacity: 1; transform: translate(-50%, 0); }
+
+button.gd-r { padding: 0; background: none; cursor: pointer; font: inherit; }
+button.gd-r:hover:not(.is-on) { color: var(--ink); border-color: var(--hair-2); }
+/* The last card's single button, centred and wide. */
+.gd-bar.is-finish { justify-content: center; }
+.gd-bar.is-finish .grow { display: none; }
+.gd-bar.is-finish .btn { width: 100%; max-width: 280px; min-height: 46px; }
+
+/* The leaves at Finish the tour and at the hand-over's reveal: the rating
+   screen's, on a layer of their own, since the overlay is gone before they
+   land. */
+.gd-leaves { position: fixed; inset: 0; z-index: 195; overflow: hidden; pointer-events: none; }
+.gd-leaves i { position: absolute; top: 0; left: 0; border-radius: 0 100% 0 100%; will-change: transform, opacity; }
+
+@media (prefers-reduced-motion: reduce) {
+  .gd-hole, .gd-card, .gd-finger, .gd-chip { transition: none; }
+  .gd-hole.is-pulse::after, .gd-finger.is-press::after { animation: none; }
+}
+
+/* ---- The hand-over, from Show me around to the first card ----
+   Everything starts hidden; js/guide.js brings each piece in with the Web
+   Animations API, so a step that is skipped simply never appears. */
+.gdi { position: fixed; inset: 0; z-index: 188; display: grid; place-items: center; cursor: pointer; }
+.gdi-ground {
+  position: absolute; inset: 0; opacity: 0;
+  background:
+    radial-gradient(70% 45% at 50% 34%, rgba(63, 190, 139, 0.16), transparent 70%),
+    radial-gradient(60% 40% at 50% 78%, rgba(200, 169, 107, 0.07), transparent 70%),
+    var(--bg-0);
+}
+:root[data-theme="conservatory"] .gdi-ground {
+  background:
+    radial-gradient(70% 45% at 50% 34%, rgba(47, 154, 112, 0.14), transparent 70%),
+    var(--bg-1);
+}
+
+.gdi-cast {
+  position: relative; width: min(100% - 32px, 360px);
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  transform-origin: 50% 60%;
+}
+
+/* Two plates in one place, so the planner's face can crossfade over the
+   greeting one. */
+.gdi-faces { position: relative; width: 132px; height: 132px; margin-bottom: 22px; transition: width 600ms var(--ease), height 600ms var(--ease), margin 600ms var(--ease); }
+.gdi-face { position: absolute; inset: 0; opacity: 0; }
+.gdi-face.sprout-plate { width: 100%; height: 100%; }
+.gdi.is-building .gdi-faces { width: 84px; height: 84px; margin-bottom: 14px; }
+
+.gdi-say {
+  margin: 0; font-family: var(--display); font-weight: 200; font-size: 32px; line-height: 1.15;
+  letter-spacing: 0.01em; color: var(--ink); text-wrap: balance;
+}
+.gdi-sub {
+  margin: 0 0 18px; font-family: var(--serif); font-size: 19px; line-height: 1.45; color: var(--ink-2);
+  text-wrap: balance; max-width: 30ch;
+}
+.gdi-w { display: inline-block; opacity: 0; }
+
+/* The plan: a card of the planner's own grid, drawn on. */
+.gdi-stage {
+  position: relative; width: 100%; aspect-ratio: 300 / 220; opacity: 0;
+  border-radius: 14px; border: 1px solid var(--hair-2);
+  background:
+    linear-gradient(var(--hair) 1px, transparent 1px) 0 0 / 18px 18px,
+    linear-gradient(90deg, var(--hair) 1px, transparent 1px) 0 0 / 18px 18px,
+    var(--bg-2);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), 0 0 50px rgba(63, 190, 139, 0.08);
+}
+.gdi-plan { position: absolute; inset: 8px; width: calc(100% - 16px); height: calc(100% - 16px); overflow: visible; }
+.gdi-wall { fill: none; stroke: var(--mint); stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.gdi-outer { stroke-width: 3; }
+.gdi-inner { stroke-width: 2; opacity: 0.85; }
+.gdi-win {
+  fill: none; stroke: var(--gold-lit); stroke-width: 4.5; stroke-linecap: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0;
+  filter: drop-shadow(0 0 4px rgba(223, 197, 143, 0.75));
+}
+/* Each room fills with the light it gets, on the plan's own ladder: sun
+   for the kitchen, bright for the living room, down to the bathroom. */
+.gdi-fill { opacity: 0; }
+.gdi-fill.is-direct { fill: rgba(223, 197, 143, 0.26); }
+.gdi-fill.is-bright { fill: rgba(63, 190, 139, 0.2); }
+.gdi-fill.is-medium { fill: rgba(63, 190, 139, 0.1); }
+.gdi-fill.is-low    { fill: rgba(63, 190, 139, 0.04); }
+.gdi-label { font-family: var(--sans); font-size: 7.5px; letter-spacing: 0.18em; fill: var(--ink-3); opacity: 0; }
+
+/* Six real plants, each on a round plate, potted into its room. */
+.gdi-pot {
+  position: absolute; width: 46px; height: 46px; opacity: 0;
+  border-radius: 50%; overflow: hidden; transform: translate(-50%, -50%);
+  background: radial-gradient(circle at 50% 35%, var(--bg-4), var(--bg-3));
+  border: 1.5px solid rgba(63, 190, 139, 0.6);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+.gdi-pot img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+
+.gdi-status {
+  min-height: 1.5em; margin: 16px 0 0;
+  font-family: var(--sans); font-size: 10.5px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--mint);
+}
+.gdi-skip {
+  position: absolute; bottom: calc(env(safe-area-inset-bottom, 0px) + 28px); left: 50%; transform: translateX(-50%);
+  opacity: 0; background: none; border: 0; padding: 10px 14px; cursor: pointer;
+  font-family: var(--sans); font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-3);
+}
+
+/* Reduced motion: the two lines, held, then a crossfade. */
+.gdi.is-still .gdi-ground, .gdi.is-still .gdi-face.is-a { opacity: 1; }
+.gdi.is-still .gdi-stage, .gdi.is-still .gdi-skip { display: none; }

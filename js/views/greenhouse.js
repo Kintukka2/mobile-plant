@@ -1080,20 +1080,18 @@ window.ViewGreenhouse = (function () {
       /* The plan leads, because tracing a home is what makes the light real —
          but someone with three plants on a windowsill should not have to
          trace their flat before logging a watering, so the quick path stays
-         a tap away, and both produce the same thing: rooms.
+         a tap away: one line under the button, opening the same Add sheet
+         as the + in the top bar, where the reader picks a room or a plant.
 
          The face is the greenhouse scene, Sprout with a pot in each arm,
          and it is this screen's own: the first visit here and the empty
          All plants tab below both wear it, while Today keeps new-growth, so
          the two tabs a newcomer opens first do not show the same picture. */
       return UI.empty('sprout:greenhouse', 'Start with your home',
-        'Trace your home and I\'ll read the light in every room from its windows.',
+        'Use the planner to build a map of your home, and I\'ll calculate the light in every room from its windows and floor plan.',
         '<div class="stack" style="gap:10px;align-items:center">' +
           '<button class="btn" data-go="/plan">' + UI.icon('compass') + 'Trace your home</button>' +
-          '<div class="row" style="gap:14px;justify-content:center">' +
-            '<button class="link-btn" data-open="room">or add one room</button>' +
-            '<button class="link-btn" data-open="plant">add a plant</button>' +
-          '</div>' +
+          '<button class="link-btn is-skip" data-open="menu">or skip the home planner and just add a room or plant</button>' +
         '</div>');
     }
 
@@ -1123,10 +1121,10 @@ window.ViewGreenhouse = (function () {
           '<button class="btn btn-soft btn-block" data-open="room" style="margin-top:12px">' +
             UI.icon('plus') + 'Add another room</button>'
         : UI.empty('home', 'No rooms yet',
-            'Trace your home and I\'ll read each room\'s light from its windows, or add one room at a time.',
+            'Use the planner to build a map of your home, and I\'ll calculate the light in every room from its windows and floor plan.',
             '<div class="stack" style="gap:10px;align-items:center">' +
               '<button class="btn" data-go="/plan">' + UI.icon('compass') + 'Trace your home</button>' +
-              '<button class="link-btn" data-open="room">or add one room</button>' +
+              '<button class="link-btn is-skip" data-open="menu">or skip the home planner and just add a room or plant</button>' +
             '</div>');
 
       if (unassigned.length) {
@@ -1176,7 +1174,8 @@ window.ViewGreenhouse = (function () {
 
       const open = e.target.closest('[data-open]');
       if (open) {
-        open.getAttribute('data-open') === 'room' ? roomSheet(null) : addPlantSheet(null);
+        const kind = open.getAttribute('data-open');
+        if (kind === 'menu') addMenu(); else if (kind === 'room') roomSheet(null); else addPlantSheet(null);
         return;
       }
 

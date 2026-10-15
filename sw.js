@@ -75,8 +75,11 @@
    v99: a review of all ninety-five profiles, a lettered tile for a
    species still waiting on its photograph, diagnosis that never tells a
    never-fed plant to feed, and propagation timed by each method's own
-   season. */
-const CACHE = 'sprout-v105-viridium';
+   season.
+
+   v106: four tabs, with You on Today; the guided tour, js/guide.js, and
+   its sample home; the introduction's counted plant rows and calendar. */
+const CACHE = 'sprout-v106-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is
@@ -152,6 +155,7 @@ const ASSETS = [
   'js/views/diary.js',
   'js/onboard.js',
   'js/rate.js',
+  'js/guide.js',
   'js/app.js'
 ];
 

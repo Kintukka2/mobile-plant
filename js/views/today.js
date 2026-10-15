@@ -294,11 +294,17 @@ window.ViewToday = (function () {
     return UI.DAYS[d.getDay()] + ' ' + d.getDate() + ' ' + UI.MONTHS[d.getMonth()];
   }
 
+  /* You lives here now rather than on the tab bar: a round button beside
+     Add, round so it reads as a person and not as another action. */
   function actions() {
-    return '<button class="icon-btn" data-act="add" aria-label="Add a plant">' + UI.icon('plus') + '</button>';
+    return '<button class="icon-btn" data-act="add" aria-label="Add a plant">' + UI.icon('plus') + '</button>' +
+      '<button class="icon-btn is-round" data-act="me" aria-label="You: profile and settings">' + UI.icon('user') + '</button>';
   }
 
-  function onAction(act) { if (act === 'add') ViewGreenhouse.addMenu(); }
+  function onAction(act) {
+    if (act === 'add') ViewGreenhouse.addMenu();
+    else if (act === 'me') App.go('/profile');
+  }
 
   function render() {
     const plants = Store.activePlants();
