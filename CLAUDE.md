@@ -541,7 +541,10 @@ says what is about to happen while a floor plan of the sample home draws
 itself), then five cards: one per tab, then the reader's own plan, where
 Finish the tour lets the rating screen's leaves go and leaves them on the
 empty plan, which offers its own walkthrough. The overlay only dims, frames
-and talks; every page under it is the real one.
+and talks; every page under it is the real one. Those leaves fall at Finish
+and nowhere else in the tour. The page under it cannot be scrolled by hand
+while it runs (each frame is measured where the tour put the page); the
+tour scrolls it itself.
 
 **The sample home is never stored.** `Store.beginSample(state)` swaps it in
 and keeps the reader's state object aside; while it is showing, `save()`
