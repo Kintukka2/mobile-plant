@@ -67,6 +67,34 @@ window.Store = (function () {
 
   let state = null;
 
+  /* ---------- Sample mode ----------
+     The guided tour (Guide) shows a sample home, and it must never be able
+     to touch the reader's own. While a sample is showing, `state` is the
+     sample and `real` holds the reader's state exactly as it was: save()
+     writes nothing, so nothing reaches localStorage, the reminder digest or
+     another open tab. Ending it puts the reader's object back untouched, and
+     an app closed mid-tour reopens on their own garden, because the sample
+     was never stored anywhere.
+
+     This replaced the prototype's approach, which loaded the sample with
+     importAll and restored a snapshot afterwards: that wrote six strangers'
+     plants into storage, scheduled their reminders on the phone, and left
+     them there if the app was closed before the last card. */
+  let real = null;
+  function beginSample(sample) {
+    if (!real) real = state;
+    state = Object.assign(blankState(), JSON.parse(JSON.stringify(sample)));
+  }
+  function endSample() {
+    if (!real) return;
+    state = real;
+    real = null;
+    /* A digest build the sample turned away may have been the reader's
+       own, queued by a save just before it began, so build it now. */
+    if (window.Notify) Notify.sync();
+  }
+  function inSample() { return !!real; }
+
   /* ---------- Load / save ---------- */
   function load() {
     try {
@@ -108,6 +136,7 @@ window.Store = (function () {
   }
 
   function save() {
+    if (real) return true;            // a sample is showing: see beginSample()
     try {
       localStorage.setItem(KEY, JSON.stringify(state));
       /* The reminder digest is derived from exactly this, so it is rebuilt
@@ -384,6 +413,7 @@ window.Store = (function () {
   /* ---------- Photos ----------
      Stored one key per photo so we never rewrite the whole library. */
   function savePhoto(dataUrl) {
+    if (real) return null;            // nothing is stored for a sample
     const id = uid('photo');
     try {
       localStorage.setItem(PHOTO_PREFIX + id, dataUrl);
@@ -401,7 +431,7 @@ window.Store = (function () {
   }
 
   function deletePhoto(id) {
-    if (!id) return;
+    if (!id || real) return;
     try { localStorage.removeItem(PHOTO_PREFIX + id); } catch (e) {}
   }
 
@@ -668,6 +698,7 @@ window.Store = (function () {
 
   return {
     load: load, save: save, get: get, uid: uid,
+    beginSample: beginSample, endSample: endSample, inSample: inSample,
     updatePlan: updatePlan,
     updateProfile: updateProfile, hemisphere: hemisphere,
     hemisphereIsGuess: hemisphereIsGuess,

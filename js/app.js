@@ -100,9 +100,11 @@ window.App = (function () {
     const lb = document.querySelector('.lightbox:not(.is-closing)');
     if (lb) { lb.click(); return; }
 
-    /* The tour and the rating screen each close on their own Escape, with
-       their own exit, so they are handed one rather than torn down here. */
-    const layer = document.querySelector('.tour, .rate');
+    /* The planner's walkthrough, the rating screen and the guided tour each
+       answer their own Escape, with their own exit, so they are handed one
+       rather than torn down here. The guided tour's goes to its last card,
+       on the reader's own plan, so Back never leaves them on a sample. */
+    const layer = document.querySelector('.tour, .rate, .gdi, .gd');
     if (layer) {
       layer.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
       return;

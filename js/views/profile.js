@@ -59,12 +59,21 @@ window.ViewProfile = (function () {
      daylight-theme button sitting in the sidebar on the very same screen.
      Two identical marks doing different jobs is worse than a less
      conventional glyph. */
+  /* Beside it, a question mark that offers the guided tour again: a reader
+     who chose "Let me look around first" has no other way back to it. The
+     mark is drawn here rather than added to UI's set, because nothing else
+     in the app asks a question with an icon. */
+  const HELP = '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.6 2.3c-.7.3-1.2 1-1.2 1.8v.4"/><path d="M12 17.2v.1"/></svg>';
   function actions() {
-    return '<button class="icon-btn" data-act="settings" aria-label="Settings">' +
-      UI.icon('sliders') + '</button>';
+    return (window.Guide ? '<button class="icon-btn" data-act="tour" aria-label="Show me around">' + HELP + '</button>' : '') +
+      '<button class="icon-btn" data-act="settings" aria-label="Settings">' + UI.icon('sliders') + '</button>';
   }
 
-  function onAction(act) { if (act === 'settings') App.go('/settings'); }
+  function onAction(act) {
+    if (act === 'settings') App.go('/settings');
+    else if (act === 'tour' && window.Guide) Guide.offer();
+  }
   function sub() {
     const p = Store.get().profile;
     return p.location ? p.location.label : 'Profile & settings';
@@ -605,14 +614,10 @@ window.ViewProfile = (function () {
   /* The end of the introduction, not a second one. Sprout says who it is
      above the first question, so this sheet's job is to show that the
      answers were heard — each line is something the app now does
-     differently because of one — and to hand over to the next step.
-
-     The plan leads either way, because it is the thing no other plant app
-     does, but what it is for depends on the plants question. With plants
-     already in, it is where they go: each waits in the plan's tray to be
-     dragged to where it stands. Without, it is how I learn what would grow
-     there, and step 4 of the plan suggests species for each room's light
-     once north is set. */
+     differently because of one — and to offer the guided tour (Guide),
+     which shows each tab on a sample home and ends on the reader's own
+     plan, where the planner's walkthrough takes over. "Let me look around
+     first" skips it; You offers it again behind its question mark. */
   function welcomeSheet() {
     const prof = Store.get().profile;
     const name = (prof.name || '').trim();
@@ -638,10 +643,8 @@ window.ViewProfile = (function () {
     const body =
       UI.sprout('base', 'is-small welcome-sprout') +
       '<p class="muted" style="margin:0 0 14px;line-height:1.65">' +
-        (count
-          ? 'Now draw your home and drag ' + (count === 1 ? 'it' : 'each one') + ' to where it stands. I\'ll read the light ' +
-            (count === 1 ? 'it gets' : 'each gets') + ' from the windows and tell you if a spot is wrong.'
-          : 'Draw your home and mark the windows, and I\'ll read the light in every room. Then I can suggest plants that will do well in each one.') +
+        'I can show you round each tab on a sample home first. It takes about a minute, and ' +
+        (count ? 'your own plants stay exactly as they are.' : 'nothing of yours is changed.') +
       '</p>' +
       (heard.length
         ? '<div class="stack welcome-heard" style="gap:8px;clear:both">' + heard.map(function (h) {
@@ -651,11 +654,8 @@ window.ViewProfile = (function () {
         : '') +
 
       '<div class="stack" style="gap:8px;margin-top:18px;clear:both">' +
-        '<button class="btn btn-lg" id="w-go">Draw my home</button>' +
-        (count
-          ? '<button class="btn btn-ghost" id="w-skip">Show me today first</button>'
-          : '<button class="btn btn-ghost" id="w-browse">Browse plants</button>' +
-            '<button class="link-btn center" id="w-skip">Look around first</button>') +
+        '<button class="btn btn-lg" id="w-tour">Show me around</button>' +
+        '<button class="btn btn-ghost" id="w-skip">Let me look around first</button>' +
       '</div>';
 
     UI.openSheet(name ? 'Welcome, ' + name : 'Welcome to Sprout', body, function (root) {
@@ -663,22 +663,12 @@ window.ViewProfile = (function () {
         Store.updateSettings({ seenWelcome: true });
       }
 
-      /* Straight into the planner, the same door the empty greenhouse
-         opens. It used to drop the reader into the add-a-room form, which
-         made a described room the default and the plan an afterthought —
-         the opposite of the order the greenhouse itself now leads with. The
-         quiet "or just add a room" route is one tap back. */
-      root.querySelector('#w-go').addEventListener('click', function () {
+      /* The tour starts once the sheet is out of the way, so the hand-over
+         takes the screen from the page and not from a sheet half closed. */
+      root.querySelector('#w-tour').addEventListener('click', function () {
         save();
         UI.closeSheet();
-        App.go('/plan');
-      });
-
-      const browse = root.querySelector('#w-browse');
-      if (browse) browse.addEventListener('click', function () {
-        save();
-        UI.closeSheet();
-        App.go('/discover');
+        if (window.Guide) setTimeout(Guide.play, 260); else App.go('/plan');
       });
 
       root.querySelector('#w-skip').addEventListener('click', function () {

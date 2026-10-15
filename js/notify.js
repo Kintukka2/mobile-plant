@@ -195,6 +195,12 @@ window.Notify = (function () {
     queued = true;
     setTimeout(function () {
       queued = false;
+      /* Never from the guided tour's sample home: those are not the
+         reader's plants, and their reminders would be scheduled on the
+         phone. Checked when the build runs, not when it was asked for,
+         because a save just before the sample began is still queued. The
+         reader's own digest is untouched and rebuilt on their next save. */
+      if (Store.inSample && Store.inSample()) return;
       let d;
       try { d = build(); } catch (e) { return; }
       /* Written on both runtimes. The shell does not read it, but one code
