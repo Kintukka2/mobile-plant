@@ -612,33 +612,16 @@ window.ViewProfile = (function () {
   }
 
   /* The end of the introduction, not a second one. Sprout says who it is
-     above the first question, so this sheet's job is to show that the
-     answers were heard — each line is something the app now does
-     differently because of one — and to offer the guided tour (Guide),
-     which shows each tab on a sample home and ends on the reader's own
-     plan, where the planner's walkthrough takes over. "Let me look around
+     above the first question, and the introduction's last screen reads the
+     answers back (Onboard's review), so this sheet only offers the guided
+     tour (Guide), which shows each tab on a sample home and ends on the
+     reader's own plan, where the planner's walkthrough takes over. It is
+     the same height for everyone now, whatever was answered. "Let me look around
      first" skips it; You offers it again behind its question mark. */
   function welcomeSheet() {
     const prof = Store.get().profile;
     const name = (prof.name || '').trim();
-    const pets = (prof.pets || []).filter(function (k) { return k === 'cats' || k === 'dogs'; });
     const count = Store.activePlants().length;
-
-    const heard = [];
-    if (count) {
-      heard.push(['leaf', count === 1 ? '1 plant in, with its own routine already.'
-        : UI.plural(count, 'plant') + ' in, each with its own routine already.']);
-    }
-    if (pets.length) {
-      heard.push(['paw', 'I\'ll warn you about any plant that\'s toxic to your ' + pets.join(' or ') + '.']);
-    }
-    /* A location answers the hemisphere as well, so the forecast line is the
-       one worth saying when both are known. */
-    if (prof.location && prof.location.label) {
-      heard.push(['pin', 'I\'ll offer to stretch or shorten watering before a wet or dry spell in ' + prof.location.label + '.']);
-    } else if (prof.hemisphere) {
-      heard.push(['sun', 'I\'m reading seasons and window light for the ' + prof.hemisphere + 'ern hemisphere.']);
-    }
 
     const body =
       UI.sprout('base', 'is-small welcome-sprout') +
@@ -646,12 +629,6 @@ window.ViewProfile = (function () {
         'I can show you round each tab on a sample home first. It takes about a minute, and ' +
         (count ? 'your own plants stay exactly as they are.' : 'nothing of yours is changed.') +
       '</p>' +
-      (heard.length
-        ? '<div class="stack welcome-heard" style="gap:8px;clear:both">' + heard.map(function (h) {
-            return '<div class="row welcome-heard-row">' + UI.icon(h[0]) +
-              '<span class="small">' + UI.esc(h[1]) + '</span></div>';
-          }).join('') + '</div>'
-        : '') +
 
       '<div class="stack" style="gap:8px;margin-top:18px;clear:both">' +
         '<button class="btn btn-lg" id="w-tour">Show me around</button>' +

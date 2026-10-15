@@ -28,13 +28,31 @@ window.Onboard = (function () {
      it: latitude decides the hemisphere (Store.updateProfile), so the
      question is only asked of someone who said no or whose phone could not
      find them. It is last for that reason, and the introduction ends a
-     step early when it is not needed. */
-  const STEPS = ['name', 'pets', 'exp', 'plants', 'watered', 'loc', 'hemi'];
+     step early when it is not needed.
+
+     The review is last: every answer on one screen, before the welcome
+     sheet. Those lines used to sit in the sheet itself, which made it a
+     different height for every reader, from a sprite and two buttons to
+     most of the screen. */
+  const STEPS = ['name', 'pets', 'exp', 'plants', 'watered', 'loc', 'hemi', 'review'];
 
   /* "Watered" follows the plants step only when there is something on it:
      it asks about the plants just added, and with none it has nothing to
-     ask. Skipped in both directions and left out of the dots. */
-  function live(step) { return step !== 'watered' || added.length > 0; }
+     ask. Skipped in both directions and left out of the dots. The
+     hemisphere is skipped the same way once a location has answered it. */
+  function live(step) {
+    if (step === 'watered') return added.length > 0;
+    if (step === 'hemi') return !Store.get().profile.location;
+    return true;
+  }
+
+  /* Set while the reader is changing one answer from the review, so that
+     answer leads back to the review rather than on through every question
+     after it. A step that only follows from the one being changed (the
+     watered dates after new plants, the hemisphere after a declined
+     location) is still asked on the way. */
+  let editing = false;
+  const FOLLOWS = { plants: 'watered', loc: 'hemi' };
 
   let root = null, stage = null, dotsEl = null, backEl = null, skipEl = null,
       at = -1, finished = false, onDone = null, busy = false;
@@ -342,7 +360,52 @@ window.Onboard = (function () {
       '<p class="ob-hint ob-note" id="ob-loc-note" hidden></p>';
   }
 
-  const RENDER = { name: stepName, pets: stepPets, exp: stepExp, plants: stepPlants, watered: stepWatered, loc: stepLoc, hemi: stepHemi };
+  /* Each line names the answer and, where the app does something with it,
+     what that is. A line is the way back to its question. */
+  function reviewRows() {
+    const prof = Store.get().profile, rows = [];
+    const name = (prof.name || '').trim();
+    rows.push(['user', 'Name', name || 'Not given', 'name']);
+
+    const pets = prof.pets || [];
+    const warn = pets.filter(function (k) { return k === 'cats' || k === 'dogs'; });
+    const petLine = !pets.length ? 'None'
+      : warn.length ? 'I\'ll warn you about any plant that\'s toxic to your ' + warn.join(' or ') + '.'
+      : 'Other pets';
+    rows.push(['paw', 'Pets', petLine, 'pets']);
+
+    const exp = EXPERIENCE.filter(function (e) { return e.key === prof.experience; })[0];
+    /* Only the two gentlest answers change anything (Schedule.roomMatches
+       puts the forgiving plants first), so only they say so. */
+    const gentle = prof.experience === 'new' || prof.experience === 'some';
+    rows.push(['sprout', 'Experience', exp ? exp.label + (gentle ? ', so I\'ll suggest the forgiving plants first.' : '') : 'Not given', 'exp']);
+
+    const count = Store.activePlants().length;
+    rows.push(['leaf', 'Plants', count ? UI.plural(count, 'plant') + ', each on its own routine.' : 'None yet', 'plants']);
+
+    /* A location answers the hemisphere as well, so it is the one line. */
+    if (prof.location && prof.location.label) {
+      rows.push(['pin', 'Location', prof.location.label + ', for the forecast.', 'loc']);
+    } else {
+      rows.push(['sun', 'Hemisphere', prof.hemisphere ? (prof.hemisphere === 'south' ? 'Southern' : 'Northern') : 'Not given', 'hemi']);
+    }
+    return rows;
+  }
+
+  function stepReview() {
+    return '<h2 class="ob-q">Does this look right?</h2>' +
+      '<div class="ob-review">' + reviewRows().map(function (r) {
+        return '<button type="button" class="ob-rv-row" data-ob-edit="' + r[3] + '" aria-label="Change ' + UI.attr(r[1].toLowerCase()) + '">' +
+          UI.icon(r[0]) +
+          '<span class="ob-rv-text"><span class="ob-rv-k">' + UI.esc(r[1]) + '</span><span class="ob-rv-v">' + UI.esc(r[2]) + '</span></span>' +
+          UI.icon('edit') +
+        '</button>';
+      }).join('') + '</div>' +
+      '<p class="ob-hint">Tap a line to change it.</p>' +
+      '<div class="ob-actions"><button class="btn btn-lg" data-ob="next">Yes, looks good</button></div>';
+  }
+
+  const RENDER = { name: stepName, pets: stepPets, exp: stepExp, plants: stepPlants, watered: stepWatered, loc: stepLoc, hemi: stepHemi, review: stepReview };
 
   /* ---------- Flow ---------- */
 
@@ -363,10 +426,12 @@ window.Onboard = (function () {
       at = i;
       stage.innerHTML = '<div class="ob-step">' + RENDER[STEPS[i]]() + '</div>';
       dots();
-      backEl.hidden = i === 0;
+      backEl.hidden = i === 0 && !editing;
       /* On the location question "Not now" already is the skip, so a
-         second way out under it would only be a second word for the tap. */
-      skipEl.hidden = STEPS[i] === 'loc';
+         second way out under it would only be a second word for the tap.
+         On the review there is nothing left to skip. */
+      skipEl.hidden = STEPS[i] === 'loc' || STEPS[i] === 'review';
+      if (STEPS[i] === 'review') editing = false;
       busy = false;
       const input = stage.querySelector('#ob-name');
       if (input) setTimeout(function () { input.focus(); }, 500);
@@ -380,14 +445,19 @@ window.Onboard = (function () {
   function next() {
     let i = at + 1;
     while (i < STEPS.length && !live(STEPS[i])) i++;
+    if (editing && STEPS[i] !== FOLLOWS[STEPS[at]]) i = STEPS.indexOf('review');
     if (i >= STEPS.length) finish(); else go(i);
   }
+
+  function review() { go(STEPS.indexOf('review')); }
 
   /* Answers are already saved, so stepping back only re-asks: the step
      renders with what was chosen lit, and choosing again overwrites it. */
   function back() {
-    if (!root || finished || busy || at <= 0) return;
+    if (!root || finished || busy || (at <= 0 && !editing)) return;
     if (STEPS[at] === 'name') saveName();
+    /* Back out of a change goes to the review it came from. */
+    if (editing) { review(); return; }
     let i = at - 1;
     while (i > 0 && !live(STEPS[i])) i--;
     go(i);
@@ -417,7 +487,7 @@ window.Onboard = (function () {
       Store.setWeather(null);
       if (window.App && App.syncWeather) App.syncWeather(true);
       note.textContent = 'Set to ' + place.label + '.';
-      setTimeout(finish, 520);
+      setTimeout(function () { if (STEPS[at] === 'loc') next(); }, 520);
     });
   }
 
@@ -463,8 +533,14 @@ window.Onboard = (function () {
         else if (a === 'finish') { if (STEPS[at] === 'name') saveName(); finish(); }
         else if (a === 'loc-later') {
           Store.snoozeLocationAsk();
-          if (Store.get().profile.hemisphere) finish(); else next();
+          if (Store.get().profile.hemisphere) review(); else next();
         }
+        return;
+      }
+      const edit = t.closest('[data-ob-edit]');
+      if (edit) {
+        const step = STEPS.indexOf(edit.getAttribute('data-ob-edit'));
+        if (step !== -1 && !busy) { editing = true; go(step); }
         return;
       }
       const pet = t.closest('[data-ob-pet]');
