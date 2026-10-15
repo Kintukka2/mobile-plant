@@ -37,13 +37,17 @@ window.App = (function () {
     diary:      function () { return window.ViewDiary; }
   };
 
+  /* Four tabs. You used to be a fifth, but it holds answers given once and
+     settings changed rarely, which is not a place anyone goes every week;
+     it opens from the round button in Today's top bar instead, and from
+     the foot of the sidebar on a wide screen. */
   const TABS = [
     { key: 'today',      label: 'Today',      icon: 'home',        path: '/today' },
     { key: 'greenhouse', label: 'Greenhouse', icon: 'leaf',        path: '/greenhouse' },
     { key: 'discover',   label: 'Discover',   icon: 'search',      path: '/discover' },
-    { key: 'diagnose',   label: 'Diagnose',   icon: 'stethoscope', path: '/diagnose' },
-    { key: 'profile',    label: 'You',        icon: 'user',        path: '/profile' }
+    { key: 'diagnose',   label: 'Diagnose',   icon: 'stethoscope', path: '/diagnose' }
   ];
+  const ME = { key: 'profile', label: 'You', icon: 'user', path: '/profile' };
 
   let current = { name: 'today', id: null, extra: null, tail: null };
   let currentView = null;
@@ -461,8 +465,11 @@ window.App = (function () {
       return '';
     }
 
+    /* On the tab bar, You and its settings light Today, the tab they open
+       from; the sidebar has You's own link for that. */
+    const fromToday = current.name === 'profile' || current.name === 'settings';
     document.getElementById('tabbar').innerHTML = TABS.map(function (t) {
-      const on = t.key === current.name || isChildOf(t.key, current.name);
+      const on = t.key === current.name || isChildOf(t.key, current.name) || (t.key === 'today' && fromToday);
       return '<button class="tab' + (on ? ' is-active' : '') + '" data-path="' + UI.attr(t.path) + '">' +
         UI.icon(t.icon) +
         badge(t.key, 'tab-badge') +
@@ -477,6 +484,13 @@ window.App = (function () {
         badge(t.key, 'side-count') +
       '</button>';
     }).join('');
+
+    const me = document.getElementById('side-me');
+    if (me) {
+      const on = current.name === 'profile' || current.name === 'settings';
+      me.innerHTML = '<button class="side-link' + (on ? ' is-active' : '') + '" data-path="' + UI.attr(ME.path) + '">' +
+        UI.icon(ME.icon) + '<span>' + UI.esc(ME.label) + '</span></button>';
+    }
 
     renderWeatherChip();
   }
@@ -537,7 +551,11 @@ window.App = (function () {
     });
 
     document.getElementById('btn-back').innerHTML = UI.icon('back');
-    document.getElementById('btn-back').addEventListener('click', function () { back('/greenhouse'); });
+    /* You is reached from Today now, so that is where Back lands when there
+       is no history to go back through (a cold start straight onto it). */
+    document.getElementById('btn-back').addEventListener('click', function () {
+      back(current.name === 'profile' ? '/today' : '/greenhouse');
+    });
 
     // Sheet dismissal: close button, backdrop click, Escape.
     const closeBtn = document.getElementById('sheet-close');

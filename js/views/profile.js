@@ -692,8 +692,9 @@ window.ViewProfile = (function () {
     });
   }
 
+  /* No tab to return to, so You carries the same Back as a plant page. */
   return {
-    title: title, sub: sub, actions: actions, onAction: onAction,
+    title: title, sub: sub, actions: actions, onAction: onAction, back: true,
     render: render, mount: mount,
     welcomeSheet: welcomeSheet, locationSheet: locationSheet
   };

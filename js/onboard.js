@@ -326,7 +326,7 @@ window.Onboard = (function () {
     if (btn) btn.disabled = true;
     Weather.locateMe(function (err, place) {
       if (finished) return;
-      if (err) { note.textContent = err.message + ' You can set it later on the You tab.'; if (btn) btn.disabled = false; return; }
+      if (err) { note.textContent = err.message + ' You can set it later in You, from the top of Today.'; if (btn) btn.disabled = false; return; }
       Store.updateProfile({ location: { label: place.label, lat: place.lat, lon: place.lon } });
       Store.setWeather(null);
       if (window.App && App.syncWeather) App.syncWeather(true);
