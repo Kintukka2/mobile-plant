@@ -114,7 +114,7 @@ window.ViewDiagnose = (function () {
          that follow never carry one. The line says what adding a plant
          gets the reader; the option below covers going on without one. */
       html += UI.empty('sprout:diagnose', 'No plants yet',
-        'Add one and I\'ll rank the causes for its species.',
+        'Add a plant and I can let you know the likely causes it might be sick.',
         '<button class="btn btn-ghost" data-open="plant">Add a plant</button>');
     }
 
