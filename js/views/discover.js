@@ -14,6 +14,14 @@ window.ViewDiscover = (function () {
   let query = '';
   let filter = 'all';
 
+  /* Twelve at a time. All 95 cards at once was a long page of photographs
+     to scroll past and a lot of tiles to build on every keystroke, for a
+     reader who usually wants a handful or is about to search. A search or a
+     filter starts again at twelve; coming back from a species page keeps
+     however many were showing, so Back lands where the reader left off. */
+  const PAGE = 12;
+  let shown = PAGE;
+
   /* Text only. This is a fifteen-chip bar that already scrolls sideways, and
      a glyph on each one would widen every chip — making the scroll worse —
      to decorate a control whose selected state is the only thing the eye
@@ -127,6 +135,12 @@ window.ViewDiscover = (function () {
     return ViewGreenhouse.searchSpecies(query).filter(matches);
   }
 
+  function moreButton(list) {
+    return list.length > shown
+      ? '<button class="btn btn-ghost" data-more="1">Show more plants</button>'
+      : '';
+  }
+
   /* ---------- View ---------- */
 
   function title() { return 'Discover'; }
@@ -189,7 +203,8 @@ window.ViewDiscover = (function () {
           UI.plural(list.length, 'plant') + '</span>' +
       '</div>' +
       (list.length
-        ? '<div class="grid grid-plants">' + list.map(speciesCard).join('') + '</div>'
+        ? '<div class="grid grid-plants">' + list.slice(0, shown).map(speciesCard).join('') + '</div>' +
+          '<div id="dc-more" style="display:flex;justify-content:center;margin-top:18px">' + moreButton(list) + '</div>'
         : UI.empty('search', 'Nothing matches',
             /* Counted, not typed. Three places claimed "48" from memory and
                the dataset is the only thing that actually knows — a number
@@ -212,6 +227,7 @@ window.ViewDiscover = (function () {
       // Redraw only the results, so the input keeps focus and the caret.
       q.addEventListener('input', function () {
         query = q.value;
+        shown = PAGE;
         const list = results();
         const grid = root.querySelector('.grid-plants');
 
@@ -225,7 +241,9 @@ window.ViewDiscover = (function () {
           return;
         }
 
-        grid.innerHTML = list.map(speciesCard).join('');
+        grid.innerHTML = list.slice(0, shown).map(speciesCard).join('');
+        const more = root.querySelector('#dc-more');
+        if (more) more.innerHTML = moreButton(list);
 
         /* Target these by id. Reaching for the first `.section-note` picked up
            the room-recommendation heading instead, so the result count never
@@ -245,9 +263,26 @@ window.ViewDiscover = (function () {
 
     root.addEventListener('click', function (e) {
       const f = e.target.closest('[data-filter]');
-      if (f) { filter = f.getAttribute('data-filter'); App.refresh(); return; }
+      if (f) { filter = f.getAttribute('data-filter'); shown = PAGE; App.refresh(); return; }
 
-      if (e.target.closest('[data-reset]')) { filter = 'all'; query = ''; App.refresh(); return; }
+      if (e.target.closest('[data-reset]')) { filter = 'all'; query = ''; shown = PAGE; App.refresh(); return; }
+
+      /* The next twelve go on the end of the grid rather than through a
+         refresh, so nothing above them is rebuilt and the page stays put.
+         Focus moves to the first new card, since the button it was on may
+         be about to disappear. */
+      if (e.target.closest('[data-more]')) {
+        const list = results();
+        const grid = root.querySelector('.grid-plants');
+        const from = shown;
+        shown = Math.min(shown + PAGE, list.length);
+        if (grid) grid.insertAdjacentHTML('beforeend', list.slice(from, shown).map(speciesCard).join(''));
+        const more = root.querySelector('#dc-more');
+        if (more) more.innerHTML = moreButton(list);
+        const first = grid && grid.children[from];
+        if (first) first.focus({ preventScroll: true });
+        return;
+      }
 
       const sp = e.target.closest('[data-species]');
       if (sp) { App.go('/species/' + sp.getAttribute('data-species')); }
