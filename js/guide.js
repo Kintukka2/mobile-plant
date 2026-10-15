@@ -327,8 +327,10 @@ window.Guide = (function () {
     return reveal();
   }
 
-  /* The plan rushes past, the ground lifts, leaves go up, and Today rises
-     underneath on its own entrance, already holding the sample home. */
+  /* The plan rushes past, the ground lifts, and Today rises underneath on
+     its own entrance, already holding the sample home. The leaves are kept
+     for Finish the tour: a burst here, before the first card, read as the
+     tour ending at the moment it began. */
   async function reveal() {
     skipped = false;
     showSample();
@@ -336,7 +338,6 @@ window.Guide = (function () {
     window.scrollTo(0, 0);
     hand.style.pointerEvents = 'none';
     anim(hand.querySelector('.gdi-skip'), [{ opacity: 1 }, { opacity: 0 }], { duration: 200 });
-    leaves(innerWidth / 2, innerHeight * 0.52, 40, [36]);
     anim(hand.querySelector('.gdi-cast'), [{ opacity: 1, transform: 'none', filter: 'blur(0)' }, { opacity: 0, transform: 'scale(1.9)', filter: 'blur(8px)' }],
       { duration: reduced() ? 300 : 820, easing: 'cubic-bezier(.65,0,.35,1)' });
     await anim(hand.querySelector('.gdi-ground'), [{ opacity: 1 }, { opacity: 0 }],
@@ -449,6 +450,18 @@ window.Guide = (function () {
   }
 
   let root = null, hole = null, card = null, finger = null, chip = null;
+  /* The page under the tour does not scroll by hand. Each frame is
+     measured against the page where the tour has put it, so a reader who
+     dragged the page left the frame round the wrong thing and the card
+     over the rest. The tour still scrolls the page itself, through
+     scrollToY(), which no listener here stops. The card keeps its own
+     touches, in case a long one ever has to scroll. */
+  const SCROLL_KEYS = [' ', 'PageUp', 'PageDown', 'Home', 'End', 'ArrowUp', 'ArrowDown'];
+  function noScroll(e) {
+    if (card && card.contains(e.target)) return;
+    e.preventDefault();
+  }
+
   let at = -1, token = 0, current = null, capH = null, trackT = 0;
 
   function mount() {
@@ -468,10 +481,14 @@ window.Guide = (function () {
     document.addEventListener('keydown', onKey, true);
     window.addEventListener('resize', reframe);
     window.addEventListener('scroll', reframe, true);
+    document.addEventListener('touchmove', noScroll, { passive: false });
+    document.addEventListener('wheel', noScroll, { passive: false });
   }
   function unmount() {
     if (!root) return;
     document.removeEventListener('keydown', onKey, true);
+    document.removeEventListener('touchmove', noScroll);
+    document.removeEventListener('wheel', noScroll);
     window.removeEventListener('resize', reframe);
     window.removeEventListener('scroll', reframe, true);
     root.remove();
@@ -717,6 +734,7 @@ window.Guide = (function () {
     if (e.key === 'Escape') { if (STOPS[at].last) finish(); else skip(); }
     else if (e.key === 'ArrowRight') next();
     else if (e.key === 'ArrowLeft') back();
+    else if (SCROLL_KEYS.indexOf(e.key) !== -1 && !(card && card.contains(e.target))) { e.preventDefault(); return; }
     else return;
     e.stopPropagation(); e.preventDefault();
   }

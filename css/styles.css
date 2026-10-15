@@ -5916,8 +5916,9 @@ html.plan-full .tabbar { visibility: hidden; }
 .gd.is-on { pointer-events: auto; }
 
 /* Catches every tap that is not on the card, so the page underneath only
-   moves when the tour moves it. */
-.gd-block { position: absolute; inset: 0; }
+   moves when the tour moves it. touch-action stops a drag on it from
+   starting a scroll at all; Guide's touchmove listener covers the rest. */
+.gd-block { position: absolute; inset: 0; touch-action: none; }
 
 /* The lit window. Its own shadow is the dimming, so the hole and the dark
    are one element and glide together from target to target. */
