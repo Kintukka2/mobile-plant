@@ -148,8 +148,18 @@ window.ViewPlan = (function () {
     const q = pt.matrixTransform(m.inverse()); return { x: q.x, y: q.y };
   }
   function toPlan(evt) { const q = svgPoint(evt); return mode === 'plan' ? { x: q.x / P, y: q.y / P } : unIso(q.x, q.y); }
+  /* The plan stays where it is framed unless the reader has zoomed in.
+     Fitted, every room is already in view, so a drag could only push the
+     plan out of place: readers dragged the empty grid off the stage and
+     found a Centre button for a view they had never meant to move. So:
+     nothing moves at all while the invitation is up and nothing is drawn;
+     zoom goes no further out than the fitted frame, and reaching it puts
+     the plan back in the middle; a drag pans only while zoomed in. */
+  function frozen() { return mode === 'plan' && !drawing && !drawn().length; }
   function zoomAt(clientX, clientY, k2) {
-    const v = curView(); k2 = clamp(k2, 0.5, 6);
+    if (frozen()) return;
+    const v = curView(); k2 = clamp(k2, 1, 6);
+    if (k2 === 1) { v.k = 1; v.cx = 0; v.cy = 0; applyView(baseVB.x, baseVB.y, baseVB.w, baseVB.h); syncOverlays(); return; }
     const before = svgPoint({ clientX: clientX, clientY: clientY });
     const vb = canvas.viewBox.baseVal, fx = (before.x - vb.x) / vb.width, fy = (before.y - vb.y) / vb.height;
     const w2 = baseVB.w / k2, h2 = baseVB.h / k2;
@@ -157,6 +167,7 @@ window.ViewPlan = (function () {
     applyView(baseVB.x, baseVB.y, baseVB.w, baseVB.h); syncOverlays();
   }
   function panBy(dxPx, dyPx) {
+    if (frozen() || curView().k <= 1) return;
     const v = curView(), rc = canvas.getBoundingClientRect(), vb = canvas.viewBox.baseVal;
     const upp = Math.max(vb.width / rc.width, vb.height / rc.height);
     v.cx -= dxPx * upp; v.cy -= dyPx * upp;
