@@ -931,7 +931,19 @@ window.ViewPlan = (function () {
       if (n.parentNode !== hints) { hints.appendChild(n); hints.appendChild(tip); }
       hints.hidden = n.hidden && tip.hidden;
     }
-    root.querySelector('#pl-invite').hidden = !(mode === 'plan' && !drawing && !list.length && window.Tour);
+    const inviting = !!(mode === 'plan' && !drawing && !list.length && window.Tour);
+    root.querySelector('#pl-invite').hidden = !inviting;
+    /* While the invitation is up, it is the whole screen: undo and redo,
+       the compass, the ruler, full screen, the step dots and the step panel
+       all wait until the reader has chosen to trace. Nine controls around
+       an empty grid asked them to learn the planner before deciding to use
+       it, and every one of them does nothing until a room exists. They
+       come back the moment tracing starts, and go again if it is cancelled
+       with nothing drawn. */
+    root.querySelector('.plan-history').hidden = inviting;
+    root.querySelector('.plan-tools').hidden = inviting;
+    root.querySelector('#pl-dock').hidden = inviting;
+    root.querySelector('#pl-panel').hidden = inviting;
     /* The line under the grid that used to carry this went unread: tracing
        starts on the grid, so that is where the eye already is. It goes at
        the first touch, and pointer-events: none lets that touch through. */
@@ -1170,9 +1182,12 @@ window.ViewPlan = (function () {
   function modeTabs() {
     return '<button class="tab-btn' + (mode === 'plan' ? ' is-on' : '') + '" data-mode="plan">Plan</button><button class="tab-btn' + (mode === 'home' ? ' is-on' : '') + '" data-mode="home">Home</button>';
   }
-  /* Plan and Home sit in the header beside the title, which hands the row
-     they used to take back to the stage. */
-  function actions() { return '<div class="tabs plan-modes" role="group" aria-label="View">' + modeTabs() + '</div>'; }
+  /* Plan and Home are off the header for now: the Home view is not ready
+     to be the second thing a new reader finds, and two tabs beside the
+     title read as a choice to make before anything is drawn. The Home
+     drawing and setMode() are kept, so putting modeTabs() back here is
+     the whole of turning it on again. */
+  function actions() { return ''; }
   function setMode(m) { mode = m; if (mode === 'home') { tool = 'select'; drawing = null; } redraw(); }
 
   function render() {
