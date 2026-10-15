@@ -6127,7 +6127,7 @@ button.gd-r:hover:not(.is-on) { color: var(--ink); border-color: var(--hair-2); 
   border: 1.5px solid rgba(63, 190, 139, 0.6);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
-.gdi-pot img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+.gdi-pot img { width: 100%; height: 100%; object-fit: cover; }
 
 .gdi-status {
   min-height: 1.5em; margin: 16px 0 0;

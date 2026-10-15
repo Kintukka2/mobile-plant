@@ -192,12 +192,16 @@ window.Guide = (function () {
     '</svg>';
   }
 
-  /* Placed against the drawing, which sits 8px in from the card's edge. */
+  /* Placed against the drawing, which sits 8px in from the card's edge.
+     The pictures are img/guide/, 144px crops of the six species photos,
+     not the photos themselves: those are not in the service worker's cache
+     (each is cached on first view), so a first run with no signal drew six
+     empty circles. The crops are 55KB together and are cached up front. */
   function potsHTML() {
     return POTS.map(function (p) {
       return '<span class="gdi-pot" style="left:calc(8px + (100% - 16px) * ' + (p.x / 300).toFixed(4) + ');' +
         'top:calc(8px + (100% - 16px) * ' + (p.y / 220).toFixed(4) + ')">' +
-        '<img src="' + UI.attr(Store.speciesPhoto(p.sp)) + '" alt=""></span>';
+        '<img src="img/guide/' + UI.attr(p.sp) + '.webp" alt=""></span>';
     }).join('');
   }
 

@@ -232,7 +232,11 @@ without looking, so a new species needs its photograph in the same commit —
 owner's own photo first and the species photo after (`Store.tilePhoto`).
 They are deliberately not in `sw.js` ASSETS (9MB, mostly never opened; each
 is cached on first view), and `native/copy-web.js` copies `img/` whole so the
-store builds carry every one.
+store builds carry every one. The guided tour's hand-over is the one place a
+first run shows species pictures before any page has cached them, so it uses
+`img/guide/<id>.webp` instead: 144px square crops of its six plants (the
+photo's top 30% crop, as `object-position: 50% 30%` cut it), 55KB together
+and in ASSETS. Replace one of those six photos and recut its crop.
 
 `js/data/problems.js` — the diagnosis knowledge base: 26 symptoms, 43 clues,
 47 causes. Scoring is `symptom.causes[id]` as a base, `+6` per supporting clue

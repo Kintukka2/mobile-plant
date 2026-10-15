@@ -78,8 +78,11 @@
    season.
 
    v106: four tabs, with You on Today; the guided tour, js/guide.js, and
-   its sample home; the introduction's counted plant rows and calendar. */
-const CACHE = 'sprout-v106-viridium';
+   its sample home; the introduction's counted plant rows and calendar.
+
+   v107: the hand-over's six plant pictures, img/guide/, cached up front so
+   a first run with no signal does not draw empty circles. */
+const CACHE = 'sprout-v107-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is
@@ -124,6 +127,12 @@ const ASSETS = [
      screens that show them (a first run, an empty greenhouse, an empty plan,
      a day with nothing due) are exactly the ones most likely to be opened
      offline. This list and SPROUT_POSES in js/ui.js name the same poses. */
+  'img/guide/monstera-deliciosa.webp',
+  'img/guide/ficus-lyrata.webp',
+  'img/guide/spathiphyllum-wallisii.webp',
+  'img/guide/dracaena-trifasciata.webp',
+  'img/guide/epipremnum-aureum.webp',
+  'img/guide/calathea-orbifolia.webp',
   'img/sprout/base.webp',
   'img/sprout/new-growth.webp',
   'img/sprout/watering.webp',
