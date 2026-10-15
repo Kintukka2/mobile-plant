@@ -268,7 +268,13 @@ window.App = (function () {
   /* ---------- Rendering ---------- */
 
   function render(keepScroll) {
+    const was = current;
     current = parse();
+    /* Leaving the plan is the one good moment no single save marks: the
+       reader may have drawn for ten minutes and saved nothing by hand. */
+    if (was && was.name === 'plan' && current.name !== 'plan' && window.Rate && window.ViewPlan) {
+      Rate.moment('plan', { edited: ViewPlan.edited() });
+    }
     const view = current.name ? VIEWS[current.name]() : null;
     /* Read before the DOM is replaced. Once innerHTML is gone the document
        may be shorter than the current offset and the browser will have
@@ -664,9 +670,8 @@ window.App = (function () {
       setTimeout(function () { ViewProfile.welcomeSheet(); }, 380);
     }
 
-    /* The rating screen has no trigger of its own yet; when and how often
-       it asks is still to be decided. Until then `?rate` opens it, so it
-       can be seen on a real device without a console. */
+    /* `?rate` opens the rating screen whatever Rate.eligible() says, so it
+       can be seen on a real device without a console. Not counted as an ask. */
     if (window.Rate && /[?&]rate(?:[=&]|$)/.test(location.search)) {
       setTimeout(function () { Rate.open(); }, 380);
     }

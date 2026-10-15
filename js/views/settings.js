@@ -217,6 +217,9 @@ window.ViewSettings = (function () {
            be a no-op: arriving resets the plan's undo history, which
            should not reach back across a whole plan being replaced. */
         if (location.hash === '#/plan') App.render(); else App.go('/plan');
+        /* A home drawn on the web and carried into the app is the whole
+           journey the planner preview exists for. */
+        if (window.Rate) Rate.moment('import', { to: '/plan' });
       });
     });
   }

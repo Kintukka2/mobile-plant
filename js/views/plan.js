@@ -1622,5 +1622,11 @@ window.ViewPlan = (function () {
   /* Arrive with a room already selected — from its sheet or its page. */
   function focusRoom(id) { sel = { type: 'room', id: id }; mode = 'plan'; tool = 'select'; drawing = null; }
 
-  return { title: title, sub: sub, actions: actions, back: true, render: render, mount: mount, stagger: false, focusRoom: focusRoom, place: place };
+  /* Whether this visit has changed the plan, for the rating screen's
+     "leaving a plan you have just drawn" moment. The first snapshot is the
+     plan as it was on arrival, so a second means something moved; undoing
+     back to the start counts as no change. */
+  function edited() { return hist.past.length > 1; }
+
+  return { title: title, sub: sub, actions: actions, back: true, render: render, mount: mount, stagger: false, focusRoom: focusRoom, place: place, edited: edited };
 })();

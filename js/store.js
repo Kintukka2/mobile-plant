@@ -58,7 +58,7 @@ window.Store = (function () {
         onboarded: false,       // the first-run questions were answered or skipped
         remind: false,          // care reminders, off until the reader asks
         remindHour: 8,          // local hour they arrive
-        rating: { asks: 0, lastAsked: null, rated: null },  // see Rate.maybeAsk()
+        rating: { asks: 0, lastAsked: null, rated: null },  // see Rate.moment()
         locationAsk: null,      // ISO date Today may suggest a location again, see locationAskDue()
         adjustments: {}         // plantId -> days offset accepted from a weather nudge
       }

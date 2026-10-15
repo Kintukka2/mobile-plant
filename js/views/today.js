@@ -499,7 +499,7 @@ window.ViewToday = (function () {
     const plant = Store.getPlant(plantId);
     if (!plant) return;
 
-    Store.addLog({ plantId: plantId, kind: type, date: UI.toISO(UI.today()) });
+    const log = Store.addLog({ plantId: plantId, kind: type, date: UI.toISO(UI.today()) });
 
     btn.classList.add('is-done');
     const row = btn.closest('.task');
@@ -510,9 +510,10 @@ window.ViewToday = (function () {
 
     setTimeout(function () { App.refresh(); }, 420);
 
-    /* The tap that empties the list is the one moment the rating screen
-       may appear. Rate decides whether it actually does. */
-    if (window.Rate && !Schedule.tasks(0).length) Rate.maybeAsk();
+    /* The tap that empties the list is a good moment, and so is the first
+       care a plant gets after its first month. Rate decides whether either
+       counts; the second is only tried when the first did not ask. */
+    if (window.Rate && !Rate.moment('caught-up').ok) Rate.moment('log', { log: log });
   }
 
   return {

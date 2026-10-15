@@ -9,13 +9,18 @@
    are champagne, the one metallic; the ring is a frame around the plate,
    because the character is always framed.
 
-   It is asked for at one moment only: the tap that clears the last task on
-   Today, while the reader is looking at "All caught up". That is the one
-   moment the app can be sure has just gone well, and the reader has just
-   finished something rather than being in the middle of it. `maybeAsk()`
-   below holds the rest of the policy. `Rate.open()` from the console and
-   `?rate` on the URL still open it unconditionally, for review, and are
-   not counted as an ask.
+   It is asked for at good moments only, each one something the reader has
+   just finished rather than is in the middle of: a milestone, a plant that
+   grew, a cutting taken, a plant repotted, a photo, a plant's first month,
+   a day cleared, a room or a home drawn. The screens report what happened
+   through `Rate.moment()`; MOMENTS below decides whether it counts, and
+   `eligible()` whether this reader can be asked. Nothing waits on time or
+   on how big the garden is, because the moments already say the reader is
+   engaged: someone who installs Sprout to learn how to propagate one plant,
+   and does, has had the best day the app can give them, and may never have
+   another like it. `Rate.open()` from the console and `?rate` on the URL
+   still open the screen unconditionally, for review, and are not counted as
+   an ask.
 
    The ask itself is the platform's. A store only lets an app *request* its
    review sheet, and both stores decide on their own whether to show it,
@@ -42,27 +47,25 @@ window.Rate = (function () {
 
        Native only. A browser has no review sheet, so the web would be
        asking for something it then cannot open.
-       A week in, on three separate days of care, with ten care actions and
-       two plants. Long enough to have an opinion that is about the app,
-       not about the first five minutes of it.
-       Never within a fortnight of a diagnosis. Someone whose plant is
-       ailing is not having the week the stars are asking about.
-       Once a season at most, three times ever, and never again after the
-       first tap on the button. The stores cap their own sheet tighter than
-       that anyway; this keeps the full screen from outliving the cap. */
-  const POLICY = {
-    minDays: 7, minCareDays: 3, minCare: 10, minPlants: 2,
-    quietAfterProblem: 14, gapDays: 90, maxAsks: 3
-  };
+       A fortnight between asks, and never again after the first tap on the
+       button. The gap is the only brake: no cap on asks, no wait after
+       install, no minimum garden. Play keeps its own quota on the card
+       (about a month, and it never says), so an ask inside it shows the
+       screen and no card; the thanks still plays, which is the cost of
+       asking this often.
+       A photo counts when it is the plant's first or comes a fortnight
+       after its last; a new plant when the last one came a week or more
+       before it; a plant's first month on the first care logged after it. */
+  const POLICY = { gapDays: 14, photoGapDays: 14, plantGapDays: 7, monthDays: 30 };
   const CARE = ['water', 'fertilise', 'repot', 'rotate', 'mist', 'prune', 'inspect'];
 
-  /* Off until the production release. Closed testing runs on paid testers,
-     and Play treats ratings from people paid to use the app as incentivised:
-     it can strip them and penalise the listing. PrimeTestLab raised this on
-     ticket #3229 after 1.2 went out with the ask live. Rate.open() and
-     ?rate still open the screen for review; only the automatic ask waits.
-     Turn this on in the build that goes to production, and nowhere earlier. */
-  const LIVE = false;
+  /* On for the production release. It was off through closed testing,
+     which ran on paid testers: Play treats ratings from people paid to use
+     the app as incentivised and can strip them and penalise the listing
+     (PrimeTestLab, ticket #3229, after 1.2 went out with the ask live).
+     Those testers are gone. Turn this off again for any build that goes to
+     a paid test track. */
+  const LIVE = true;
 
   const POSE = 'new-growth';
   /* The thank-you gets its own face. It is seen once per install at most,
@@ -435,49 +438,164 @@ window.Rate = (function () {
   /* The reason is returned rather than just a yes or no, so `Rate.eligible()`
      in the console says why a device is not being asked. */
   function eligible() {
-    const s = Store.get(), r = record(), today = UI.today();
+    const r = record(), today = UI.today();
     const ago = function (iso) { const d = UI.fromISO(iso); return d ? UI.daysBetween(d, today) : Infinity; };
 
-    if (!LIVE) return { ok: false, why: 'switched off until the production release' };
+    if (!LIVE) return { ok: false, why: 'switched off in this build' };
     if (platform() === 'web') return { ok: false, why: 'web has no review sheet' };
+    /* The guided tour's sample home is not the reader's garden, and a
+       milestone or a cleared day inside it is the tour's, not theirs. */
+    if (Store.inSample()) return { ok: false, why: 'the sample home is showing' };
     if (r.rated) return { ok: false, why: 'already tapped Leave a rating' };
-    if (r.asks >= POLICY.maxAsks) return { ok: false, why: 'asked ' + r.asks + ' times' };
     if (ago(r.lastAsked) < POLICY.gapDays) return { ok: false, why: 'asked ' + ago(r.lastAsked) + ' days ago' };
-    if (ago(s.profile.createdAt) < POLICY.minDays) return { ok: false, why: 'installed ' + ago(s.profile.createdAt) + ' days ago' };
-    if (Store.activePlants().length < POLICY.minPlants) return { ok: false, why: 'fewer than ' + POLICY.minPlants + ' plants' };
-
-    const care = s.logs.filter(function (l) { return CARE.indexOf(l.kind) !== -1; });
-    const days = {};
-    care.forEach(function (l) { days[l.date] = true; });
-    if (care.length < POLICY.minCare) return { ok: false, why: care.length + ' care actions' };
-    if (Object.keys(days).length < POLICY.minCareDays) return { ok: false, why: Object.keys(days).length + ' days of care' };
-
-    const ill = s.logs.some(function (l) { return l.kind === 'problem' && ago(l.date) < POLICY.quietAfterProblem; });
-    if (ill) return { ok: false, why: 'a diagnosis in the last ' + POLICY.quietAfterProblem + ' days' };
-
     return { ok: true, why: 'eligible' };
   }
 
-  /* Anything else on screen wins. A sheet, the lightbox, the tour or the
-     splash means the reader is busy, and the ask waits for the next
-     clear day rather than stacking on top. */
+  /* Anything else on screen wins. A sheet, the lightbox, either tour or the
+     splash means the reader is busy, and the ask waits for the next good
+     moment rather than stacking on top. `.gd` is the guided tour, `.tour`
+     the planner's walkthrough. */
   function busy() {
     const sheet = document.getElementById('sheet-backdrop');
     const splash = document.getElementById('splash');
-    return !!root || (sheet && !sheet.hidden) || !!document.querySelector('.lightbox, .tour') ||
+    return !!root || (sheet && !sheet.hidden) || !!document.querySelector('.lightbox, .tour, .gd') ||
       (splash && !splash.classList.contains('is-out'));
   }
 
-  let askedThisSession = false;
+  /* ---------- The moments ---------- */
 
-  /* Called by Today when a tap clears the day. The pause lets the toast
-     land and "All caught up" settle on screen first, so the reader sees
-     the reason before the ask arrives. */
-  function maybeAsk() {
-    if (askedThisSession || !eligible().ok) return false;
-    askedThisSession = true;
+  function hasWindow(shape) { return !!(shape && shape.win && shape.win.indexOf(Plan.WINDOW) !== -1); }
+
+  function dayOf(iso) { return UI.fromISO(String(iso || '').slice(0, 10)); }
+  function daysFrom(a, b) { const x = dayOf(a), y = dayOf(b); return x && y ? UI.daysBetween(x, y) : null; }
+
+  /* The plant's other entries, newest first, so the one just saved is
+     never compared with itself. */
+  function earlier(log, test) {
+    return Store.get().logs.filter(function (l) {
+      return l.id !== log.id && l.plantId === log.plantId && test(l);
+    }).sort(function (a, b) {
+      return a.date === b.date ? ((a.createdAt || '') < (b.createdAt || '') ? 1 : -1) : (a.date < b.date ? 1 : -1);
+    });
+  }
+
+  /* One diary entry or care tap is one chance. Each test answers for the
+     entries it is about: undefined when the entry is not its kind, null when
+     it counts, a reason when it is the right kind and still does not. The
+     first that counts wins, so a milestone with a photo is asked about once,
+     and the reason given is the one that applied. */
+  const LOG_TESTS = [
+    function (log) {
+      if (['milestone', 'propagate', 'repot'].indexOf(log.kind) !== -1) return null;
+    },
+    /* Growth only counts when the plant is bigger than it was. The first
+       measurement is a baseline, not news, and a measurement in another
+       unit cannot be compared without guessing at the conversion. */
+    function (log) {
+      if (log.kind !== 'growth') return undefined;
+      const prev = earlier(log, function (l) { return l.kind === 'growth' && l.unit === log.unit && typeof l.value === 'number'; })[0];
+      if (!prev) return 'the first measurement in ' + (log.unit || 'this unit');
+      return log.value > prev.value ? null : 'no bigger than the last, ' + prev.value + ' ' + (log.unit || '');
+    },
+    function (log) {
+      if (!log.photoId) return undefined;
+      const prev = earlier(log, function (l) { return !!l.photoId; })[0];
+      if (!prev) return null;
+      const gap = daysFrom(prev.date, log.date);
+      return gap !== null && gap >= POLICY.photoGapDays ? null : 'a photo ' + gap + ' days after the last';
+    },
+    /* The month is counted from when the plant came into Sprout, not when
+       the reader got it: it is the app's month that is being marked, and
+       `acquired` can be years back. It fires on the first care logged on
+       or after the day, so it is one moment per plant, not every tap after. */
+    function (log) {
+      if (CARE.indexOf(log.kind) === -1) return undefined;
+      const plant = Store.getPlant(log.plantId);
+      const age = plant ? daysFrom(plant.createdAt, log.date) : null;
+      if (age === null || age < POLICY.monthDays) return 'the plant is ' + age + ' days in';
+      const since = earlier(log, function (l) {
+        return CARE.indexOf(l.kind) !== -1 && daysFrom(plant.createdAt, l.date) >= POLICY.monthDays;
+      });
+      return since.length ? 'its month was already marked' : null;
+    }
+  ];
+
+  const MOMENTS = {
+    log: function (d) {
+      if (!d.log) return 'no entry';
+      let why;
+      for (let i = 0; i < LOG_TESTS.length; i++) {
+        const r = LOG_TESTS[i](d.log);
+        if (r === null) return null;
+        if (r !== undefined && why === undefined) why = r;
+      }
+      return why || 'a ' + d.log.kind + ' entry is not one of the moments';
+    },
+
+    'caught-up': function () {
+      return Schedule.tasks(0).length ? 'tasks left today' : null;
+    },
+
+    /* A second plant a week or more after the last is a reader who came
+       back and trusted the app with more. The first plant is where every
+       reader starts, so it says nothing yet. Removed plants are gone from
+       the store, so the gap is measured from the ones still in it, and a
+       plant with no date is older than any that has one. */
+    plant: function (d) {
+      if (!d.plant) return 'no plant';
+      const others = Store.get().plants.filter(function (p) { return p.id !== d.plant.id; });
+      if (!others.length) return 'the first plant';
+      const dated = others.filter(function (p) { return p.createdAt; });
+      if (!dated.length) return null;
+      const last = dated.map(function (p) { return String(p.createdAt).slice(0, 10); }).sort().pop();
+      const gap = daysFrom(last, d.plant.createdAt);
+      return gap !== null && gap >= POLICY.plantGapDays ? null : 'a plant ' + gap + ' days after the last';
+    },
+
+    /* The room form has just worked out a room's light: a shape, a window,
+       and a north the plan trusts. Without the last, nothing was shown. An
+       edit counts only when it is the one that marked the first window, so
+       renaming a lit room is not an occasion. */
+    room: function (d) {
+      if (!d.room || !hasWindow(d.room.shape)) return 'no window marked';
+      if (d.before && hasWindow(d.before.shape)) return 'its windows were already marked';
+      return Plan.known() ? null : 'north or the hemisphere is not settled';
+    },
+
+    /* Leaving the plan after changing it, with the light map showing.
+       Opening the plan to look at it is not an occasion; drawing it is. */
+    plan: function (d) {
+      if (!d.edited) return 'nothing changed on this visit';
+      if (!Plan.known()) return 'the light map is not showing';
+      return Plan.shaped().some(function (r) { return hasWindow(r.shape); }) ? null : 'no window on the plan';
+    },
+
+    import: function () { return null; }
+  };
+
+  let pending = false;
+
+  /* Called by a screen when something has just happened. The pause lets
+     the toast land and the page settle first, so the reader sees the reason
+     before the ask arrives. `to` names the page the caller is about to go
+     to, when it is about to go somewhere; the ask only arrives if the
+     reader is still on it, since a reader who has moved on is in the
+     middle of something else. */
+  function moment(name, detail) {
+    const d = detail || {};
+    const test = MOMENTS[name];
+    if (!test) return { ok: false, why: 'no moment called ' + name };
+    const why = test(d);
+    if (why) return { ok: false, why: why };
+    const e = eligible();
+    if (!e.ok) return e;
+    if (pending || root) return { ok: false, why: 'an ask is already on its way' };
+
+    pending = true;
+    const at = d.to ? '#' + d.to : location.hash;
     setTimeout(function () {
-      if (busy() || App.route().name !== 'today') { askedThisSession = false; return; }
+      pending = false;
+      if (busy() || location.hash !== at || !eligible().ok) return;
       const r = record();
       Store.updateSettings({ rating: { asks: r.asks + 1, lastAsked: UI.toISO(UI.today()), rated: r.rated } });
       open({
@@ -487,11 +605,11 @@ window.Rate = (function () {
         }
       });
     }, 1600);
-    return true;
+    return { ok: true, why: name };
   }
 
   return {
     open: open, close: close, isOpen: function () { return !!root; },
-    maybeAsk: maybeAsk, eligible: eligible
+    moment: moment, eligible: eligible
   };
 })();
