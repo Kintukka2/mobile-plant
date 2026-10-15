@@ -42,7 +42,7 @@ window.ViewDiagnose = (function () {
   }
 
   function sub(params) {
-    if (!params.id) return 'Pick a plant and I\'ll rank the likely causes';
+    if (!params.id) return 'Let\'s figure out what\'s wrong with it';
     if (!params.extra) return 'What do you notice?';
     const s = PROBLEM_DATA.SYMPTOMS[params.extra];
     return s ? s.label : '';
