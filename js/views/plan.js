@@ -1288,7 +1288,7 @@ window.ViewPlan = (function () {
             '<div class="plan-invite-t">Nothing drawn yet</div>' +
             '<p class="hint">I\'ll build a sample home and name each part as it appears, if it helps to see one first.</p>' +
             '<div class="stack" style="gap:9px;align-items:center">' +
-              '<button class="btn btn-sm" data-tour="1">' + UI.icon('sparkle') + 'Watch me build one</button>' +
+              '<button class="btn btn-sm plan-invite-go" data-tour="1">' + UI.icon('sparkle') + 'Watch me build one</button>' +
               '<button class="link-btn" id="pl-trace">or trace one yourself</button>' +
               /* Only where Settings is loaded, which is the app: the planner
                  preview is where these files come from, not where they go. */

@@ -716,6 +716,21 @@ img { max-width: 100%; display: block; }
 .ob-opt.is-on { border-color: var(--mint); background: var(--mint-wash); }
 .ob-opt.is-on small { color: var(--mint); }
 .ob-opt:active { transform: scale(0.985); }
+/* The review: every answer on one screen, each line the way back to its
+   question. Left-aligned, unlike the questions, because it is read down. */
+.ob-review { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 360px; }
+.ob-rv-row {
+  display: flex; align-items: center; gap: 12px; width: 100%; padding: 11px 14px;
+  border: 1px solid var(--hair-2); border-radius: var(--r); background: var(--glass);
+  color: var(--ink); text-align: left; cursor: pointer;
+  transition: border-color var(--dur-1) var(--ease), transform var(--dur-1) var(--ease);
+}
+.ob-rv-row:active { transform: scale(0.985); border-color: var(--mint); }
+.ob-rv-row > svg { flex: none; width: 16px; height: 16px; color: var(--mint); }
+.ob-rv-row > svg:last-child { width: 14px; height: 14px; color: var(--ink-4); }
+.ob-rv-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.ob-rv-k { font-family: var(--sans); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3); }
+.ob-rv-v { font-family: var(--serif); font-size: 16px; line-height: 1.3; }
 .ob-dots { position: absolute; bottom: calc(env(safe-area-inset-bottom, 0px) + 10vh); display: flex; gap: 9px; animation: obIn 900ms var(--ease) 420ms both; }
 .ob-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--hair-3); transition: background var(--dur-2) var(--ease), transform var(--dur-2) var(--ease); }
 .ob-dot.is-on { background: var(--mint); transform: scale(1.3); }
@@ -4303,9 +4318,6 @@ img { max-width: 100%; display: block; }
 .welcome-sprout { float: left; margin: 4px 16px 6px 0; }
 /* What the introduction's answers changed, one line each, so the questions
    are seen to have been worth answering. */
-.welcome-heard { padding: 12px 14px; border: 1px solid var(--hair); border-radius: var(--r); background: var(--glass); }
-.welcome-heard-row { gap: 10px; flex-wrap: nowrap; align-items: flex-start; color: var(--ink-2); }
-.welcome-heard-row svg { flex: none; width: 16px; height: 16px; margin-top: 2px; color: var(--mint); }
 
 .empty h3 {
   font-family: var(--display);
@@ -5488,6 +5500,29 @@ html.plan-full .tabbar { visibility: hidden; }
    decorates it, and a plate that pushed them off the grid would be the
    wrong way round. */
 @media (max-height: 719px) { .plan-invite-sprout { display: none; } }
+/* The walkthrough is the one thing an empty plan wants tapped, and it is
+   where the guided tour leaves the reader. It breathes the ring step 2's
+   Add a room breathes, so the planner has one way of saying "this next";
+   the button glows as the ring leaves it, and its sparkle catches the light
+   on each breath. The ring alone was too faint to find on the grid. */
+.plan-invite-go { position: relative; animation: inviteGlow 2.4s var(--ease) infinite; }
+.plan-invite-go::after {
+  content: ''; position: absolute; inset: -1px; border-radius: inherit;
+  border: 1.5px solid var(--emerald-glow); pointer-events: none;
+  animation: ctaBreathe 2.4s var(--ease) infinite;
+}
+.plan-invite-go svg { animation: inviteTwinkle 2.4s var(--ease) infinite; }
+@keyframes inviteGlow {
+  0%, 60%, 100% { box-shadow: var(--sheen), 0 2px 12px -4px rgba(47, 154, 112, 0.5); }
+  22% { box-shadow: var(--sheen), 0 0 22px 2px rgba(70, 196, 146, 0.42); }
+}
+@keyframes inviteTwinkle {
+  0%, 55%, 100% { transform: none; filter: none; }
+  20% { transform: scale(1.22) rotate(18deg); filter: drop-shadow(0 0 4px var(--emerald-glow)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .plan-invite-go, .plan-invite-go::after, .plan-invite-go svg { animation: none; }
+}
 
 /* ---- The walls tip ----
    A small callout pinned to side 1's number by placeWallTip(), with an
