@@ -58,6 +58,11 @@ h1 em{font-style:normal;color:var(--glow)}
 .tab .copy{left:calc(var(--u)*120);right:auto;width:calc(var(--u)*660);top:calc(var(--u)*190);text-align:left}
 .tab .eyebrow{margin-right:0}
 .tab h1{font-size:calc(var(--u)*84)}
+/* A 4:3 canvas (the App Store's iPad slot) has a third more height than
+   Play's 16:9, which left the tablet small with empty ground under it. The
+   words take the full width across the top instead, and the tablet grows
+   into the space below. */
+.tab.tall .copy{width:calc(var(--u)*1680);top:calc(var(--u)*130)}
 .tilt .copy{text-align:left;right:calc(var(--u)*120)}
 .tilt .eyebrow{margin-right:0}
 </style>
@@ -75,7 +80,9 @@ h1 em{font-style:normal;color:var(--glow)}
   const v = document.getElementById('v');
   document.documentElement.style.setProperty('--u', U + 'px');
   v.style.width = W + 'px'; v.style.height = H + 'px';
+  const TALL = TAB && HU > 1200;
   if (TAB) v.classList.add('tab');
+  if (TALL) v.classList.add('tall');
   else if (f.layout === 'tilt') v.classList.add('tilt');
   const px = n => (n * U) + 'px';
   const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -91,8 +98,8 @@ h1 em{font-style:normal;color:var(--glow)}
   function placeTablet() {
     // The wide layout at 1280x800, so 16:10, in a near-black bezel that runs
     // just off the right edge, centred top to bottom.
-    const BZ = 18, pw = 1060, ph = (pw - 2 * BZ) * 0.625 + 2 * BZ;
-    const x0 = 1920 - pw + 30, y0 = (HU - ph) / 2;
+    const BZ = 18, pw = TALL ? 1500 : 1060, ph = (pw - 2 * BZ) * 0.625 + 2 * BZ;
+    const x0 = 1920 - pw + 30, y0 = TALL ? HU - ph - 110 : (HU - ph) / 2;
     const halo = document.createElement('div');
     halo.className = 'halo ' + f.glow;
     Object.assign(halo.style, { left: px(x0 - 60), top: px(y0 + 60), width: px(pw + 120), height: px(ph - 120) });
