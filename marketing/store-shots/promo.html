@@ -1,0 +1,132 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Sprout App Store promo</title>
+<!-- The App Store's two wide assets, chosen by the query string:
+       promo.html?kind=header   3840x1646, the product page header (21:9)
+       promo.html?kind=search   3840x2560, the search results asset (3:2)
+     Same ground, phones and type as frame.html, from the same captures in
+     raw/, so they read as one set with the screenshots. Every length is a
+     multiple of --u (the canvas width over 1920).
+
+     The header is the app's opening screen, widened. Apple crops it differently by device and
+     orientation and publishes the safe area only inside its templates, so
+     everything that matters sits in the middle third, where every crop
+     keeps it; the name and icon sit under it on the page anyway. The
+     search asset is seen small, beside the name and the Get button, so it
+     says what Sprout does in one line, large. -->
+<style>
+@font-face{font-family:'PP Hatton';src:url('/css/fonts/hatton-ultralight.woff2') format('woff2');font-weight:200;font-display:block}
+@font-face{font-family:'Jost';src:url('/css/fonts/jost-var.woff2') format('woff2');font-weight:300 500;font-display:block}
+@font-face{font-family:'Sacramento';src:url('/css/fonts/sacramento-400.woff2') format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:'Cormorant';src:url('/css/fonts/cormorant-var.woff2') format('woff2');font-weight:300 700;font-display:block}
+:root{ --bg:#050A08; --ink:#F3F6F1; --ink2:rgba(228,240,232,.74); --glow:#3FBE8B;
+       --leaf:#2F9A70; --sun:#E0C47A; --hair:rgba(214,237,226,.14); --u:1px; }
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);overflow:hidden}
+#v{position:relative;overflow:hidden;background:var(--bg)}
+.layer{position:absolute;inset:0;pointer-events:none}
+.grid{background-image:linear-gradient(to right,rgba(214,237,226,.045) 1px,transparent 1px),linear-gradient(to bottom,rgba(214,237,226,.045) 1px,transparent 1px);
+      background-size:calc(var(--u)*48) calc(var(--u)*48)}
+.vig{background:radial-gradient(130% 120% at 50% 45%,transparent 55%,rgba(0,0,0,.6) 100%)}
+.phone{position:absolute;background:#040907;box-shadow:0 0 0 calc(var(--u)*1.2) var(--hair),0 calc(var(--u)*40) calc(var(--u)*110) rgba(0,0,0,.75)}
+.phone img{display:block;width:100%}
+.halo{position:absolute;border-radius:50%;filter:blur(calc(var(--u)*80));opacity:.5}
+.halo.leaf{background:var(--leaf)} .halo.sun{background:var(--sun);opacity:.3}
+.copy{position:absolute}
+.eyebrow{font-family:'Jost';font-weight:500;font-size:calc(var(--u)*30);letter-spacing:.3em;text-transform:uppercase;color:var(--glow)}
+h1{font-family:'PP Hatton';font-weight:200;font-size:calc(var(--u)*116);line-height:1.06;color:var(--ink);margin-top:calc(var(--u)*30);text-wrap:balance}
+h1 em{font-style:normal;color:var(--glow)}
+.sub{font-family:'Cormorant';font-weight:500;font-size:calc(var(--u)*48);line-height:1.3;color:var(--ink2);margin-top:calc(var(--u)*34)}
+/* The header is the app's opening screen, widened: the splash's ground,
+   wordmark, script and rule, under the site hero's falling wash and its
+   motes. Nothing else; the screenshots sit right under it. */
+.wash{position:absolute;left:-10%;top:-25%;width:120%;height:150%;
+      background:linear-gradient(107deg,transparent 22%,rgba(150,190,120,.10) 34%,rgba(224,196,122,.07) 40%,transparent 52%)}
+.mote{position:absolute;width:calc(var(--u)*2.2);border-radius:99px;background:linear-gradient(to bottom,transparent,rgba(224,240,220,.55),transparent)}
+.mark{position:absolute;left:0;right:0;text-align:center}
+.mark .w{font-family:'PP Hatton';font-weight:200;font-size:calc(var(--u)*150);letter-spacing:.22em;text-indent:.22em;text-transform:uppercase;color:var(--ink);line-height:1}
+.mark .s{font-family:'Sacramento';font-size:calc(var(--u)*78);color:#9FD3BE;line-height:1;margin-top:calc(var(--u)*-14);padding-bottom:.12em}
+.mark .r{margin:calc(var(--u)*30) auto 0;width:calc(var(--u)*230);height:calc(var(--u)*1.6);
+         background:linear-gradient(90deg,rgba(214,237,226,.14),rgba(159,211,190,.9) 50%,rgba(214,237,226,.14))}
+.grainy{position:absolute;inset:0;opacity:.06;mix-blend-mode:overlay;
+        background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E")}
+</style>
+<div id="v"><div class="layer" id="bloom"></div><div class="layer grid" id="grid"></div><div class="layer vig"></div></div>
+<script>
+(function () {
+  const q = new URLSearchParams(location.search);
+  const KIND = q.get('kind') === 'search' ? 'search' : 'header';
+  const W = KIND === 'search' ? 3840 : 3840, H = KIND === 'search' ? 2560 : 1646;
+  const U = W / 1920, HU = H / U;
+  const v = document.getElementById('v');
+  document.documentElement.style.setProperty('--u', U + 'px');
+  v.style.width = W + 'px'; v.style.height = H + 'px';
+  const px = n => (n * U) + 'px';
+  const SCR = 390 / 844;
+
+  // A phone pw units wide, drawn with the screenshots' proportions: bezel
+  // and corner radius scale with the width, so a small phone is the same
+  // phone, not a thicker-framed one.
+  function phone(screen, x, y, pw, rot, glow) {
+    const bez = pw * 0.018, h = (pw - 2 * bez) / SCR + 2 * bez;
+    if (glow) {
+      const halo = document.createElement('div');
+      halo.className = 'halo ' + glow;
+      Object.assign(halo.style, { left: px(x - pw * 0.15), top: px(y + h * 0.15), width: px(pw * 1.3), height: px(h * 0.7) });
+      v.appendChild(halo);
+    }
+    const p = document.createElement('div');
+    p.className = 'phone';
+    p.innerHTML = '<img src="raw/' + screen + '.png">';
+    Object.assign(p.style, { left: px(x), top: px(y), width: px(pw), padding: px(bez), borderRadius: px(pw * 0.092),
+      transform: 'rotate(' + (rot || 0) + 'deg)', transformOrigin: '50% 100%' });
+    p.firstChild.style.borderRadius = px(pw * 0.074);
+    v.appendChild(p);
+    return h;
+  }
+
+  const bloom = document.getElementById('bloom'), grid = document.getElementById('grid');
+  if (KIND === 'header') {
+    // The splash's own glow, widened to the canvas, and a low pool of
+    // sun at the foot where the site's wash lands.
+    bloom.style.background = 'radial-gradient(' + px(900) + ' ' + px(520) + ' at 50% 46%,rgba(47,154,112,.30),transparent 70%),' +
+      'radial-gradient(' + px(520) + ' ' + px(260) + ' at 30% 104%,rgba(224,196,122,.10),transparent 70%)';
+    grid.style.display = 'none';
+    const wash = document.createElement('div'); wash.className = 'wash'; v.appendChild(wash);
+    // Motes drifting through the light, as on the site's hero: fixed
+    // positions, so every render is the same image.
+    [[560, 150, 14], [740, 560, 12], [1200, 120, 12], [1330, 430, 16], [470, 470, 10], [1480, 600, 12], [880, 80, 10]]
+      .forEach(function (m) {
+        const el = document.createElement('i'); el.className = 'mote';
+        Object.assign(el.style, { left: px(m[0]), top: px(m[1]), height: px(m[2]), transform: 'rotate(-18deg)', opacity: '.45' });
+        v.appendChild(el);
+      });
+    const mark = document.createElement('div');
+    mark.className = 'mark';
+    mark.innerHTML = '<div class="w">Sprout</div><div class="s">evergreen</div><div class="r"></div>';
+    v.appendChild(mark);
+    const grain = document.createElement('div'); grain.className = 'grainy'; v.appendChild(grain);
+    document.fonts.ready.then(function () {
+      mark.style.top = px((HU - mark.offsetHeight / U) / 2 - 10);
+    });
+  } else {
+    bloom.style.background = 'radial-gradient(' + px(900) + ' ' + px(800) + ' at 70% 50%,rgba(47,154,112,.34),transparent 70%),' +
+      'radial-gradient(' + px(900) + ' ' + px(600) + ' at 15% -10%,rgba(47,154,112,.14),transparent 70%)';
+    grid.style.webkitMaskImage = 'radial-gradient(' + px(1100) + ' ' + px(900) + ' at 60% 45%,#000,transparent 85%)';
+    const copy = document.createElement('div');
+    copy.className = 'copy';
+    copy.innerHTML = '<p class="eyebrow">Houseplant care</p>' +
+      '<h1>Watering worked out <em>for every plant.</em></h1>' +
+      '<p class="sub">From its pot, its light and the weather.</p>';
+    Object.assign(copy.style, { left: px(140), width: px(800) });
+    v.appendChild(copy);
+    copy.style.top = px((HU - copy.offsetHeight / U) / 2 - 30);
+    phone('plant', 1390, 210, 380, 7, 'leaf');
+    phone('today', 1030, 170, 420, -3, 'leaf');
+  }
+  document.fonts.ready.then(() => {
+    const imgs = [...document.images];
+    Promise.all(imgs.map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; }))).then(() => { document.body.dataset.ready = '1'; });
+  });
+})();
+</script>
