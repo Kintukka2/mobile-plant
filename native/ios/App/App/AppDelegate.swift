@@ -7,7 +7,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        // The screen stays on while Sprout is in front, as on Android: the
+        // walkthroughs play hands-free and a home is drawn with pauses.
+        application.isIdleTimerDisabled = true
         return true
     }
 
@@ -26,7 +28,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        // Set again on every return: iOS can clear it after a call or a trip
+        // to another app.
+        application.isIdleTimerDisabled = true
     }
 
     func applicationWillTerminate(_ application: UIApplication) {

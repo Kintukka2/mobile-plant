@@ -616,6 +616,11 @@ window.ViewPlan = (function () {
         '<button class="plan-back" id="pl-back" aria-label="Back to the steps">' + CHEV + '</button>' +
         '<input class="plan-title-input" id="pl-room-name" value="' + UI.attr(r.name) + '" placeholder="Room name" aria-label="Room name" maxlength="40" autocomplete="off"' + (lk ? ' readonly' : '') + '>' +
         '<button class="plan-room-ico' + (lk ? ' is-on' : '') + '" id="pl-room-lock" aria-pressed="' + lk + '" aria-label="' + (lk ? 'Unlock this room' : 'Lock this room') + '">' + (lk ? LOCK_SVG : UNLOCK_SVG) + '</button>' +
+        /* Beside the lock, which is what keeps it from working: a link at
+           the panel's foot sat a long scroll from the room's own controls.
+           A locked room's bin stays tappable, dimmed, so the tap explains
+           the lock rather than doing nothing. */
+        '<button class="plan-room-ico is-danger' + (lk ? ' is-disabled' : '') + '" id="pl-room-delete" aria-label="Remove this room"' + (lk ? ' aria-disabled="true"' : '') + '>' + UI.icon('trash') + '</button>' +
         '<button class="plan-room-ico" id="pl-room-more" aria-label="Icon, humidity and notes">' + UI.icon('sliders') + '</button>' +
       '</div>';
     /* Right under the room's name, where the room's own actions are, and
@@ -623,7 +628,7 @@ window.ViewPlan = (function () {
        afterthought, and on the stage it was mistaken for Add a room. A
        locked room still takes plants, so the lock does not touch it. */
     h += '<button class="btn btn-sm btn-ghost btn-block plan-room-add" id="pl-quick-add">' + UI.icon('plus') + 'Add a plant</button>';
-    if (lk) h += '<p class="plan-room-lockline">' + LOCK_SVG + '<span>Locked, so its shape, walls and name stay put. Tap the lock to change them.</span></p>';
+    if (lk) h += '<p class="plan-room-lockline">' + LOCK_SVG + '<span>Locked. Tap the lock to edit it.</span></p>';
     h += '<div class="plan-room-sub"><span class="label">Walls <button class="plan-help" id="pl-walls-help" aria-label="What do these mean?">?</button></span>' +
         '<label class="plan-check"><input type="checkbox" id="pl-room-outdoor"' + (sh.outdoor ? ' checked' : '') + (lk ? ' disabled' : '') + '> Outdoors</label></div>';
     /* What the four buttons are for, before the reader has to guess. Which
@@ -649,8 +654,7 @@ window.ViewPlan = (function () {
         return '<button class="plan-row" data-sel-plant="' + UI.attr(p.id) + '"><span class="plan-row-nm">' + UI.esc(Store.displayName(p)) + '</span>' + verdictPill(Plan.verdict(Store.species(p), Plan.pointRank(r, p.pos.x, p.pos.y))) + '</button>';
       }).join('') + '</div></div>';
     }
-    h += '<div class="plan-room-foot"><button class="btn btn-sm" id="pl-done-sel">Done</button>' +
-      '<button class="link-btn plan-room-remove" id="pl-room-delete"' + (lk ? ' disabled' : '') + '>' + UI.icon('trash') + '<span>Remove room</span></button></div>';
+    h += '<div class="plan-room-foot is-solo"><button class="btn btn-sm" id="pl-done-sel">Done</button></div>';
     panel.innerHTML = h;
   }
 

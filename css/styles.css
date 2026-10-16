@@ -5440,12 +5440,21 @@ html.plan-full .tabbar { visibility: hidden; }
 .plan-room-ico.is-on { color: var(--gold-lit); border-color: var(--gold); background: var(--gold-wash); }
 [data-theme="conservatory"] .plan-room-ico.is-on { color: var(--gold); }
 .plan-room-ico:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+/* Removal's colour, quiet until pressed, so it is never mistaken for the
+   neutral buttons beside it. Dimmed while the room is locked. */
+.plan-room-ico.is-danger { color: var(--terra); }
+.plan-room-ico.is-danger:hover, .plan-room-ico.is-danger:active { border-color: var(--terra); background: rgba(208, 138, 98, 0.12); }
+.plan-room-ico.is-disabled { opacity: 0.4; }
 .plan-room-lockline {
   display: flex; align-items: flex-start; gap: 8px; margin: 0 0 14px;
   font-size: 13px; line-height: 1.45; color: var(--gold-lit);
 }
 [data-theme="conservatory"] .plan-room-lockline { color: var(--gold); }
 .plan-room-lockline svg { flex: 0 0 auto; width: 15px; height: 15px; margin-top: 2px; }
+/* One line, always: it sits between the room's controls and its walls, and
+   a second line pushed the walls down for a reminder of what the gold lock
+   already says. */
+.plan-room-lockline span { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .plan-room-sub { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
 .plan-room-sub .label { display: inline-flex; align-items: center; gap: 8px; margin: 0; }
 .plan-walls-lede { margin: -2px 0 12px; }
@@ -5454,6 +5463,8 @@ html.plan-full .tabbar { visibility: hidden; }
 .plan-room.is-locked .plan-wall { opacity: 0.55; cursor: not-allowed; }
 .plan-room.is-locked .plan-check { opacity: 0.55; }
 .plan-room-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; }
+.plan-room-foot.is-solo { justify-content: center; }
+.plan-room-foot.is-solo .btn { width: 100%; max-width: 320px; justify-content: center; }
 .plan-room-remove { display: inline-flex; align-items: center; gap: 6px; color: var(--terra); }
 .plan-room-remove svg { width: 15px; height: 15px; }
 .plan-room-remove:disabled { opacity: 0.4; cursor: not-allowed; }
