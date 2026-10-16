@@ -59,7 +59,7 @@ outlines, so no fonts are needed at the RIP.
 
 `cards.html` is the source. It holds the card design and copy as data
 (`HOOKS`), with placeholders where the build inlines the app's own font
-files, Sprout's corner cut-out and the QR code.
+files and the QR code.
 
 ```bash
 pip install segno pypdf                 # plus Chrome and Ghostscript

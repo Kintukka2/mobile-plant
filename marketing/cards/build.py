@@ -1,5 +1,5 @@
 """Builds the pocket-card page from cards.html: inlines the app's own font
-files, the corner cut-out of Sprout and a QR code for sproutevergreen.com.
+files and a QR code for sproutevergreen.com.
 
     python3 marketing/cards/build.py      # needs: pip install segno
 
@@ -40,7 +40,7 @@ if __name__ == '__main__':
         'HATTON200': b64('css/fonts/hatton-ultralight.woff2'), 'HATTON500': b64('css/fonts/hatton-medium.woff2'),
         'CORM': b64('css/fonts/cormorant-var.woff2'), 'CORMI': b64('css/fonts/cormorant-var-italic.woff2'),
         'JOST': b64('css/fonts/jost-var.woff2'), 'SACR': b64('css/fonts/sacramento-400.woff2'),
-        'BUDDY': b64('site/img/sprout-corner.webp'), 'QR': qr_svg(),
+        'QR': qr_svg(),
     }.items():
         s = s.replace('{{' + key + '}}', val)
     assert '{{' not in s
