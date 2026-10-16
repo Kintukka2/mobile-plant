@@ -174,12 +174,19 @@ its checks in the PR; in brief:
 
 ## Release notes (Play "What's new", under 500 characters)
 
-> Watch me build one now draws a sample flat on the real planner, step by
-> step. The planner zooms out to your whole home and pans freely, with its
-> tools in one row. A guided tour shows each tab on a sample home, and the
-> introduction reads your answers back before you start. Edit diary
-> entries, import a plan drawn on the web, and see twelve plants at a time
-> in Discover. The screen stays on while Sprout is open.
+Pasted as plain text; Play keeps the line breaks.
+
+```
+• Watch me build one: a sample flat drawn on the real planner
+• Planner zooms out to your whole home and pans freely
+• Planner tools in one row, and a bin beside each room's lock
+• Guided tour of every tab on a sample home
+• The introduction reads your answers back before you start
+• Edit diary entries
+• Import a plan drawn on the web
+• Discover shows twelve plants at a time
+• The screen stays on while Sprout is open
+```
 
 ## Release housekeeping
 
