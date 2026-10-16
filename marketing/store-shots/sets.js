@@ -54,7 +54,11 @@
     'ios-6.9': { w: 1320, h: 2868 },
     // Play's 7-inch and 10-inch tablet slots, both: 16:9, and inside the
     // 10-inch minimum of 1080 on the short side. Set A only.
-    'tablet': { w: 2560, h: 1440, device: 'tablet', sets: ['a'] }
+    'tablet': { w: 2560, h: 1440, device: 'tablet', sets: ['a'] },
+    // The App Store's 13-inch iPad slot, which every iPad size scales from.
+    // Sprout runs on iPad (TARGETED_DEVICE_FAMILY 1,2), so the listing needs
+    // one. 4:3 landscape, the same wide layout as Play's tablet set.
+    'ios-ipad-13': { w: 2752, h: 2064, device: 'tablet', sets: ['a'] }
   };
   root.SETS = SETS; root.SIZES = SIZES;
   if (typeof module !== 'undefined') module.exports = { SETS, SIZES };

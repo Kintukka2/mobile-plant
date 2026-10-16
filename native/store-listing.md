@@ -202,3 +202,77 @@ Expected outcome: **Everyone / PEGI 3 / rated for all ages.**
   leave the credentials fields empty.
 - **Government app** — no. **Financial features** — none. **Health** — no,
   the app makes no health claims about people.
+
+## App Store
+
+The same story for Apple, which differs in three ways: the description
+is plain text (no `<b>`, which App Store Connect would show literally),
+there is a 170-character promotional text above it that can change
+without a review, and keywords are their own field. Sprout runs on iPad
+as well, so "your device", never "your phone", wherever the copy says
+where things live.
+
+**Subtitle — 30 / 30:** `Plant care that fits your home`
+
+**Promotional text — 121 / 170:**
+
+```
+Watering reminders worked out from your pots, light and local weather. Free, with no account, no ads and no subscription.
+```
+
+**Keywords — 97 / 100**, comma-separated with no spaces, and none
+repeating a word already in the name or subtitle (Apple indexes those
+anyway):
+
+```
+houseplant,watering,reminder,succulent,monstera,fern,indoor,garden,schedule,repot,soil,light,pets
+```
+
+**Description:**
+
+```
+Most plant apps ask how often you want reminding. Sprout works it out.
+
+A houseplant companion that sets plant care and watering reminders for each plant, from what it is and where it lives. Free, with no account, no ads and no subscription.
+
+Every plant care schedule starts from care data for the species you own: warm and cool season watering intervals, a feeding cycle, ideal light and toxicity for some of the most common houseplants. Sprout then adjusts it for where each plant lives: pot size and material, drainage, how bright the room is, which way the window faces and the season where you live. A Monstera in a 24cm terracotta pot by a bright window dries out faster than one in a plastic pot in a dim corner, so it is watered sooner. Every schedule comes with the reason behind it.
+
+WATERING THAT FOLLOWS THE WEATHER
+Set a location and Sprout reads the local forecast. Before a hot, dry week it offers to water two days sooner, and before a cool, wet spell two days later. You approve every change.
+
+DRAW YOUR HOME, FIND THE LIGHT
+Group plants into rooms, or trace your floor plan, mark the windows and point north. Sprout works out which rooms are bright, which are dim and which borrow light through a doorway, then shows where each plant should stand and tells you when one is in the wrong light.
+
+A PLANT DOCTOR FOR WHEN SOMETHING LOOKS WRONG
+Yellow leaves, brown tips, drooping, sudden leaf drop, fungus gnats. Pick the symptom, answer a few questions about what else you are seeing, and Sprout ranks the likely causes, weighted by what your species is prone to. Each cause comes with clear steps for what to do about it.
+
+PET SAFE PLANTS, STATED PLAINLY
+Tell Sprout you have cats or dogs and it flags what is toxic to them. Every plant is rated separately for cats, dogs and people, because the same plant is not equally risky to each. One tap in Discover shows the ones safe for both.
+
+FIND PLANTS THAT SUIT YOUR ROOMS
+Browse the plant library with photos, care needs and toxicity for every species, and see which plants suit the light in your rooms.
+
+A PLANT CARE JOURNAL WORTH KEEPING
+Every plant gets a diary and a growth chart: photos, measurements, repotting, problems and milestones. Propagation guides show how to grow new plants from the ones you have.
+
+ONE REMINDER, ONLY WHEN IT MATTERS
+At most one notification a day, and only on days something is due. Reminders are scheduled on your device, with nothing sent from a server.
+
+PRIVATE BY DESIGN
+No sign-up, no analytics and no server of Sprout's own. Your plants, photos, diary and schedule live on your device and are never uploaded. The only thing that leaves is an approximate location, rounded to about a kilometre, sent to the weather service for your forecast.
+
+Works offline.
+```
+
+Headings in capitals because plain text has no bold, and a capitalised
+line is the convention App Store descriptions use for it. The 1.0 text
+said "48 of the most common houseplants"; like the Play copy and the
+site, this one states no count, because the list grows.
+
+**Screenshots:**
+
+- **iPhone 6.9"** from `listing/a/ios-6.9/`, all seven in file order.
+  Every smaller iPhone size scales from it, which is why App Store
+  Connect shows the medium display as "Using existing assets".
+- **iPad 13"** from `listing/a/ios-ipad-13/`, the same seven at
+  2752×2064 in the app's wide layout. The smaller iPads scale from it.

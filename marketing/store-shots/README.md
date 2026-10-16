@@ -38,6 +38,7 @@ experiments against it.
 | `android-phone` | 1080×1920 | Google Play phone screenshots |
 | `ios-6.9` | 1320×2868 | App Store 6.9" iPhone, the size the others scale from |
 | `tablet` | 2560×1440 | Google Play 7-inch and 10-inch tablet slots, Set A only. Landscape: the words on the left, the app's wide layout (sidebar and all) in a drawn tablet on the right |
+| `ios-ipad-13` | 2752×2064 | App Store 13" iPad, Set A only: the tablet layout at 4:3, with the headline across the top and a larger tablet below |
 
 ## Rules the copy keeps
 
