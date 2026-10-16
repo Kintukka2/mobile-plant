@@ -1,0 +1,104 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Sprout App Store promo</title>
+<!-- The App Store's two wide assets, chosen by the query string:
+       promo.html?kind=header   3840x1646, the product page header (21:9)
+       promo.html?kind=search   3840x2560, the search results asset (3:2)
+     Same ground, phones and type as frame.html, from the same captures in
+     raw/, so they read as one set with the screenshots. Every length is a
+     multiple of --u (the canvas width over 1920).
+
+     The header carries no words. Apple crops it differently by device and
+     orientation and publishes the safe area only inside its templates, so
+     everything that matters sits in the middle third, where every crop
+     keeps it; the name and icon sit under it on the page anyway. The
+     search asset is seen small, beside the name and the Get button, so it
+     says what Sprout does in one line, large. -->
+<style>
+@font-face{font-family:'PP Hatton';src:url('/css/fonts/hatton-ultralight.woff2') format('woff2');font-weight:200;font-display:block}
+@font-face{font-family:'Jost';src:url('/css/fonts/jost-var.woff2') format('woff2');font-weight:300 500;font-display:block}
+@font-face{font-family:'Cormorant';src:url('/css/fonts/cormorant-var.woff2') format('woff2');font-weight:300 700;font-display:block}
+:root{ --bg:#050A08; --ink:#F3F6F1; --ink2:rgba(228,240,232,.74); --glow:#3FBE8B;
+       --leaf:#2F9A70; --sun:#E0C47A; --hair:rgba(214,237,226,.14); --u:1px; }
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);overflow:hidden}
+#v{position:relative;overflow:hidden;background:var(--bg)}
+.layer{position:absolute;inset:0;pointer-events:none}
+.grid{background-image:linear-gradient(to right,rgba(214,237,226,.045) 1px,transparent 1px),linear-gradient(to bottom,rgba(214,237,226,.045) 1px,transparent 1px);
+      background-size:calc(var(--u)*48) calc(var(--u)*48)}
+.vig{background:radial-gradient(130% 120% at 50% 45%,transparent 55%,rgba(0,0,0,.6) 100%)}
+.phone{position:absolute;background:#040907;box-shadow:0 0 0 calc(var(--u)*1.2) var(--hair),0 calc(var(--u)*40) calc(var(--u)*110) rgba(0,0,0,.75)}
+.phone img{display:block;width:100%}
+.halo{position:absolute;border-radius:50%;filter:blur(calc(var(--u)*80));opacity:.5}
+.halo.leaf{background:var(--leaf)} .halo.sun{background:var(--sun);opacity:.3}
+.copy{position:absolute}
+.eyebrow{font-family:'Jost';font-weight:500;font-size:calc(var(--u)*30);letter-spacing:.3em;text-transform:uppercase;color:var(--glow)}
+h1{font-family:'PP Hatton';font-weight:200;font-size:calc(var(--u)*116);line-height:1.06;color:var(--ink);margin-top:calc(var(--u)*30);text-wrap:balance}
+h1 em{font-style:normal;color:var(--glow)}
+.sub{font-family:'Cormorant';font-weight:500;font-size:calc(var(--u)*48);line-height:1.3;color:var(--ink2);margin-top:calc(var(--u)*34)}
+</style>
+<div id="v"><div class="layer" id="bloom"></div><div class="layer grid" id="grid"></div><div class="layer vig"></div></div>
+<script>
+(function () {
+  const q = new URLSearchParams(location.search);
+  const KIND = q.get('kind') === 'search' ? 'search' : 'header';
+  const W = KIND === 'search' ? 3840 : 3840, H = KIND === 'search' ? 2560 : 1646;
+  const U = W / 1920, HU = H / U;
+  const v = document.getElementById('v');
+  document.documentElement.style.setProperty('--u', U + 'px');
+  v.style.width = W + 'px'; v.style.height = H + 'px';
+  const px = n => (n * U) + 'px';
+  const SCR = 390 / 844;
+
+  // A phone pw units wide, drawn with the screenshots' proportions: bezel
+  // and corner radius scale with the width, so a small phone is the same
+  // phone, not a thicker-framed one.
+  function phone(screen, x, y, pw, rot, glow) {
+    const bez = pw * 0.018, h = (pw - 2 * bez) / SCR + 2 * bez;
+    if (glow) {
+      const halo = document.createElement('div');
+      halo.className = 'halo ' + glow;
+      Object.assign(halo.style, { left: px(x - pw * 0.15), top: px(y + h * 0.15), width: px(pw * 1.3), height: px(h * 0.7) });
+      v.appendChild(halo);
+    }
+    const p = document.createElement('div');
+    p.className = 'phone';
+    p.innerHTML = '<img src="raw/' + screen + '.png">';
+    Object.assign(p.style, { left: px(x), top: px(y), width: px(pw), padding: px(bez), borderRadius: px(pw * 0.092),
+      transform: 'rotate(' + (rot || 0) + 'deg)', transformOrigin: '50% 100%' });
+    p.firstChild.style.borderRadius = px(pw * 0.074);
+    v.appendChild(p);
+    return h;
+  }
+
+  const bloom = document.getElementById('bloom'), grid = document.getElementById('grid');
+  if (KIND === 'header') {
+    // Three phones fanned from the foot, the plan in front: the home and
+    // its light is the one idea nobody else's listing shows.
+    bloom.style.background = 'radial-gradient(' + px(900) + ' ' + px(520) + ' at 50% 62%,rgba(47,154,112,.36),transparent 70%)';
+    grid.style.webkitMaskImage = 'radial-gradient(' + px(900) + ' ' + px(560) + ' at 50% 55%,#000,transparent 80%)';
+    const cw = 300, sw = 262;
+    phone('today', 960 - cw / 2 - 300, 250, sw, -9, 'leaf');
+    phone('plant', 960 - cw / 2 + cw + 300 - sw, 250, sw, 9, 'leaf');
+    phone('plan', 960 - cw / 2, 120, cw, 0, 'sun');
+  } else {
+    bloom.style.background = 'radial-gradient(' + px(900) + ' ' + px(800) + ' at 70% 50%,rgba(47,154,112,.34),transparent 70%),' +
+      'radial-gradient(' + px(900) + ' ' + px(600) + ' at 15% -10%,rgba(47,154,112,.14),transparent 70%)';
+    grid.style.webkitMaskImage = 'radial-gradient(' + px(1100) + ' ' + px(900) + ' at 60% 45%,#000,transparent 85%)';
+    const copy = document.createElement('div');
+    copy.className = 'copy';
+    copy.innerHTML = '<p class="eyebrow">Houseplant care</p>' +
+      '<h1>Watering worked out <em>for every plant.</em></h1>' +
+      '<p class="sub">From its pot, its light and the weather.</p>';
+    Object.assign(copy.style, { left: px(140), width: px(800) });
+    v.appendChild(copy);
+    copy.style.top = px((HU - copy.offsetHeight / U) / 2 - 30);
+    phone('plant', 1390, 210, 380, 7, 'leaf');
+    phone('today', 1030, 170, 420, -3, 'leaf');
+  }
+  document.fonts.ready.then(() => {
+    const imgs = [...document.images];
+    Promise.all(imgs.map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; }))).then(() => { document.body.dataset.ready = '1'; });
+  });
+})();
+</script>

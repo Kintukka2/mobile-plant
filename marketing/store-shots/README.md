@@ -15,6 +15,7 @@ and voice are Sprout's own.
 | `sets.js` | Every frame's copy and layout, three sets |
 | `frame.html` | Draws one frame at any size from the query string, e.g. `frame.html?set=a&n=1&w=1080&h=1920` |
 | `render.js` | Renders every frame of every set at both sizes, and the feature graphic |
+| `promo.html` | Draws the App Store's product page header (3840×1646, 21:9, no words, everything in the middle third) and search results asset (3840×2560, 3:2, one line and two phones); `render.js promo` renders just these |
 | `flatten.py` | Strips alpha (Play rejects it), converts to JPEG, builds the overview sheet |
 
 Output goes to `native/store-assets/listing/<set>/<size>/NN-<screen>.jpg`,

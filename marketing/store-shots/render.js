@@ -53,6 +53,20 @@ const [onlySet, onlySize] = process.argv.slice(2);
     await p.close();
     console.log('feature graphic');
   }
+  // The App Store's header and search results assets (promo.html), as
+  // JPEG straight from the page: Apple refuses alpha in either, and a JPEG
+  // has none to strip, so flatten.py has nothing to do for them.
+  if (!onlySet || onlySet === 'promo') {
+    for (const [kind, w, h] of [['header', 3840, 1646], ['search', 3840, 2560]]) {
+      const p = await b.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
+      await p.goto(APP + 'marketing/store-shots/promo.html?kind=' + kind, { waitUntil: 'load' });
+      await p.waitForFunction(() => document.body.dataset.ready === '1', null, { timeout: 10000 });
+      await p.screenshot({ path: path.join(ROOT, 'native', 'store-assets', 'app-store-' + kind + '-' + w + 'x' + h + '.jpg'), type: 'jpeg', quality: 92, clip: { x: 0, y: 0, width: w, height: h } });
+      await p.close();
+      console.log('app store', kind);
+    }
+    if (onlySet === 'promo') { await b.close(); return; }
+  }
   await b.close();
   execFileSync('python3', ['-I', path.join(__dirname, 'flatten.py'), OUT, ...written], { stdio: 'inherit' });
 })();
