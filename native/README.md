@@ -119,6 +119,17 @@ still worth having. Each checks for Node first and says where to get it rather t
 failing with a `'node' is not recognized`, and each holds its window open on
 an error so the message can be read.
 
+## The screen stays on while Sprout is open
+
+`MainActivity.java` sets `FLAG_KEEP_SCREEN_ON` on the app's window and
+`AppDelegate.swift` sets `isIdleTimerDisabled`, so the phone never dims
+and locks while Sprout is in front. The planner's walkthrough and the
+guided tour play without a touch, and a home is drawn with long pauses
+between rooms; a screen that locked half way lost the reader's place. Both
+belong to the app's own window: another app, or the lock button, ends them
+at once, and neither needs a permission. iOS can clear its flag after a
+call, so the delegate sets it again each time the app becomes active.
+
 ## How the backup gets off the phone
 
 A browser saves a backup by clicking an `<a download>` at a blob URL. The
