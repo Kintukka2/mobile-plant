@@ -105,7 +105,10 @@ window.ViewPlan = (function () {
     const list = drawn();
     if (!list.length) return homeBox();
     const all = []; list.forEach(function (r) { r.shape.pts.forEach(function (p) { all.push(p); }); });
-    const b = Plan.bbox(all), pad = 2, minW = 12, minH = 9;
+    /* Never tighter than the frame an empty plan opens on: Centre on one
+       small room used to fill the stage with it, and left no grid in view
+       to draw the next room on. */
+    const b = Plan.bbox(all), pad = 2, minW = HOME_W, minH = HOME_H;
     let x0 = b.x0 - pad, y0 = b.y0 - pad, x1 = b.x1 + pad, y1 = b.y1 + pad;
     if (x1 - x0 < minW) { const m = (x0 + x1) / 2; x0 = m - minW / 2; x1 = m + minW / 2; }
     if (y1 - y0 < minH) { const m = (y0 + y1) / 2; y0 = m - minH / 2; y1 = m + minH / 2; }
@@ -148,29 +151,39 @@ window.ViewPlan = (function () {
     const q = pt.matrixTransform(m.inverse()); return { x: q.x, y: q.y };
   }
   function toPlan(evt) { const q = svgPoint(evt); return mode === 'plan' ? { x: q.x / P, y: q.y / P } : unIso(q.x, q.y); }
-  /* The plan stays where it is framed unless the reader has zoomed in.
-     Fitted, every room is already in view, so a drag could only push the
-     plan out of place: readers dragged the empty grid off the stage and
-     found a Centre button for a view they had never meant to move. So:
-     nothing moves at all while the invitation is up and nothing is drawn;
-     zoom goes no further out than the fitted frame, and reaching it puts
-     the plan back in the middle; a drag pans only while zoomed in. */
+  /* An empty plan holds still: readers dragged the bare grid off the stage
+     and found a Centre button for a view they had never meant to move. Once
+     a room exists the view is the reader's. It zooms out until the whole
+     grid is in view, since a plan held at its fitted frame left no room to
+     draw the rest of a home, and it pans at any zoom, with its middle kept
+     on the grid so it can never be dragged off into nothing. */
   function frozen() { return mode === 'plan' && !drawing && !drawn().length; }
+  function minZoom() {
+    if (mode !== 'plan' || !baseVB) return 1;
+    return Math.min(1, baseVB.w / (GW * P), baseVB.h / (GH * P));
+  }
+  function keepOnGrid(v) {
+    if (mode !== 'plan' || !baseVB) return;
+    const mx = baseVB.x + baseVB.w / 2, my = baseVB.y + baseVB.h / 2;
+    v.cx = clamp(v.cx, -mx, GW * P - mx);
+    v.cy = clamp(v.cy, -my, GH * P - my);
+  }
   function zoomAt(clientX, clientY, k2) {
     if (frozen()) return;
-    const v = curView(); k2 = clamp(k2, 1, 6);
-    if (k2 === 1) { v.k = 1; v.cx = 0; v.cy = 0; applyView(baseVB.x, baseVB.y, baseVB.w, baseVB.h); syncOverlays(); return; }
+    const v = curView(); k2 = clamp(k2, minZoom(), 6);
     const before = svgPoint({ clientX: clientX, clientY: clientY });
     const vb = canvas.viewBox.baseVal, fx = (before.x - vb.x) / vb.width, fy = (before.y - vb.y) / vb.height;
     const w2 = baseVB.w / k2, h2 = baseVB.h / k2;
     v.k = k2; v.cx = (before.x - fx * w2) - baseVB.x - (baseVB.w - w2) / 2; v.cy = (before.y - fy * h2) - baseVB.y - (baseVB.h - h2) / 2;
+    keepOnGrid(v);
     applyView(baseVB.x, baseVB.y, baseVB.w, baseVB.h); syncOverlays();
   }
   function panBy(dxPx, dyPx) {
-    if (frozen() || curView().k <= 1) return;
+    if (frozen()) return;
     const v = curView(), rc = canvas.getBoundingClientRect(), vb = canvas.viewBox.baseVal;
     const upp = Math.max(vb.width / rc.width, vb.height / rc.height);
     v.cx -= dxPx * upp; v.cy -= dyPx * upp;
+    keepOnGrid(v);
     applyView(baseVB.x, baseVB.y, baseVB.w, baseVB.h); syncOverlays();
   }
 
