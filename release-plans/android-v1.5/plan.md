@@ -174,12 +174,22 @@ its checks in the PR; in brief:
 
 ## Release notes (Play "What's new", under 500 characters)
 
-> Watch me build one now draws a sample flat on the real planner, step by
-> step. The planner zooms out to your whole home and pans freely, with its
-> tools in one row. A guided tour shows each tab on a sample home, and the
-> introduction reads your answers back before you start. Edit diary
-> entries, import a plan drawn on the web, and see twelve plants at a time
-> in Discover. The screen stays on while Sprout is open.
+Pasted as plain text; Play keeps the line breaks.
+
+```
+• Guided tour: see every tab in action on a sample home
+• Planner walkthrough: watch a home drawn step by step in the planner itself
+• Home planner: a full-plan view, free panning and tidier room controls
+• Plan import: bring in a plan drawn at sproutevergreen.app/planner
+• Diary: edit any entry, including its date and photo
+• Setup: review your answers before you begin
+• Discover: browse plants twelve at a time
+• Display: the screen stays on while Sprout is open
+```
+
+One label per line, so the list scans on a phone; Play shows its own
+"What's new" heading above it. Every line is a feature in this build, and
+the planner address is the one the preview is served from.
 
 ## Release housekeeping
 
