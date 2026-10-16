@@ -124,21 +124,62 @@ Still to check on a device: the reminder ask's Remind me opening Android's
 notification permission dialog on 13 and up, and Back stepping through the
 questions.
 
+### Since this plan was written
+
+The owner kept building before the upload. Each change is its own PR, with
+its checks in the PR; in brief:
+
+| Change | PRs |
+| --- | --- |
+| Plain voice across the app, site and listing (Decision 14) | #133 |
+| Four tabs, with You opening from Today; the guided tour on a sample home, offered from the welcome sheet | #134, #138 |
+| The introduction ends on "Does this look right?", reading the answers back; the welcome sheet is the same height for everyone | #143 |
+| The rating screen is asked for at good moments (a milestone, a first photo, clearing the day, a plan drawn and more), 14 days apart, never in the tour's sample; the thank-you waits for Play's card | #131, #137 |
+| Diagnose's first step reworded; Discover shows twelve plants at a time | #139, #140 |
+| The planner: tools hidden until tracing, step 1 while asking for a floorplan, the tour's tint, the plan held still until a room exists, then free to zoom out to the whole grid and pan | #141, #142, #146 |
+| "Watch me build one" is a live demo on the real planner, with the tour's card and veil, on a sample that is never kept; the tools in a row top-left; "Set north" only once a window exists | #144 |
+| The room panel: a bin beside the lock, a one-line lock note, Done centred | #147 |
+| The screen stays on while Sprout is open (`FLAG_KEEP_SCREEN_ON`) | #147 |
+
 ## Production switches
 
-- [ ] `js/rate.js`: `LIVE = true`. Closed testers are paid, so it stayed
-      off until now (`../android-v1.3/plan.md`).
-- [ ] `native/android/app/build.gradle`: `versionCode 8`, `versionName "1.5"`.
-- [ ] Device check: the 1.4 items (Back closing the diary sheet, the room
-      name coming back, Remove this plant), editing a diary entry, and
-      Import a home plan from a file saved on the phone (the system file
-      picker opens, the sheet reads it, the plan arrives), and the first
-      run: Back through the questions, and Today's reminder ask opening the
-      notification permission dialog on Android 13 and up.
+- [x] `js/rate.js`: `LIVE = true` (#137). Closed testers are paid, so it
+      stayed off until now (`../android-v1.3/plan.md`).
+- [x] `native/android/app/build.gradle`: `versionCode 8`, `versionName "1.5"`.
+- [ ] **Build.** Run `native/prepare-android.bat` (it pulls main first),
+      then sync in Android Studio. Sign through **Build → Generate Signed
+      App Bundle or APK → Android App Bundle** with the release key. The
+      file lands in `native\android\app\release\app-release.aab`.
+- [ ] **Device check**, on a build installed from Android Studio:
+  - [ ] The 1.4 items: Back closing the diary sheet, the room name coming
+        back, Remove this plant.
+  - [ ] Editing a diary entry, and Import a home plan from a file saved on
+        the phone.
+  - [ ] The first run: Back through the questions, "Does this look right?",
+        and Today's reminder ask opening the notification permission
+        dialog on Android 13 and up.
+  - [ ] "Watch me build one" runs through to "Your turn" (the finger's
+        taps land, no keyboard opens), and Skip and Back land on your own
+        plan.
+  - [ ] The screen stays on past the phone's timeout while Sprout is open.
+  - [ ] The plan: zoom out to the whole grid and pan once a room exists;
+        the bin removes a room and refuses a locked one.
 - [ ] Play Console before the first production release: store listing,
       Data safety (including whether the In-App Review library needs
       declaring), content rating, countries.
-- [ ] Production release, ideally staged (for example 20% first).
+- [ ] **Production release** of **8 (1.5)**, with the notes below, ideally
+      staged (for example 20% first). If Play says version code 8 is
+      already used, a bundle carrying it was uploaded before: bump to 9
+      and rebuild (`../../native/store-listing.md`).
+
+## Release notes (Play "What's new", under 500 characters)
+
+> Watch me build one now draws a sample flat on the real planner, step by
+> step. The planner zooms out to your whole home and pans freely, with its
+> tools in one row. A guided tour shows each tab on a sample home, and the
+> introduction reads your answers back before you start. Edit diary
+> entries, import a plan drawn on the web, and see twelve plants at a time
+> in Discover. The screen stays on while Sprout is open.
 
 ## Release housekeeping
 
