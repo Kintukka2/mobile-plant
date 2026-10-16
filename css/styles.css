@@ -5197,10 +5197,14 @@ html.plan-full .tabbar { visibility: hidden; }
 
 /* The compass and the ruler live on the stage, not in the drawing. In the
    drawing they sat at the grid's far corner and left the frame the moment
-   the view centred on the rooms. They sit at the middle of the right edge,
-   which hands the top-right corner to undo and redo; the walkthrough's
-   mock stage uses the same rule, so it shows them where they really are. */
-.plan-tools { position: absolute; top: 50%; right: 12px; z-index: 5; display: flex; flex-direction: column; align-items: center; gap: 8px; transform: translateY(-50%); }
+   the view centred on the rooms. They run along the top-left, full screen
+   then ruler then compass, which leaves the top-right corner to undo and
+   redo and the right edge clear for the drawing. */
+.plan-tools { position: absolute; top: 12px; left: 12px; z-index: 5; display: flex; flex-direction: row; align-items: center; gap: 8px; }
+/* Centre, and the Home view's walls switch, step down beneath the row. */
+.plan-stage-btn.is-left:not(.is-bottom) { top: 64px; }
+.plan-stage.is-full .plan-tools { top: calc(12px + env(safe-area-inset-top, 0px)); }
+.plan-stage.is-full .plan-stage-btn.is-left:not(.is-bottom) { top: calc(64px + env(safe-area-inset-top, 0px)); }
 .plan-tool {
   width: 44px; height: 44px; padding: 0;
   border: 1px solid var(--hair-2); border-radius: 50%;
@@ -5247,7 +5251,7 @@ html.plan-full .tabbar { visibility: hidden; }
 
 /* Home view: the walls switch has the top-left corner (the bottom-right
    belongs to the dock), and Centre steps down beneath it. */
-.plan-stage.is-home #pl-walls-toggle:not([hidden]) ~ #pl-view-reset { top: 54px; }
+.plan-stage.is-home #pl-walls-toggle:not([hidden]) ~ #pl-view-reset { top: 106px; }
 
 /* ---- The step dock ----
    The four steps, as buttons on the stage's bottom-right corner. A done
@@ -5341,22 +5345,24 @@ html.plan-full .tabbar { visibility: hidden; }
   50%      { transform: rotate(32deg); }
 }
 .plan-rose-tag {
-  position: absolute; right: calc(100% + 10px); top: 50%;
-  display: none; align-items: center; gap: 6px;
+  /* Under the compass, pointing up at it: beside it, the tag ran into undo
+     and redo on a narrow phone. Left-aligned to the dial, so it clears
+     Centre under the first button. */
+  position: absolute; left: 0; top: calc(100% + 8px);
+  display: none; flex-direction: row-reverse; align-items: center; gap: 6px;
   padding: 6px 10px; border-radius: 999px;
   border: 1px solid var(--gold); background: var(--bg-2);
   box-shadow: 0 0 0 4px var(--gold-wash);
   color: var(--gold-lit);
   font-family: var(--sans); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap;
-  transform: translateY(-50%);
   animation: roseLean 2.4s var(--ease) infinite;
 }
 [data-theme="conservatory"] .plan-rose-tag { color: var(--gold); }
 .plan-tool.has-tag .plan-rose-tag { display: inline-flex; }
 .plan-tool.is-rose .plan-rose-tag svg { width: 10px; height: 10px; }
 @keyframes roseLean {
-  0%, 100% { transform: translate(0, -50%); }
-  50%      { transform: translate(4px, -50%); }
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
 }
 /* A window marked before north is set: the legend's gold, with a "?" that
    says what it is waiting for. */
@@ -5652,87 +5658,67 @@ html.plan-full .tabbar { visibility: hidden; }
   .plan-coach-dot::after { opacity: 0; }
 }
 
-/* ---- The walkthrough itself ---- */
-.tour {
-  position: fixed; inset: 0; z-index: 190;
-  display: grid; place-items: center;
-  padding: 16px;
-  padding-top: calc(16px + env(safe-area-inset-top, 0px));
-  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-  background:
-    radial-gradient(760px 520px at 50% 28%, rgba(47, 154, 112, 0.17), transparent 70%),
-    var(--bg-0);
-  animation: tourIn 380ms var(--ease) both;
+/* ---- The walkthrough: the real planner, driven ----
+   Tour (js/tour.js) works the planner itself with a ghost finger, so this
+   is only what lies over it: the finger, a shield that keeps the reader's
+   own taps out of the script, the guided tour's veil and its card. All of
+   it sits inside one .tour root, which is what Android's Back and the
+   rating screen look for. */
+.tour-shield { position: fixed; inset: 0; z-index: 390; touch-action: none; }
+.tour-finger {
+  position: fixed; left: 0; top: 0; z-index: 400; width: 44px; height: 44px; margin: -22px 0 0 -22px;
+  border-radius: 50%; pointer-events: none; opacity: 0;
+  background: radial-gradient(circle at 40% 35%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.18) 60%);
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 6px 18px -4px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.18);
+  transition: opacity 260ms var(--ease);
 }
-.tour.is-out { opacity: 0; transition: opacity 300ms var(--ease); pointer-events: none; }
-@keyframes tourIn { from { opacity: 0; } to { opacity: 1; } }
+.tour-finger.is-on { opacity: 1; }
+.tour-ring {
+  position: fixed; z-index: 399; width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 50%;
+  border: 2px solid var(--emerald-glow); pointer-events: none;
+  animation: tourRing 520ms ease-out forwards;
+}
+@keyframes tourRing { from { opacity: 0.9; transform: scale(0.6); } to { opacity: 0; transform: scale(1.9); } }
 
-.tour-plate {
-  width: 100%; max-width: 560px; max-height: 100%;
-  overflow-y: auto;
-  display: flex; flex-direction: column; gap: 14px;
+/* The guided tour's veil: one lit window over what the finger is working,
+   the rest dimmed by its own shadow, the same values as .gd-hole. A sheet
+   brings its own backdrop, so the veil steps aside while one is open. */
+.tour-hole {
+  position: fixed; left: 0; top: 0; width: 0; height: 0; z-index: 385; pointer-events: none;
+  border-radius: 12px; opacity: 0;
+  box-shadow: 0 0 0 200vmax rgba(3, 9, 7, 0.5);
+  outline: 2px solid var(--mint);
+  transition: opacity 260ms var(--ease);
 }
-.tour-stage {
-  position: relative; flex: 0 0 auto;
-  aspect-ratio: 1 / 1;
-  border: 1px solid var(--hair); border-radius: var(--r);
-  background: var(--bg-1); overflow: hidden;
-}
-@media (min-width: 620px) { .tour-stage { aspect-ratio: 16 / 11; } }
-.tour-stage > svg { display: block; width: 100%; height: 100%; }
-.tour-stage .plan-tool { cursor: default; }
-.plan-tool.is-lit { color: var(--mint); border-color: var(--emerald-glow); box-shadow: 0 0 0 4px var(--mint-wash); }
-.plan-tool.is-rose.is-lit { box-shadow: none; }
+:root[data-theme="conservatory"] .tour-hole { box-shadow: 0 0 0 200vmax rgba(20, 34, 28, 0.32); }
+.tour-hole.is-on { opacity: 1; }
+.tour-hole.is-glide { transition: opacity 260ms var(--ease), left 420ms var(--ease-io), top 420ms var(--ease-io), width 420ms var(--ease-io), height 420ms var(--ease-io); }
+/* What the demo's taps produce has to read over the veil. */
+body:has(.tour) .toast-wrap { z-index: 396; }
 
-/* The panel the planner would slide up, shown only while the beat that
-   uses one is running. */
-.tour-mock {
-  position: absolute; left: 12px; right: 12px; bottom: 12px; z-index: 6;
-  padding: 13px 15px;
-  border: 1px solid var(--hair-2); border-radius: var(--r);
-  background: var(--bg-2); box-shadow: var(--shadow);
-  opacity: 0; transform: translateY(10px); pointer-events: none;
-  transition: opacity 280ms var(--ease), transform 280ms var(--ease);
+/* The guided tour's own card, kept above the tab bar, where the planner
+   has nothing the finger needs, and moved to the top while a sheet owns
+   the bottom of the screen. */
+.tour .gd-card {
+  position: fixed; z-index: 395; padding: 16px 18px 14px;
+  bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 12px);
 }
-.tour-mock.is-up { opacity: 1; transform: none; }
-.tour-mock-label {
-  font-family: var(--sans); font-size: 9.5px; letter-spacing: 0.2em;
-  text-transform: uppercase; color: var(--ink-4); margin-bottom: 7px;
-}
-.tour-mock-title {
-  font-family: var(--display); font-weight: 500;
-  font-size: 17px; letter-spacing: 0.14em; text-transform: uppercase;
-  border-bottom: 1px dotted var(--hair-3); padding-bottom: 4px;
-  display: inline-block; min-width: 150px;
-}
-.tour-mock-title i { color: var(--emerald-glow); font-style: normal; }
-.tour-field { border: 1px solid var(--hair-2); border-radius: 10px; padding: 6px 10px; background: var(--bg-3); }
-.tour-field span { display: block; font-family: var(--sans); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-4); }
-.tour-field b { font-family: var(--serif); font-weight: 400; font-size: 18px; }
-.tour-est { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; font-family: var(--sans); font-size: 11.5px; color: var(--ink-3); }
-.tour-est b { font-family: var(--serif); font-weight: 400; font-size: 14px; color: var(--ink-2); }
-.tour-wall { border: 1px solid var(--hair-2); border-radius: 99px; padding: 5px 11px; font-family: var(--sans); font-size: 11px; color: var(--ink-2); }
-.tour-wall.is-win { border-color: var(--gold); color: var(--gold); background: rgba(200, 169, 107, 0.1); }
-.tour-wall.is-open { border-style: dashed; border-color: var(--emerald-glow); color: var(--mint); }
+@media (min-width: 900px) { .tour .gd-card { bottom: calc(24px + env(safe-area-inset-bottom, 0px)); } }
+.planner-page .tour .gd-card { bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+body:has(#sheet-backdrop:not([hidden])) .tour .gd-card { bottom: auto; top: calc(env(safe-area-inset-top, 0px) + 12px); }
+.tour .gd-title { margin-bottom: 6px; }
+.tour .gd-bar, .tour .gd-meter { margin-top: 14px; }
+.tour .gd-bar.is-finish .btn { flex: 1; }
 
-.tour-say { border: 1px solid var(--hair); border-radius: var(--r); background: var(--bg-2); padding: 16px 18px 14px; }
-.tour-head { display: flex; align-items: baseline; gap: 11px; flex-wrap: wrap; margin-bottom: 7px; }
-.tour-num { font-family: var(--sans); font-size: 9.5px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); }
-.tour-say h2 {
-  font-family: var(--display); font-weight: 500;
-  font-size: 19px; letter-spacing: 0.14em; text-transform: uppercase;
-  margin: 0; line-height: 1.2;
-}
-/* A fixed floor under the narration, so the card does not jump a line
-   taller and shorter as the beats change under it. */
-.tour-say p { margin: 0; color: var(--ink-2); font-size: 16px; line-height: 1.55; min-height: 4.7em; }
-.tour-meter { height: 2px; background: var(--hair); border-radius: 2px; overflow: hidden; margin: 12px 0; }
-.tour-meter i { display: block; height: 100%; width: 0; background: var(--emerald-glow); }
-.tour-bar { gap: 8px; flex-wrap: wrap; }
+/* The focus line on a field the demo is typing into, drawn without focus:
+   a focused field would bring the phone's keyboard up over the demo. */
+.plan-title-input.tour-typing { border-bottom-color: var(--emerald-glow); }
+.input.tour-typing { border-color: var(--emerald-glow); }
 
 @media (prefers-reduced-motion: reduce) {
-  .tour { animation: none; }
-  .tour-mock { transition: none; }
+  .tour-ring { animation: none; opacity: 0; }
+  .tour-hole.is-glide { transition: opacity 260ms var(--ease); }
 }
 .plan-rule { border: 0; border-top: 1px solid var(--hair); margin: 14px 0; }
 .plan-back { width: 30px; height: 30px; margin-right: 10px; border: 1px solid var(--hair-2); border-radius: var(--r); background: none; color: var(--ink-2); display: inline-grid; place-items: center; cursor: pointer; vertical-align: middle; }

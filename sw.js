@@ -84,7 +84,7 @@
    a first run with no signal does not draw empty circles.
 
    v108: the watered question asks when, not whether this week. */
-const CACHE = 'sprout-v115-viridium';
+const CACHE = 'sprout-v116-viridium';
 
 /* Fonts live in their own cache, kept deliberately apart from the app shell.
    Two reasons. The shell cache is wiped on every version bump, and there is

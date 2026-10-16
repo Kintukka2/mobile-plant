@@ -1,554 +1,520 @@
 /* ==========================================================================
    Sprout — the plan walkthrough
    --------------------------------------------------------------------------
-   The planner asks for a traced home before it can say anything useful, and
-   four folded steps over an empty grid do not explain how to produce one.
-   This builds a sample flat in front of the reader and names each part as it
-   appears, in the order they would meet it.
+   "Watch me build one" draws a two-room flat on the real planner, with a
+   ghost finger doing what a reader's thumb would. It used to be an
+   animation on a canvas of its own, with mock-ups of the panels, which
+   described the controls but never showed where they were; this is the
+   planner itself, so the reader sees the very buttons they are about to
+   use, and the walkthrough cannot drift from the app.
 
-   It runs on its own canvas, not the real one. Nothing here touches the
-   store: the sample flat lives in this file's own state and goes away with
-   the overlay, so a reader who has already drawn something loses nothing by
-   watching, and a tour abandoned half way leaves no rooms behind.
+   Every tap and drag is a pointer event dispatched where a thumb would
+   land. Nothing on screen is drawn by this file except the finger, the
+   tour's veil and its card. If the planner changes, the run either follows
+   it or stops on the step that no longer fits, and the selectors it drives
+   are listed in CLAUDE.md for that reason.
 
-   It is offered, never forced. ViewPlan shows the invitation only while
-   nothing is drawn, and the last beat hands over by arming the add tool.
+   It runs on the guided tour's sample (Store.beginSample), so nothing it
+   draws is ever stored, and an app closed half way reopens on the reader's
+   own garden. The sample is never handed over: the end, Skip and Back all
+   land on the reader's own plan with tracing armed, because a sample flat
+   is not their home and keeping it would only be more to undo.
    ========================================================================== */
 
 window.Tour = (function () {
   'use strict';
 
   const P = 24;                       // px per grid cell, matching ViewPlan
-  const WALL = 0, WINDOW = 1, OPENING = 2;
+  const WINDOW = 1;
 
-  /* The sample flat, in grid cells of half a metre. Rooms that share a wall
-     share an edge exactly, because the borrowed-light beat needs a real
-     shared edge to borrow across. */
-  const FLAT = [
-    { id: 'living',  name: 'Living room', pts: [[8, 6], [18, 6], [18, 14], [8, 14]],   light: 3 },
-    { id: 'bedroom', name: 'Bedroom',     pts: [[18, 6], [26, 6], [26, 13], [18, 13]], light: 2 },
-    { id: 'kitchen', name: 'Kitchen',     pts: [[8, 14], [15, 14], [15, 20], [8, 20]], light: 1 },
-    { id: 'hall',    name: 'Hallway',     pts: [[15, 14], [18, 14], [18, 20], [15, 20]], light: 0 },
-    { id: 'balcony', name: 'Balcony',     pts: [[18, 13], [26, 13], [26, 17], [18, 17]], light: 4 }
-  ];
+  let root = null, shield = null, hole = null, finger = null, card = null;
+  let run = 0, paused = false, stepMode = false, gate = null, at = -1, driving = false;
+  let onHandover = null, veilOn = false, lit = null, litLast = null, raf = null;
+  let fx = 0, fy = 0;
+  let seedId = null;
 
-  const RANK_KEY = ['none', 'low', 'medium', 'bright-indirect', 'direct'];
-  const HEAT = { ideal: 'rgba(63,190,139,0.42)', ok: 'rgba(200,169,107,0.30)', poor: 'rgba(208,138,98,0.12)', bad: 'rgba(208,138,98,0.06)' };
-  const RING = { ideal: 'var(--emerald-glow)', ok: 'var(--gold)', poor: 'var(--terra)', bad: 'var(--terra)' };
-
-  /* The demo plant is a Monstera: bright indirect ideal, medium tolerated.
-     One table, so the heatmap and the verdict can never disagree. */
-  function verdictOf(rank) {
-    if (rank === 3) return 'ideal';
-    if (rank === 2) return 'ok';
-    if (rank === 4) return 'poor';
-    return 'bad';
-  }
-  function verdictWord(v) {
-    return v === 'ideal' ? 'Perfect spot' : v === 'ok' ? 'It will cope' : 'Wrong light';
-  }
-  function lightLabel(rank) { return LOOKUPS.LIGHT[RANK_KEY[rank]].label; }
-  function metres(cells) {
-    const v = Math.round(cells * 0.5 * 10) / 10;
-    return (v % 1 === 0 ? v : v.toFixed(1)) + ' m';
-  }
-
-  /* ======================================================================
-     State — the canvas is a pure function of this
-     ====================================================================== */
-
-  let st = null;
-  function reset() {
-    st = { grid: 0, rooms: [], trace: null, names: {}, scale: 0, shade: 0,
-           north: 0, northSet: false, hot: null, plant: null, heat: 0, verdict: null };
-  }
-  function room(id) {
-    for (let i = 0; i < st.rooms.length; i++) if (st.rooms[i].id === id) return st.rooms[i];
-    return null;
-  }
-  function add(id, grow) {
-    let src = null;
-    FLAT.forEach(function (f) { if (f.id === id) src = f; });
-    let r = room(id);
-    if (!r) {
-      r = { id: src.id, name: src.name, pts: src.pts, light: src.light,
-            win: [WALL, WALL, WALL, WALL], outdoor: false, grow: 0 };
-      st.rooms.push(r);
-    }
-    r.grow = grow === undefined ? 1 : grow;
-    return r;
-  }
-
-  /* ======================================================================
-     Geometry
-     ====================================================================== */
-
-  function centroid(pts) {
-    let x = 0, y = 0;
-    pts.forEach(function (p) { x += p[0]; y += p[1]; });
-    return [x / pts.length, y / pts.length];
-  }
-  function grown(pts, k) {
-    if (k >= 1) return pts;
-    const c = centroid(pts);
-    return pts.map(function (p) { return [c[0] + (p[0] - c[0]) * k, c[1] + (p[1] - c[1]) * k]; });
-  }
-  function poly(pts) { return pts.map(function (p) { return (p[0] * P) + ',' + (p[1] * P); }).join(' '); }
-  function bbox(pts) {
-    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
-    pts.forEach(function (p) {
-      x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]);
-      y0 = Math.min(y0, p[1]); y1 = Math.max(y1, p[1]);
-    });
-    return { x0: x0, y0: y0, x1: x1, y1: y1 };
-  }
-
-  /* ======================================================================
-     Drawing — the planner's own tokens, so both themes come free
-     ====================================================================== */
-
-  function drawGrid() {
-    if (st.grid <= 0) return '';
-    let h = '<g opacity="' + st.grid.toFixed(3) + '">';
-    for (let x = 4; x <= 32; x++) {
-      h += '<line x1="' + (x * P) + '" y1="' + (2 * P) + '" x2="' + (x * P) + '" y2="' + (24 * P) +
-           '" stroke="var(' + (x % 2 ? '--plan-grid' : '--plan-grid-2') + ')"/>';
-    }
-    for (let y = 2; y <= 24; y++) {
-      h += '<line x1="' + (4 * P) + '" y1="' + (y * P) + '" x2="' + (32 * P) + '" y2="' + (y * P) +
-           '" stroke="var(' + (y % 2 ? '--plan-grid' : '--plan-grid-2') + ')"/>';
-    }
-    return h + '</g>';
-  }
-
-  function drawRoom(r) {
-    if (r.grow <= 0) return '';
-    const pts = grown(r.pts, r.grow);
-    const fill = st.shade > 0 ? 'var(--plan-floor-' + r.light + ')' : 'var(--plan-floor-x)';
-    let h = '<g opacity="' + Math.min(1, r.grow * 1.4).toFixed(3) + '">';
-    h += '<polygon points="' + poly(pts) + '" style="fill:' + fill +
-         ';stroke:var(--plan-wall-edge);stroke-width:2;stroke-linejoin:round' +
-         (r.outdoor ? ';stroke-dasharray:6 4' : '') + '"/>';
-
-    /* Windows and openings are drawn along the wall itself, inset at both
-       ends, exactly as the real plan draws them. */
-    for (let i = 0; i < pts.length; i++) {
-      const a = pts[i], b = pts[(i + 1) % pts.length];
-      const kind = r.win[i];
-      const lit = kind === WINDOW || kind === OPENING || r.outdoor;
-      const hot = st.hot && st.hot.id === r.id && st.hot.edge === i;
-      if (hot) {
-        h += '<line x1="' + (a[0] * P) + '" y1="' + (a[1] * P) + '" x2="' + (b[0] * P) + '" y2="' + (b[1] * P) +
-             '" stroke="var(--emerald-glow)" stroke-width="9" stroke-linecap="round" opacity="0.26"/>';
-      }
-      if (!lit) continue;
-      const t0 = 0.12, t1 = 0.88;
-      const x1 = (a[0] + (b[0] - a[0]) * t0) * P, y1 = (a[1] + (b[1] - a[1]) * t0) * P;
-      const x2 = (a[0] + (b[0] - a[0]) * t1) * P, y2 = (a[1] + (b[1] - a[1]) * t1) * P;
-      const col = kind === OPENING ? 'var(--emerald-glow)' : 'var(--gold)';
-      h += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + col +
-           '" stroke-width="' + (kind === OPENING ? 3 : 5) + '"' +
-           (kind === OPENING ? ' stroke-dasharray="3 4"' : '') +
-           (r.outdoor && kind !== OPENING ? ' opacity="0.55"' : '') + ' stroke-linecap="round"/>';
-    }
-
-    if (r.grow > 0.92) {
-      const c = centroid(r.pts), b2 = bbox(r.pts);
-      const nm = st.names[r.id] !== undefined ? st.names[r.id] : r.name;
-      if (nm) h += '<text class="plan-name" x="' + (c[0] * P) + '" y="' + (c[1] * P - 2) + '" text-anchor="middle">' + UI.esc(nm) + '</text>';
-      if (st.shade > 0) {
-        h += '<text class="plan-tiny" x="' + (c[0] * P) + '" y="' + (c[1] * P + 11) + '" text-anchor="middle" opacity="' + st.shade.toFixed(3) + '">' +
-             UI.esc(lightLabel(r.light) + (r.outdoor ? ' · outdoors' : '')) + '</text>';
-      }
-      if (st.scale > 0) {
-        h += '<text class="plan-tiny" x="' + (c[0] * P) + '" y="' + (b2.y1 * P - 7) + '" text-anchor="middle" opacity="' + (st.scale * 0.8).toFixed(3) + '">' +
-             UI.esc(metres(b2.x1 - b2.x0) + ' × ' + metres(b2.y1 - b2.y0)) + '</text>';
-      }
-    }
-    return h + '</g>';
-  }
-
-  function drawHeat() {
-    if (st.heat <= 0) return '';
-    let h = '<g opacity="' + st.heat.toFixed(3) + '" style="pointer-events:none">';
-    st.rooms.forEach(function (r) {
-      const b = bbox(r.pts), col = HEAT[verdictOf(r.light)];
-      for (let cx = b.x0; cx < b.x1; cx++) {
-        for (let cy = b.y0; cy < b.y1; cy++) {
-          h += '<rect x="' + (cx * P) + '" y="' + (cy * P) + '" width="' + P + '" height="' + P + '" style="fill:' + col + '"/>';
-        }
-      }
-    });
-    return h + '</g>';
-  }
-
-  function drawTrace() {
-    if (!st.trace) return '';
-    const t = st.trace;
-    let h = '';
-    if (t.pts.length) {
-      const run = t.pts.concat(t.cursor ? [t.cursor] : []);
-      h += '<polyline points="' + poly(run) + '" style="fill:var(--mint-wash);stroke:var(--emerald-glow);stroke-width:1.5;stroke-dasharray:4 4"/>';
-    }
-    t.pts.forEach(function (p, i) {
-      h += '<circle cx="' + (p[0] * P) + '" cy="' + (p[1] * P) + '" r="' + (i === 0 ? 7 : 4) +
-           '" style="fill:' + (i === 0 ? 'var(--bg-1)' : 'var(--emerald-glow)') + ';stroke:var(--emerald-glow);stroke-width:2"/>';
-    });
-    if (t.cursor) {
-      h += '<circle cx="' + (t.cursor[0] * P) + '" cy="' + (t.cursor[1] * P) + '" r="11" style="fill:var(--mint-wash);stroke:var(--emerald-glow);stroke-width:1.4"/>';
-      h += '<circle cx="' + (t.cursor[0] * P) + '" cy="' + (t.cursor[1] * P) + '" r="3" style="fill:var(--emerald-glow)"/>';
-    }
-    return h;
-  }
-
-  function drawPlant() {
-    if (!st.plant) return '';
-    const ring = st.verdict ? RING[st.verdict] : 'var(--hair-3)';
-    const x = st.plant[0] * P, y = st.plant[1] * P;
-    let h = '<g>';
-    h += '<ellipse cx="' + x + '" cy="' + (y + 9) + '" rx="12" ry="5" style="fill:rgba(0,0,0,0.22)"/>';
-    h += '<circle cx="' + x + '" cy="' + y + '" r="11" style="fill:var(--plan-pot);stroke:' + ring + ';stroke-width:2.4"/>';
-    h += '<text class="plan-letter" x="' + x + '" y="' + (y + 4) + '" text-anchor="middle" style="font-size:12px">M</text>';
-    if (st.verdict) {
-      h += '<text class="plan-tiny" x="' + x + '" y="' + (y - 19) + '" text-anchor="middle" style="fill:' + ring + '">' +
-           UI.esc(verdictWord(st.verdict)) + '</text>';
-    }
-    return h + '</g>';
-  }
-
-  function compassRose() {
-    const known = st.northSet;
-    let h = '<circle r="21" style="fill:var(--bg-2);stroke:' + (known ? 'var(--hair-3)' : 'var(--gold)') + '"/>';
-    if (known) {
-      h += '<g transform="rotate(' + st.north.toFixed(1) + ')">' +
-           '<polygon points="0,-16 4,0 -4,0" style="fill:var(--terra)"/>' +
-           '<polygon points="0,16 4,0 -4,0" style="fill:var(--ink-4)"/>' +
-           '<text class="plan-n" y="-22" text-anchor="middle">N</text></g>';
-    } else {
-      h += '<text class="plan-n" y="4" text-anchor="middle" style="fill:var(--gold-lit)">N?</text>';
-    }
-    return h;
-  }
-
-  /* ======================================================================
-     The beats. run(t) sets the whole world from t alone, so stepping back
-     and jumping about land on the same picture as playing through.
-     ====================================================================== */
-
-  function ease(t) { return 1 - Math.pow(1 - t, 3); }
-  function seg(t, a, b) { return Math.max(0, Math.min(1, (t - a) / (b - a))); }
-  function lerp(a, b, t) { return a + (b - a) * t; }
-
-  /* Everything the earlier beats established, so a beat only animates its
-     own move. */
-  function stateBefore(i) {
-    if (i > 0) st.grid = 1;
-    if (i >= 2) { add('living'); st.names.living = 'Living room'; }
-    if (i >= 4) ['bedroom', 'kitchen', 'hall', 'balcony'].forEach(function (id) { add(id); });
-    if (i >= 5) st.scale = 1;
-    if (i >= 6) {
-      room('living').win = [WINDOW, WALL, WALL, WALL];
-      room('bedroom').win = [WALL, WINDOW, WALL, WALL];
-      room('kitchen').win = [WALL, WALL, WALL, WINDOW];
-    }
-    if (i >= 7) { st.north = -14; st.northSet = true; st.shade = 1; }
-    if (i >= 8) { room('hall').win = [OPENING, WALL, WALL, WALL]; room('hall').light = 2; }
-    if (i >= 9) { room('balcony').outdoor = true; room('balcony').light = 4; }
-    if (i >= 10) { st.plant = [10.8, 8.4]; st.verdict = 'ideal'; }
-  }
-
-  const BEATS = [
-    {
-      short: 'The grid', title: 'The grid', dur: 2200,
-      body: 'Every square is half a metre. Draw each room at its real size, since every reading after this depends on it.',
-      run: function (t) { st.grid = ease(t); }
-    },
-    {
-      short: 'Trace a room', title: 'Trace a room', dur: 4200,
-      body: 'Drag a box, or tap corner to corner for any shape. I\'ll snap what you draw to the grid as you go.',
-      run: function (t) {
-        const c = FLAT[0].pts;
-        const k = Math.min(1, t / 0.88) * c.length;
-        const i = Math.min(c.length - 1, Math.floor(k)), f = k - Math.floor(k);
-        const a = c[i], b = c[(i + 1) % c.length];
-        st.trace = { pts: c.slice(0, Math.floor(k)), cursor: [lerp(a[0], b[0], f), lerp(a[1], b[1], f)] };
-        if (t >= 0.9) { st.trace = null; add('living', ease(seg(t, 0.9, 1))); st.names.living = ''; }
-      }
-    },
-    {
-      short: 'Name it', title: 'Name it', dur: 3000,
-      body: 'Open a room and type over its heading to rename it on the plan.',
-      mock: function (t) {
-        const n = 'Living room', k = Math.floor(seg(t, 0.15, 0.85) * n.length);
-        return '<div class="tour-mock-label">Room</div>' +
-               '<div class="tour-mock-title">' + UI.esc(n.slice(0, k)) + '<i>|</i></div>';
-      },
-      run: function (t) {
-        const n = 'Living room';
-        st.names.living = n.slice(0, Math.floor(seg(t, 0.15, 0.85) * n.length));
-      }
-    },
-    {
-      short: 'The rest of it', title: 'The rest of the flat', dur: 4200,
-      body: 'Keep going until the whole floor is down. Rooms that share a wall should share an edge, which is what lets light cross between them later.',
-      run: function (t) {
-        ['bedroom', 'kitchen', 'hall', 'balcony'].forEach(function (id, i) {
-          add(id, ease(seg(t, i * 0.22, i * 0.22 + 0.30)));
-        });
-      }
-    },
-    {
-      short: 'One real size', title: 'One real size', dur: 3800, lit: 'ruler',
-      body: 'Measure one room and I\'ll scale the others from it. They all sit on the same grid, so a single width is enough.',
-      mock: function (t) {
-        const w = (seg(t, 0.1, 0.5) * 5).toFixed(1), rest = seg(t, 0.5, 0.9);
-        const rows = ['bedroom', 'kitchen', 'balcony'].map(function (id) {
-          let src = null;
-          FLAT.forEach(function (f) { if (f.id === id) src = f; });
-          const b = bbox(src.pts);
-          return '<div class="tour-est"><span>' + UI.esc(src.name) + '</span><b>' +
-                 UI.esc(metres(b.x1 - b.x0) + ' × ' + metres(b.y1 - b.y0)) + '</b></div>';
-        }).join('');
-        return '<div class="tour-mock-label">How big is it?</div>' +
-               '<div class="grid-2" style="margin-bottom:8px">' +
-                 '<div class="tour-field"><span>Width</span><b>' + w + '</b></div>' +
-                 '<div class="tour-field"><span>Depth</span><b>' + (rest > 0 ? '4.0' : '—') + '</b></div>' +
-               '</div>' +
-               (rest > 0.1 ? '<div style="opacity:' + rest.toFixed(2) + '"><div class="tour-mock-label">The rest, estimated</div>' + rows + '</div>' : '');
-      },
-      run: function (t) { st.scale = seg(t, 0.5, 0.9); }
-    },
-    {
-      short: 'Windows', title: 'Windows', dur: 4600,
-      body: 'Tap a wall to cycle it: wall, then window, then opening. A window is the only way daylight gets into a room.',
-      mock: function (t) {
-        const k = seg(t, 0.05, 0.3) > 0.6;
-        return '<div class="tour-mock-label">Wall / window / opening · tap to cycle</div>' +
-               '<div class="row-wrap">' +
-                 '<span class="tour-wall' + (k ? ' is-win' : '') + '">1 · ' + (k ? 'Window' : 'Wall') + '</span>' +
-                 '<span class="tour-wall">2 · Wall</span><span class="tour-wall">3 · Wall</span><span class="tour-wall">4 · Wall</span>' +
-               '</div>';
-      },
-      run: function (t) {
-        st.hot = t < 0.3 ? { id: 'living', edge: 0 } : null;
-        if (t > 0.22) room('living').win = [WINDOW, WALL, WALL, WALL];
-        if (t > 0.55) room('bedroom').win = [WALL, WINDOW, WALL, WALL];
-        if (t > 0.8) room('kitchen').win = [WALL, WALL, WALL, WINDOW];
-      }
-    },
-    {
-      short: 'North', title: 'Which way is north', dur: 4200, lit: 'compass',
-      body: 'Turn the dial until N points north in your home. Until it\'s set, I leave every room unshaded.',
-      run: function (t) {
-        st.north = lerp(0, -14, ease(Math.min(1, t / 0.5)));
-        st.northSet = t > 0.5;
-        st.shade = ease(seg(t, 0.55, 1));
-      }
-    },
-    {
-      short: 'Doorways', title: 'Doorways', dur: 4000,
-      body: 'An opening lets a room borrow light from the one next door, one step dimmer. Light crosses a single doorway, never a chain of them.',
-      run: function (t) {
-        st.hot = t < 0.35 ? { id: 'hall', edge: 0 } : null;
-        const r = room('hall');
-        if (t > 0.3) r.win = [OPENING, WALL, WALL, WALL];
-        r.light = t > 0.55 ? 2 : 0;
-      }
-    },
-    {
-      short: 'Outdoors', title: 'Outdoors', dur: 3400,
-      body: 'Tick a balcony as outdoors and every side with nothing built beyond it opens to the sky, so there are no windows to mark.',
-      mock: function () {
-        return '<div class="tour-mock-label">Balcony</div>' +
-               '<div class="row" style="gap:10px"><span class="tour-wall is-open">✓ Outdoors</span>' +
-               '<span class="hint" style="margin:0">Open sky on three sides</span></div>';
-      },
-      run: function (t) {
-        const r = room('balcony');
-        r.outdoor = t > 0.3;
-        r.light = t > 0.45 ? 4 : 0;
-      }
-    },
-    {
-      short: 'A plant’s place', title: 'Where a plant should stand', dur: 4800,
-      body: 'Drop a plant in and I\'ll shade the whole floor by how well each square suits it. The greenest one is where I\'d put it.',
-      run: function (t) {
-        st.heat = ease(seg(t, 0.05, 0.4));
-        const k = ease(seg(t, 0.35, 0.8));
-        st.plant = [lerp(24, 10.8, k), lerp(19, 8.4, k)];
-        st.verdict = t > 0.85 ? 'ideal' : null;
-      }
-    },
-    {
-      short: 'Done', title: 'The whole flat, read for light', dur: 3400, last: true,
-      body: 'Each room\'s light reading feeds into the watering of every plant in it, and I\'ll tell you when a plant is in the wrong light.',
-      run: function (t) { st.heat = 1 - ease(t); }
-    }
-  ];
-
-  /* ======================================================================
-     The overlay
-     ====================================================================== */
-
-  let root = null, canvas = null, at = 0, t = 0, playing = false, raf = null, last = 0, onHandover = null;
-
+  function Stopped() {}
   function reduced() {
     return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
 
-  function paint() {
-    const beat = BEATS[at], tt = reduced() ? 1 : t;
-    reset();
-    stateBefore(at);
-    beat.run(tt);
+  /* ======================================================================
+     Time. Every wait honours Pause, and a run that has been ended stops at
+     its next wait rather than carrying on into the reader's own plan.
+     ====================================================================== */
 
-    let h = drawGrid();
-    st.rooms.forEach(function (r) { h += drawRoom(r); });
-    h += drawHeat() + drawTrace() + drawPlant();
-    canvas.innerHTML = h;
-    root.querySelector('#tr-rose').innerHTML = compassRose();
-
-    root.querySelector('#tr-num').textContent = 'Step ' + (at + 1) + ' of ' + BEATS.length;
-    root.querySelector('#tr-title').textContent = beat.title;
-    root.querySelector('#tr-body').textContent = beat.body;
-    root.querySelector('#tr-meter').style.width = ((at + tt) / BEATS.length * 100).toFixed(2) + '%';
-    root.querySelector('#tr-back').disabled = at === 0;
-    root.querySelector('#tr-next').disabled = at === BEATS.length - 1;
-
-    const mock = root.querySelector('#tr-mock');
-    const html = beat.mock ? beat.mock(tt) : null;
-    if (html) { mock.innerHTML = html; mock.classList.add('is-up'); }
-    else { mock.classList.remove('is-up'); }
-
-    root.querySelectorAll('[data-tr-lit]').forEach(function (el) {
-      el.classList.toggle('is-lit', beat.lit === el.getAttribute('data-tr-lit'));
+  function sleep(ms) {
+    const my = run;
+    return new Promise(function (res, rej) {
+      let left = ms, last = performance.now();
+      (function tick() {
+        if (my !== run) return rej(new Stopped());
+        const now = performance.now();
+        if (!paused) left -= now - last;
+        last = now;
+        if (left <= 0) return res();
+        requestAnimationFrame(tick);
+      })();
     });
-
-    /* The last beat swaps the primary action for the handover, because the
-       point of the walkthrough is the plan the reader draws after it. */
-    const done = at === BEATS.length - 1 && tt >= 1;
-    root.querySelector('#tr-play').hidden = done;
-    root.querySelector('#tr-go').hidden = !done;
-    setPlayLabel();
+  }
+  function until(fn, ms) {
+    const t0 = performance.now(), my = run;
+    return new Promise(function (res, rej) {
+      (function poll() {
+        if (my !== run) return rej(new Stopped());
+        const v = fn();
+        if (v) return res(v);
+        if (performance.now() - t0 > (ms || 5000)) return rej(new Error('Timed out waiting'));
+        setTimeout(poll, 50);
+      })();
+    });
+  }
+  function visible(sel) {
+    const el = document.querySelector(sel);
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden' ? el : null;
   }
 
-  function frame(now) {
-    if (!playing) return;
-    const dt = last ? Math.min(64, now - last) : 16;
-    last = now;
-    t += dt / BEATS[at].dur;
-    if (t >= 1) {
-      t = 1;
-      if (at < BEATS.length - 1) { paint(); at++; t = 0; }
-      else { paint(); pause(); return; }
+  /* ======================================================================
+     The finger
+     ====================================================================== */
+
+  function place(x, y, down) {
+    fx = x; fy = y;
+    finger.style.transform = 'translate(' + x + 'px,' + y + 'px)' + (down ? ' scale(.82)' : '');
+  }
+  function ease(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+  /* A reader who has asked not to be animated at gets the finger where it
+     is going, at once. */
+  function glide(x, y, ms, each, down) {
+    const x0 = fx, y0 = fy, my = run, len = reduced() ? 0 : ms;
+    return new Promise(function (res, rej) {
+      let el = 0, last = performance.now();
+      (function tick() {
+        if (my !== run) return rej(new Stopped());
+        const now = performance.now();
+        if (!paused) el += now - last;
+        last = now;
+        const k = len ? Math.min(1, el / len) : 1, e = ease(k);
+        place(x0 + (x - x0) * e, y0 + (y - y0) * e, down);
+        if (each) each(fx, fy);
+        if (k >= 1) return res();
+        requestAnimationFrame(tick);
+      })();
+    });
+  }
+  /* What a thumb at this point would land on, looking through the shield
+     and the card, which are only there to keep the reader's own taps out.
+     pointer-events, not visibility: under reduced motion every element
+     carries a short transition, and visibility waits for it to finish. */
+  function hit(x, y) {
+    root.style.pointerEvents = 'none';
+    const el = document.elementFromPoint(x, y);
+    root.style.pointerEvents = '';
+    return el;
+  }
+  function pev(type, el, x, y) {
+    el.dispatchEvent(new PointerEvent(type, {
+      bubbles: true, cancelable: true, composed: true, pointerId: 7, pointerType: 'touch',
+      isPrimary: true, clientX: x, clientY: y, button: 0, buttons: type === 'pointerup' ? 0 : 1
+    }));
+  }
+  /* Where a real pointer's later events go once captured. The canvas and
+     the dial redraw their own children mid-drag, and an event sent to a
+     child that has just been replaced reaches nothing. */
+  function captureOf(el) { return (el.closest && (el.closest('#pl-canvas') || el.closest('#pl-dial'))) || el; }
+  function ring(x, y) {
+    const r = document.createElement('div');
+    r.className = 'tour-ring';
+    r.style.left = x + 'px'; r.style.top = y + 'px';
+    root.appendChild(r);
+    setTimeout(function () { r.remove(); }, 600);
+  }
+  function centre(el) { const r = el.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }
+
+  /* Scrolled into view only when the card or the header would hide it. The
+     header is measured: on a narrow phone it wraps taller, and a wall's
+     number under it takes the header's tap instead. */
+  async function reveal(el) {
+    const r = el.getBoundingClientRect(), top = card ? card.getBoundingClientRect().top : innerHeight;
+    const head = document.querySelector('.topbar'), below = head ? Math.max(0, head.getBoundingClientRect().bottom) + 8 : 70;
+    if (r.top < below || r.bottom > top - 8) {
+      el.scrollIntoView({ block: 'center', behavior: reduced() ? 'auto' : 'smooth' });
+      await sleep(650);
     }
-    paint();
-    raf = requestAnimationFrame(frame);
+  }
+  async function tapAt(x, y) {
+    await glide(x, y, 620);
+    await sleep(120);
+    place(x, y, true);
+    const el = hit(x, y);
+    pev('pointerdown', el, x, y);
+    await sleep(110);
+    pev('pointerup', captureOf(el), x, y);
+    place(x, y, false);
+    ring(x, y);
+    el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window, clientX: x, clientY: y }));
+    await sleep(160);
+  }
+  function outside(el) { return !el.closest('#pl-stage') && !el.closest('#sheet'); }
+  async function tap(sel) {
+    const el = await until(function () { return visible(sel); });
+    const out = outside(el);
+    if (out) { light(el); await sleep(300); }
+    await reveal(el);
+    const c = centre(el);
+    await tapAt(c[0], c[1]);
+    if (out) { await sleep(250); light(null); }
+  }
+  async function drag(x1, y1, x2, y2, ms) {
+    await glide(x1, y1, 620);
+    await sleep(140);
+    place(x1, y1, true);
+    const el = hit(x1, y1), cap = captureOf(el);
+    pev('pointerdown', el, x1, y1);
+    await sleep(120);
+    await glide(x2, y2, ms || 1100, function (x, y) { pev('pointermove', cap, x, y); }, true);
+    await sleep(120);
+    pev('pointerup', cap, x2, y2);
+    place(x2, y2, false);
+    await sleep(200);
+  }
+  /* Typed without focus: a focused field brings the phone's keyboard up
+     over the very thing the reader is watching. The field wears its focus
+     line instead, and takes the letters as input events, which is all the
+     planner listens for. */
+  async function type(sel, text) {
+    const el = await until(function () { return visible(sel); });
+    const out = outside(el);
+    if (out) { light(el.id === 'pl-room-name' ? el.parentElement : el); await sleep(300); }
+    await reveal(el);
+    const c = centre(el);
+    await tapAt(c[0], c[1]);
+    el.classList.add('tour-typing');
+    el.value = '';
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+    for (let i = 0; i < text.length; i++) {
+      await sleep(70 + Math.random() * 60);
+      el.value += text[i];
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    await sleep(250);
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+    el.classList.remove('tour-typing');
+    if (out) { await sleep(250); light(null); }
   }
 
-  function play() {
-    if (at === BEATS.length - 1 && t >= 1) { at = 0; t = 0; }
-    playing = true; last = 0;
-    setPlayLabel();
-    raf = requestAnimationFrame(frame);
+  /* A grid cell's place on screen, read from the canvas as it is drawn now. */
+  function cell(x, y) {
+    const svg = document.getElementById('pl-canvas'), p = svg.createSVGPoint();
+    p.x = x * P; p.y = y * P;
+    const q = p.matrixTransform(svg.getScreenCTM());
+    return [q.x, q.y];
   }
-  function pause() {
-    playing = false;
-    if (raf) cancelAnimationFrame(raf);
-    setPlayLabel();
-    paint();
+  async function dragCells(a, b, ms) { const p = cell(a[0], a[1]), q = cell(b[0], b[1]); await drag(p[0], p[1], q[0], q[1], ms); }
+  async function tapCell(x, y) { const p = cell(x, y); await tapAt(p[0], p[1]); }
+  /* A side's number badge on the plan, for the selected room. Checked, not
+     assumed: the badges redraw as the panel settles, and a tap that lands
+     mid-redraw changes nothing. Two more tries, then a plain stop. */
+  async function tapWall(i, name) {
+    function isWindow() {
+      const r = Store.get().rooms.filter(function (x) { return x.name === name; })[0];
+      return r && r.shape && r.shape.win[i] === WINDOW;
+    }
+    for (let n = 0; n < 3 && !isWindow(); n++) {
+      await sleep(350);
+      await tap('#pl-canvas [data-edge="' + i + '"]');
+      await sleep(250);
+    }
+    if (!isWindow()) throw new Error('Side ' + (i + 1) + ' of ' + name + ' did not become a window');
   }
-  /* UI.icon has no transport glyphs and one overlay is not a reason to add
-     two to the set, so they are drawn here. */
-  const PLAY = '<svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor"><path d="M4 2.5v11l9-5.5z"/></svg>';
-  const PAUSE = '<svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor"><rect x="3.5" y="2.5" width="3.5" height="11"/><rect x="9" y="2.5" width="3.5" height="11"/></svg>';
-  function setPlayLabel() {
-    const b = root.querySelector('#tr-play');
-    if (b) b.innerHTML = (playing ? PAUSE + 'Pause' : PLAY + 'Play');
-  }
-  function jump(i) {
-    at = Math.max(0, Math.min(BEATS.length - 1, i));
-    if (playing) { t = 0; last = 0; paint(); }
-    else { t = 1; paint(); }
+  /* The dial, turned by its rim from N to a little west of it. */
+  async function turnDial() {
+    const dial = await until(function () { return visible('#pl-dial'); });
+    const r = dial.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2, rad = r.width * 0.38;
+    function at(deg) { const a = deg * Math.PI / 180; return [cx + rad * Math.sin(a), cy - rad * Math.cos(a)]; }
+    const start = at(0);
+    await glide(start[0], start[1], 600);
+    place(fx, fy, true);
+    const el = hit(fx, fy), cap = captureOf(el);
+    pev('pointerdown', el, fx, fy);
+    const my = run, len = reduced() ? 0 : 1100;
+    let el0 = 0, last = performance.now();
+    await new Promise(function (res, rej) {
+      (function tick() {
+        if (my !== run) return rej(new Stopped());
+        const now = performance.now();
+        if (!paused) el0 += now - last;
+        last = now;
+        const k = len ? Math.min(1, el0 / len) : 1, p = at(-35 * ease(k));
+        place(p[0], p[1], true);
+        pev('pointermove', cap, fx, fy);
+        if (k >= 1) return res();
+        requestAnimationFrame(tick);
+      })();
+    });
+    pev('pointerup', cap, fx, fy);
+    place(fx, fy, false);
   }
 
-  function close(handover) {
+  /* ======================================================================
+     The veil: the guided tour's lit window over what the finger is
+     working, the plan itself unless a control below it is the one in hand.
+     ====================================================================== */
+
+  function light(el) { lit = el; }
+  function track() {
     if (!root) return;
-    playing = false;
-    if (raf) cancelAnimationFrame(raf);
-    document.removeEventListener('keydown', onKey, true);
-    document.body.style.overflow = '';
-    const el = root;
-    root = null; canvas = null;
-    el.classList.add('is-out');
-    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 320);
-    if (handover && typeof onHandover === 'function') onHandover();
+    const backdrop = document.getElementById('sheet-backdrop');
+    const sheetUp = !!backdrop && !backdrop.hidden;
+    const target = lit && document.body.contains(lit) ? lit : document.getElementById('pl-stage');
+    hole.classList.toggle('is-on', veilOn && !sheetUp && !!target);
+    if (veilOn && target) {
+      if (target !== litLast) {
+        hole.classList.add('is-glide');
+        setTimeout(function () { if (hole) hole.classList.remove('is-glide'); }, 440);
+        litLast = target;
+      }
+      const r = target.getBoundingClientRect(), pad = target.id === 'pl-stage' ? 0 : 6;
+      hole.style.left = (r.left - pad) + 'px'; hole.style.top = (r.top - pad) + 'px';
+      hole.style.width = (r.width + pad * 2) + 'px'; hole.style.height = (r.height + pad * 2) + 'px';
+    }
+    raf = requestAnimationFrame(track);
   }
 
-  /* Capture, because the app's own shortcuts would otherwise navigate the
-     page behind an overlay the reader cannot see past. */
-  function onKey(e) {
-    if (!root) return;
-    if (e.key === 'Escape') { close(false); }
-    else if (e.key === 'ArrowRight') { jump(at + 1); }
-    else if (e.key === 'ArrowLeft') { jump(at - 1); }
-    else if (e.key === ' ') { playing ? pause() : play(); }
-    e.stopPropagation();
-    if (e.key === ' ' || e.key.indexOf('Arrow') === 0) e.preventDefault();
+  /* ======================================================================
+     The script: one short flat, start to finish
+     ====================================================================== */
+
+  const BEATS = [
+    { title: 'Trace your home', say: 'Start from an empty plan.',
+      go: async function () { await tap('#pl-trace'); } },
+    { title: 'Freehand', say: 'No floorplan to hand, so draw it freehand.',
+      go: async function () { await tap('#pl-coach-self'); await sleep(500); } },
+    /* Two cells below the tools row, so its buttons never sit over a wall
+       the finger has to tap. */
+    { title: 'Drag out a room', say: 'Each square on the grid is half a metre.',
+      go: async function () { await sleep(300); await dragCells([15, 16], [23, 23], 1300); await sleep(500); } },
+    { title: 'Name it', say: 'Use the name you call it at home.',
+      go: async function () { await type('#pl-room-name', 'Living room'); await sleep(300); } },
+    { title: 'Mark the windows', say: 'Tap a numbered side to switch it to a window.',
+      go: async function () { await tapWall(0, 'Living room'); await sleep(600); } },
+    { title: 'The next room', say: 'Draw it against the first, so the two share a wall.',
+      go: async function () {
+        await tapCell(31.5, 26.5); await sleep(300);
+        await tap('#pl-add-room'); await sleep(450);
+        await dragCells([23, 16], [30, 22], 1100); await sleep(400);
+        await type('#pl-room-name', 'Bedroom');
+        await tapWall(1, 'Bedroom'); await sleep(500);
+      } },
+    { title: 'Set north', say: 'Turn the dial until N points north, and I can read the light in every room.',
+      go: async function () {
+        await tapCell(31.5, 26.5); await sleep(250);
+        await tap('#pl-rose'); await sleep(900);
+        await turnDial(); await sleep(400);
+        await tap('[data-act="pl-north-confirm"]'); await sleep(900);
+      } },
+    /* One of the reader's plants, which the sample holds ready, rather than
+       a new one: adding a plant opens the full plant form, which belongs to
+       the greenhouse and would carry the finger off the plan. */
+    { title: 'Add a plant', say: 'Pick one of yours and I\'ll stand it where the light suits it best.',
+      go: async function () {
+        await tapCell(26.5, 19); await sleep(400);
+        await tap('#pl-quick-add'); await sleep(400);
+        await tap('[data-quick-plant="' + seedId + '"]'); await sleep(700);
+      } },
+    { title: 'Where it should stand', say: 'Tap it, and I\'ll shade the floor by how well each spot suits it.',
+      go: async function () {
+        window.scrollTo({ top: 0, behavior: reduced() ? 'auto' : 'smooth' }); await sleep(500);
+        const p = Store.getPlant(seedId);
+        if (!p || !p.pos) throw new Error('The plant did not reach the plan');
+        await tapCell(p.pos.x, p.pos.y); await sleep(2200);
+      } }
+  ];
+
+  /* ======================================================================
+     The card: the guided tour's own (.gd-card), so the two read as one
+     ====================================================================== */
+
+  function say(beat, n) {
+    card.querySelector('.gd-count').textContent = 'Your plan · ' + n + ' of ' + BEATS.length;
+    card.querySelector('.gd-title').textContent = beat.title;
+    card.querySelector('.gd-body').textContent = beat.say;
+    card.querySelector('.gd-meter i').style.width = ((n - 1) / (BEATS.length - 1) * 100).toFixed(1) + '%';
+    card.classList.remove('is-out');
+  }
+  /* Pause while it plays itself; Next when it holds after each step, which
+     is how it runs for a reader who has asked for less motion. */
+  function syncControl(holding) {
+    const b = card && card.querySelector('[data-tr="ctl"]');
+    if (!b) return;
+    b.textContent = stepMode ? 'Next' : paused ? 'Resume' : 'Pause';
+    b.disabled = stepMode && !holding;
+  }
+  function finishBar() {
+    const bar = card.querySelector('.gd-bar');
+    bar.className = 'gd-bar is-finish';
+    bar.innerHTML = '<button class="btn btn-ghost btn-sm" data-tr="again">Watch again</button>' +
+      '<button class="btn btn-sm" data-tr="own">' + UI.icon('plus') + 'Start my own plan</button>';
   }
 
-  function open(handover) {
-    if (root) return;
-    onHandover = handover || null;
-    at = 0; t = 0; reset();
+  /* ======================================================================
+     While it drives, the reader's keyboard has no say. A field that takes
+     focus is let go at once (a sheet focuses its first one), so no keyboard
+     opens over the demo, and real key presses go nowhere. The demo's own
+     typing is untrusted input events, which pass. Escape is the exception:
+     it is how a keyboard leaves, and Android's Back arrives as one.
+     ====================================================================== */
 
+  document.addEventListener('focusin', function (e) {
+    if (driving && e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) e.target.blur();
+  }, true);
+  ['keydown', 'keypress', 'keyup', 'beforeinput', 'paste', 'compositionstart'].forEach(function (t) {
+    document.addEventListener(t, function (e) {
+      if (!root || !e.isTrusted) return;
+      if (t === 'keydown' && e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); close('own'); return; }
+      if (driving) { e.preventDefault(); e.stopImmediatePropagation(); }
+    }, true);
+  });
+
+  /* ======================================================================
+     Way in, way out
+     ====================================================================== */
+
+  /* The reader's hemisphere, stated, so the dial never stops to ask which
+     side of the equator the sample is on; the welcome flags are set so no
+     first-run sheet opens over it. */
+  function begin() {
+    const hemisphere = Store.hemisphere();
+    Store.beginSample({
+      profile: { hemisphere: hemisphere },
+      settings: { onboarded: true, seenWelcome: true, reshapeTipDone: true }
+    });
+    /* Watered today, so Today's badge does not move under the veil. */
+    seedId = Store.addPlant({ speciesId: 'monstera-deliciosa', acquired: null, lastWatered: UI.toISO(UI.today()) }).id;
+    ViewPlan.reset();
+    App.render();
+  }
+
+  function mount() {
     root = document.createElement('div');
     root.className = 'tour';
     root.innerHTML =
-      '<div class="tour-plate" role="dialog" aria-modal="true" aria-label="How the plan works">' +
-        '<div class="tour-stage">' +
-          '<svg id="tr-canvas" viewBox="144 96 528 432" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>' +
-          '<div class="plan-tools">' +
-            '<span class="plan-tool is-rose" data-tr-lit="compass"><svg id="tr-rose" viewBox="-30 -30 60 60" aria-hidden="true"></svg></span>' +
-            '<span class="plan-tool" data-tr-lit="ruler">' + UI.icon('ruler') + '</span>' +
-          '</div>' +
-          '<div class="tour-mock" id="tr-mock"></div>' +
-        '</div>' +
-        '<div class="tour-say">' +
-          '<div class="tour-head"><span class="tour-num" id="tr-num"></span><h2 id="tr-title"></h2></div>' +
-          '<p id="tr-body"></p>' +
-          '<div class="tour-meter"><i id="tr-meter"></i></div>' +
-          '<div class="row tour-bar">' +
-            '<button class="btn btn-sm" id="tr-play"></button>' +
-            '<button class="btn" id="tr-go" hidden>' + UI.icon('plus') + 'Start my own plan</button>' +
-            '<button class="btn btn-ghost btn-sm" id="tr-back">Back</button>' +
-            '<button class="btn btn-ghost btn-sm" id="tr-next">Next</button>' +
-            '<span style="flex:1"></span>' +
-            '<button class="link-btn" id="tr-skip">Skip</button>' +
-          '</div>' +
-        '</div>' +
+      '<div class="tour-shield" aria-hidden="true"></div>' +
+      '<div class="tour-hole" aria-hidden="true"></div>' +
+      '<div class="tour-finger" aria-hidden="true"></div>' +
+      '<div class="gd-card is-out" role="dialog" aria-live="polite" aria-label="How the plan works">' +
+        '<div class="gd-count"></div><h3 class="gd-title"></h3><p class="gd-body"></p>' +
+        '<div class="gd-bar"><button class="gd-skip" data-tr="skip">Skip</button><span class="grow"></span>' +
+          '<button class="btn btn-ghost btn-sm" data-tr="ctl">Pause</button></div>' +
+        '<div class="gd-meter"><i style="width:0"></i></div>' +
       '</div>';
-
     document.body.appendChild(root);
-    canvas = root.querySelector('#tr-canvas');
-    document.body.style.overflow = 'hidden';
-    document.addEventListener('keydown', onKey, true);
+    shield = root.querySelector('.tour-shield');
+    hole = root.querySelector('.tour-hole');
+    finger = root.querySelector('.tour-finger');
+    card = root.querySelector('.gd-card');
 
     root.addEventListener('click', function (e) {
-      if (e.target.closest('#tr-play')) { playing ? pause() : play(); return; }
-      if (e.target.closest('#tr-next')) { jump(at + 1); return; }
-      if (e.target.closest('#tr-back')) { jump(at - 1); return; }
-      if (e.target.closest('#tr-skip')) { close(false); return; }
-      if (e.target.closest('#tr-go')) { close(true); return; }
+      const b = e.target.closest('[data-tr]');
+      if (!b) return;
+      const k = b.getAttribute('data-tr');
+      if (k === 'skip' || k === 'own') close('own');
+      else if (k === 'again') { const h = onHandover; close('quiet'); open(h); }
+      else if (k === 'ctl') {
+        if (stepMode) { if (gate) { const g = gate; gate = null; g(); syncControl(false); } }
+        else { paused = !paused; syncControl(); }
+      }
     });
+    /* app.js hands Android's Back here as an Escape on this root. */
+    root.addEventListener('keydown', function (e) { if (e.key === 'Escape') close('own'); });
+    /* Anything that changes the page mid-run (a notification tapped, the
+       phone's own back gesture) ends the sample before the reader sees
+       their garden through it. */
+    window.addEventListener('hashchange', onRoute);
 
-    paint();
-    /* Choosing to watch is choosing not to drive, so it plays itself. A
-       reader who has asked not to be animated at gets the end of each beat
-       and the buttons instead. A timer rather than a frame callback: the
-       overlay has only just been appended, and a first frame is not owed. */
-    if (!reduced()) setTimeout(play, 60);
+    fx = innerWidth * 0.7; fy = innerHeight * 0.75;
+    place(fx, fy, false);
+    raf = requestAnimationFrame(track);
   }
+  function onRoute() { close('route'); }
+
+  async function play() {
+    const my = ++run;
+    paused = false; at = -1; driving = true; veilOn = true;
+    stepMode = reduced();
+    if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur();
+    finger.classList.add('is-on');
+    syncControl(false);
+    try {
+      for (let i = 0; i < BEATS.length; i++) {
+        at = i;
+        say(BEATS[i], i + 1);
+        syncControl(false);
+        await sleep(700);
+        await BEATS[i].go();
+        await sleep(500);
+        if (stepMode && i < BEATS.length - 1) {
+          syncControl(true);
+          await new Promise(function (res) { gate = res; });
+          if (my !== run) return;
+        }
+      }
+      if (my !== run) return;
+      driving = false; veilOn = false;
+      finger.classList.remove('is-on');
+      card.querySelector('.gd-count').textContent = 'Your plan · done';
+      card.querySelector('.gd-meter i').style.width = '100%';
+      card.querySelector('.gd-title').textContent = 'Your turn';
+      card.querySelector('.gd-body').textContent = 'That\'s the planner. Now draw yours.';
+      finishBar();
+    } catch (e) {
+      if (e instanceof Stopped) return;
+      /* A step that no longer fits the planner: say so plainly and offer
+         the way out, rather than leaving a finger frozen over the plan. */
+      driving = false; veilOn = false;
+      finger.classList.remove('is-on');
+      card.querySelector('.gd-title').textContent = 'That step didn\'t work';
+      card.querySelector('.gd-body').textContent = 'Start your own plan and I\'ll guide you from the planner\'s steps.';
+      finishBar();
+      if (window.console) console.warn('Tour stopped on step ' + (at + 1) + ':', e);
+    }
+  }
+
+  /* 'own' hands over to the reader's plan with tracing armed; 'route' has
+     already left the plan, so only the sample goes; 'quiet' is Watch again,
+     which opens a fresh sample straight after. */
+  function close(how) {
+    if (!root) return;
+    run++;
+    driving = false; veilOn = false; gate = null; paused = false;
+    window.removeEventListener('hashchange', onRoute);
+    if (raf) cancelAnimationFrame(raf);
+    raf = null;
+    root.remove();
+    root = shield = hole = finger = card = null;
+    lit = litLast = null;
+    if (UI.sheetIsOpen()) UI.closeSheet();
+    Store.endSample();
+    ViewPlan.reset();
+    if (how === 'quiet') return;
+    if (how === 'route') { App.refresh(); return; }
+    App.render();
+    if (typeof onHandover === 'function') onHandover();
+  }
+
+  /* Never over the guided tour's sample, which is already a sample, and
+     never twice at once. */
+  function open(handover) {
+    if (root || Store.inSample()) return;
+    onHandover = handover || null;
+    begin();
+    mount();
+    play();
+  }
+
+  function isOn() { return !!root; }
 
   /* The invitation belongs only on a plan with nothing on it: once a room
      exists the reader has worked it out and does not need asking again. */
@@ -556,5 +522,5 @@ window.Tour = (function () {
     return !Store.get().rooms.some(function (r) { return !!r.shape; });
   }
 
-  return { open: open, shouldOffer: shouldOffer };
+  return { open: open, isOn: isOn, shouldOffer: shouldOffer };
 })();
