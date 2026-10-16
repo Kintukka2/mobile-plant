@@ -14,3 +14,4 @@ Nothing in the app reads this directory.
 | [`android-v1.3/`](android-v1.3/plan.md) | Android 1.3 (versionCode 6) | Rating ask off for closed testing (PrimeTestLab ticket #3229); minSdk 24 |
 | [`android-v1.4/`](android-v1.4/plan.md) | Android 1.4 (versionCode 7) | PrimeTestLab closed-testing report Nº 8220 |
 | [`android-v1.5/`](android-v1.5/plan.md) | Android 1.5 (versionCode 8) | First production release |
+| [`ios-v1.1/`](ios-v1.1/plan.md) | iOS 1.1, the first App Store release | App Review: 2.1 and 5.1.1(iv) on 1.0 |

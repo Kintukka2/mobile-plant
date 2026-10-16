@@ -242,6 +242,11 @@ window.ViewToday = (function () {
   function remindAsk() {
     const s = Store.get().settings;
     if (!window.Notify || !Notify.isNative() || s.remind) return '';
+    /* Not on iOS. A card whose yes raises the permission prompt and whose
+       Not now puts it off is the pattern App Review refused on the
+       introduction's location screen (5.1.1(iv)); there Profile's switch
+       is the way in, a request the reader starts. Play has no such rule. */
+    if (UI.platform() === 'ios') return '';
     if (dismissed().indexOf(REMIND_ASK) !== -1 || Notify.state() === 'denied') return '';
     const hour = typeof s.remindHour === 'number' ? s.remindHour : 8;
     return '<div class="section"><div class="nudge">' +
