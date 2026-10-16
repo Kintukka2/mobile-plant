@@ -253,6 +253,14 @@ window.UI = (function () {
   }
   function here() { return isNative() ? 'this device' : 'this browser'; }
 
+  /* 'ios', 'android' or 'web'. For the few places the two stores' rules
+     differ, so the check is never written out at a call site. */
+  function platform() {
+    const C = window.Capacitor;
+    if (!isNative() || typeof C.getPlatform !== 'function') return 'web';
+    return C.getPlatform();
+  }
+
   function plural(n, one, many) {
     return n + ' ' + (n === 1 ? one : (many || one + 's'));
   }
@@ -852,7 +860,7 @@ window.UI = (function () {
     esc: esc, attr: attr, icon: icon,
     today: today, toISO: toISO, fromISO: fromISO, daysBetween: daysBetween, addDays: addDays,
     fmtDate: fmtDate, relDays: relDays, relDue: relDue, plural: plural, deg: deg,
-    isNative: isNative, here: here,
+    isNative: isNative, here: here, platform: platform,
     MONTHS: MONTHS, DAYS: DAYS,
     toast: toast, openSheet: openSheet, closeSheet: closeSheet, sheetIsOpen: sheetIsOpen,
     roomMark: roomMark,

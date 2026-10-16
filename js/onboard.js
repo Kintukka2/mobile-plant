@@ -348,14 +348,18 @@ window.Onboard = (function () {
       '<p class="ob-hint">It decides which way your bright windows face, and which months are the growing season.</p>';
   }
 
+  /* One button, and it always leads to the system's own prompt. This
+     screen used to ask "Can I use your location?" with a Not now beside the
+     yes, and App Review rejected iOS 1.0 for it (guideline 5.1.1(iv),
+     14 October 2026): a message shown before a permission request may
+     explain it, never offer a way round it. The yes or no belongs to the
+     operating system's sheet, so this says what is coming and why, and
+     whatever the reader answers there moves the introduction on. */
   function stepLoc() {
-    return '<h2 class="ob-q">Can I use your location?</h2>' +
-      '<p class="ob-hint" style="margin-top:0">I round it to about a kilometre and send it only to Open-Meteo, for a forecast that lets me offer to stretch or shorten watering before a wet or dry spell.</p>' +
+    return '<h2 class="ob-q">Your local forecast</h2>' +
+      '<p class="ob-hint" style="margin-top:0">Next you\'ll be asked whether I can use your location. I round it to about a kilometre and send it only to Open-Meteo, for a forecast that lets me offer to stretch or shorten watering before a wet or dry spell.</p>' +
       '<div class="ob-actions">' +
-        '<button class="btn btn-lg" data-ob="locate">' + UI.icon('pin') + 'Use my location</button>' +
-        /* A no here is the same no as the card on Today, so it holds there
-           too rather than being asked again the next morning. */
-        '<button class="btn btn-ghost" data-ob="loc-later">Not now</button>' +
+        '<button class="btn btn-lg" data-ob="locate">' + UI.icon('pin') + 'Continue</button>' +
       '</div>' +
       '<p class="ob-hint ob-note" id="ob-loc-note" hidden></p>';
   }
@@ -427,9 +431,10 @@ window.Onboard = (function () {
       stage.innerHTML = '<div class="ob-step">' + RENDER[STEPS[i]]() + '</div>';
       dots();
       backEl.hidden = i === 0 && !editing;
-      /* On the location question "Not now" already is the skip, so a
-         second way out under it would only be a second word for the tap.
-         On the review there is nothing left to skip. */
+      /* The location question has no way out but its one button, which
+         leads to the system prompt (see stepLoc), so a skip under it would
+         be the Not now Apple refused by another name. On the review there
+         is nothing left to skip. */
       skipEl.hidden = STEPS[i] === 'loc' || STEPS[i] === 'review';
       if (STEPS[i] === 'review') editing = false;
       busy = false;
@@ -482,7 +487,15 @@ window.Onboard = (function () {
     if (btn) btn.disabled = true;
     Weather.locateMe(function (err, place) {
       if (finished) return;
-      if (err) { note.textContent = err.message + ' You can set it later in You, from the top of Today.'; if (btn) btn.disabled = false; return; }
+      /* A refusal, a timeout or no fix at all: the reader has answered the
+         system's sheet, or it had nothing to give, and the question that
+         follows (the hemisphere) is the one a location would have answered.
+         The no holds on Today for a month, as Not now's did. */
+      if (err) {
+        Store.snoozeLocationAsk();
+        if (STEPS[at] === 'loc') { if (Store.get().profile.hemisphere) review(); else next(); }
+        return;
+      }
       Store.updateProfile({ location: { label: place.label, lat: place.lat, lon: place.lon } });
       Store.setWeather(null);
       if (window.App && App.syncWeather) App.syncWeather(true);
@@ -531,10 +544,6 @@ window.Onboard = (function () {
         else if (a === 'back') back();
         else if (a === 'locate') locate();
         else if (a === 'finish') { if (STEPS[at] === 'name') saveName(); finish(); }
-        else if (a === 'loc-later') {
-          Store.snoozeLocationAsk();
-          if (Store.get().profile.hemisphere) review(); else next();
-        }
         return;
       }
       const edit = t.closest('[data-ob-edit]');

@@ -668,3 +668,19 @@ to Open-Meteo and nothing else does. Both stores are told the same thing, in
 `native/store-privacy.md`; a privacy claim that drifts from the code is worse
 than no claim, and on Play an under-declared form is a removal rather than a
 warning.
+
+## Permission prompts
+
+**A screen shown before a permission prompt has one button, and it leads
+to the prompt.** App Review rejected iOS 1.0 under guideline 5.1.1(iv)
+because the introduction asked "Can I use your location?" with a Not now
+beside the yes: a message before a permission request may explain it,
+never offer a way round it. The yes or no belongs to the operating
+system's sheet. So the introduction's location step says what is coming
+and has Continue, and whatever the reader answers there moves it on
+(`js/onboard.js`, `stepLoc`). A control the reader reaches for on their own
+is a different thing: Profile's Reminders switch and the location sheet's
+"Use my location" ask when tapped, and that is fine. Today's reminder card
+(Remind me / Not now) is the pattern Apple refused, so it is Android only
+(`UI.platform()`), and iOS readers turn reminders on in Profile.
+`release-plans/ios-v1.1/plan.md` has the whole exchange.

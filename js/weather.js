@@ -183,7 +183,7 @@ window.Weather = (function () {
       },
       function (err) {
         const msgs = {
-          1: 'Location permission was denied. You can type your city instead.',
+          1: 'Location is off for Sprout. Type your town instead.',
           2: 'Your location is unavailable right now.',
           3: 'The location request timed out.'
         };
