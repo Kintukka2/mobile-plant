@@ -8,7 +8,7 @@
      raw/, so they read as one set with the screenshots. Every length is a
      multiple of --u (the canvas width over 1920).
 
-     The header carries the lockup and nothing else. Apple crops it differently by device and
+     The header is the app's opening screen, widened. Apple crops it differently by device and
      orientation and publishes the safe area only inside its templates, so
      everything that matters sits in the middle third, where every crop
      keeps it; the name and icon sit under it on the page anyway. The
@@ -37,21 +37,25 @@ html,body{background:var(--bg);overflow:hidden}
 h1{font-family:'PP Hatton';font-weight:200;font-size:calc(var(--u)*116);line-height:1.06;color:var(--ink);margin-top:calc(var(--u)*30);text-wrap:balance}
 h1 em{font-style:normal;color:var(--glow)}
 .sub{font-family:'Cormorant';font-weight:500;font-size:calc(var(--u)*48);line-height:1.3;color:var(--ink2);margin-top:calc(var(--u)*34)}
-/* The header: a room at dusk rather than a screen. Window light falls
-   across the middle, houseplants frame the corners, the near ones out of
-   focus, and the lockup sits in the light. Geometry of the lockup is the
-   feature graphic's and the site's, from one --wm. */
-.plant{position:absolute;pointer-events:none}
-.plant img{display:block;width:100%}
-.win{position:absolute;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:calc(var(--u)*16);
-     transform:skewX(-22deg) rotate(-4deg);filter:blur(calc(var(--u)*22))}
-.win i{background:rgba(224,196,122,.2);border-radius:calc(var(--u)*6)}
-.lockup{position:absolute;--wm:calc(var(--u)*120);--mk:calc(var(--wm)*0.96);--mkw:calc(var(--mk)*0.7647);--gap:calc(var(--wm)*0.26)}
-.wm-row{display:flex;align-items:center;gap:var(--gap)}
-.m{width:var(--mkw);height:var(--mk);color:var(--glow);flex:none}
-.m svg{width:100%;height:100%;display:block}
-.word{font-family:'PP Hatton';font-weight:200;font-size:var(--wm);letter-spacing:.2em;text-transform:uppercase;line-height:1;color:var(--ink);margin-right:-.2em}
-.script{font-family:'Sacramento';font-size:calc(var(--wm)*0.56);color:#9FD3BE;line-height:1;margin-top:calc(var(--wm)*0.12);padding-left:calc(var(--mkw) + var(--gap))}
+/* The header is the app's opening screen, widened: the splash's ground,
+   wordmark, script and rule, under the site hero's falling wash, behind a
+   row of conservatory arches lit from the middle out. The arches are to
+   Sprout what the cabin windows are to Apple's Airline example: the one
+   shape that says where you are. */
+.arch{position:absolute;border:calc(var(--u)*1.4) solid rgba(159,211,190,.16);border-bottom:0;
+      background:linear-gradient(to bottom,rgba(63,190,139,.13),rgba(63,190,139,.03) 70%,transparent)}
+.arch::after{content:'';position:absolute;left:0;right:0;top:76%;height:calc(var(--u)*1.4);background:rgba(159,211,190,.12)}
+.arch::before{content:'';position:absolute;top:0;bottom:0;left:50%;width:calc(var(--u)*1.4);background:rgba(159,211,190,.08)}
+.wash{position:absolute;left:-10%;top:-25%;width:120%;height:150%;
+      background:linear-gradient(107deg,transparent 22%,rgba(150,190,120,.10) 34%,rgba(224,196,122,.07) 40%,transparent 52%)}
+.mote{position:absolute;width:calc(var(--u)*2.2);border-radius:99px;background:linear-gradient(to bottom,transparent,rgba(224,240,220,.55),transparent)}
+.mark{position:absolute;left:0;right:0;text-align:center}
+.mark .w{font-family:'PP Hatton';font-weight:200;font-size:calc(var(--u)*150);letter-spacing:.22em;text-indent:.22em;text-transform:uppercase;color:var(--ink);line-height:1}
+.mark .s{font-family:'Sacramento';font-size:calc(var(--u)*78);color:#9FD3BE;line-height:1;margin-top:calc(var(--u)*-14);padding-bottom:.12em}
+.mark .r{margin:calc(var(--u)*30) auto 0;width:calc(var(--u)*230);height:calc(var(--u)*1.6);
+         background:linear-gradient(90deg,rgba(214,237,226,.14),rgba(159,211,190,.9) 50%,rgba(214,237,226,.14))}
+.grainy{position:absolute;inset:0;opacity:.06;mix-blend-mode:overlay;
+        background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E")}
 </style>
 <div id="v"><div class="layer" id="bloom"></div><div class="layer grid" id="grid"></div><div class="layer vig"></div></div>
 <script>
@@ -89,45 +93,39 @@ h1 em{font-style:normal;color:var(--glow)}
 
   const bloom = document.getElementById('bloom'), grid = document.getElementById('grid');
   if (KIND === 'header') {
-    // Dusk in a room: a low green glow, a window's light thrown across the
-    // middle, and foliage in the corners, darker than the light and out of
-    // focus, as if in front of the lens. Nothing in the frame is sharp but
-    // the lockup: a potted plant in focus read as a product shot. Everything that must
-    // survive a crop (the lockup and the light under it) is in the middle
-    // third; the plants are what a crop is allowed to lose.
-    bloom.style.background = 'radial-gradient(' + px(760) + ' ' + px(420) + ' at 50% 50%,rgba(47,154,112,.30),transparent 72%),' +
-      'radial-gradient(' + px(1200) + ' ' + px(700) + ' at 50% 120%,rgba(47,154,112,.16),transparent 70%)';
+    // The splash's own glow, widened to the canvas, and a low pool of
+    // sun at the foot where the site's wash lands.
+    bloom.style.background = 'radial-gradient(' + px(900) + ' ' + px(520) + ' at 50% 46%,rgba(47,154,112,.30),transparent 70%),' +
+      'radial-gradient(' + px(520) + ' ' + px(260) + ' at 30% 104%,rgba(224,196,122,.10),transparent 70%)';
     grid.style.display = 'none';
-    const win = document.createElement('div');
-    win.className = 'win';
-    win.innerHTML = '<i></i><i></i><i></i><i></i>';
-    Object.assign(win.style, { left: px(720), top: px(110), width: px(560), height: px(560) });
-    v.appendChild(win);
-    // [species, left, top, width, brightness, blur, flip]
-    const PLANTS = [
-      ['dracaena-trifasciata', -60, 330, 420, .55, 10, false],
-      ['howea-forsteriana', 1440, -260, 640, .5, 12, true],
-      ['epipremnum-aureum', -120, -330, 560, .45, 14, false],
-      ['monstera-deliciosa', 1480, 380, 560, .45, 14, true]
-    ];
-    PLANTS.forEach(function (d) {
-      const el = document.createElement('div');
-      el.className = 'plant';
-      el.innerHTML = '<img src="/img/species/' + d[0] + '.webp">';
-      Object.assign(el.style, { left: px(d[1]), top: px(d[2]), width: px(d[3]),
-        filter: 'brightness(' + d[4] + ') saturate(.85)' + (d[5] ? ' blur(' + px(d[5]) + ')' : ''),
-        transform: d[6] ? 'scaleX(-1)' : '' });
-      v.appendChild(el);
-    });
-    const lock = document.createElement('div');
-    lock.className = 'lockup';
-    lock.innerHTML = '<div class="wm-row"><span class="m"><svg viewBox="24 20 52 68" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">' +
-      '<path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/></svg></span>' +
-      '<div class="word">Sprout</div></div><div class="script">evergreen</div>';
-    v.appendChild(lock);
+    const wash = document.createElement('div'); wash.className = 'wash'; v.appendChild(wash);
+    // Seven arches, the middle one tallest and brightest, fading out to
+    // each side so the row reads as glass catching light, not a fence.
+    const AW = 210, GAP = 34, N = 7;
+    for (let i = 0; i < N; i++) {
+      const k = i - (N - 1) / 2, d = Math.abs(k);
+      const h = 640 - d * 46, x = 960 + k * (AW + GAP) - AW / 2, y = HU - h;
+      const a = document.createElement('div');
+      a.className = 'arch';
+      Object.assign(a.style, { left: px(x), top: px(y), width: px(AW), height: px(h),
+        borderRadius: px(AW / 2) + ' ' + px(AW / 2) + ' 0 0', opacity: String(1 - d * 0.24) });
+      v.appendChild(a);
+    }
+    // Motes drifting through the light, as on the site's hero: fixed
+    // positions, so every render is the same image.
+    [[560, 150, 14], [740, 560, 12], [1200, 120, 12], [1330, 430, 16], [470, 470, 10], [1480, 600, 12], [880, 80, 10]]
+      .forEach(function (m) {
+        const el = document.createElement('i'); el.className = 'mote';
+        Object.assign(el.style, { left: px(m[0]), top: px(m[1]), height: px(m[2]), transform: 'rotate(-18deg)', opacity: '.45' });
+        v.appendChild(el);
+      });
+    const mark = document.createElement('div');
+    mark.className = 'mark';
+    mark.innerHTML = '<div class="w">Sprout</div><div class="s">evergreen</div><div class="r"></div>';
+    v.appendChild(mark);
+    const grain = document.createElement('div'); grain.className = 'grainy'; v.appendChild(grain);
     document.fonts.ready.then(function () {
-      lock.style.left = px((1920 - lock.offsetWidth / U) / 2);
-      lock.style.top = px((HU - lock.offsetHeight / U) / 2 - 20);
+      mark.style.top = px((HU - mark.offsetHeight / U) / 2 - 10);
     });
   } else {
     bloom.style.background = 'radial-gradient(' + px(900) + ' ' + px(800) + ' at 70% 50%,rgba(47,154,112,.34),transparent 70%),' +
