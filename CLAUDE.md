@@ -324,6 +324,12 @@ belongs to the house, not the room. A room left blank is saved with no shape
 and no light (the old "Not sure"); editing a shapeless room keeps its typed
 light unless windows are marked.
 
+The planner's tools run along the stage's top-left (full screen, ruler,
+compass), with Centre beneath them. The compass's ring breathes whenever
+north is unset; its "Set north" tag, under it, appears only once a drawn
+room has a window or is outdoors, with nothing selected, because before
+that north would change nothing and the reader is still marking walls.
+
 The plan obeys the same go-quiet rule as the room form: while north is
 unconfirmed or the hemisphere is a guess, every light function returns
 null and the plan renders unshaded. Openings borrow light from the room
@@ -556,6 +562,24 @@ the reader's own garden. Anything new that writes outside `save()` (a new
 localStorage key, IndexedDB, a plugin) has to check `Store.inSample()`
 too, or the sample leaks. The tour ends the sample as it reaches the plan,
 and on every way out (Esc and Android's Back go to that last card).
+
+**The planner's walkthrough is `Tour` (`js/tour.js`),** behind "Watch me
+build one" on the empty plan and "Watch walkthrough again" on step 1. It
+draws a two-room flat on the real planner: a ghost finger dispatches the
+pointer and input events a thumb would, under the guided tour's veil and
+card (`.gd-card`), on its own `Store.beginSample()`, seeded with one
+unplaced Monstera for the add-a-plant step. The sample is never kept: the
+end, Skip, Esc and Android's Back all end it and open the reader's own
+plan with tracing armed, and a route change mid-run just ends it. While it
+drives, a shield takes the reader's taps, fields are typed into without
+focus so no keyboard opens, and real key presses are dropped. Because it
+drives the planner itself, it depends on these staying as they are:
+`#pl-trace`, `#pl-coach-self`, `#pl-room-name`, `[data-edge]` on the
+canvas, `#pl-add-room`, `#pl-rose`, `#pl-dial`,
+`[data-act="pl-north-confirm"]`, `#pl-quick-add`, `[data-quick-plant]` and
+`[data-plant]`. Rename one and update the script, or the run stops on that
+step with a card saying so. Its root is `.tour`, which is what Android's
+Back and `Rate`'s busy check look for.
 
 ## Type
 

@@ -1002,9 +1002,14 @@ window.ViewPlan = (function () {
     if (rose) {
       const unset = !Plan.known();
       rose.classList.toggle('is-unset', unset);
-      /* The tag only once a room is drawn: on an empty grid there is no
-         light to read yet, and the invitation is the one thing to look at. */
-      rose.classList.toggle('has-tag', unset && list.length > 0 && !drawing && curStep() === 3);
+      /* The tag only once north would change something: a window marked, or
+         a room open to the sky, since a room of walls reads the same light
+         whichever way the plan faces. And only with nothing selected, so it
+         arrives as the reader steps back from a finished room rather than
+         while they are still marking its walls. The compass's ring breathes
+         the whole time north is unset; the tag is the one firm ask. */
+      const lit = list.some(function (r) { return r.shape.outdoor || r.shape.win.some(function (w) { return w === WINDOW; }); });
+      rose.classList.toggle('has-tag', unset && lit && !sel && !drawing && curStep() === 3);
       rose.setAttribute('aria-label', unset ? 'Set north. Room light is off until it is set' : 'Which way is north?');
     }
     document.querySelectorAll('[data-mode]').forEach(function (b) { b.classList.toggle('is-on', b.getAttribute('data-mode') === mode); });
@@ -1223,12 +1228,14 @@ window.ViewPlan = (function () {
           '<div class="plan-walltip" id="pl-walltip" hidden><span>Tap a number and I\'ll switch that side between wall, window and opening.</span>' +
             '<button class="plan-tip-x" data-walltip-done="1" aria-label="Got it, hide this tip">' + UI.icon('x') + '</button></div>' +
           '<div class="plan-history"><button class="plan-tool" id="pl-undo" aria-label="Undo" disabled>' + UNDO_SVG + '</button><button class="plan-tool" id="pl-redo" aria-label="Redo" disabled>' + REDO_SVG + '</button></div>' +
+          /* Full screen, ruler, compass, left to right along the top-left
+             corner, the order a reader scans them. */
           '<div class="plan-tools">' +
-            '<button class="plan-tool is-rose" id="pl-rose" data-open-compass="1" aria-label="Which way is north?"><svg id="pl-tool-compass" viewBox="-30 -30 60 60" aria-hidden="true"></svg>' +
-              '<span class="plan-rose-tag" aria-hidden="true">Set north<svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h8M7 3l3 3-3 3"/></svg></span>' +
-            '</button>' +
-            '<button class="plan-tool" data-open-dims="1" aria-label="Set the room sizes">' + UI.icon('ruler') + '</button>' +
             '<button class="plan-tool" id="pl-full" aria-label="Fill the screen"></button>' +
+            '<button class="plan-tool" data-open-dims="1" aria-label="Set the room sizes">' + UI.icon('ruler') + '</button>' +
+            '<button class="plan-tool is-rose" id="pl-rose" data-open-compass="1" aria-label="Which way is north?"><svg id="pl-tool-compass" viewBox="-30 -30 60 60" aria-hidden="true"></svg>' +
+              '<span class="plan-rose-tag" aria-hidden="true">Set north<svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10V2M3 5l3-3 3 3"/></svg></span>' +
+            '</button>' +
           '</div>' +
           /* The bottom-right corner belongs to the dock, so the Home
              view's walls switch takes the top-left, and Centre steps down
@@ -1286,7 +1293,7 @@ window.ViewPlan = (function () {
           '<div class="plan-invite" id="pl-invite" hidden>' +
             UI.sprout('home-planner', 'is-small plan-invite-sprout') +
             '<div class="plan-invite-t">Nothing drawn yet</div>' +
-            '<p class="hint">I\'ll build a sample home and name each part as it appears, if it helps to see one first.</p>' +
+            '<p class="hint">I\'ll draw a sample flat on this plan, step by step, if it helps to see one first.</p>' +
             '<div class="stack" style="gap:9px;align-items:center">' +
               '<button class="btn btn-sm plan-invite-go" data-tour="1">' + UI.icon('sparkle') + 'Watch me build one</button>' +
               '<button class="link-btn" id="pl-trace">or trace one yourself</button>' +
@@ -1673,5 +1680,11 @@ window.ViewPlan = (function () {
      back to the start counts as no change. */
   function edited() { return hist.past.length > 1; }
 
-  return { title: title, sub: sub, actions: actions, back: true, render: render, mount: mount, stagger: false, focusRoom: focusRoom, place: place, edited: edited };
+  /* Let go of everything the editor holds between renders, for the
+     walkthrough's way in and out of its sample: a selection that named a
+     sample room would otherwise reach into the reader's plan. A render
+     without refresh clears the rest (drawing, tool, history, step, view). */
+  function reset() { sel = null; mode = 'plan'; drag = null; }
+
+  return { title: title, sub: sub, actions: actions, back: true, render: render, mount: mount, stagger: false, focusRoom: focusRoom, place: place, edited: edited, reset: reset };
 })();
