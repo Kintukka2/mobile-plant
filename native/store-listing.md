@@ -278,7 +278,7 @@ site, this one states no count, because the list grows.
   2752×2064 in the app's wide layout. The smaller iPads scale from it.
 - **Header and Search Results**, on the version page's first tab:
   `store-assets/app-store-header-3840x1646.jpg` (the product page header,
-  21:9: the lockup in window light with houseplants in the corners, a
+  21:9: the lockup in window light with blurred foliage in the corners, a
   scene rather than screens, since the screenshots sit right under it) and
   `store-assets/app-store-search-3840x2560.jpg` (the search results asset,
   3:2). Both are optional; without the search asset, search shows the

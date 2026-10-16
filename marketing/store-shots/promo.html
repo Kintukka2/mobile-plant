@@ -90,8 +90,9 @@ h1 em{font-style:normal;color:var(--glow)}
   const bloom = document.getElementById('bloom'), grid = document.getElementById('grid');
   if (KIND === 'header') {
     // Dusk in a room: a low green glow, a window's light thrown across the
-    // middle, and the plants in the corners darker than the light, the
-    // nearest blurred as if in front of the lens. Everything that must
+    // middle, and foliage in the corners, darker than the light and out of
+    // focus, as if in front of the lens. Nothing in the frame is sharp but
+    // the lockup: a potted plant in focus read as a product shot. Everything that must
     // survive a crop (the lockup and the light under it) is in the middle
     // third; the plants are what a crop is allowed to lose.
     bloom.style.background = 'radial-gradient(' + px(760) + ' ' + px(420) + ' at 50% 50%,rgba(47,154,112,.30),transparent 72%),' +
@@ -105,12 +106,9 @@ h1 em{font-style:normal;color:var(--glow)}
     // [species, left, top, width, brightness, blur, flip]
     const PLANTS = [
       ['dracaena-trifasciata', -60, 330, 420, .55, 10, false],
-      ['strelitzia-nicolai', 40, 170, 500, .6, 0, false],
       ['howea-forsteriana', 1440, -260, 640, .5, 12, true],
       ['epipremnum-aureum', -120, -330, 560, .45, 14, false],
-      ['monstera-deliciosa', 1330, 300, 520, .7, 0, true],
-      ['pilea-peperomioides', 520, 540, 240, .62, 0, false],
-      ['calathea-orbifolia', 1210, 530, 300, .6, 0, false]
+      ['monstera-deliciosa', 1480, 380, 560, .45, 14, true]
     ];
     PLANTS.forEach(function (d) {
       const el = document.createElement('div');
