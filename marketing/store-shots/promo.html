@@ -8,7 +8,7 @@
      raw/, so they read as one set with the screenshots. Every length is a
      multiple of --u (the canvas width over 1920).
 
-     The header carries no words. Apple crops it differently by device and
+     The header carries the lockup and nothing else. Apple crops it differently by device and
      orientation and publishes the safe area only inside its templates, so
      everything that matters sits in the middle third, where every crop
      keeps it; the name and icon sit under it on the page anyway. The
@@ -17,6 +17,7 @@
 <style>
 @font-face{font-family:'PP Hatton';src:url('/css/fonts/hatton-ultralight.woff2') format('woff2');font-weight:200;font-display:block}
 @font-face{font-family:'Jost';src:url('/css/fonts/jost-var.woff2') format('woff2');font-weight:300 500;font-display:block}
+@font-face{font-family:'Sacramento';src:url('/css/fonts/sacramento-400.woff2') format('woff2');font-weight:400;font-display:block}
 @font-face{font-family:'Cormorant';src:url('/css/fonts/cormorant-var.woff2') format('woff2');font-weight:300 700;font-display:block}
 :root{ --bg:#050A08; --ink:#F3F6F1; --ink2:rgba(228,240,232,.74); --glow:#3FBE8B;
        --leaf:#2F9A70; --sun:#E0C47A; --hair:rgba(214,237,226,.14); --u:1px; }
@@ -36,6 +37,21 @@ html,body{background:var(--bg);overflow:hidden}
 h1{font-family:'PP Hatton';font-weight:200;font-size:calc(var(--u)*116);line-height:1.06;color:var(--ink);margin-top:calc(var(--u)*30);text-wrap:balance}
 h1 em{font-style:normal;color:var(--glow)}
 .sub{font-family:'Cormorant';font-weight:500;font-size:calc(var(--u)*48);line-height:1.3;color:var(--ink2);margin-top:calc(var(--u)*34)}
+/* The header: a room at dusk rather than a screen. Window light falls
+   across the middle, houseplants frame the corners, the near ones out of
+   focus, and the lockup sits in the light. Geometry of the lockup is the
+   feature graphic's and the site's, from one --wm. */
+.plant{position:absolute;pointer-events:none}
+.plant img{display:block;width:100%}
+.win{position:absolute;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:calc(var(--u)*16);
+     transform:skewX(-22deg) rotate(-4deg);filter:blur(calc(var(--u)*22))}
+.win i{background:rgba(224,196,122,.2);border-radius:calc(var(--u)*6)}
+.lockup{position:absolute;--wm:calc(var(--u)*120);--mk:calc(var(--wm)*0.96);--mkw:calc(var(--mk)*0.7647);--gap:calc(var(--wm)*0.26)}
+.wm-row{display:flex;align-items:center;gap:var(--gap)}
+.m{width:var(--mkw);height:var(--mk);color:var(--glow);flex:none}
+.m svg{width:100%;height:100%;display:block}
+.word{font-family:'PP Hatton';font-weight:200;font-size:var(--wm);letter-spacing:.2em;text-transform:uppercase;line-height:1;color:var(--ink);margin-right:-.2em}
+.script{font-family:'Sacramento';font-size:calc(var(--wm)*0.56);color:#9FD3BE;line-height:1;margin-top:calc(var(--wm)*0.12);padding-left:calc(var(--mkw) + var(--gap))}
 </style>
 <div id="v"><div class="layer" id="bloom"></div><div class="layer grid" id="grid"></div><div class="layer vig"></div></div>
 <script>
@@ -73,14 +89,48 @@ h1 em{font-style:normal;color:var(--glow)}
 
   const bloom = document.getElementById('bloom'), grid = document.getElementById('grid');
   if (KIND === 'header') {
-    // Three phones fanned from the foot, the plan in front: the home and
-    // its light is the one idea nobody else's listing shows.
-    bloom.style.background = 'radial-gradient(' + px(900) + ' ' + px(520) + ' at 50% 62%,rgba(47,154,112,.36),transparent 70%)';
-    grid.style.webkitMaskImage = 'radial-gradient(' + px(900) + ' ' + px(560) + ' at 50% 55%,#000,transparent 80%)';
-    const cw = 300, sw = 262;
-    phone('today', 960 - cw / 2 - 300, 250, sw, -9, 'leaf');
-    phone('plant', 960 - cw / 2 + cw + 300 - sw, 250, sw, 9, 'leaf');
-    phone('plan', 960 - cw / 2, 120, cw, 0, 'sun');
+    // Dusk in a room: a low green glow, a window's light thrown across the
+    // middle, and the plants in the corners darker than the light, the
+    // nearest blurred as if in front of the lens. Everything that must
+    // survive a crop (the lockup and the light under it) is in the middle
+    // third; the plants are what a crop is allowed to lose.
+    bloom.style.background = 'radial-gradient(' + px(760) + ' ' + px(420) + ' at 50% 50%,rgba(47,154,112,.30),transparent 72%),' +
+      'radial-gradient(' + px(1200) + ' ' + px(700) + ' at 50% 120%,rgba(47,154,112,.16),transparent 70%)';
+    grid.style.display = 'none';
+    const win = document.createElement('div');
+    win.className = 'win';
+    win.innerHTML = '<i></i><i></i><i></i><i></i>';
+    Object.assign(win.style, { left: px(720), top: px(110), width: px(560), height: px(560) });
+    v.appendChild(win);
+    // [species, left, top, width, brightness, blur, flip]
+    const PLANTS = [
+      ['dracaena-trifasciata', -60, 330, 420, .55, 10, false],
+      ['strelitzia-nicolai', 40, 170, 500, .6, 0, false],
+      ['howea-forsteriana', 1440, -260, 640, .5, 12, true],
+      ['epipremnum-aureum', -120, -330, 560, .45, 14, false],
+      ['monstera-deliciosa', 1330, 300, 520, .7, 0, true],
+      ['pilea-peperomioides', 520, 540, 240, .62, 0, false],
+      ['calathea-orbifolia', 1210, 530, 300, .6, 0, false]
+    ];
+    PLANTS.forEach(function (d) {
+      const el = document.createElement('div');
+      el.className = 'plant';
+      el.innerHTML = '<img src="/img/species/' + d[0] + '.webp">';
+      Object.assign(el.style, { left: px(d[1]), top: px(d[2]), width: px(d[3]),
+        filter: 'brightness(' + d[4] + ') saturate(.85)' + (d[5] ? ' blur(' + px(d[5]) + ')' : ''),
+        transform: d[6] ? 'scaleX(-1)' : '' });
+      v.appendChild(el);
+    });
+    const lock = document.createElement('div');
+    lock.className = 'lockup';
+    lock.innerHTML = '<div class="wm-row"><span class="m"><svg viewBox="24 20 52 68" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M50 84V40"/><path d="M50 58C36 58 28 49 28 36c14 0 22 9 22 22Z"/><path d="M50 46c14 0 22-9 22-22-14 0-22 9-22 22Z"/></svg></span>' +
+      '<div class="word">Sprout</div></div><div class="script">evergreen</div>';
+    v.appendChild(lock);
+    document.fonts.ready.then(function () {
+      lock.style.left = px((1920 - lock.offsetWidth / U) / 2);
+      lock.style.top = px((HU - lock.offsetHeight / U) / 2 - 20);
+    });
   } else {
     bloom.style.background = 'radial-gradient(' + px(900) + ' ' + px(800) + ' at 70% 50%,rgba(47,154,112,.34),transparent 70%),' +
       'radial-gradient(' + px(900) + ' ' + px(600) + ' at 15% -10%,rgba(47,154,112,.14),transparent 70%)';
